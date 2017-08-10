@@ -1,0 +1,2 @@
+# hivemind
+Starcraft II AI
