@@ -3,6 +3,14 @@
 
 namespace hivemind {
 
+  Bot::Bot(): time_( 0 ), console_( this ), players_( this ), brain_( this ), messaging_( this )
+  {
+  }
+
+  Bot::~Bot()
+  {
+  }
+
   void Bot::OnGameStart()
   {
     time_ = 0;
@@ -13,6 +21,7 @@ namespace hivemind {
     console_.gameBegin();
     players_.gameBegin();
     brain_.gameBegin();
+    messaging_.gameBegin();
   }
 
   void Bot::OnStep()
@@ -27,6 +36,7 @@ namespace hivemind {
     lastStepTime_ = time_;
 
     brain_.update( time_, delta );
+    messaging_.update( time_ );
 
     players_.draw();
     brain_.draw();
@@ -36,6 +46,7 @@ namespace hivemind {
 
   void Bot::OnGameEnd()
   {
+    messaging_.gameEnd();
     brain_.gameEnd();
     players_.gameEnd();
     console_.gameEnd();
@@ -95,14 +106,6 @@ namespace hivemind {
       console_.printf( "CLIENT ERROR: %d - %s", error, c_clientErrorText[(int)error] );
     for ( auto& error : protocol_errors )
       console_.printf( "PROTOCOL ERROR: %s", error.c_str() );
-  }
-
-  Bot::Bot(): time_( 0 ), console_( this ), players_( this ), brain_( this )
-  {
-  }
-
-  Bot::~Bot()
-  {
   }
 
 }

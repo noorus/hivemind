@@ -105,6 +105,7 @@
     <ClInclude Include="include\hive_math.h" />
     <ClInclude Include="include\hive_types.h" />
     <ClInclude Include="include\hive_vector2.h" />
+    <ClInclude Include="include\messaging.h" />
     <ClInclude Include="include\player.h" />
     <ClInclude Include="include\sc2_forward.h" />
     <ClInclude Include="include\stdafx.h" />
@@ -120,6 +121,7 @@
     <ClCompile Include="src\console.cpp" />
     <ClCompile Include="src\exception.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\messaging.cpp" />
     <ClCompile Include="src\player.cpp" />
     <ClCompile Include="src\playermanager.cpp" />
     <ClCompile Include="src\stdafx.cpp">

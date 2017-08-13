@@ -66,6 +66,9 @@
     <ClInclude Include="include\ai_agent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\messaging.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\stdafx.cpp">
@@ -96,6 +99,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\brain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\messaging.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

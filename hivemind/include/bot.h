@@ -3,6 +3,7 @@
 #include "console.h"
 #include "player.h"
 #include "brain.h"
+#include "messaging.h"
 
 namespace hivemind {
 
@@ -16,6 +17,7 @@ namespace hivemind {
     sc2::DebugInterface* debug_;
     Console console_;
     PlayerManager players_;
+    Messaging messaging_;
     Brain brain_;
   public:
     inline const GameTime time() const { return time_; }
