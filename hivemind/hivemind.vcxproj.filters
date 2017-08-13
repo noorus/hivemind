@@ -54,6 +54,12 @@
     <ClInclude Include="include\player.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\ai_statemachines.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ai_goals.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\stdafx.cpp">
@@ -75,6 +81,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\playermanager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ai_finitestatemachine.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ai_goals.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -94,6 +94,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="include\ai_goals.h" />
+    <ClInclude Include="include\ai_statemachines.h" />
     <ClInclude Include="include\bot.h" />
     <ClInclude Include="include\console.h" />
     <ClInclude Include="include\exception.h" />
@@ -109,6 +111,8 @@
     <ClInclude Include="include\utilities.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\ai_finitestatemachine.cpp" />
+    <ClCompile Include="src\ai_goals.cpp" />
     <ClCompile Include="src\bot.cpp" />
     <ClCompile Include="src\console.cpp" />
     <ClCompile Include="src\exception.cpp" />
