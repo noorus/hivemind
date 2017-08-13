@@ -4,7 +4,7 @@
 namespace hivemind {
 
   Bot::Bot(): time_( 0 ),
-  console_( this ), players_( this ), brain_( this ), messaging_( this ), map_( this )
+  console_( this ), players_( this ), brain_( this ), messaging_( this ), map_( this ), workers_( this )
   {
   }
 
@@ -20,12 +20,14 @@ namespace hivemind {
     observation_ = Observation();
 
     console_.gameBegin();
+    messaging_.gameBegin();
 
     map_.rebuild();
 
+    workers_.gameBegin();
+
     players_.gameBegin();
     brain_.gameBegin();
-    messaging_.gameBegin();
   }
 
   void Bot::OnStep()
@@ -41,18 +43,21 @@ namespace hivemind {
 
     brain_.update( time_, delta );
     messaging_.update( time_ );
+    workers_.update( time_ );
 
     players_.draw();
     brain_.draw();
+    workers_.draw();
 
     debug_->SendDebug();
   }
 
   void Bot::OnGameEnd()
   {
-    messaging_.gameEnd();
     brain_.gameEnd();
     players_.gameEnd();
+    workers_.gameEnd();
+    messaging_.gameEnd();
     console_.gameEnd();
   }
 

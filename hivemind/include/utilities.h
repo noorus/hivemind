@@ -6,6 +6,9 @@ namespace hivemind {
 
   namespace utils {
 
+    static std::random_device g_randomDevice;
+    static std::mt19937 g_random( g_randomDevice() );
+
     constexpr GameTime timeToTicks( const uint16_t minutes, const uint16_t seconds )
     {
       const float speed_multiplier = 1.4f; // faster
@@ -18,6 +21,12 @@ namespace hivemind {
       const float speed_multiplier = 1.4f; // faster
       const float ticks_per_second = 16.0f; // 32 updates per second / 2 updates per tick
       return (RealTime)Math::round( ( (float)ticks / speed_multiplier ) / ticks_per_second );
+    }
+
+    inline int randomBetween( int imin, int imax )
+    {
+      std::uniform_int_distribution<> distrib( imin, imax );
+      return distrib( g_random );
     }
 
     inline const bool pathable( const GameInfo& info, size_t x, size_t y )
@@ -44,6 +53,45 @@ namespace hivemind {
     inline const bool isMine( const Unit& unit )
     {
       return ( unit.alliance == Unit::Alliance::Self );
+    }
+
+    inline const bool isWorker( const UnitTypeID& type )
+    {
+      switch ( type.ToType() )
+      {
+        case sc2::UNIT_TYPEID::TERRAN_SCV:
+        case sc2::UNIT_TYPEID::PROTOSS_PROBE:
+        case sc2::UNIT_TYPEID::ZERG_DRONE:
+        case sc2::UNIT_TYPEID::ZERG_DRONEBURROWED:
+          return true;
+        default:
+          return false;
+      }
+    }
+
+    inline const bool isWorker( const Unit& unit )
+    {
+      return isWorker( unit.unit_type );
+    }
+
+    inline const bool isSupplyProvider( const UnitTypeID& type )
+    {
+      switch ( type.ToType() )
+      {
+        case sc2::UNIT_TYPEID::ZERG_OVERLORD:
+        case sc2::UNIT_TYPEID::PROTOSS_PYLON:
+        case sc2::UNIT_TYPEID::PROTOSS_PYLONOVERCHARGED:
+        case sc2::UNIT_TYPEID::TERRAN_SUPPLYDEPOT:
+        case sc2::UNIT_TYPEID::TERRAN_SUPPLYDEPOTLOWERED:
+          return true;
+        default:
+          return false;
+      }
+    }
+
+    inline  const bool isSupplyProvider( const Unit& unit )
+    {
+      return isSupplyProvider( unit.unit_type );
     }
 
   }

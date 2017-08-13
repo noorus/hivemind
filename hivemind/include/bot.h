@@ -5,6 +5,7 @@
 #include "brain.h"
 #include "messaging.h"
 #include "map.h"
+#include "workers.h"
 
 namespace hivemind {
 
@@ -21,6 +22,7 @@ namespace hivemind {
     Messaging messaging_;
     Brain brain_;
     Map map_;
+    WorkerManager workers_;
   public:
     inline const GameTime time() const { return time_; }
     inline const sc2::ObservationInterface& observation() { return *observation_; }
@@ -29,7 +31,10 @@ namespace hivemind {
     inline sc2::DebugInterface& debug() { return *debug_; }
     inline Console& console() { return console_; }
     inline PlayerManager& players() { return players_; }
+    inline Messaging& messaging() { return messaging_; }
     inline Brain& brain() { return brain_; }
+    inline Map& map() { return map_; }
+    inline WorkerManager& workers() { return workers_; }
   public:
     //! Callbacks
     virtual void OnGameStart() final;
