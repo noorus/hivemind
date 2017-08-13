@@ -1,6 +1,7 @@
 #pragma once
 #include "sc2_forward.h"
 #include "console.h"
+#include "player.h"
 
 namespace hivemind {
 
@@ -13,6 +14,7 @@ namespace hivemind {
     sc2::ActionInterface* action_;
     sc2::DebugInterface* debug_;
     Console console_;
+    PlayerManager players_;
   public:
     inline const GameTime time() const { return time_; }
     inline const sc2::ObservationInterface& observation() { return *observation_; }

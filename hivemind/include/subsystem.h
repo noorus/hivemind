@@ -11,6 +11,7 @@ namespace hivemind {
     Subsystem( Bot* bot ): bot_( bot ) {}
     virtual void gameBegin() = 0;
     virtual void gameEnd() = 0;
+    virtual void draw() {}
   };
 
 }
