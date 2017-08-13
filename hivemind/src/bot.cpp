@@ -54,36 +54,44 @@ namespace hivemind {
 
   void Bot::OnUnitDestroyed( const Unit& unit )
   {
+    messaging_.sendGlobal( M_Global_UnitDestroyed, &unit );
   }
 
   void Bot::OnUnitCreated( const Unit& unit )
   {
+    messaging_.sendGlobal( M_Global_UnitCreated, &unit );
   }
 
   void Bot::OnUnitIdle( const Unit& unit )
   {
+    messaging_.sendGlobal( M_Global_UnitIdle, &unit );
   }
 
   void Bot::OnUpgradeCompleted( UpgradeID upgrade )
   {
+    messaging_.sendGlobal( M_Global_UpgradeCompleted, (uint32_t)upgrade );
   }
 
   void Bot::OnBuildingConstructionComplete( const Unit& unit )
   {
+    messaging_.sendGlobal( M_Global_UpgradeCompleted, &unit );
   }
 
   void Bot::OnNydusDetected()
   {
     console_.printf( "GLOBAL: Nydus detected!" );
+    messaging_.sendGlobal( M_Global_NydusDetected );
   }
 
   void Bot::OnNuclearLaunchDetected()
   {
     console_.printf( "GLOBAL: Nuclear launch detected!" );
+    messaging_.sendGlobal( M_Global_NuclearLaunchDetected );
   }
 
   void Bot::OnUnitEnterVision( const Unit& unit )
   {
+    messaging_.sendGlobal( M_Global_UnitEnterVision, &unit );
   }
 
   const char* c_clientErrorText[11] = {
