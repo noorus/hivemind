@@ -77,3 +77,5 @@
 #ifndef SAFE_CLOSE_HANDLE
 # define SAFE_CLOSE_HANDLE(p) {if(p){CloseHandle(p);(p)=NULL;}}
 #endif
+
+#include "hive_types.h"

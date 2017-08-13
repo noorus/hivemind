@@ -1,8 +1,46 @@
 #include "stdafx.h"
+#include "bot.h"
+#include "exception.h"
+
+using sc2::Coordinator;
+
+const unsigned int c_updateSleepTime = 10; // 10 milliseconds
+const char* c_mapName = "Bastion of the Conclave";
 
 int main( int argc, char* argv[] )
 {
-  printf( "hello world\n" );
+  try
+  {
+    Coordinator coordinator;
+
+    if ( !coordinator.LoadSettings( argc, argv ) )
+      ENGINE_EXCEPT( "Failed to load settings" );
+
+    coordinator.SetRealtime( true );
+
+    coordinator.SetWindowSize( 1920, 1080 );
+
+    hivemind::Bot hivemindBot;
+
+    coordinator.SetParticipants( {
+      CreateParticipant( sc2::Zerg, &hivemindBot ),
+      CreateComputer( sc2::Terran, sc2::Difficulty::Medium )
+    } );
+
+    coordinator.LaunchStarcraft();
+    if ( !coordinator.StartGame( c_mapName ) )
+      ENGINE_EXCEPT( "Failed to start game" );
+
+    while ( coordinator.Update() )
+    {
+      sc2::SleepFor( c_updateSleepTime );
+    }
+  }
+  catch ( hivemind::Exception& e )
+  {
+    printf_s( "EXCEPTION: %s\n", e.getFullDescription().c_str() );
+    return EXIT_FAILURE;
+  }
 
   return EXIT_SUCCESS;
 }
