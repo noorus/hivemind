@@ -12,6 +12,7 @@ namespace hivemind {
 
     console_.gameBegin();
     players_.gameBegin();
+    brain_.gameBegin();
   }
 
   void Bot::OnStep()
@@ -25,13 +26,17 @@ namespace hivemind {
     auto delta = ( time_ - lastStepTime_ );
     lastStepTime_ = time_;
 
+    brain_.update( time_, delta );
+
     players_.draw();
+    brain_.draw();
 
     debug_->SendDebug();
   }
 
   void Bot::OnGameEnd()
   {
+    brain_.gameEnd();
     players_.gameEnd();
     console_.gameEnd();
   }
@@ -92,7 +97,7 @@ namespace hivemind {
       console_.printf( "PROTOCOL ERROR: %s", error.c_str() );
   }
 
-  Bot::Bot(): time_( 0 ), console_( this ), players_( this )
+  Bot::Bot(): time_( 0 ), console_( this ), players_( this ), brain_( this )
   {
   }
 

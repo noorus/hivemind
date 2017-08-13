@@ -2,6 +2,7 @@
 #include "sc2_forward.h"
 #include "console.h"
 #include "player.h"
+#include "brain.h"
 
 namespace hivemind {
 
@@ -15,6 +16,7 @@ namespace hivemind {
     sc2::DebugInterface* debug_;
     Console console_;
     PlayerManager players_;
+    Brain brain_;
   public:
     inline const GameTime time() const { return time_; }
     inline const sc2::ObservationInterface& observation() { return *observation_; }
@@ -22,6 +24,8 @@ namespace hivemind {
     inline sc2::ActionInterface& action() { return *action_; }
     inline sc2::DebugInterface& debug() { return *debug_; }
     inline Console& console() { return console_; }
+    inline PlayerManager& players() { return players_; }
+    inline Brain& brain() { return brain_; }
   public:
     //! Callbacks
     virtual void OnGameStart() final;

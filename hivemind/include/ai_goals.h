@@ -52,7 +52,7 @@ namespace hivemind {
       virtual const bool isComposite() const final { return true; }
       virtual const bool isCollection() const final { return false; }
       GoalList& getSubgoals() { return subGoals_; }
-      virtual void addSubgoal( Goal* goal ) final;
+      virtual void addSubgoal( Goal* goal ) override;
       virtual void removeAllSubgoals();
     };
 
@@ -70,9 +70,9 @@ namespace hivemind {
     public:
       ThinkGoal( Agent* owner );
       void arbitrate();
-      void activate() final;
-      Status process() final;
-      void terminate() final;
+      void activate() override;
+      Status process() override;
+      void terminate() override;
     };
 
     class GoalCollection: public Goal {
