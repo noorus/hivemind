@@ -13,6 +13,23 @@ namespace hivemind {
   {
   }
 
+  void dump( Array2<uint64_t>& flagmap )
+  {
+    std::ofstream outBuildable( "debug_map_buildable.log" );
+    std::ofstream outPathable( "debug_map_pathable.log" );
+
+    for ( size_t y = 0; y < flagmap.height(); y++ )
+    {
+      for ( size_t x = 0; x < flagmap.width(); x++ )
+      {
+        outBuildable << ( ( flagmap.column( x )[y] & MapFlag_Buildable ) ? 'x' : '.' );
+        outPathable << ( ( flagmap.column( x )[y] & MapFlag_Walkable ) ? 'x' : '.' );
+      }
+      outBuildable << std::endl;
+      outPathable << std::endl;
+    }
+  }
+
   void Map::rebuild()
   {
     bot_->console().printf( "Map: Rebuilding..." );
@@ -31,19 +48,21 @@ namespace hivemind {
       for ( size_t y = 0; y < height_; y++ )
       {
         uint64_t flags = 0;
-        if ( utils::placement( *gameInfo, Point2D( x + 0.5f, y + 0.5f ) ) )
+        if ( utils::placement( *gameInfo, x, y ) )
           flags |= MapFlag_Buildable;
-        if ( ( flags & MapFlag_Buildable ) || utils::pathable( *gameInfo, Point2D( x + 0.5f, y + 0.5f ) ) )
+        if ( ( flags & MapFlag_Buildable ) || utils::pathable( *gameInfo, x, y ) )
           flags |= MapFlag_Walkable;
 
         flagsMap_[x][y] = flags;
 
-        heightMap_[x][y] = utils::terrainHeight( *gameInfo, Point2D( x + 0.5f, y + 0.5f ) );
+        heightMap_[x][y] = utils::terrainHeight( *gameInfo, x, y );
       }
 
     bot_->console().printf( "Map: Got build-, walkability- and height map" );
 
     bot_->console().printf( "Map: Rebuild done" );
+
+    dump( flagsMap_ );
   }
 
   bool Map::isValid( size_t x, size_t y ) const
