@@ -3,7 +3,8 @@
 
 namespace hivemind {
 
-  Bot::Bot(): time_( 0 ), console_( this ), players_( this ), brain_( this ), messaging_( this )
+  Bot::Bot(): time_( 0 ),
+  console_( this ), players_( this ), brain_( this ), messaging_( this ), map_( this )
   {
   }
 
@@ -19,6 +20,9 @@ namespace hivemind {
     observation_ = Observation();
 
     console_.gameBegin();
+
+    map_.rebuild();
+
     players_.gameBegin();
     brain_.gameBegin();
     messaging_.gameBegin();

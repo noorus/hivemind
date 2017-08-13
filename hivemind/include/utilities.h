@@ -1,5 +1,6 @@
 #pragma once
 #include "sc2_forward.h"
+#include "hive_math.h"
 
 namespace hivemind {
 
@@ -16,7 +17,42 @@ namespace hivemind {
     {
       const float speed_multiplier = 1.4f; // faster
       const float ticks_per_second = 16.0f; // 32 updates per second / 2 updates per tick
-      return (RealTime)roundf( ( (float)ticks / speed_multiplier ) / ticks_per_second );
+      return (RealTime)Math::round( ( (float)ticks / speed_multiplier ) / ticks_per_second );
+    }
+
+    inline const bool pathable( const GameInfo& info, const Point2D& pos )
+    {
+      Point2DI pointI( (int)pos.x, (int)pos.y );
+      if ( pointI.x < 0 || pointI.x >= info.width || pointI.y < 0 || pointI.y >= info.height )
+        return false;
+      uint8_t encoded = info.pathing_grid.data[pointI.x + ( ( info.height - 1 ) - pointI.y )*info.width];
+      bool decoded = ( encoded == 255 ? false : true );
+      return decoded;
+    }
+
+    inline const bool placement( const GameInfo& info, const Point2D& pos )
+    {
+      Point2DI pointI( (int)pos.x, (int)pos.y );
+      if ( pointI.x < 0 || pointI.x >= info.width || pointI.y < 0 || pointI.y >= info.height )
+        return false;
+      uint8_t encoded = info.placement_grid.data[pointI.x + ( ( info.height - 1 ) - pointI.y )*info.width];
+      bool decoded = ( encoded == 255 ? true : false );
+      return decoded;
+    }
+
+    inline const Real terrainHeight( const GameInfo& info, const Point2D& pos )
+    {
+      Point2DI pointI( (int)pos.x, (int)pos.y );
+      if ( pointI.x < 0 || pointI.x >= info.width || pointI.y < 0 || pointI.y >= info.height )
+        return false;
+      uint8_t encoded = info.terrain_height.data[pointI.x + ( ( info.height - 1 ) - pointI.y )*info.width];
+      Real decoded = ( -100.0f + 200.0f * Real( encoded ) / 255.0f );
+      return decoded;
+    }
+
+    inline const bool isMine( const Unit& unit )
+    {
+      return ( unit.alliance == Unit::Alliance::Self );
     }
 
   }

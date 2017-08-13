@@ -19,6 +19,7 @@ namespace hivemind {
       y = (Real)coords[1];
     }
     inline explicit Vector2( Real* const coords ): x( coords[0] ), y( coords[1] ) {}
+    inline Vector2( const Point2D& pt ): x( pt.x ), y( pt.y ) {}
     //! Swap
     inline void swap( Vector2& other )
     {
@@ -94,7 +95,7 @@ namespace hivemind {
     {
       return Vector2( lhs.x + rhs, lhs.y + rhs );
     }
-    inline friend Vector2 operator + ( const Vector2& lhs, const Vector2& rhs )
+    inline friend Vector2 operator + ( const Real lhs, const Vector2& rhs )
     {
       return Vector2( lhs + rhs.x, lhs + rhs.y );
     }

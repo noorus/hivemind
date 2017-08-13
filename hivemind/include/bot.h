@@ -4,6 +4,7 @@
 #include "player.h"
 #include "brain.h"
 #include "messaging.h"
+#include "map.h"
 
 namespace hivemind {
 
@@ -19,6 +20,7 @@ namespace hivemind {
     PlayerManager players_;
     Messaging messaging_;
     Brain brain_;
+    Map map_;
   public:
     inline const GameTime time() const { return time_; }
     inline const sc2::ObservationInterface& observation() { return *observation_; }
