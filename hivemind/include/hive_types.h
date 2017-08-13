@@ -18,6 +18,8 @@ namespace hivemind {
   using GameTime = uint32_t;
   using RealTime = uint32_t;
   using PlayerID = uint32_t;
+
   using Real = float;
+  using Radian = Real;
 
 }
