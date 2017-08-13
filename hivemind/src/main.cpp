@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "bot.h"
 #include "exception.h"
+#include "hive_array2.h"
 
 using sc2::Coordinator;
 
