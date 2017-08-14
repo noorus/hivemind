@@ -15,7 +15,7 @@ int main( int argc, char* argv[] )
     Coordinator coordinator;
 
     if ( !coordinator.LoadSettings( argc, argv ) )
-      ENGINE_EXCEPT( "Failed to load settings" );
+      HIVE_EXCEPT( "Failed to load settings" );
 
     coordinator.SetRealtime( true );
 
@@ -30,7 +30,7 @@ int main( int argc, char* argv[] )
 
     coordinator.LaunchStarcraft();
     if ( !coordinator.StartGame( c_mapName ) )
-      ENGINE_EXCEPT( "Failed to start game" );
+      HIVE_EXCEPT( "Failed to start game" );
 
     while ( coordinator.Update() )
     {

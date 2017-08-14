@@ -72,7 +72,7 @@ namespace hivemind {
         }
 
       if ( blob_algo::find_blobs( 0, 0, width, height, image_input, width, height, &lbl_out, &lbl_w, &lbl_h, &blob_out, &blob_count, 1 ) != 1 )
-        ENGINE_EXCEPT( "find_blobs failed" );
+        HIVE_EXCEPT( "find_blobs failed" );
 
       labels_out.resize( lbl_w, lbl_h );
 

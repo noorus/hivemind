@@ -24,7 +24,7 @@ namespace hivemind {
         int16_t *tmp = (int16_t*)BLOB_REALLOC( contour->points, newCapacity * ( 2 * sizeof( int16_t ) ) );
         if ( nullptr == tmp )
         {
-          ENGINE_EXCEPT( "Out of memory" );
+          HIVE_EXCEPT( "Out of memory" );
           return 0;
         }
         contour->points = tmp;
@@ -44,7 +44,7 @@ namespace hivemind {
       blob_t *tmp = (blob_t*)BLOB_REALLOC( *b, ( *count + 1 ) * sizeof( blob_t ) );
       if ( nullptr == tmp )
       {
-        ENGINE_EXCEPT( "Out of memory" );
+        HIVE_EXCEPT( "Out of memory" );
         return 0;
       }
       BLOB_MEMSET( &tmp[*count], 0, sizeof( blob_t ) );
@@ -59,7 +59,7 @@ namespace hivemind {
       contour_t *tmp = (contour_t*)BLOB_REALLOC( b->internal, ( b->internal_count + 1 ) * sizeof( contour_t ) );
       if ( nullptr == tmp )
       {
-        ENGINE_EXCEPT( "Out of memory" );
+        HIVE_EXCEPT( "Out of memory" );
         return 0;
       }
       BLOB_MEMSET( &tmp[b->internal_count], 0, sizeof( contour_t ) );
@@ -195,7 +195,7 @@ namespace hivemind {
       if ( ( nullptr == label ) || ( nullptr == label_w ) || ( nullptr == label_h )
         || ( nullptr == blobs ) || ( nullptr == count ) )
       {
-        ENGINE_EXCEPT( "One or more invalid arguments" );
+        HIVE_EXCEPT( "One or more invalid arguments" );
         return 0;
       }
 
@@ -222,7 +222,7 @@ namespace hivemind {
       *label = (label_t*)malloc( roi_w * roi_h * sizeof( label_t ) );
       if ( nullptr == label )
       {
-        ENGINE_EXCEPT( "Out of memory" );
+        HIVE_EXCEPT( "Out of memory" );
         return 0;
       }
       *label_w = roi_w;

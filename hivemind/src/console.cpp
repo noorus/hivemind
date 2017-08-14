@@ -37,7 +37,7 @@ namespace hivemind {
       FILE_ATTRIBUTE_NORMAL, 0 );
 
     if ( file_ == INVALID_HANDLE_VALUE )
-      ENGINE_EXCEPT( "Cannot create text file" );
+      HIVE_EXCEPT( "Cannot create text file" );
 
     SetFilePointer( file_, 0, nullptr, FILE_END );
   }
@@ -46,7 +46,7 @@ namespace hivemind {
   {
     DWORD written;
     if ( !WriteFile( file_, str.c_str(), (DWORD)str.size(), &written, nullptr ) )
-      ENGINE_EXCEPT( "Cannot write to file" );
+      HIVE_EXCEPT( "Cannot write to file" );
   }
 
   TextFile::~TextFile()

@@ -18,7 +18,7 @@ namespace hivemind {
 #if defined(ENGINE_EXCEPT)
 # error ENGINE_EXCEPT* macro already defined!
 #else
-# define ENGINE_EXCEPT(description) {throw hivemind::Exception(description,__FUNCTION__);}
+# define HIVE_EXCEPT(description) {throw hivemind::Exception(description,__FUNCTION__);}
 #endif
 
 }

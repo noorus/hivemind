@@ -32,7 +32,7 @@ namespace hivemind {
 
     void Goal::addSubgoal( Goal* goal )
     {
-      ENGINE_EXCEPT( "Cannot add a subgoal to an atomic goal" );
+      HIVE_EXCEPT( "Cannot add a subgoal to an atomic goal" );
     }
 
     /* CompositeGoal class */
@@ -120,7 +120,7 @@ namespace hivemind {
         }
       }
       if ( !mostDesirable )
-        ENGINE_EXCEPT( "No evaluator selected" );
+        HIVE_EXCEPT( "No evaluator selected" );
       mostDesirable->apply( this, owner_ );
     }
 
