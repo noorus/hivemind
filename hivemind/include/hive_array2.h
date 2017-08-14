@@ -25,6 +25,7 @@ namespace hivemind {
     {
       resize( rhs.width(), rhs.height() );
       memcpy( data_, rhs.data_, width_ * height_ * sizeof( T ) );
+      return *this;
     }
     ~Array2()
     {
