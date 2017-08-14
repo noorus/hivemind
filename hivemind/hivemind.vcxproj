@@ -101,6 +101,7 @@
     <ClInclude Include="include\bot.h" />
     <ClInclude Include="include\brain.h" />
     <ClInclude Include="include\console.h" />
+    <ClInclude Include="include\distancemap.h" />
     <ClInclude Include="include\exception.h" />
     <ClInclude Include="include\hive_array2.h" />
     <ClInclude Include="include\hive_math.h" />
@@ -125,6 +126,7 @@
     <ClCompile Include="src\bot.cpp" />
     <ClCompile Include="src\brain.cpp" />
     <ClCompile Include="src\console.cpp" />
+    <ClCompile Include="src\distancemap.cpp" />
     <ClCompile Include="src\exception.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\map.cpp" />

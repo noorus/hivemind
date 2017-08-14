@@ -39,7 +39,16 @@ namespace hivemind {
       size_t index = ( n * width_ );
       return &data_[index];
     }
+    T* column( size_t n ) const
+    {
+      size_t index = ( n * width_ );
+      return &data_[index];
+    }
     inline T* operator [] ( size_t n )
+    {
+      return column( n );
+    }
+    inline T* operator [] ( size_t n ) const
     {
       return column( n );
     }
@@ -52,6 +61,13 @@ namespace hivemind {
         data_ = (T*)malloc( width_ * height_ * sizeof( T ) );
       else
         data_ = (T*)realloc( data_, width_ * height_ * sizeof( T ) );
+    }
+    void reset( T value )
+    {
+      if ( !data_ )
+        return;
+      for ( size_t i = 0; i < ( width_ * height_ ); i++ )
+        data_[i] = value;
     }
   };
 
