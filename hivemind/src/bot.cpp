@@ -59,7 +59,7 @@ namespace hivemind {
     brain_.draw();
     workers_.draw();
 
-    // map_.draw();
+    map_.draw();
 
     for ( const sc2::Unit& unit : observation_->GetUnits() )
       if ( unit.is_selected && utils::isMine( unit ) )

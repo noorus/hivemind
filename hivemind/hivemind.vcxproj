@@ -65,7 +65,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <AdditionalLibraryDirectories>$(SolutionDir)..\SDK\SC2API_Binary_vs2017\lib\$(Configuration);$(SolutionDir)..\SDK\CGAL\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>winmm.lib;imm32.lib;version.lib;civetweb.lib;libprotobufd.lib;sc2libd.lib;sc2apid.lib;sc2protocold.lib;sc2rendererd.lib;sc2utilsd.lib;SDL2.lib;CGAL-vc140-mt-gd-4.10.lib;CGAL_Core-vc140-mt-gd-4.10.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>winmm.lib;imm32.lib;version.lib;civetweb.lib;libprotobufd.lib;sc2libd.lib;sc2apid.lib;sc2protocold.lib;sc2rendererd.lib;sc2utilsd.lib;SDL2.lib;CGAL-vc140-mt-gd-4.10.lib;CGAL_Core-vc140-mt-gd-4.10.lib;libgmp-10.lib;libmpfr-4.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalOptions>/IGNORE:4099 %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
@@ -89,7 +89,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>$(SolutionDir)..\SDK\SC2API_Binary_vs2017\lib\$(Configuration);$(SolutionDir)..\SDK\CGAL\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>winmm.lib;imm32.lib;version.lib;civetweb.lib;libprotobuf.lib;sc2lib.lib;sc2api.lib;sc2protocol.lib;sc2renderer.lib;sc2utils.lib;SDL2.lib;CGAL-vc140-mt-4.10.lib;CGAL_Core-vc140-mt-4.10.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>winmm.lib;imm32.lib;version.lib;civetweb.lib;libprotobuf.lib;sc2lib.lib;sc2api.lib;sc2protocol.lib;sc2renderer.lib;sc2utils.lib;SDL2.lib;CGAL-vc140-mt-4.10.lib;CGAL_Core-vc140-mt-4.10.lib;libgmp-10.lib;libmpfr-4.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalOptions>/IGNORE:4099 %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
@@ -104,6 +104,7 @@
     <ClInclude Include="include\exception.h" />
     <ClInclude Include="include\hive_array2.h" />
     <ClInclude Include="include\hive_math.h" />
+    <ClInclude Include="include\hive_polygon.h" />
     <ClInclude Include="include\hive_types.h" />
     <ClInclude Include="include\hive_vector2.h" />
     <ClInclude Include="include\map.h" />

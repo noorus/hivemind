@@ -5,9 +5,22 @@
 #include "blob_algo.h"
 #include "exception.h"
 
+#include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
+#include <CGAL/Polygon_2.h>
+#include <CGAL/Polyline_simplification_2/simplify.h>
+
 namespace hivemind {
 
   namespace Analysis {
+
+    typedef CGAL::Exact_predicates_inexact_constructions_kernel CGAL_Kernel;
+    typedef CGAL_Kernel::Point_2 CGAL_Point_2;
+    typedef CGAL::Polygon_2<CGAL_Kernel> CGAL_Polygon_2;
+
+    namespace CGAL_PS = CGAL::Polyline_simplification_2;
+    typedef CGAL_PS::Stop_below_count_ratio_threshold CGAL_PS_Stop_CountRatio;
+    typedef CGAL_PS::Stop_above_cost_threshold CGAL_PS_Stop_Cost;
+    typedef CGAL_PS::Squared_distance_cost CGAL_PS_Cost;
 
     /*
      * 1) Extract from gameinfo: dimensions, buildability, pathability, heightmap
@@ -94,6 +107,53 @@ namespace hivemind {
       free( lbl_out );
 
       blob_algo::destroy_blobs( blob_out, blob_count );
+    }
+
+    Polygon convertCgalPoly( CGAL_Polygon_2& in )
+    {
+      Polygon out;
+      for ( auto vi = in.vertices_begin(); vi != in.vertices_end(); ++vi )
+        out.emplace_back( (float)vi->x(), (float)vi->y() );
+      return out;
+    }
+
+    /*
+     * 3) Turn contours and components into clean polygons
+     **/
+    void Map_ComponentPolygons( ComponentVector& components_in, PolygonComponentVector& polygons_out, bool simplify, double simplify_stop_cost )
+    {
+      for ( auto& component : components_in )
+      {
+        PolygonComponent out_comp;
+        out_comp.label = component.label;
+
+        vector<CGAL_Point_2> points;
+        for ( auto& pt : component.contour )
+          points.emplace_back(  (double)pt.x, (double)pt.y  );
+
+        CGAL_Polygon_2 contourPoly( points.begin(), points.end() );
+
+        if ( simplify )
+          contourPoly = CGAL_PS::simplify( contourPoly, CGAL_PS::Squared_distance_cost(), CGAL_PS_Stop_Cost( simplify_stop_cost ) );
+
+        out_comp.contour = convertCgalPoly( contourPoly );
+
+        for ( auto& hole : component.holes )
+        {
+          points.clear();
+          for ( auto& pt : hole )
+            points.emplace_back( (double)pt.x, (double)pt.y );
+
+          CGAL_Polygon_2 holePoly( points.begin(), points.end() );
+
+          if ( simplify )
+            holePoly = CGAL_PS::simplify( holePoly, CGAL_PS::Squared_distance_cost(), CGAL_PS_Stop_Cost( simplify_stop_cost ) );
+
+          out_comp.holes.push_back( convertCgalPoly( holePoly ) );
+        }
+
+        polygons_out.push_back( out_comp );
+      }
     }
 
   }

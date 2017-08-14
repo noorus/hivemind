@@ -2,6 +2,7 @@
 #include "sc2_forward.h"
 #include "hive_vector2.h"
 #include "hive_array2.h"
+#include "hive_polygon.h"
 
 namespace hivemind {
 
@@ -30,6 +31,14 @@ namespace hivemind {
 
   using ComponentVector = vector<MapComponent>;
 
+  struct PolygonComponent {
+    int label;
+    Polygon contour;
+    PolygonVector holes;
+  };
+
+  using PolygonComponentVector = vector<PolygonComponent>;
+
   class Map {
   public:
     Bot* bot_;
@@ -39,6 +48,8 @@ namespace hivemind {
     Array2<Real> heightMap_; //!< Map heights
     Array2<int> labelsMap_;
     ComponentVector components_;
+    PolygonComponentVector polygons_;
+    Real maxZ_;
   public:
     Map( Bot* bot );
     void rebuild();

@@ -80,6 +80,9 @@ namespace hivemind {
 
     Analysis::Map_BuildBasics( info, width_, height_, flagsMap_, heightMap_ );
 
+    for ( auto& unit : bot_->observation().GetUnits( Unit::Alliance::Neutral ) )
+      maxZ_ = std::max( unit.pos.z, maxZ_ );
+
     bot_->console().printf( "Map: Width %d, height %d", width_, height_ );
     bot_->console().printf( "Map: Got build-, walkability- and height map" );
 
@@ -88,16 +91,40 @@ namespace hivemind {
     bot_->console().printf( "Map: Processing contours..." );
 
     components_.clear();
+    polygons_.clear();
+
     Analysis::Map_ProcessContours( flagsMap_, labelsMap_, components_ );
 
     debugDumpLabels( labelsMap_ );
 
+    bot_->console().printf( "Map: Generating polygons..." );
+
+    Analysis::Map_ComponentPolygons( components_, polygons_ );
+
     bot_->console().printf( "Map: Rebuild done" );
+  }
+
+  void drawPoly( sc2::DebugInterface& debug, Polygon& poly, Real z, sc2::Color color )
+  {
+    auto previous = poly.back();
+    for ( auto& vec : poly )
+    {
+      Point3D p0( previous.x + 0.5f, previous.y + 0.5f, z + 0.1f );
+      Point3D p1( vec.x + 0.5f, vec.y + 0.5f, z + 0.1f );
+      debug.DebugLineOut( p0, p1, color );
+      previous = vec;
+    }
   }
 
   void Map::draw()
   {
-    Point2D camera = bot_->observation().GetCameraPos();
+    for ( auto& poly_comp : polygons_ )
+    {
+      drawPoly( bot_->debug(), poly_comp.contour, maxZ_, sc2::Colors::Green );
+      for ( auto& hole : poly_comp.holes )
+        drawPoly( bot_->debug(), hole, maxZ_, sc2::Colors::Purple );
+    }
+    /*Point2D camera = bot_->observation().GetCameraPos();
     for ( float x = camera.x - 16.0f; x < camera.x + 16.0f; ++x )
     {
       for ( float y = camera.y - 16.0f; y < camera.y + 16.0f; ++y )
@@ -115,7 +142,7 @@ namespace hivemind {
           clr = sc2::Colors::Yellow;
         bot_->debug().DebugSphereOut( pt, 0.25f, clr );
       }
-    }
+    }*/
   }
 
   bool Map::isValid( size_t x, size_t y ) const
