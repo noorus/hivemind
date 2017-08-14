@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "bot.h"
+#include "utilities.h"
 
 namespace hivemind {
 
@@ -30,6 +31,15 @@ namespace hivemind {
     brain_.gameBegin();
   }
 
+  static std::string GetAbilityText( sc2::AbilityID ability_id ) {
+    std::string str;
+    str += sc2::AbilityTypeToName( ability_id );
+    str += " (";
+    str += std::to_string( uint32_t( ability_id ) );
+    str += ")";
+    return str;
+  }
+
   void Bot::OnStep()
   {
     observation_ = Observation();
@@ -48,6 +58,18 @@ namespace hivemind {
     players_.draw();
     brain_.draw();
     workers_.draw();
+
+    // map_.draw();
+
+    for ( const sc2::Unit& unit : observation_->GetUnits() )
+      if ( unit.is_selected && utils::isMine( unit ) )
+      {
+        string txt = sc2::UnitTypeToName( unit.unit_type );
+        txt.append( " (" + std::to_string( unit.unit_type ) + ")\n" );
+        for ( auto& order : unit.orders )
+          txt.append( GetAbilityText( order.ability_id ) + "\n" );
+        debug_->DebugTextOut( txt, unit.pos, sc2::Colors::Green );
+      }
 
     debug_->SendDebug();
   }

@@ -3,6 +3,9 @@
 #include "bot.h"
 #include "utilities.h"
 
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include "external/stb_image_write.h"
+
 namespace hivemind {
 
   const size_t c_legalActions = 4;
@@ -13,21 +16,27 @@ namespace hivemind {
   {
   }
 
-  void dump( Array2<uint64_t>& flagmap )
+  void debugDumpMaps( Array2<uint64_t>& flagmap, Array2<Real>& heightmap, const GameInfo& info )
   {
-    std::ofstream outBuildable( "debug_map_buildable.log" );
-    std::ofstream outPathable( "debug_map_pathable.log" );
+    Array2<uint8_t> height8( info.width, info.height );
+    Array2<uint8_t> build8( info.width, info.height );
+    Array2<uint8_t> path8( info.width, info.height );
 
-    for ( size_t y = 0; y < flagmap.height(); y++ )
-    {
-      for ( size_t x = 0; x < flagmap.width(); x++ )
+    for ( size_t y = 0; y < info.height; y++ )
+      for ( size_t x = 0; x < info.width; x++ )
       {
-        outBuildable << ( ( flagmap.column( x )[y] & MapFlag_Buildable ) ? 'x' : '.' );
-        outPathable << ( ( flagmap.column( x )[y] & MapFlag_Walkable ) ? 'x' : '.' );
+        uint8_t val;
+        val = (uint8_t)( ( ( heightmap[x][y] + 200.0f ) / 400.0f ) * 255.0f );
+        height8[y][x] = val;
+        val = ( flagmap[x][y] & MapFlag_Buildable ) ? 0xFF : 0x00;
+        build8[y][x] = val;
+        val = ( flagmap[x][y] & MapFlag_Walkable ) ? 0xFF : 0x00;
+        path8[y][x] = val;
       }
-      outBuildable << std::endl;
-      outPathable << std::endl;
-    }
+
+    stbi_write_png( "debug_map_height.png", info.width, info.height, 1, height8.data(), info.width );
+    stbi_write_png( "debug_map_buildable.png", info.width, info.height, 1, build8.data(), info.width );
+    stbi_write_png( "debug_map_pathable.png", info.width, info.height, 1, path8.data(), info.width );
   }
 
   void Map::rebuild()
@@ -60,9 +69,32 @@ namespace hivemind {
 
     bot_->console().printf( "Map: Got build-, walkability- and height map" );
 
-    bot_->console().printf( "Map: Rebuild done" );
+    debugDumpMaps( flagsMap_, heightMap_, *gameInfo );
 
-    dump( flagsMap_ );
+    bot_->console().printf( "Map: Rebuild done" );
+  }
+
+  void Map::draw()
+  {
+    Point2D camera = bot_->observation().GetCameraPos();
+    for ( float x = camera.x - 16.0f; x < camera.x + 16.0f; ++x )
+    {
+      for ( float y = camera.y - 16.0f; y < camera.y + 16.0f; ++y )
+      {
+        if ( !isValid( (size_t)x, (size_t)y ) )
+          continue;
+        Point3D pt;
+        pt.x = x;
+        pt.y = y;
+        pt.z = heightMap_[(size_t)x][(size_t)y] + 0.25f;
+        sc2::Color clr = sc2::Colors::Red;
+        if ( flagsMap_[(size_t)x][(size_t)y] & MapFlag_Buildable )
+          clr = sc2::Colors::Green;
+        else if ( flagsMap_[(size_t)x][(size_t)y] & MapFlag_Walkable )
+          clr = sc2::Colors::Yellow;
+        bot_->debug().DebugSphereOut( pt, 0.25f, clr );
+      }
+    }
   }
 
   bool Map::isValid( size_t x, size_t y ) const

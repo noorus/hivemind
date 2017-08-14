@@ -23,6 +23,7 @@ namespace hivemind {
   public:
     Map( Bot* bot );
     void rebuild();
+    void draw();
     const size_t width() const { return width_; }
     const size_t height() const { return height_; }
     bool isValid( size_t x, size_t y ) const;
