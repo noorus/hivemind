@@ -13,6 +13,23 @@ namespace hivemind {
     MapFlag_Buildable = 2
   };
 
+  struct MapPoint2 {
+    int x;
+    int y;
+    MapPoint2( int x_, int y_ ): x( x_ ), y( y_ ) {}
+  };
+
+  using Contour = vector<MapPoint2>;
+  using ContourVector = vector<Contour>;
+
+  struct MapComponent {
+    int label; //!< Component number
+    Contour contour;
+    ContourVector holes;
+  };
+
+  using ComponentVector = vector<MapComponent>;
+
   class Map {
   public:
     Bot* bot_;
@@ -20,6 +37,8 @@ namespace hivemind {
     size_t height_; //!< Map height
     Array2<uint64_t> flagsMap_; //!< Map walkable & buildable flags
     Array2<Real> heightMap_; //!< Map heights
+    Array2<int> labelsMap_;
+    ComponentVector components_;
   public:
     Map( Bot* bot );
     void rebuild();

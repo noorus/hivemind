@@ -2,9 +2,12 @@
 #include "map.h"
 #include "bot.h"
 #include "utilities.h"
+#include "map_analysis.h"
 
+#pragma warning(disable: 4996)
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "external/stb_image_write.h"
+#pragma warning(default: 4996)
 
 namespace hivemind {
 
@@ -39,37 +42,55 @@ namespace hivemind {
     stbi_write_png( "debug_map_pathable.png", info.width, info.height, 1, path8.data(), info.width );
   }
 
+  void debugDumpLabels( Array2<int>& labels )
+  {
+#pragma pack(push, 1)
+    struct rgb {
+      uint8_t r, g, b;
+    };
+#pragma pack(pop)
+
+    const rgb unwalkable = { 0, 0, 0 };
+    const rgb contour = { 255, 255, 255 };
+
+    Array2<rgb> rgb8( labels.width(), labels.height() );
+
+    for ( size_t y = 0; y < labels.height(); y++ )
+      for ( size_t x = 0; x < labels.width(); x++ )
+      {
+        if ( labels[x][y] == -1 )
+          rgb8[y][x] = contour;
+        else if ( labels[x][y] == 0 )
+          rgb8[y][x] = unwalkable;
+        else {
+          rgb tmp;
+          utils::hsl2rgb( ( (uint16_t)labels[x][y] - 1 ) * 120, 230, 200, (uint8_t*)&tmp );
+          rgb8[y][x] = tmp;
+        }
+      }
+
+    stbi_write_png( "debug_map_components.png", (int)labels.width(), (int)labels.height(), 3, rgb8.data(), (int)labels.width() * 3 );
+  }
+
   void Map::rebuild()
   {
     bot_->console().printf( "Map: Rebuilding..." );
 
-    width_ = bot_->observation().GetGameInfo().width;
-    height_ = bot_->observation().GetGameInfo().height;
+    const GameInfo& info = bot_->observation().GetGameInfo();
+
+    Analysis::Map_BuildBasics( info, width_, height_, flagsMap_, heightMap_ );
 
     bot_->console().printf( "Map: Width %d, height %d", width_, height_ );
-
-    flagsMap_.resize( width_, height_ );
-    heightMap_.resize( width_, height_ );
-
-    auto gameInfo = &bot_->observation().GetGameInfo();
-
-    for ( size_t x = 0; x < width_; x++ )
-      for ( size_t y = 0; y < height_; y++ )
-      {
-        uint64_t flags = 0;
-        if ( utils::placement( *gameInfo, x, y ) )
-          flags |= MapFlag_Buildable;
-        if ( ( flags & MapFlag_Buildable ) || utils::pathable( *gameInfo, x, y ) )
-          flags |= MapFlag_Walkable;
-
-        flagsMap_[x][y] = flags;
-
-        heightMap_[x][y] = utils::terrainHeight( *gameInfo, x, y );
-      }
-
     bot_->console().printf( "Map: Got build-, walkability- and height map" );
 
-    debugDumpMaps( flagsMap_, heightMap_, *gameInfo );
+    debugDumpMaps( flagsMap_, heightMap_, info );
+
+    bot_->console().printf( "Map: Processing contours..." );
+
+    components_.clear();
+    Analysis::Map_ProcessContours( flagsMap_, labelsMap_, components_ );
+
+    debugDumpLabels( labelsMap_ );
 
     bot_->console().printf( "Map: Rebuild done" );
   }

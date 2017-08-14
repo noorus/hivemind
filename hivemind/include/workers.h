@@ -18,7 +18,8 @@ namespace hivemind {
   public:
     WorkerManager( Bot* bot );
     void onMessage( const Message& msg ) final;
-    void gameBegin();
+    virtual void gameBegin() override;
+    virtual void gameEnd() override;
     bool add( Tag worker );
     const bool exists( Tag worker ) const;
     const bool ignored( Tag worker ) const;
@@ -27,7 +28,6 @@ namespace hivemind {
     Tag release(); //! Release a worker for other use
     virtual void draw() override;
     void update( GameTime time );
-    void gameEnd();
     void initialise();
     void shutdown();
   };
