@@ -97,6 +97,7 @@
     <ClInclude Include="include\ai_agent.h" />
     <ClInclude Include="include\ai_goals.h" />
     <ClInclude Include="include\ai_statemachines.h" />
+    <ClInclude Include="include\blob_algo.h" />
     <ClInclude Include="include\bot.h" />
     <ClInclude Include="include\brain.h" />
     <ClInclude Include="include\console.h" />
@@ -118,6 +119,7 @@
   <ItemGroup>
     <ClCompile Include="src\ai_finitestatemachine.cpp" />
     <ClCompile Include="src\ai_goals.cpp" />
+    <ClCompile Include="src\blob_algo.cpp" />
     <ClCompile Include="src\bot.cpp" />
     <ClCompile Include="src\brain.cpp" />
     <ClCompile Include="src\console.cpp" />

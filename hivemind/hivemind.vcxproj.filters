@@ -75,6 +75,9 @@
     <ClInclude Include="include\workers.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\blob_algo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\stdafx.cpp">
@@ -114,6 +117,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\workers.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\blob_algo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
