@@ -3,6 +3,7 @@
 #include "hive_vector2.h"
 #include "hive_array2.h"
 #include "hive_polygon.h"
+#include "distancemap.h"
 
 namespace hivemind {
 
@@ -50,6 +51,8 @@ namespace hivemind {
     ComponentVector components_;
     PolygonComponentVector polygons_;
     Real maxZ_;
+    mutable std::map<std::pair<size_t, size_t>, DistanceMap> distanceMapCache_;
+    vector<UnitVector> resourceClusters_;
   public:
     Map( Bot* bot );
     void rebuild();
@@ -65,6 +68,7 @@ namespace hivemind {
     bool isWalkable( const Vector2& position ) { return isWalkable( (size_t)position.x, (size_t)position.y ); }
     bool isBuildable( size_t x, size_t y );
     bool isBuildable( const Vector2& position ) { return isBuildable( (size_t)position.x, (size_t)position.y ); }
+    const DistanceMap& getDistanceMap( const Point2D& tile ) const;
   };
 
 }

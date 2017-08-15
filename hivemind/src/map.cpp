@@ -42,14 +42,14 @@ namespace hivemind {
     stbi_write_png( "debug_map_pathable.png", info.width, info.height, 1, path8.data(), info.width );
   }
 
-  void debugDumpLabels( Array2<int>& labels )
-  {
 #pragma pack(push, 1)
-    struct rgb {
-      uint8_t r, g, b;
-    };
+  struct rgb {
+    uint8_t r, g, b;
+  };
 #pragma pack(pop)
 
+  void debugDumpLabels( Array2<int>& labels )
+  {
     const rgb unwalkable = { 0, 0, 0 };
     const rgb contour = { 255, 255, 255 };
 
@@ -72,9 +72,43 @@ namespace hivemind {
     stbi_write_png( "debug_map_components.png", (int)labels.width(), (int)labels.height(), 3, rgb8.data(), (int)labels.width() * 3 );
   }
 
+  void debugDumpResources( vector<UnitVector>& clusters, const GameInfo& info )
+  {
+    const rgb empty = { 0, 0, 0 };
+    const rgb field = { 132, 47, 132 };
+    const rgb mineral = { 4, 218, 255 };
+    const rgb gas = { 129, 255, 15 };
+
+    Array2<rgb> rgb8( info.width, info.height );
+    rgb8.reset( empty );
+
+    for ( size_t y = 0; y < info.height; y++ )
+      for ( size_t x = 0; x < info.width; x++ )
+      {
+        Vector2 pos( (Real)x, (Real)y );
+        for ( auto& cluster : clusters )
+        {
+          bool gotit = false;
+          for ( auto& unit : cluster )
+            if ( pos.distance( Vector2( unit.pos ) ) <= unit.radius ) {
+              rgb8[y][x] = ( utils::isMineral( unit ) ? mineral : gas );
+              gotit = true;
+              break;
+            }
+          if ( !gotit && pos.distance( cluster.center() ) <= 14.0f ) // shouldn't be hardcoded
+            rgb8[y][x] = field;
+        }
+      }
+
+    stbi_write_png( "debug_map_clusters.png", (int)info.width, (int)info.height, 3, rgb8.data(), (int)info.width * 3 );
+  }
+
   void Map::rebuild()
   {
     bot_->console().printf( "Map: Rebuilding..." );
+
+    bot_->console().printf( "Map: Clearing distance map cache" );
+    distanceMapCache_.clear();
 
     const GameInfo& info = bot_->observation().GetGameInfo();
 
@@ -100,6 +134,14 @@ namespace hivemind {
     bot_->console().printf( "Map: Generating polygons..." );
 
     Analysis::Map_ComponentPolygons( components_, polygons_ );
+
+    bot_->console().printf( "Map: Finding resource clusters..." );
+
+    resourceClusters_.clear();
+
+    Analysis::Map_FindResourceClusters( bot_->observation(), resourceClusters_ );
+
+    debugDumpResources( resourceClusters_, info );
 
     bot_->console().printf( "Map: Rebuild done" );
   }
@@ -190,6 +232,19 @@ namespace hivemind {
       return false;
 
     return ( flagsMap_[x][y] & MapFlag_Buildable );
+  }
+
+  const DistanceMap & Map::getDistanceMap( const Point2D & tile ) const
+  {
+    std::pair<size_t, size_t> index( (size_t)tile.x, (size_t)tile.y );
+
+    if ( distanceMapCache_.find( index ) == distanceMapCache_.end() )
+    {
+      distanceMapCache_[index] = DistanceMap();
+      distanceMapCache_[index].compute( bot_, tile );
+    }
+
+    return distanceMapCache_[index];
   }
 
 }

@@ -156,6 +156,53 @@ namespace hivemind {
       }
     }
 
+    // liberally adapted from the CommandCenter bot by davechurchill.
+    void Map_FindResourceClusters( const sc2::ObservationInterface& observation, vector<UnitVector>& clusters_out, size_t minClusterSize, Real maxResourceDistance )
+    {
+      vector<UnitVector> potentialClusters;
+
+      for ( auto& mineral : observation.GetUnits( Unit::Alliance::Neutral, utils::isMineral ) )
+      {
+        bool foundCluster = false;
+        for ( auto& cluster : potentialClusters )
+        {
+          Real dist = Vector2( mineral.pos ).distance( cluster.center() );
+          if ( dist <= maxResourceDistance )
+          {
+            Real groundDist = dist;
+            if ( groundDist >= 0.0f && groundDist < maxResourceDistance )
+            {
+              cluster.push_back( mineral );
+              foundCluster = true;
+              break;
+            }
+          }
+        }
+        if ( !foundCluster )
+        {
+          potentialClusters.emplace_back();
+          potentialClusters.back().push_back( mineral );
+        }
+      }
+
+      for ( auto& geyser : observation.GetUnits( Unit::Alliance::Neutral, utils::isGeyser ) )
+      {
+        for ( auto& cluster : potentialClusters )
+        {
+          float groundDist = Vector2( geyser.pos ).distance( cluster.center() );
+          if ( groundDist >= 0.0f && groundDist <= maxResourceDistance )
+          {
+            cluster.push_back( geyser );
+            break;
+          }
+        }
+      }
+
+      for ( auto& cluster : potentialClusters )
+        if ( cluster.size() >= minClusterSize )
+          clusters_out.push_back( cluster );
+    }
+
   }
 
 }

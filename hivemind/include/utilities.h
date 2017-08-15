@@ -55,6 +55,86 @@ namespace hivemind {
       return ( unit.alliance == Unit::Alliance::Self );
     }
 
+    struct isFlying {
+      inline bool operator()( const Unit& unit ) {
+        return unit.is_flying;
+      }
+    };
+
+    inline const bool isMainStructure( const UnitTypeID& type )
+    {
+      switch ( type.ToType() )
+      {
+        case sc2::UNIT_TYPEID::ZERG_HATCHERY:
+        case sc2::UNIT_TYPEID::ZERG_LAIR:
+        case sc2::UNIT_TYPEID::ZERG_HIVE:
+        case sc2::UNIT_TYPEID::TERRAN_COMMANDCENTER:
+        case sc2::UNIT_TYPEID::TERRAN_ORBITALCOMMAND:
+        case sc2::UNIT_TYPEID::TERRAN_ORBITALCOMMANDFLYING:
+        case sc2::UNIT_TYPEID::TERRAN_PLANETARYFORTRESS:
+        case sc2::UNIT_TYPEID::PROTOSS_NEXUS:
+          return true;
+        default:
+          return false;
+      }
+    }
+
+    inline const bool isMainStructure( const Unit& unit )
+    {
+      return isMainStructure( unit.unit_type );
+    }
+
+    struct isMainStructure {
+      inline bool operator()( const Unit& unit ) {
+        return hivemind::utils::isMainStructure( unit.unit_type );
+      }
+    };
+
+    inline const bool isRefinery( const UnitTypeID& type )
+    {
+      switch ( type.ToType() )
+      {
+        case sc2::UNIT_TYPEID::TERRAN_REFINERY:
+        case sc2::UNIT_TYPEID::PROTOSS_ASSIMILATOR:
+        case sc2::UNIT_TYPEID::ZERG_EXTRACTOR:
+          return true;
+        default:
+          return false;
+      }
+    }
+
+    inline const bool isRefinery( const Unit& unit )
+    {
+      return isRefinery( unit.unit_type );
+    }
+
+    inline const bool isMineral( const Unit& unit )
+    {
+      switch ( unit.unit_type.ToType() )
+      {
+        case sc2::UNIT_TYPEID::NEUTRAL_MINERALFIELD:
+        case sc2::UNIT_TYPEID::NEUTRAL_MINERALFIELD750:
+        case sc2::UNIT_TYPEID::NEUTRAL_RICHMINERALFIELD:
+        case sc2::UNIT_TYPEID::NEUTRAL_RICHMINERALFIELD750:
+          return true;
+        default:
+          return false;
+      }
+    }
+
+    inline const bool isGeyser( const Unit& unit )
+    {
+      switch ( unit.unit_type.ToType() )
+      {
+        case sc2::UNIT_TYPEID::NEUTRAL_VESPENEGEYSER:
+        case sc2::UNIT_TYPEID::NEUTRAL_PROTOSSVESPENEGEYSER:
+        case sc2::UNIT_TYPEID::NEUTRAL_SPACEPLATFORMGEYSER:
+          return true;
+        default:
+          return false;
+      }
+    }
+
     inline const bool isWorker( const UnitTypeID& type )
     {
       switch ( type.ToType() )
