@@ -1,6 +1,7 @@
 #pragma once
 #include "hive_types.h"
-#include "sc2_forward.h"
+#include "hive_math.h"
+#include <sc2api/sc2_common.h>
 
 namespace hivemind {
 
@@ -19,7 +20,7 @@ namespace hivemind {
       y = (Real)coords[1];
     }
     inline explicit Vector2( Real* const coords ): x( coords[0] ), y( coords[1] ) {}
-    inline Vector2( const Point2D& pt ): x( pt.x ), y( pt.y ) {}
+    inline Vector2( const sc2::Point2D& pt ): x( pt.x ), y( pt.y ) {}
     //! Swap
     inline void swap( Vector2& other )
     {
@@ -158,15 +159,15 @@ namespace hivemind {
       return *this;
     }
     //! Implicit conversions
-    inline Vector2& operator = ( const Point2D& rhs )
+    inline Vector2& operator = ( const sc2::Point2D& rhs )
     {
       x = rhs.x;
       y = rhs.y;
       return *this;
     }
-    inline operator Point2D() const
+    inline operator sc2::Point2D() const
     {
-      Point2D ret;
+      sc2::Point2D ret;
       ret.x = x;
       ret.y = y;
       return ret;
@@ -174,7 +175,7 @@ namespace hivemind {
     //! Operations
     inline Real length() const
     {
-      return sqrt( x * x + y * y );
+      return Math::sqrt( x * x + y * y );
     }
     inline Real squaredLength() const
     {

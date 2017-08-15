@@ -1,11 +1,13 @@
 #pragma once
 
-#include "hive_types.h"
-
 #include <sc2api/sc2_api.h>
 #include <sc2lib/sc2_lib.h>
 #include <sc2utils/sc2_manage_process.h>
 #include <sc2renderer/sc2_renderer.h>
+#include <vector>
+
+#include "hive_types.h"
+#include "hive_vector2.h"
 
 namespace hivemind {
 
@@ -28,7 +30,6 @@ namespace hivemind {
   using UnitTag = uint64_t;
   using UnitMap = std::map<Tag, sc2::UNIT_TYPEID>;
 
-  using UnitVector = vector<Unit>;
   using Point2Vector = vector<Point2D>;
   using Point3Vector = vector<Point3D>;
 
@@ -37,5 +38,21 @@ namespace hivemind {
   using FloatMap = vector<vector<float>>;
   using TagVector = vector<Tag>;
   using TagSet = set<Tag>;
+
+  struct UnitVector: public std::vector<Unit> {
+  public:
+    inline hivemind::Vector2 center() const
+    {
+      hivemind::Vector2 cntr( 0.0f, 0.0f );
+
+      if ( empty() )
+        return cntr;
+
+      for ( auto& unit : *this )
+        cntr += hivemind::Vector2( unit.pos.x, unit.pos.y );
+
+      return ( cntr / (Real)size() );
+    }
+  };
 
 }

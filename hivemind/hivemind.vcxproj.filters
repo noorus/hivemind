@@ -123,6 +123,9 @@
     <ClInclude Include="include\distancemap.h">
       <Filter>Header Files\Algorithm</Filter>
     </ClInclude>
+    <ClInclude Include="include\hive_vector3.h">
+      <Filter>Header Files\Math</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\stdafx.cpp">
