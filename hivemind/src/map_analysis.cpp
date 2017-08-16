@@ -56,7 +56,7 @@ namespace hivemind {
       auto width = (int16_t)flags_in.width();
       auto height = (int16_t)flags_in.height();
 
-      auto image_input = (uint8_t*)malloc( width * height );
+      auto image_input = (uint8_t*)::malloc( width * height );
 
       int16_t lbl_w = width;
       int16_t lbl_h = height;
@@ -103,8 +103,8 @@ namespace hivemind {
         components_out.push_back( comp );
       }
 
-      free( image_input );
-      free( lbl_out );
+      ::free( image_input );
+      ::free( lbl_out );
 
       blob_algo::destroy_blobs( blob_out, blob_count );
     }
@@ -156,7 +156,6 @@ namespace hivemind {
       }
     }
 
-    // liberally adapted from the CommandCenter bot by davechurchill.
     void Map_FindResourceClusters( const sc2::ObservationInterface& observation, vector<UnitVector>& clusters_out, size_t minClusterSize, Real maxResourceDistance )
     {
       vector<UnitVector> potentialClusters;

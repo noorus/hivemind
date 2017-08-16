@@ -3,7 +3,7 @@
 #include "hive_vector2.h"
 #include "hive_array2.h"
 #include "hive_polygon.h"
-#include "baselocations.h"
+// #include "baselocations.h"
 
 namespace hivemind {
 
