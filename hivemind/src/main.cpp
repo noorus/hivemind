@@ -10,8 +10,10 @@ const char* c_mapName = "Bastion of the Conclave";
 
 int main( int argc, char* argv[] )
 {
+#ifndef _DEBUG
   try
   {
+#endif
     Coordinator coordinator;
 
     if ( !coordinator.LoadSettings( argc, argv ) )
@@ -36,12 +38,14 @@ int main( int argc, char* argv[] )
     {
       sc2::SleepFor( c_updateSleepTime );
     }
+#ifndef _DEBUG
   }
   catch ( hivemind::Exception& e )
   {
     printf_s( "EXCEPTION: %s\n", e.getFullDescription().c_str() );
     return EXIT_FAILURE;
   }
+#endif
 
   return EXIT_SUCCESS;
 }

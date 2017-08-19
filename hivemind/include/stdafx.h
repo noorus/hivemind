@@ -52,6 +52,7 @@
 #include <boost/geometry/geometries/point_xy.hpp>
 #include <boost/polygon/voronoi.hpp>
 #include <boost/polygon/polygon.hpp>
+#include <boost/geometry/index/rtree.hpp>
 
 #include <CGAL/basic.h>
 #include <CGAL/Simple_cartesian.h>

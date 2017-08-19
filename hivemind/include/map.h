@@ -53,6 +53,7 @@ namespace hivemind {
     Real maxZ_;
     mutable std::map<std::pair<size_t, size_t>, DistanceMap> distanceMapCache_;
     vector<UnitVector> resourceClusters_;
+    Polygon voronoi_;
   public:
     Map( Bot* bot );
     void rebuild();

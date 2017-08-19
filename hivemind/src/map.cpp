@@ -8,6 +8,7 @@
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "external/stb_image_write.h"
 #pragma warning(default: 4996)
+#include "external/simple_svg_1.0.0.hpp"
 
 namespace hivemind {
 
@@ -103,6 +104,28 @@ namespace hivemind {
     stbi_write_png( "debug_map_clusters.png", (int)info.width, (int)info.height, 3, rgb8.data(), (int)info.width * 3 );
   }
 
+  void dumpPolygons( size_t width, size_t height, PolygonComponentVector& polys )
+  {
+    svg::Dimensions dim( width * 4, height * 4 );
+    svg::Document doc( "debug_map_polygons.svg", svg::Layout( dim, svg::Layout::BottomLeft ) );
+    for ( auto& poly : polys )
+    {
+      svg::Polygon svgPoly( svg::Stroke( 2.0, svg::Color::Red ) );
+
+      for ( auto& pt : poly.contour )
+        svgPoly << svg::Point( pt.x * 4.0, pt.y * 4.0 );
+      for ( auto& hole : poly.holes )
+      {
+        svg::Polygon holePoly( svg::Stroke( 2.0, svg::Color::Purple ) );
+        for ( auto& pt : hole )
+          holePoly << svg::Point( pt.x * 4.0, pt.y * 4.0 );
+        doc << holePoly;
+      }
+      doc << svgPoly;
+    }
+    doc.save();
+  }
+
   void Map::rebuild()
   {
     bot_->console().printf( "Map: Rebuilding..." );
@@ -133,9 +156,29 @@ namespace hivemind {
 
     bot_->console().printf( "Map: Generating polygons..." );
 
-    Analysis::Map_ComponentPolygons( components_, polygons_ );
+    Analysis::Map_ComponentPolygons( components_, polygons_, 0.1 );
 
-    bot_->console().printf( "Map: Finding resource clusters..." );
+    dumpPolygons( width_, height_, polygons_ );
+
+    /*bot_->console().printf( "Map: Generating voronoi graph..." );
+
+    boost::polygon::voronoi_diagram<double> voronoi;
+    Analysis::Map_GenerateVoronoid( info, polygons_, voronoi );
+
+    bot_->console().printf( "Map: Voronoi: %d cells, %d edges, %d vertices", voronoi.num_cells(), voronoi.num_edges(), voronoi.num_vertices() );
+
+    static const std::size_t VISITED_COLOR = 1;
+    for ( const auto& edge : voronoi.edges() ) {
+    if ( !edge.is_primary() || !edge.is_finite() || edge.color() == VISITED_COLOR )
+    continue;
+    edge.twin()->color( VISITED_COLOR );
+    auto* v0 = edge.vertex0();
+    auto* v1 = edge.vertex1();
+    voronoi_.push_back( Vector2( v0->x(), v0->y() ) );
+    voronoi_.push_back( Vector2( v1->x(), v1->y() ) );
+    }*/
+
+    /*bot_->console().printf( "Map: Finding resource clusters..." );
 
     resourceClusters_.clear();
 
@@ -143,7 +186,7 @@ namespace hivemind {
 
     debugDumpResources( resourceClusters_, info );
 
-    bot_->console().printf( "Map: Rebuild done" );
+    bot_->console().printf( "Map: Rebuild done" );*/
   }
 
   void drawPoly( sc2::DebugInterface& debug, Polygon& poly, Real z, sc2::Color color )

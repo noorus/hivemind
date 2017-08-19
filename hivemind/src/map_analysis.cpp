@@ -8,6 +8,7 @@
 #include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
 #include <CGAL/Polygon_2.h>
 #include <CGAL/Polyline_simplification_2/simplify.h>
+#include <CGAL/Polyline_simplification_2/Hybrid_squared_distance_cost.h>
 
 namespace hivemind {
 
@@ -109,7 +110,7 @@ namespace hivemind {
       blob_algo::destroy_blobs( blob_out, blob_count );
     }
 
-    Polygon convertCgalPoly( CGAL_Polygon_2& in )
+    inline Polygon cgalPolyToPoly( CGAL_Polygon_2& in )
     {
       Polygon out;
       for ( auto vi = in.vertices_begin(); vi != in.vertices_end(); ++vi )
@@ -117,10 +118,48 @@ namespace hivemind {
       return out;
     }
 
+    inline CGAL_Polygon_2 polyToCgalPoly( Polygon& in )
+    {
+      CGAL_Polygon_2 out;
+      for ( auto& pt : in )
+        out.push_back( CGAL_Point_2( (double)pt.x, (double)pt.y ) );
+      return out;
+    }
+
+    /*
+     * Utility to try to naively clean up some self-loops in the edges
+     **/
+    void cleanupPolygon( CGAL_Polygon_2& poly )
+    {
+      auto fnEncodePoint = []( const Point2DI& pt ) -> uint64_t
+      { return ( ( (uint64_t)pt.x ) << 32 ) | ( (uint64_t)pt.y ); };
+
+      using ptmap = std::map<uint64_t, size_t>;
+      ptmap existingPointsMap;
+      bool reloop = true;
+      while ( reloop )
+      {
+        existingPointsMap.clear();
+        reloop = false;
+        for ( size_t i = 0; i < poly.size(); i++ )
+        {
+          auto pt = Point2DI( (int)poly[i].x(), (int)poly[i].y() );
+          if ( existingPointsMap.count( fnEncodePoint( pt ) ) )
+          {
+            auto previousIndex = existingPointsMap[fnEncodePoint( pt )];
+            poly.erase( poly.vertices_begin() + previousIndex, poly.vertices_begin() + i );
+            reloop = true;
+            break;
+          } else
+            existingPointsMap[fnEncodePoint( pt )] = i;
+        }
+      }
+    }
+
     /*
      * 3) Turn contours and components into clean polygons
      **/
-    void Map_ComponentPolygons( ComponentVector& components_in, PolygonComponentVector& polygons_out, bool simplify, double simplify_stop_cost )
+    void Map_ComponentPolygons( ComponentVector& components_in, PolygonComponentVector& polygons_out, bool simplify, double simplify_distance_cost, double simplify_stop_cost )
     {
       for ( auto& component : components_in )
       {
@@ -134,9 +173,13 @@ namespace hivemind {
         CGAL_Polygon_2 contourPoly( points.begin(), points.end() );
 
         if ( simplify )
-          contourPoly = CGAL_PS::simplify( contourPoly, CGAL_PS::Squared_distance_cost(), CGAL_PS_Stop_Cost( simplify_stop_cost ) );
+          contourPoly = CGAL_PS::simplify( contourPoly, CGAL_PS::Hybrid_squared_distance_cost<double>( simplify_distance_cost ), CGAL_PS_Stop_Cost( simplify_stop_cost ) );
 
-        out_comp.contour = convertCgalPoly( contourPoly );
+        cleanupPolygon( contourPoly );
+        if ( !contourPoly.is_simple() )
+          HIVE_EXCEPT( "Cleaned component contour polygon is not simple" );
+
+        out_comp.contour = cgalPolyToPoly( contourPoly );
 
         for ( auto& hole : component.holes )
         {
@@ -147,9 +190,13 @@ namespace hivemind {
           CGAL_Polygon_2 holePoly( points.begin(), points.end() );
 
           if ( simplify )
-            holePoly = CGAL_PS::simplify( holePoly, CGAL_PS::Squared_distance_cost(), CGAL_PS_Stop_Cost( simplify_stop_cost ) );
+            holePoly = CGAL_PS::simplify( holePoly, CGAL_PS::Hybrid_squared_distance_cost<double>( simplify_distance_cost ), CGAL_PS_Stop_Cost( simplify_stop_cost ) );
 
-          out_comp.holes.push_back( convertCgalPoly( holePoly ) );
+          cleanupPolygon( holePoly );
+          if ( !holePoly.is_simple() )
+            HIVE_EXCEPT( "Cleaned hole contour polygon is not simple" );
+
+          out_comp.holes.push_back( cgalPolyToPoly( holePoly ) );
         }
 
         polygons_out.push_back( out_comp );
