@@ -104,8 +104,10 @@
     <ClInclude Include="include\distancemap.h" />
     <ClInclude Include="include\exception.h" />
     <ClInclude Include="include\hive_array2.h" />
+    <ClInclude Include="include\hive_geometry.h" />
     <ClInclude Include="include\hive_math.h" />
     <ClInclude Include="include\hive_polygon.h" />
+    <ClInclude Include="include\hive_rect2.h" />
     <ClInclude Include="include\hive_types.h" />
     <ClInclude Include="include\hive_vector2.h" />
     <ClInclude Include="include\hive_vector3.h" />
@@ -113,6 +115,7 @@
     <ClInclude Include="include\map_analysis.h" />
     <ClInclude Include="include\messaging.h" />
     <ClInclude Include="include\player.h" />
+    <ClInclude Include="include\regiongraph.h" />
     <ClInclude Include="include\sc2_forward.h" />
     <ClInclude Include="include\stdafx.h" />
     <ClInclude Include="include\subsystem.h" />
@@ -135,6 +138,7 @@
     <ClCompile Include="src\messaging.cpp" />
     <ClCompile Include="src\player.cpp" />
     <ClCompile Include="src\playermanager.cpp" />
+    <ClCompile Include="src\regiongraph.cpp" />
     <ClCompile Include="src\stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>

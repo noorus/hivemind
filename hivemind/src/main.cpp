@@ -6,7 +6,7 @@
 using sc2::Coordinator;
 
 const unsigned int c_updateSleepTime = 10; // 10 milliseconds
-const char* c_mapName = "Bastion of the Conclave";
+const char* c_mapName = "Interloper LE";
 
 int main( int argc, char* argv[] )
 {

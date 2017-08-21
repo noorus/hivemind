@@ -15,6 +15,11 @@ namespace hivemind {
       return ::sqrtf( value );
     }
 
+    inline Real abs( Real value )
+    {
+      return ::fabsf( value );
+    }
+
   }
 
 }

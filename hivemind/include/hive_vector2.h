@@ -49,6 +49,22 @@ namespace hivemind {
     {
       return ( x != rhs.x && y != rhs.y );
     }
+    inline bool operator < ( const Vector2& rhs ) const
+    {
+      return ( x < rhs.x && y < rhs.y );
+    }
+    inline bool operator > ( const Vector2& rhs ) const
+    {
+      return ( x > rhs.x && y > rhs.y );
+    }
+    inline bool operator <= ( const Vector2& rhs ) const
+    {
+      return ( x <= rhs.x && y <= rhs.y );
+    }
+    inline bool operator >= ( const Vector2& rhs ) const
+    {
+      return ( x >= rhs.x && y >= rhs.y );
+    }
     //! Arithmetic
     inline Vector2 operator + ( const Vector2& rhs ) const
     {

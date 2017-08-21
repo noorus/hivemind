@@ -4,6 +4,7 @@
 #include "hive_array2.h"
 #include "hive_polygon.h"
 #include "distancemap.h"
+#include "regiongraph.h"
 
 namespace hivemind {
 
@@ -53,7 +54,10 @@ namespace hivemind {
     Real maxZ_;
     mutable std::map<std::pair<size_t, size_t>, DistanceMap> distanceMapCache_;
     vector<UnitVector> resourceClusters_;
-    Polygon voronoi_;
+    Analysis::RegionGraph graph_;
+    Analysis::RegionGraph graphSimplified_;
+    PolygonComponentVector obstacles_;
+    std::map<Analysis::nodeID, Analysis::chokeSides_t> chokepointSides_;
   public:
     Map( Bot* bot );
     void rebuild();

@@ -3,6 +3,7 @@
 #include "bot.h"
 #include "utilities.h"
 #include "map_analysis.h"
+#include "hive_geometry.h"
 
 #pragma warning(disable: 4996)
 #define STB_IMAGE_WRITE_IMPLEMENTATION
@@ -104,24 +105,31 @@ namespace hivemind {
     stbi_write_png( "debug_map_clusters.png", (int)info.width, (int)info.height, 3, rgb8.data(), (int)info.width * 3 );
   }
 
-  void dumpPolygons( size_t width, size_t height, PolygonComponentVector& polys )
+  void dumpPolygons( size_t width, size_t height, PolygonComponentVector& polys, std::map<Analysis::nodeID, Analysis::chokeSides_t>& chokes )
   {
-    svg::Dimensions dim( width * 4, height * 4 );
-    svg::Document doc( "debug_map_polygons.svg", svg::Layout( dim, svg::Layout::BottomLeft ) );
+    svg::Dimensions dim( width * 16, height * 16 );
+    svg::Document doc( "debug_map_polygons_invert.svg", svg::Layout( dim, svg::Layout::TopLeft ) );
     for ( auto& poly : polys )
     {
-      svg::Polygon svgPoly( svg::Stroke( 2.0, svg::Color::Red ) );
+      svg::Polygon svgPoly( svg::Stroke( 2.0, svg::Color::Purple ) );
 
       for ( auto& pt : poly.contour )
-        svgPoly << svg::Point( pt.x * 4.0, pt.y * 4.0 );
+        svgPoly << svg::Point( pt.x * 16.0, pt.y * 16.0 );
       for ( auto& hole : poly.holes )
       {
-        svg::Polygon holePoly( svg::Stroke( 2.0, svg::Color::Purple ) );
+        svg::Polygon holePoly( svg::Stroke( 2.0, svg::Color::Red ) );
         for ( auto& pt : hole )
-          holePoly << svg::Point( pt.x * 4.0, pt.y * 4.0 );
+          holePoly << svg::Point( pt.x * 16.0, pt.y * 16.0 );
         doc << holePoly;
       }
       doc << svgPoly;
+    }
+    for ( auto& pair : chokes )
+    {
+      Vector2 p0( pair.second.side1.x, pair.second.side1.y );
+      Vector2 p1( pair.second.side2.x, pair.second.side2.y );
+      svg::Line line( svg::Point( p0.x * 16, p0.y * 16 ), svg::Point( p1.x * 16, p1.y * 16 ), svg::Stroke( 2.0, svg::Color::Cyan ) );
+      doc << line;
     }
     doc.save();
   }
@@ -149,6 +157,7 @@ namespace hivemind {
 
     components_.clear();
     polygons_.clear();
+    obstacles_.clear();
 
     Analysis::Map_ProcessContours( flagsMap_, labelsMap_, components_ );
 
@@ -156,29 +165,40 @@ namespace hivemind {
 
     bot_->console().printf( "Map: Generating polygons..." );
 
-    Analysis::Map_ComponentPolygons( components_, polygons_, 0.1 );
+    Analysis::Map_ComponentPolygons( components_, polygons_ );
 
-    dumpPolygons( width_, height_, polygons_ );
+    bot_->console().printf( "Map: Inverting walkable polygons to obstacles..." );
 
-    /*bot_->console().printf( "Map: Generating voronoi graph..." );
+    Analysis::Map_InvertPolygons( polygons_, obstacles_, Rect2( info.playable_min, info.playable_max ), Vector2( info.width, info.height ) );
 
-    boost::polygon::voronoi_diagram<double> voronoi;
-    Analysis::Map_GenerateVoronoid( info, polygons_, voronoi );
+    bot_->console().printf( "Map: Generating Voronoi diagram..." );
 
-    bot_->console().printf( "Map: Voronoi: %d cells, %d edges, %d vertices", voronoi.num_cells(), voronoi.num_edges(), voronoi.num_vertices() );
+    bgi::rtree<BoostSegmentI, bgi::quadratic<16> > rtree;
+    Analysis::Map_MakeVoronoi( info, obstacles_, labelsMap_, graph_, rtree );
 
-    static const std::size_t VISITED_COLOR = 1;
-    for ( const auto& edge : voronoi.edges() ) {
-    if ( !edge.is_primary() || !edge.is_finite() || edge.color() == VISITED_COLOR )
-    continue;
-    edge.twin()->color( VISITED_COLOR );
-    auto* v0 = edge.vertex0();
-    auto* v1 = edge.vertex1();
-    voronoi_.push_back( Vector2( v0->x(), v0->y() ) );
-    voronoi_.push_back( Vector2( v1->x(), v1->y() ) );
-    }*/
+    bot_->console().printf( "Map: Pruning Voronoi diagram..." );
 
-    /*bot_->console().printf( "Map: Finding resource clusters..." );
+    Analysis::Map_PruneVoronoi( graph_ );
+
+    bot_->console().printf( "Map: Detecting nodes..." );
+
+    Analysis::Map_DetectNodes( graph_, obstacles_ );
+
+    bot_->console().printf( "Map: Simplifying graph..." );
+
+    Analysis::Map_SimplifyGraph( graph_, graphSimplified_ );
+
+    bot_->console().printf( "Map: Merging graph region nodes..." );
+
+    Analysis::Map_MergeRegionNodes( graphSimplified_ );
+
+    bot_->console().printf( "Map: Expanding chokepoints..." );
+
+    Analysis::Map_GetChokepointSides( graphSimplified_, rtree, chokepointSides_ );
+
+    dumpPolygons( width_, height_, obstacles_, chokepointSides_ );
+
+    bot_->console().printf( "Map: Finding resource clusters..." );
 
     resourceClusters_.clear();
 
@@ -186,7 +206,7 @@ namespace hivemind {
 
     debugDumpResources( resourceClusters_, info );
 
-    bot_->console().printf( "Map: Rebuild done" );*/
+    bot_->console().printf( "Map: Rebuild done" );
   }
 
   void drawPoly( sc2::DebugInterface& debug, Polygon& poly, Real z, sc2::Color color )
@@ -205,29 +225,20 @@ namespace hivemind {
   {
     for ( auto& poly_comp : polygons_ )
     {
-      drawPoly( bot_->debug(), poly_comp.contour, maxZ_, sc2::Colors::Green );
+      drawPoly( bot_->debug(), poly_comp.contour, maxZ_, sc2::Colors::Purple );
       for ( auto& hole : poly_comp.holes )
-        drawPoly( bot_->debug(), hole, maxZ_, sc2::Colors::Purple );
+        drawPoly( bot_->debug(), hole, maxZ_, sc2::Colors::Red );
     }
-    /*Point2D camera = bot_->observation().GetCameraPos();
-    for ( float x = camera.x - 16.0f; x < camera.x + 16.0f; ++x )
+    for ( auto& asd : chokepointSides_ )
     {
-      for ( float y = camera.y - 16.0f; y < camera.y + 16.0f; ++y )
-      {
-        if ( !isValid( (size_t)x, (size_t)y ) )
-          continue;
-        Point3D pt;
-        pt.x = x;
-        pt.y = y;
-        pt.z = heightMap_[(size_t)x][(size_t)y] + 0.25f;
-        sc2::Color clr = sc2::Colors::Red;
-        if ( flagsMap_[(size_t)x][(size_t)y] & MapFlag_Buildable )
-          clr = sc2::Colors::Green;
-        else if ( flagsMap_[(size_t)x][(size_t)y] & MapFlag_Walkable )
-          clr = sc2::Colors::Yellow;
-        bot_->debug().DebugSphereOut( pt, 0.25f, clr );
-      }
-    }*/
+      Point3D p0( asd.second.side1.x, asd.second.side1.y, maxZ_ );
+      Point3D p1( asd.second.side2.x, asd.second.side2.y, maxZ_ );
+      bot_->debug().DebugLineOut( p0, p1, sc2::Colors::Green );
+    }
+    for ( auto& node : graphSimplified_.nodes )
+    {
+      bot_->debug().DebugSphereOut( sc2::Point3D( node.x, node.y, maxZ_ ), 0.25f, sc2::Colors::Teal );
+    }
   }
 
   bool Map::isValid( size_t x, size_t y ) const

@@ -126,6 +126,15 @@
     <ClInclude Include="include\hive_vector3.h">
       <Filter>Header Files\Math</Filter>
     </ClInclude>
+    <ClInclude Include="include\regiongraph.h">
+      <Filter>Header Files\Map</Filter>
+    </ClInclude>
+    <ClInclude Include="include\hive_geometry.h">
+      <Filter>Header Files\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="include\hive_rect2.h">
+      <Filter>Header Files\Math</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\stdafx.cpp">
@@ -175,6 +184,9 @@
     </ClCompile>
     <ClCompile Include="src\distancemap.cpp">
       <Filter>Source Files\Algorithm</Filter>
+    </ClCompile>
+    <ClCompile Include="src\regiongraph.cpp">
+      <Filter>Source Files\Map</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

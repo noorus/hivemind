@@ -9,6 +9,9 @@
 #include <CGAL/Polygon_2.h>
 #include <CGAL/Polyline_simplification_2/simplify.h>
 #include <CGAL/Polyline_simplification_2/Hybrid_squared_distance_cost.h>
+#include <CGAL/Segment_Delaunay_graph_traits_2.h>
+#include <CGAL/Point_set_2.h>
+#include <CGAL/Cartesian.h>
 
 namespace hivemind {
 
@@ -200,6 +203,683 @@ namespace hivemind {
         }
 
         polygons_out.push_back( out_comp );
+      }
+    }
+
+    /*
+     * 4) Make an inverted copy of the polygons (i.e. walkables to non-walkables) for Voronoi diagram generation
+     **/
+    void Map_InvertPolygons( const PolygonComponentVector & walkable_in, PolygonComponentVector & obstacles_out, const Rect2& playableArea, const Vector2& dimensions )
+    {
+      // contour = purple
+      // holes = red
+      Real largestArea = 0.0f;
+      const Polygon* largestPoly = nullptr;
+      const PolygonComponent* largestComponent = nullptr;
+      vector<const Polygon*> potential;
+      for ( auto& comp : walkable_in )
+      {
+        if ( comp.contour.area() > largestArea )
+        {
+          largestArea = comp.contour.area();
+          if ( largestPoly )
+            potential.push_back( largestPoly );
+          largestPoly = &comp.contour;
+          largestComponent = &comp;
+        } else
+        {
+          bool ok = false;
+          for ( auto& pt : comp.contour )
+            if ( pt >= playableArea.min_ && pt <= playableArea.max_ )
+            {
+              ok = true;
+              break;
+            }
+          if ( ok )
+            potential.push_back( &comp.contour );
+        }
+      }
+      if ( !largestPoly )
+        return;
+      PolygonComponent overall;
+      overall.contour.push_back( Vector2( 0.0f, 0.0f ) );
+      overall.contour.push_back( Vector2( dimensions.x, 0.0f ) );
+      overall.contour.push_back( dimensions );
+      overall.contour.push_back( Vector2( 0.0f, dimensions.y ) );
+      overall.label = 0; // unwalkable
+      Polygon largestCopy = ( *largestPoly );
+      overall.holes.push_back( largestCopy );
+      obstacles_out.push_back( overall );
+      for ( auto& hole : largestComponent->holes )
+      {
+        PolygonComponent innerComp;
+        innerComp.contour = hole;
+        innerComp.label = 0; // unwalkable
+        obstacles_out.push_back( innerComp );
+      }
+      for ( auto inner : potential )
+      {
+        PolygonComponent innerComp;
+        innerComp.contour = ( *inner );
+        innerComp.label = 0; // unwalkable
+        obstacles_out.push_back( innerComp );
+      }
+    }
+
+    void addVerticalBorder( std::vector<VoronoiSegment>& segments, std::vector<BoostSegmentI>& rtreeSegments, size_t& idPoint,
+      const std::set<int>& border, int x, int maxY )
+    {
+      auto it = border.begin();
+      {
+        VoronoiPoint point1( x, 0 );
+        VoronoiPoint point2( x, maxY );
+        if ( it != border.end() )
+        {
+          point2.y( *it ); ++it;
+        }
+        segments.emplace_back( point1, point2 );
+        rtreeSegments.push_back( std::make_pair( BoostSegment( BoostPoint( point1.x(), point1.y() ), BoostPoint( point2.x(), point2.y() ) ), idPoint++ ) );
+      }
+      for ( it; it != border.end();)
+      {
+        if ( *it == maxY ) break;
+        VoronoiPoint point1( x, *it ); ++it;
+        VoronoiPoint point2( x, maxY );
+        if ( it != border.end() )
+        {
+          point2.y( *it ); ++it;
+        }
+        segments.emplace_back( point1, point2 );
+        rtreeSegments.push_back( std::make_pair( BoostSegment( BoostPoint( point1.x(), point1.y() ), BoostPoint( point2.x(), point2.y() ) ), idPoint++ ) );
+      }
+    }
+
+    void addHorizontalBorder( std::vector<VoronoiSegment>& segments, std::vector<BoostSegmentI>& rtreeSegments, size_t& idPoint,
+      const std::set<int>& border, int y, int maxX )
+    {
+      auto it = border.begin();
+      {
+        VoronoiPoint point1( 0, y );
+        VoronoiPoint point2( maxX, y );
+        if ( it != border.end() )
+        {
+          point2.x( *it ); ++it;
+        }
+        segments.emplace_back( point1, point2 );
+        rtreeSegments.push_back( std::make_pair( BoostSegment( BoostPoint( point1.x(), point1.y() ), BoostPoint( point2.x(), point2.y() ) ), idPoint++ ) );
+      }
+      for ( it; it != border.end();)
+      {
+        if ( *it == maxX ) break;
+        VoronoiPoint point1( *it, y ); ++it;
+        VoronoiPoint point2( maxX, y );
+        if ( it != border.end() )
+        {
+          point2.x( *it ); ++it;
+        }
+        segments.emplace_back( point1, point2 );
+        rtreeSegments.push_back( std::make_pair( BoostSegment( BoostPoint( point1.x(), point1.y() ), BoostPoint( point2.x(), point2.y() ) ), idPoint++ ) );
+      }
+    }
+
+    static const double DIFF_COEFICIENT = 0.31; // relative difference to consider a change between region<->chokepoint
+    static const int MIN_NODE_DIST = 0.25; // 7; // minimum distance between nodes
+    static const double MIN_REGION_OBST_DIST = 2.5; // 1 = 9.7; // minimum distance to object to be considered as a region
+
+    /*
+     * 5) Turn walkable areas (by way of non-walkable area polygons) to a Voronoi diagram
+     * See "Improving Terrain Analysis and Applications to RTS Game AI" (Uriarte, Ontañón, AIIDE 16) & BWTA2
+     **/
+    void Map_MakeVoronoi( const GameInfo & info, PolygonComponentVector & polygons_in, Array2<int>& labels_in, RegionGraph& graph, bgi::rtree<BoostSegmentI, bgi::quadratic<16> >& rtree )
+    {
+      std::vector<VoronoiSegment> segments;
+      std::vector<BoostSegmentI> rtreeSegments;
+      size_t idPoint = 0;
+
+      std::set<int> rightBorder, leftBorder, topBorder;
+      int maxX = info.width - 1;
+      int maxY = info.height - 1;
+
+      for ( const auto& poly: polygons_in )
+      {
+        size_t lastPoint = poly.contour.size() - 1;
+        for ( size_t i = 0, j = 1; i < lastPoint; ++i, ++j )
+        {
+          if ( poly.contour[i].x == 0 && poly.contour[j].x == 0 )
+          {
+            leftBorder.insert( (int)poly.contour[i].y );
+            leftBorder.insert( (int)poly.contour[j].y );
+          } else if ( poly.contour[i].x == maxX && poly.contour[j].x == maxX )
+          {
+            rightBorder.insert( (int)poly.contour[i].y );
+            rightBorder.insert( (int)poly.contour[j].y );
+          }
+          if ( poly.contour[i].y == 0 && poly.contour[j].y == 0 )
+          {
+            topBorder.insert( (int)poly.contour[i].x );
+            topBorder.insert( (int)poly.contour[j].x );
+          }
+          segments.emplace_back( VoronoiPoint( poly.contour[j].x, poly.contour[j].y ), VoronoiPoint( poly.contour[i].x, poly.contour[i].y ) );
+
+          rtreeSegments.push_back( std::make_pair( BoostSegment( BoostPoint( poly.contour[j].x, poly.contour[j].y ),
+            BoostPoint( poly.contour[i].x, poly.contour[i].y ) ), idPoint++ ) );
+        }
+        for ( auto& hole : poly.holes )
+        {
+          size_t lastPoint = hole.size() - 1;
+          for ( size_t i = 0, j = 1; i < lastPoint; ++i, ++j )
+          {
+            segments.emplace_back( VoronoiPoint( hole[j].x, hole[j].y ), VoronoiPoint( hole[i].x, hole[i].y ) );
+
+            rtreeSegments.push_back( std::make_pair( BoostSegment( BoostPoint( hole[j].x, hole[j].y ),
+              BoostPoint( hole[i].x, hole[i].y ) ), idPoint++ ) );
+          }
+        }
+      }
+
+      addVerticalBorder( segments, rtreeSegments, idPoint, leftBorder, 0, maxY );
+      addVerticalBorder( segments, rtreeSegments, idPoint, rightBorder, maxX, maxY );
+      addHorizontalBorder( segments, rtreeSegments, idPoint, topBorder, 0, maxX );
+
+      BoostVoronoi voronoi;
+      boost::polygon::construct_voronoi( segments.begin(), segments.end(), &voronoi );
+
+      static const std::size_t VISITED_COLOR = 1;
+      for ( const auto& edge : voronoi.edges() )
+      {
+        if ( !edge.is_primary() || !edge.is_finite() || edge.color() == VISITED_COLOR )
+          continue;
+
+        edge.twin()->color( VISITED_COLOR );
+
+        const BoostVoronoi::vertex_type* v0 = edge.vertex0();
+        const BoostVoronoi::vertex_type* v1 = edge.vertex1();
+        Vector2 p0( (Real)v0->x(), (Real)v0->y() );
+        Vector2 p1( (Real)v1->x(), (Real)v1->y() );
+
+        if ( p0.x < 0 || p0.x > maxX || p0.y < 0 || p0.y > maxY || p1.x < 0 || p1.x > maxX || p1.y < 0 || p1.y > maxY )
+        {
+          // HIVE_EXCEPT( "Voronoi vertex found outside map. Probably wrong border segment generation" );
+          continue;
+        }
+        //... is outside map or near border
+        // 			if (p0.x < SKIP_NEAR_BORDER || p0.x > maxXborder || p0.y < SKIP_NEAR_BORDER || p0.y >maxYborder || 
+        //				p1.x < SKIP_NEAR_BORDER || p1.x >maxXborder || p1.y < SKIP_NEAR_BORDER || p1.y >maxYborder) continue;
+
+        // ... any of its endpoints is inside an obstacle
+        if ( labels_in[(int)p0.x][(int)p0.y] == 0 || labels_in[(int)p1.x][(int)p1.y] == 0 ) // 0 = unwalkable
+          continue;
+
+        nodeID v0ID = graph.addNode( v0, p0 );
+        nodeID v1ID = graph.addNode( v1, p1 );
+        graph.addEdge( v0ID, v1ID );
+      }
+
+      bgi::rtree<BoostSegmentI, bgi::quadratic<16> > rtreeConstruct( rtreeSegments );
+      rtree = rtreeConstruct;
+      graph.minDistToObstacle.resize( graph.nodes.size() );
+      for ( size_t i = 0; i < graph.nodes.size(); ++i )
+      {
+        std::vector<BoostSegmentI> returnedValues;
+        BoostPoint pt( graph.nodes[i].x, graph.nodes[i].y );
+        rtree.query( bgi::nearest( pt, 1 ), std::back_inserter( returnedValues ) );
+        graph.minDistToObstacle[i] = boost::geometry::distance( returnedValues.front().first, pt );
+      }
+    }
+
+    /*
+     * 6) Prune down the messy Voronoi diagram to only the medial axes per every branch
+     * See "Improving Terrain Analysis and Applications to RTS Game AI" (Uriarte, Ontañón, AIIDE 16) & BWTA2
+     **/
+    void Map_PruneVoronoi( RegionGraph & graph )
+    {
+      // get the list of all leafs (nodes with only one element in the adjacent list)
+      std::queue<nodeID> nodeToPrune;
+      for ( size_t id = 0; id < graph.adjacencyList.size(); ++id )
+      {
+        if ( graph.adjacencyList[id].size() == 1 )
+        {
+          nodeToPrune.push( id );
+        }
+      }
+
+      // using leafs as starting points, prune the RegionGraph
+      while ( !nodeToPrune.empty() )
+      {
+        // pop first element
+        nodeID v0 = nodeToPrune.front();
+        nodeToPrune.pop();
+
+        if ( graph.adjacencyList[v0].empty() )  continue;
+
+        nodeID v1 = *graph.adjacencyList[v0].begin();
+        // remove node if it's too close to an obstacle, or parent is farther to an obstacle
+        if ( graph.minDistToObstacle[v0] < MIN_REGION_OBST_DIST
+          || graph.minDistToObstacle[v0] - 0.9 <= graph.minDistToObstacle[v1] )
+        {
+          graph.adjacencyList[v0].clear();
+          graph.adjacencyList[v1].erase( v0 );
+
+          if ( graph.adjacencyList[v1].empty() && graph.minDistToObstacle[v1] > MIN_REGION_OBST_DIST )
+          {
+            // isolated node
+            graph.markNodeAsRegion( v1 );
+          } else if ( graph.adjacencyList[v1].size() == 1 )
+          { // keep pruning if only one child
+            nodeToPrune.push( v1 );
+          }
+        }
+      }
+    }
+
+    /*std::string getDifference( const double& A, const double& B )
+    {
+      double diff = std::abs( A - B );
+      double largest = std::max( A, B );
+      double minDiff = std::max( 2.0, largest * DIFF_COEFICIENT );
+
+      std::stringstream stream;
+      stream << A << " - " << B << " > " << largest << " * " << DIFF_COEFICIENT << "\n";
+      stream << diff << " > " << minDiff;
+      return stream.str();
+    }*/
+
+    bool enoughDifference( const double& A, const double& B )
+    {
+      double diff = std::abs( A - B );
+      double largest = std::max( A, B );
+      double minDiff = std::max( 2.0, largest * DIFF_COEFICIENT );
+
+      if ( diff > minDiff ) return true;
+      return false;
+    }
+
+    /*
+     * 7) DetectNodes
+     **/
+    void Map_DetectNodes( RegionGraph & graph, const PolygonComponentVector& polygons )
+    {
+      struct parentNode_t {
+        nodeID id;
+        bool isMaximal;
+        parentNode_t(): id( 0 ), isMaximal( false ) {}
+        parentNode_t( nodeID _id, bool _isMaximal ): id( _id ), isMaximal( _isMaximal ) {}
+      };
+
+      // container to mark visited nodes, and parent list
+      std::vector<bool> visited( graph.nodes.size() );
+      std::vector<parentNode_t> parentNodes( graph.nodes.size() );
+      std::vector<nodeID> lastValid( graph.nodes.size() );
+
+
+      std::stack<nodeID> nodeToVisit;
+      // find a leaf node to start
+      for ( size_t id = 0; id < graph.adjacencyList.size(); ++id )
+      {
+        if ( graph.adjacencyList[id].size() == 1 )
+        {
+          graph.markNodeAsRegion( id );
+          visited[id] = true;
+          parentNode_t parentNode( id, true );
+          parentNodes[id] = parentNode;
+          // 				LOG("REGION " << graph.nodes[id] << " radius " << graph.minDistToObstacle[id]);
+          // add children to explore
+          for ( const auto& v1 : graph.adjacencyList[id] )
+          {
+            nodeToVisit.push( v1 );
+            visited[1] = true;
+            parentNodes[v1] = parentNode;
+          }
+          break;
+        }
+      }
+
+      while ( !nodeToVisit.empty() )
+      {
+        // pop first element
+        nodeID v0 = nodeToVisit.top();
+        nodeToVisit.pop();
+        // get parent
+        parentNode_t parentNode = parentNodes[v0];
+        if ( graph.adjacencyList[v0].size() != 2 )
+        { // We found a leaf or intersection (region node)
+          // if parent chokepoint and too close, delete parent
+          if ( graph.nodeType[parentNode.id] == RegionGraph::CHOKEPOINT &&
+            graph.nodes[v0].distance( graph.nodes[parentNode.id] ) < MIN_NODE_DIST )
+          {
+            graph.unmarkChokeNode( parentNode.id );
+          }
+          graph.markNodeAsRegion( v0 );
+          // don't update next parent if current parent is a bigger region
+          if ( graph.nodeType[parentNode.id] == RegionGraph::CHOKEPOINT ||
+            graph.minDistToObstacle[v0] > graph.minDistToObstacle[parentNode.id] )
+          {
+            parentNode.id = v0; parentNode.isMaximal = true; // updating next parent
+          }
+
+        } else
+        {
+          // look if the node is a local minimal (chokepoint node)
+          bool localMinimal = true;
+          for ( const auto& v1 : graph.adjacencyList[v0] )
+          {
+            if ( graph.minDistToObstacle[v0] > graph.minDistToObstacle[v1] )
+            {
+              localMinimal = false;
+              break;
+            }
+          }
+          if ( localMinimal )
+          {
+            if ( !parentNode.isMaximal )
+            { // (choke TO choke)
+              // keep the min
+              if ( graph.minDistToObstacle[v0] < graph.minDistToObstacle[parentNode.id] )
+              {
+                lastValid[v0] = parentNode.id;
+                graph.unmarkChokeNode( parentNode.id );
+                graph.markNodeAsChoke( v0 );
+                parentNode.id = v0; parentNode.isMaximal = false; // updating next parent
+
+              }
+            } else
+            { // parent is maximal (region TO choke)
+              int approxDistance = graph.nodes[v0].distance( graph.nodes[parentNode.id] );
+              bool enoughDistance = approxDistance >= MIN_NODE_DIST && approxDistance > graph.minDistToObstacle[parentNode.id];
+              if ( enoughDifference( graph.minDistToObstacle[v0], graph.minDistToObstacle[parentNode.id] ) || enoughDistance )
+              {
+                graph.markNodeAsChoke( v0 );
+                parentNode.id = v0; parentNode.isMaximal = false;
+              }
+            }
+          } else
+          {
+            // look if the node is a local maximal (region node)
+            bool localMaximal = true;
+            for ( const auto& v1 : graph.adjacencyList[v0] )
+            {
+              if ( graph.minDistToObstacle[v0] < graph.minDistToObstacle[v1] )
+              {
+                localMaximal = false;
+                break;
+              }
+            }
+            if ( localMaximal )
+            {
+              if ( graph.minDistToObstacle[v0] < MIN_REGION_OBST_DIST )
+              {
+			
+              } else if ( parentNode.isMaximal )
+              { // (region TO region)
+                // keep the max
+                if ( graph.minDistToObstacle[v0] > graph.minDistToObstacle[parentNode.id] )
+                {
+                  // 								LOG("REGION (better consecutive) " << graph.nodes[v0] << " radius: " << graph.minDistToObstacle[v0] << " parent: " << graph.minDistToObstacle[parentNode.id]);
+                  // only delete parent if it isn't an intersection (size == 2)
+                  if ( graph.adjacencyList[parentNode.id].size() == 2 )
+                  {
+                    graph.unmarkRegionNode( parentNode.id );
+                  }
+                  graph.markNodeAsRegion( v0 );
+                  parentNode.id = v0; parentNode.isMaximal = true; // updating next parent
+                }
+              } else
+              { // parent is minimal (choke TO region)
+                if ( enoughDifference( graph.minDistToObstacle[v0], graph.minDistToObstacle[parentNode.id] ) )
+                {
+                  graph.markNodeAsRegion( v0 );
+                  parentNode.id = v0; parentNode.isMaximal = true; // updating next parent
+                } else
+                {
+                  // the radius difference is too small
+                }
+              }
+            }
+          }
+        }
+
+        // keep exploring unvisited neighbors
+        for ( const auto& v1 : graph.adjacencyList[v0] )
+        {
+          if ( !visited[v1] )
+          {
+            nodeToVisit.push( v1 );
+            visited[v1] = true;
+            parentNodes[v1] = parentNode;
+          } else
+          {
+            // we reached a connection between visited paths.
+
+            nodeID v0Parent, v1Parent;
+            // get right parent of v0
+            if ( graph.nodeType[v0] == RegionGraph::REGION || graph.nodeType[v0] == RegionGraph::CHOKEPOINT )
+            {
+              v0Parent = v0;
+            } else v0Parent = parentNodes[v0].id;
+            // get right parent of v1
+            if ( graph.nodeType[v1] == RegionGraph::REGION || graph.nodeType[v1] == RegionGraph::CHOKEPOINT )
+            {
+              v1Parent = v1;
+            } else v1Parent = parentNodes[v1].id;
+            nodeID isMaximal0 = false;
+            if ( graph.nodeType[v0Parent] == RegionGraph::REGION ) isMaximal0 = true;
+            nodeID isMaximal1 = false;
+            if ( graph.nodeType[v1Parent] == RegionGraph::REGION ) isMaximal1 = true;
+
+            // 					if (!isMaximal0 && isMaximal1) LOG("Choke-region " << v0Parent << "-" << v1Parent);
+            // 					if (isMaximal0 && !isMaximal1) LOG("Region-choke " << v0Parent << "-" << v1Parent);
+
+            // if the connected path between choke-region nodes is too close, remove choke
+            if ( isMaximal0 != isMaximal1 &&
+              graph.nodes[v0Parent].distance( graph.nodes[v1Parent] ) < MIN_NODE_DIST )
+            {
+              nodeID nodeToDelete = v0Parent;
+              if ( isMaximal0 )  nodeToDelete = v1Parent;
+              graph.unmarkChokeNode( nodeToDelete );
+              if ( lastValid[nodeToDelete] != 0 )
+              {
+                graph.markNodeAsChoke( lastValid[nodeToDelete] );
+              }
+            } else
+              // if two consecutive minimals, keep the min
+              if ( !isMaximal0 && isMaximal0 == isMaximal1 && v0Parent != v1Parent )
+              {
+                nodeID nodeToDelete = v0Parent;
+                if ( graph.minDistToObstacle[v0Parent] < graph.minDistToObstacle[v1Parent] )
+                {
+                  nodeToDelete = v1Parent;
+                }
+                graph.unmarkChokeNode( nodeToDelete );
+              }
+          }
+        }
+      }
+    }
+
+    void Map_SimplifyGraph( const RegionGraph & graph, RegionGraph & graphSimplified )
+    {
+      std::vector<bool> visited;
+      visited.resize( graph.nodes.size() );
+      std::vector<nodeID> parentID;
+      parentID.resize( graph.nodes.size() );
+
+      nodeID leafRegionId = 99;
+      nodeID newleafRegionId;
+      for ( const auto& regionId : graph.regionNodes )
+      {
+        if ( leafRegionId == 99 && graph.adjacencyList[regionId].size() == 1 )
+        {
+          leafRegionId = regionId;
+          visited[regionId] = true;
+          newleafRegionId = graphSimplified.addNode( graph.nodes[regionId], graph.minDistToObstacle[regionId] );
+          graphSimplified.markNodeAsRegion( newleafRegionId );
+        }
+        if ( graph.adjacencyList[regionId].empty() )
+        {
+          nodeID newId = graphSimplified.addNode( graph.nodes[regionId], graph.minDistToObstacle[regionId] );
+          graphSimplified.markNodeAsRegion( newId );
+        }
+      }
+
+      std::stack<nodeID> nodeToVisit;
+      if ( leafRegionId != 99 )
+        for ( const auto& v1 : graph.adjacencyList[leafRegionId] )
+        {
+          nodeToVisit.emplace( v1 );
+          visited[v1] = true;
+          parentID[v1] = newleafRegionId;
+        }
+
+      while ( !nodeToVisit.empty() )
+      {
+        nodeID nodeId = nodeToVisit.top();
+        nodeToVisit.pop();
+        nodeID parentId = parentID[nodeId];
+
+        if ( graph.nodeType[nodeId] == RegionGraph::CHOKEPOINT )
+        {
+          nodeID newId = graphSimplified.addNode( graph.nodes[nodeId], graph.minDistToObstacle[nodeId] );
+          if ( newId != parentId )
+          {
+            graphSimplified.markNodeAsChoke( newId );
+            graphSimplified.addEdge( newId, parentId );
+            parentId = newId;
+          }
+        } else if ( graph.nodeType[nodeId] == RegionGraph::REGION )
+        {
+          nodeID newId = graphSimplified.addNode( graph.nodes[nodeId], graph.minDistToObstacle[nodeId] );
+          if ( newId != parentId )
+          {
+            graphSimplified.markNodeAsRegion( newId );
+            graphSimplified.addEdge( newId, parentId );
+            parentId = newId;
+          }
+        }
+        for ( const auto& v1 : graph.adjacencyList[nodeId] )
+        {
+          if ( !visited[v1] )
+          {
+            nodeToVisit.emplace( v1 );
+            parentID[v1] = parentId;
+            visited[v1] = true;
+          } else if ( parentID[v1] != parentID[nodeId] )
+          {
+            nodeID n1 = parentID[v1];
+            if ( graph.nodeType[v1] != RegionGraph::NONE )
+            {
+              n1 = graphSimplified.addNode( graph.nodes[v1], graph.minDistToObstacle[v1] );
+            }
+            nodeID n2 = parentID[nodeId];
+            if ( graph.nodeType[nodeId] != RegionGraph::NONE )
+            {
+              n2 = graphSimplified.addNode( graph.nodes[nodeId], graph.minDistToObstacle[nodeId] );
+            }
+            if ( n1 != n2 && graphSimplified.nodeType[n1] != RegionGraph::NONE
+              && graphSimplified.nodeType[n2] != RegionGraph::NONE )
+            {
+              graphSimplified.addEdge( n1, n2 );
+            }
+          }
+        }
+      }
+    }
+
+    void Map_MergeRegionNodes( RegionGraph & graph )
+    {
+      std::set<nodeID> mergeRegions( graph.regionNodes );
+
+      while ( !mergeRegions.empty() )
+      {
+        // pop first element
+        nodeID parent = *mergeRegions.begin();
+        mergeRegions.erase( mergeRegions.begin() );
+
+        for ( auto it = graph.adjacencyList[parent].begin(); it != graph.adjacencyList[parent].end();)
+        {
+          nodeID child = *it;
+          if ( parent == child )
+          { // This is a self-loop, remove it
+            it = graph.adjacencyList[parent].erase( it );
+            continue;
+          }
+          if ( graph.nodeType[parent] == RegionGraph::REGION && graph.nodeType[child] == RegionGraph::REGION )
+          {
+            if ( graph.minDistToObstacle[parent] > graph.minDistToObstacle[child] )
+            {
+              graph.adjacencyList[parent].insert( graph.adjacencyList[child].begin(),
+                graph.adjacencyList[child].end() );
+              for ( const auto& v2 : graph.adjacencyList[child] )
+              {
+                graph.adjacencyList[v2].erase( child );
+                if ( v2 == parent ) graph.adjacencyList[parent].erase( parent );
+                else graph.adjacencyList[v2].insert( parent );
+              }
+              graph.adjacencyList[child].clear();
+              graph.regionNodes.erase( child );
+              it = graph.adjacencyList[parent].begin();
+            } else
+            {
+              graph.adjacencyList[child].insert(
+                graph.adjacencyList[parent].begin(),
+                graph.adjacencyList[parent].end() );
+              for ( const auto& v2 : graph.adjacencyList[parent] )
+              {
+                graph.adjacencyList[v2].erase( parent );
+                if ( v2 == child ) graph.adjacencyList[child].erase( child );
+                else graph.adjacencyList[v2].insert( child );
+              }
+              graph.adjacencyList[parent].clear();
+              graph.regionNodes.erase( parent );
+              mergeRegions.insert( child );
+              break;
+            }
+          } else
+          {
+            ++it;
+          }
+        }
+      }
+    }
+
+    Vector2 getProjectedPoint( const BoostPoint &p, const BoostSegment &s )
+    {
+      double dx = s.second.x() - s.first.x();
+      double dy = s.second.y() - s.first.y();
+      if ( dx != 0 || dy != 0 )
+      {
+        double t = ( ( p.x() - s.first.x() ) * dx + ( p.y() - s.first.y() ) * dy ) / ( dx * dx + dy * dy );
+        if ( t > 1 )
+        {
+          return Vector2( static_cast<Real>( s.second.x() ), static_cast<Real>( s.second.y() ) );
+        } else if ( t > 0 )
+        {
+          return Vector2( static_cast<Real>( s.first.x() + dx * t ), static_cast<Real>( s.first.y() + dy * t ) );
+        }
+      }
+      return Vector2( static_cast<Real>( s.first.x() ), static_cast<Real>( s.first.y() ) );
+    }
+
+    void Map_GetChokepointSides( const RegionGraph & graph, const bgi::rtree<BoostSegmentI, bgi::quadratic<16>>& rtree, std::map<nodeID, chokeSides_t>& chokepointSides )
+    {
+      for ( const auto& id : graph.chokeNodes )
+      {
+        BoostPoint pt( graph.nodes[id].x, graph.nodes[id].y );
+        Vector2 side1, side2;
+
+        auto it = rtree.qbegin( bgi::nearest( pt, 10 ) );
+        side1 = getProjectedPoint( pt, it->first );
+        ++it;
+
+        for ( it; it != rtree.qend(); ++it )
+        {
+          side2 = getProjectedPoint( pt, it->first );
+          if ( ( ( side1.x <= pt.x() && side2.x >= pt.x() ) || ( side1.x >= pt.x() && side2.x <= pt.x() ) ) &&
+            ( ( side1.y <= pt.y() && side2.y >= pt.y() ) || ( side1.y >= pt.y() && side2.y <= pt.y() ) ) )
+          {
+            break;
+          }
+        }
+        chokepointSides.emplace( id, chokeSides_t( side1, side2 ) );
       }
     }
 
