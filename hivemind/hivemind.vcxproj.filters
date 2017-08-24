@@ -135,6 +135,9 @@
     <ClInclude Include="include\hive_rect2.h">
       <Filter>Header Files\Math</Filter>
     </ClInclude>
+    <ClInclude Include="include\baselocation.h">
+      <Filter>Header Files\Systems</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\stdafx.cpp">
@@ -187,6 +190,9 @@
     </ClCompile>
     <ClCompile Include="src\regiongraph.cpp">
       <Filter>Source Files\Map</Filter>
+    </ClCompile>
+    <ClCompile Include="src\baselocation.cpp">
+      <Filter>Source Files\Systems</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

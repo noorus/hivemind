@@ -5,6 +5,7 @@
 #include "hive_polygon.h"
 #include "distancemap.h"
 #include "regiongraph.h"
+#include "baselocation.h"
 
 namespace hivemind {
 
@@ -58,6 +59,7 @@ namespace hivemind {
     Analysis::RegionGraph graphSimplified_;
     PolygonComponentVector obstacles_;
     std::map<Analysis::nodeID, Analysis::chokeSides_t> chokepointSides_;
+    BaseLocationVector baseLocations_;
   public:
     Map( Bot* bot );
     void rebuild();

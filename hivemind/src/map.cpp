@@ -4,6 +4,7 @@
 #include "utilities.h"
 #include "map_analysis.h"
 #include "hive_geometry.h"
+#include "baselocation.h"
 
 #pragma warning(disable: 4996)
 #define STB_IMAGE_WRITE_IMPLEMENTATION
@@ -202,9 +203,20 @@ namespace hivemind {
 
     resourceClusters_.clear();
 
-    Analysis::Map_FindResourceClusters( bot_->observation(), resourceClusters_ );
+    Analysis::Map_FindResourceClusters( bot_->observation(), resourceClusters_, 4, 10.0f );
 
     debugDumpResources( resourceClusters_, info );
+
+    bot_->console().printf( "Map: Creating base locations..." );
+
+    baseLocations_.clear();
+
+    size_t index = 0;
+    for ( auto& cluster : resourceClusters_ )
+    {
+      baseLocations_.emplace_back( bot_, index, cluster );
+      index++;
+    }
 
     bot_->console().printf( "Map: Rebuild done" );
   }
@@ -238,6 +250,23 @@ namespace hivemind {
     for ( auto& node : graphSimplified_.nodes )
     {
       bot_->debug().DebugSphereOut( sc2::Point3D( node.x, node.y, maxZ_ ), 0.25f, sc2::Colors::Teal );
+    }
+    for ( auto& cluster : resourceClusters_ )
+    {
+      auto pos = cluster.center();
+      // bot_->debug().DebugSphereOut( Point3D( pos.x, pos.y, maxZ_ ), 10.0f );
+      for ( auto& res : cluster )
+        bot_->debug().DebugSphereOut( res.pos, 1.0f, sc2::Colors::Yellow );
+    }
+    for ( auto& location : baseLocations_ )
+    {
+      char msg[32];
+      sprintf_s( msg, 32, "Base location %d", location.baseID_ );
+      bot_->debug().DebugTextOut( msg, Point3D( location.position_.x, location.position_.y, maxZ_ ) );
+      bot_->debug().DebugBoxOut(
+        Point3D( location.left_, location.top_, maxZ_ ),
+        Point3D( location.right_, location.bottom_, maxZ_ + 1.0f ) );
+      bot_->debug().DebugSphereOut( Point3D( location.position_.x, location.position_.y, maxZ_ ), 10.0f );
     }
   }
 

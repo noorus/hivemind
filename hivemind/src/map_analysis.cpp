@@ -322,9 +322,9 @@ namespace hivemind {
       }
     }
 
-    static const double DIFF_COEFICIENT = 0.31; // relative difference to consider a change between region<->chokepoint
-    static const int MIN_NODE_DIST = 0.25; // 7; // minimum distance between nodes
-    static const double MIN_REGION_OBST_DIST = 2.5; // 1 = 9.7; // minimum distance to object to be considered as a region
+    static const Real DIFF_COEFICIENT = 0.31f; // relative difference to consider a change between region<->chokepoint
+    static const Real MIN_NODE_DIST = 0.25f; // 7; // minimum distance between nodes
+    static const Real MIN_REGION_OBST_DIST = 2.5f; // 1 = 9.7; // minimum distance to object to be considered as a region
 
     /*
      * 5) Turn walkable areas (by way of non-walkable area polygons) to a Voronoi diagram
@@ -584,7 +584,7 @@ namespace hivemind {
               }
             } else
             { // parent is maximal (region TO choke)
-              int approxDistance = graph.nodes[v0].distance( graph.nodes[parentNode.id] );
+              auto approxDistance = graph.nodes[v0].distance( graph.nodes[parentNode.id] );
               bool enoughDistance = approxDistance >= MIN_NODE_DIST && approxDistance > graph.minDistToObstacle[parentNode.id];
               if ( enoughDifference( graph.minDistToObstacle[v0], graph.minDistToObstacle[parentNode.id] ) || enoughDistance )
               {
@@ -883,20 +883,56 @@ namespace hivemind {
       }
     }
 
+    float DistSq( const sc2::Point2D & p1, const sc2::Point2D & p2 )
+    {
+      float dx = p1.x - p2.x;
+      float dy = p1.y - p2.y;
+
+      return dx*dx + dy*dy;
+    }
+
+    float Dist( const sc2::Point2D & p1, const sc2::Point2D & p2 )
+    {
+      return sqrtf( DistSq( p1, p2 ) );
+    }
+
+    sc2::Point2D CalcCenter( const std::vector<sc2::Unit> & units )
+    {
+      if ( units.empty() )
+      {
+        return sc2::Point2D( 0.0f, 0.0f );
+      }
+
+      float cx = 0.0f;
+      float cy = 0.0f;
+
+      for ( auto & unit : units )
+      {
+        cx += unit.pos.x;
+        cy += unit.pos.y;
+      }
+
+      return sc2::Point2D( cx / units.size(), cy / units.size() );
+    }
+
     void Map_FindResourceClusters( const sc2::ObservationInterface& observation, vector<UnitVector>& clusters_out, size_t minClusterSize, Real maxResourceDistance )
     {
-      vector<UnitVector> potentialClusters;
+      /*tileLocations_ = std::vector<std::vector<BaseLocation *>>( bot_->map().width(), std::vector<BaseLocation *>( bot_->map().height(), nullptr ) );
+      for ( int i = 0; i < c_maxPlayers; i++ )
+        playerStartingLocations_[i] = nullptr;*/
 
-      for ( auto& mineral : observation.GetUnits( Unit::Alliance::Neutral, utils::isMineral ) )
+      for ( auto& mineral : observation.GetUnits( Unit::Alliance::Neutral ) )
       {
+        if ( !utils::isMineral( mineral ) )
+          continue;
         bool foundCluster = false;
-        for ( auto& cluster : potentialClusters )
+        for ( auto& cluster : clusters_out )
         {
-          Real dist = Vector2( mineral.pos ).distance( cluster.center() );
-          if ( dist <= maxResourceDistance )
+          Real dist = Dist( mineral.pos, CalcCenter( cluster ) );
+          if ( dist < 14 )
           {
             Real groundDist = dist;
-            if ( groundDist >= 0.0f && groundDist < maxResourceDistance )
+            if ( groundDist >= 0.0f && groundDist < 14 )
             {
               cluster.push_back( mineral );
               foundCluster = true;
@@ -906,17 +942,19 @@ namespace hivemind {
         }
         if ( !foundCluster )
         {
-          potentialClusters.emplace_back();
-          potentialClusters.back().push_back( mineral );
+          clusters_out.emplace_back();
+          clusters_out.back().push_back( mineral );
         }
       }
 
-      for ( auto& geyser : observation.GetUnits( Unit::Alliance::Neutral, utils::isGeyser ) )
+      for ( auto& geyser : observation.GetUnits( Unit::Alliance::Neutral ) )
       {
-        for ( auto& cluster : potentialClusters )
+        if ( !utils::isGeyser( geyser ) )
+          continue;
+        for ( auto& cluster : clusters_out )
         {
-          float groundDist = Vector2( geyser.pos ).distance( cluster.center() );
-          if ( groundDist >= 0.0f && groundDist <= maxResourceDistance )
+          float groundDist = Dist( geyser.pos, CalcCenter( cluster ) );
+          if ( groundDist >= 0.0f && groundDist < 14 )
           {
             cluster.push_back( geyser );
             break;
@@ -924,9 +962,29 @@ namespace hivemind {
         }
       }
 
-      for ( auto& cluster : potentialClusters )
-        if ( cluster.size() >= minClusterSize )
-          clusters_out.push_back( cluster );
+      /*int baseID = 0;
+      for ( auto& cluster : resourceClusters )
+        if ( cluster.size() > c_minBaseClusterSize )
+          locationData_.emplace_back( bot_, baseID++, cluster );
+
+      for ( auto& loc : locationData_ )
+      {
+        locationPtrs_.push_back( &loc );
+        if ( loc.isStartLocation() )
+          startingLocations_.push_back( &loc );
+      }*/
+
+      /*for ( size_t x = 0; x < bot_->map().width(); x++ )
+        for ( size_t y = 0; y < bot_->map().height(); y++ )
+          for ( auto& loc : locationData_ )
+          {
+            Point2D pos( (Real)x + 0.5f, (Real)y + 0.5f );
+            if ( loc.containsPosition( pos ) )
+            {
+              tileLocations_[x][y] = &loc;
+              break;
+            }
+          }*/
     }
 
   }

@@ -21,6 +21,7 @@ namespace hivemind {
     }
     inline explicit Vector2( Real* const coords ): x( coords[0] ), y( coords[1] ) {}
     inline Vector2( const sc2::Point2D& pt ): x( pt.x ), y( pt.y ) {}
+    inline Vector2( const sc2::Point3D& pt ): x( pt.y ), y( pt.y ) {}
     //! Swap
     inline void swap( Vector2& other )
     {
@@ -181,11 +182,25 @@ namespace hivemind {
       y = rhs.y;
       return *this;
     }
+    inline Vector2& operator = ( const sc2::Point3D& rhs )
+    {
+      x = rhs.x;
+      y = rhs.y;
+      return *this;
+    }
     inline operator sc2::Point2D() const
     {
       sc2::Point2D ret;
       ret.x = x;
       ret.y = y;
+      return ret;
+    }
+    inline operator sc2::Point3D() const
+    {
+      sc2::Point3D ret;
+      ret.x = x;
+      ret.y = y;
+      ret.z = 0;
       return ret;
     }
     //! Operations
