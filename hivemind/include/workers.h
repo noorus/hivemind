@@ -20,6 +20,7 @@ namespace hivemind {
     void onMessage( const Message& msg ) final;
     virtual void gameBegin() override;
     virtual void gameEnd() override;
+    const TagSet& all() const;
     bool add( Tag worker );
     const bool exists( Tag worker ) const;
     const bool ignored( Tag worker ) const;

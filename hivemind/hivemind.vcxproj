@@ -83,6 +83,7 @@
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <EnableParallelCodeGeneration>true</EnableParallelCodeGeneration>
       <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -97,7 +98,9 @@
     <ClInclude Include="include\ai_agent.h" />
     <ClInclude Include="include\ai_goals.h" />
     <ClInclude Include="include\ai_statemachines.h" />
+    <ClInclude Include="include\base.h" />
     <ClInclude Include="include\baselocation.h" />
+    <ClInclude Include="include\basemanager.h" />
     <ClInclude Include="include\blob_algo.h" />
     <ClInclude Include="include\bot.h" />
     <ClInclude Include="include\brain.h" />
@@ -127,7 +130,9 @@
   <ItemGroup>
     <ClCompile Include="src\ai_finitestatemachine.cpp" />
     <ClCompile Include="src\ai_goals.cpp" />
+    <ClCompile Include="src\base.cpp" />
     <ClCompile Include="src\baselocation.cpp" />
+    <ClCompile Include="src\basemanager.cpp" />
     <ClCompile Include="src\blob_algo.cpp" />
     <ClCompile Include="src\bot.cpp" />
     <ClCompile Include="src\brain.cpp" />

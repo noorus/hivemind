@@ -60,6 +60,11 @@ namespace hivemind {
     shutdown();
   }
 
+  const TagSet & WorkerManager::all() const
+  {
+    return workers_;
+  }
+
   void WorkerManager::onMessage( const Message & msg )
   {
     if ( msg.code == M_Global_UnitCreated || msg.code == M_Global_UnitIdle || msg.code == M_Global_UnitDestroyed )

@@ -174,6 +174,37 @@ namespace hivemind {
       return isSupplyProvider( unit.unit_type );
     }
 
+    inline const bool isBuilding( const UnitTypeID& type )
+    {
+      switch ( type.ToType() )
+      {
+        case sc2::UNIT_TYPEID::ZERG_EVOLUTIONCHAMBER:
+        case sc2::UNIT_TYPEID::ZERG_EXTRACTOR:
+        case sc2::UNIT_TYPEID::ZERG_GREATERSPIRE:
+        case sc2::UNIT_TYPEID::ZERG_HATCHERY:
+        case sc2::UNIT_TYPEID::ZERG_HIVE:
+        case sc2::UNIT_TYPEID::ZERG_HYDRALISKDEN:
+        case sc2::UNIT_TYPEID::ZERG_INFESTATIONPIT:
+        case sc2::UNIT_TYPEID::ZERG_LAIR:
+        case sc2::UNIT_TYPEID::ZERG_NYDUSNETWORK:
+        case sc2::UNIT_TYPEID::ZERG_SPAWNINGPOOL:
+        case sc2::UNIT_TYPEID::ZERG_SPINECRAWLER:
+        case sc2::UNIT_TYPEID::ZERG_SPINECRAWLERUPROOTED:
+        case sc2::UNIT_TYPEID::ZERG_SPIRE:
+        case sc2::UNIT_TYPEID::ZERG_SPORECRAWLER:
+        case sc2::UNIT_TYPEID::ZERG_SPORECRAWLERUPROOTED:
+        case sc2::UNIT_TYPEID::ZERG_ULTRALISKCAVERN:
+          return true;
+        default:
+          return false;
+      }
+    }
+
+    inline  const bool isBuilding( const Unit& unit )
+    {
+      return isBuilding( unit.unit_type );
+    }
+
     inline void hsl2rgb( uint16_t hue, uint8_t sat, uint8_t lum, uint8_t rgb[3] )
     {
       uint16_t r_temp, g_temp, b_temp;

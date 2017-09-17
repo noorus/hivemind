@@ -45,6 +45,7 @@ namespace hivemind {
     PlayerID myID_;
   public:
     PlayerManager( Bot* bot );
+    const Player& self() const;
     void gameBegin() final;
     void gameEnd() final;
     void draw() final;

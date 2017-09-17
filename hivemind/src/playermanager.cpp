@@ -13,6 +13,11 @@ namespace hivemind {
     //
   }
 
+  const Player & PlayerManager::self() const
+  {
+    return players_[myID_];
+  }
+
   void PlayerManager::gameBegin()
   {
     gameEnd();
