@@ -49,6 +49,9 @@
     <Filter Include="Source Files\Utilities">
       <UniqueIdentifier>{0d15df2e-a2ce-49f8-8ad8-701feeb4d1b0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Brain">
+      <UniqueIdentifier>{9a34a9bf-d7ae-45fb-855b-85f5d075af48}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\bot.h">
@@ -170,9 +173,6 @@
     <ClCompile Include="src\map_analysis.cpp">
       <Filter>Source Files\Map</Filter>
     </ClCompile>
-    <ClCompile Include="src\brain.cpp">
-      <Filter>Source Files\Systems</Filter>
-    </ClCompile>
     <ClCompile Include="src\console.cpp">
       <Filter>Source Files\Systems</Filter>
     </ClCompile>
@@ -205,6 +205,15 @@
     </ClCompile>
     <ClCompile Include="src\basemanager.cpp">
       <Filter>Source Files\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="src\brain.cpp">
+      <Filter>Source Files\Brain</Filter>
+    </ClCompile>
+    <ClCompile Include="src\brain_economy.cpp">
+      <Filter>Source Files\Brain</Filter>
+    </ClCompile>
+    <ClCompile Include="src\brain_scouting.cpp">
+      <Filter>Source Files\Brain</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

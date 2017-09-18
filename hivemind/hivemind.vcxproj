@@ -136,6 +136,8 @@
     <ClCompile Include="src\blob_algo.cpp" />
     <ClCompile Include="src\bot.cpp" />
     <ClCompile Include="src\brain.cpp" />
+    <ClCompile Include="src\brain_economy.cpp" />
+    <ClCompile Include="src\brain_scouting.cpp" />
     <ClCompile Include="src\console.cpp" />
     <ClCompile Include="src\distancemap.cpp" />
     <ClCompile Include="src\exception.cpp" />

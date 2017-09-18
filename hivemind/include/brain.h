@@ -30,11 +30,24 @@ namespace hivemind {
       virtual void terminate() final;
     };
 
+    class Brain_UpdateHarvesters: public AI::CompositeGoal {
+    public:
+      virtual const string& getName() const final { static string name = "Brain_UpdateHarvesters"; return name; }
+    public:
+      Brain_UpdateHarvesters( AI::Agent* agent );
+      virtual void activate() final;
+      virtual Status process() final;
+      virtual void terminate() final;
+    };
+
     class Brain_ManageEconomy: public AI::GoalCollection {
+    protected:
+      Brain_UpdateHarvesters* harvestersGoal_;
     public:
       virtual const string& getName() const final { static string name = "Brain_ManageEconomy"; return name; }
     public:
       Brain_ManageEconomy( AI::Agent* agent );
+      virtual ~Brain_ManageEconomy();
       virtual void activate() final;
       virtual void terminate() final;
       virtual void evaluate() final;
