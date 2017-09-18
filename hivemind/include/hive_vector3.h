@@ -186,6 +186,10 @@ namespace hivemind {
       return ret;
     }
     //! Operations
+    inline Vector2 to2() const
+    {
+      return Vector2( x, y );
+    }
     inline Real length() const
     {
       return Math::sqrt( x * x + y * y + z * z );
