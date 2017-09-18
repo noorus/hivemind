@@ -917,10 +917,6 @@ namespace hivemind {
 
     void Map_FindResourceClusters( const sc2::ObservationInterface& observation, vector<UnitVector>& clusters_out, size_t minClusterSize, Real maxResourceDistance )
     {
-      /*tileLocations_ = std::vector<std::vector<BaseLocation *>>( bot_->map().width(), std::vector<BaseLocation *>( bot_->map().height(), nullptr ) );
-      for ( int i = 0; i < c_maxPlayers; i++ )
-        playerStartingLocations_[i] = nullptr;*/
-
       for ( auto& mineral : observation.GetUnits( Unit::Alliance::Neutral ) )
       {
         if ( !utils::isMineral( mineral ) )
@@ -961,30 +957,6 @@ namespace hivemind {
           }
         }
       }
-
-      /*int baseID = 0;
-      for ( auto& cluster : resourceClusters )
-        if ( cluster.size() > c_minBaseClusterSize )
-          locationData_.emplace_back( bot_, baseID++, cluster );
-
-      for ( auto& loc : locationData_ )
-      {
-        locationPtrs_.push_back( &loc );
-        if ( loc.isStartLocation() )
-          startingLocations_.push_back( &loc );
-      }*/
-
-      /*for ( size_t x = 0; x < bot_->map().width(); x++ )
-        for ( size_t y = 0; y < bot_->map().height(); y++ )
-          for ( auto& loc : locationData_ )
-          {
-            Point2D pos( (Real)x + 0.5f, (Real)y + 0.5f );
-            if ( loc.containsPosition( pos ) )
-            {
-              tileLocations_[x][y] = &loc;
-              break;
-            }
-          }*/
     }
 
   }

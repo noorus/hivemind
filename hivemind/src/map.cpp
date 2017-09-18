@@ -108,7 +108,7 @@ namespace hivemind {
 
   void dumpPolygons( size_t width, size_t height, PolygonComponentVector& polys, std::map<Analysis::nodeID, Analysis::chokeSides_t>& chokes )
   {
-    svg::Dimensions dim( width * 16, height * 16 );
+    svg::Dimensions dim( (double)width * 16.0, (double)height * 16.0 );
     svg::Document doc( "debug_map_polygons_invert.svg", svg::Layout( dim, svg::Layout::TopLeft ) );
     for ( auto& poly : polys )
     {
@@ -170,7 +170,7 @@ namespace hivemind {
 
     bot_->console().printf( "Map: Inverting walkable polygons to obstacles..." );
 
-    Analysis::Map_InvertPolygons( polygons_, obstacles_, Rect2( info.playable_min, info.playable_max ), Vector2( info.width, info.height ) );
+    Analysis::Map_InvertPolygons( polygons_, obstacles_, Rect2( info.playable_min, info.playable_max ), Vector2( (Real)info.width, (Real)info.height ) );
 
     bot_->console().printf( "Map: Generating Voronoi diagram..." );
 
@@ -213,10 +213,7 @@ namespace hivemind {
 
     size_t index = 0;
     for ( auto& cluster : resourceClusters_ )
-    {
-      baseLocations_.emplace_back( bot_, index, cluster );
-      index++;
-    }
+      baseLocations_.emplace_back( bot_, index++, cluster );
 
     bot_->console().printf( "Map: Rebuild done" );
   }
@@ -260,13 +257,13 @@ namespace hivemind {
     }
     for ( auto& location : baseLocations_ )
     {
-      char msg[32];
-      sprintf_s( msg, 32, "Base location %d", location.baseID_ );
-      bot_->debug().DebugTextOut( msg, Point3D( location.position_.x, location.position_.y, maxZ_ ) );
+      char msg[64];
+      sprintf_s( msg, 64, "Base location %zd", location.baseID_ );
+      bot_->debug().DebugTextOut( msg, Point3D( location.position_.x, location.position_.y, maxZ_ ), sc2::Colors::White );
       bot_->debug().DebugBoxOut(
         Point3D( location.left_, location.top_, maxZ_ ),
-        Point3D( location.right_, location.bottom_, maxZ_ + 1.0f ) );
-      bot_->debug().DebugSphereOut( Point3D( location.position_.x, location.position_.y, maxZ_ ), 10.0f );
+        Point3D( location.right_, location.bottom_, maxZ_ + 1.0f ), sc2::Colors::White );
+      bot_->debug().DebugSphereOut( Point3D( location.position_.x, location.position_.y, maxZ_ ), 10.0f, sc2::Colors::White );
     }
   }
 
