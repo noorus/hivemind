@@ -1,14 +1,18 @@
 #include "stdafx.h"
 #include "base.h"
 #include "utilities.h"
+#include "bot.h"
 
 namespace hivemind {
 
-  Base::Base( BaseLocation* location, const TagSet& workers, const UnitMap& buildings ):
-  location_( location ), workers_( workers ), buildings_( buildings )
+  const size_t c_minersPerPatch = 2;
+  const size_t c_collectorsPerGeyser = 3;
+
+  Base::Base( size_t index, BaseLocation* location, const Unit& depot ):
+  index_( index ), location_( location )
   {
     assert( location );
-    printf( "BASE::BASE: loc %d, workers %d, buildings %d\r\n", location_->baseID_, workers_.size(), buildings_.size() );
+    addDepot( depot );
   }
 
   size_t Base::WantedWorkers::total() const
@@ -27,7 +31,11 @@ namespace hivemind {
   }
 
   void Base::refresh()
-  {}
+  {
+    wantWorkers_.miners_ = ( location_->minerals_.size() * c_minersPerPatch );
+    wantWorkers_.collectors_ = ( location_->geysers_.size() * c_collectorsPerGeyser );
+    wantWorkers_.overhead_ = 0;
+  }
 
   BaseLocation* Base::location() const
   {
@@ -83,6 +91,11 @@ namespace hivemind {
     return queens_;
   }
 
+  const UnitMap & Base::buildings() const
+  {
+    return buildings_;
+  }
+
   bool Base::hasWorker( Tag worker ) const
   {
     return ( workers_.find( worker ) != workers_.end() );
@@ -117,6 +130,29 @@ namespace hivemind {
   {
     for ( auto queen : queens )
       addQueen( queen );
+  }
+
+  void Base::addLarva( Tag larva )
+  {
+    larvae_.insert( larva );
+  }
+
+  void Base::onDestroyed( Tag unit )
+  {
+    workers_.erase( unit );
+    larvae_.erase( unit );
+    queens_.erase( unit );
+    buildings_.erase( unit );
+  }
+
+  void Base::addDepot( const Unit & depot )
+  {
+    depots_.insert( depot.tag );
+  }
+
+  void Base::addBuilding( const Unit & building )
+  {
+    buildings_[building.tag] = building.unit_type;
   }
 
   Point2D Base::findBuildingPlacement( UnitTypeID structure, BuildingPlacement type )

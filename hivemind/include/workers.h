@@ -4,7 +4,7 @@
 
 namespace hivemind {
 
-  class WorkerManager: public Subsystem, public Listener {
+  class WorkerManager: public Subsystem, private Listener {
   private:
     TagSet ignored_; //! Workers that have been released for other use and not managed by us
     TagSet workers_;
@@ -15,9 +15,10 @@ namespace hivemind {
     void _onIdle( Tag worker );
     void _onActivate( Tag worker );
     void _refreshWorkers();
+  private:
+    void onMessage( const Message& msg ) final;
   public:
     WorkerManager( Bot* bot );
-    void onMessage( const Message& msg ) final;
     virtual void gameBegin() override;
     virtual void gameEnd() override;
     const TagSet& all() const;

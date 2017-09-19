@@ -8,16 +8,10 @@ namespace hivemind {
   const int c_nearBaseLocationTileDistance = 20;
 
   BaseLocation::BaseLocation( Bot* bot, size_t baseID, const UnitVector& resources ):
-    bot_( bot ), baseID_( baseID ), startLocation_( false ),
-    left_( std::numeric_limits<Real>::max() ), right_( std::numeric_limits<Real>::lowest() ),
-    top_( std::numeric_limits<Real>::lowest() ), bottom_( std::numeric_limits<Real>::max() )
+  bot_( bot ), baseID_( baseID ), startLocation_( false ),
+  left_( std::numeric_limits<Real>::max() ), right_( std::numeric_limits<Real>::lowest() ),
+  top_( std::numeric_limits<Real>::lowest() ), bottom_( std::numeric_limits<Real>::max() )
   {
-    for ( auto i = 0; i < c_maxPlayers; i++ )
-    {
-      playerOccupying_[i] = false;
-      playerStartLocation_[i] = false;
-    }
-
     Point2D resourceCenter( 0.0f, 0.0f );
 
     for ( auto& resource : resources )
@@ -44,6 +38,7 @@ namespace hivemind {
       {
         startLocation_ = true;
         depotPosition_ = pos;
+        break;
       }
 
     for ( auto& unit : bot_->observation().GetUnits() )
@@ -51,8 +46,7 @@ namespace hivemind {
       {
         startLocation_ = true;
         depotPosition_ = unit.pos;
-        playerStartLocation_[unit.owner] = true;
-        playerOccupying_[unit.owner] = true;
+        break;
       }
   }
 
@@ -66,21 +60,12 @@ namespace hivemind {
     return startLocation_;
   }
 
-  bool BaseLocation::isPlayerStartLocation( int player ) const
-  {
-    return playerStartLocation_.at( player );
-  }
-
   bool BaseLocation::containsPosition( const Vector2 & pos ) const
   {
     if ( !bot_->map().isValid( pos ) || ( pos.x == 0 && pos.y == 0 ) )
       return false;
-    return ( getGroundDistance( pos ) < c_nearBaseLocationTileDistance );
-  }
 
-  bool BaseLocation::isOccupiedByPlayer( int player ) const
-  {
-    return playerOccupying_.at( player );
+    return ( getGroundDistance( pos ) < c_nearBaseLocationTileDistance );
   }
 
   bool BaseLocation::isInResourceBox( int x, int y ) const
@@ -88,14 +73,14 @@ namespace hivemind {
     return ( x >= left_ && x < right_ && y < top_ && y >= bottom_ );
   }
 
-  void BaseLocation::setPlayerOccupying( int player, bool occupying )
-  {
-    playerOccupying_[player] = occupying;
-  }
-
   const vector<Vector2>& BaseLocation::getClosestTiles() const
   {
     return distanceMap_.sortedTiles();
+  }
+
+  const Vector2 & BaseLocation::getDepotPosition() const
+  {
+    return depotPosition_;
   }
 
 }

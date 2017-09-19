@@ -54,16 +54,17 @@ namespace hivemind {
     auto delta = ( time_ - lastStepTime_ );
     lastStepTime_ = time_;
 
-    brain_.update( time_, delta );
+    baseManager_.update( time_, delta );
     messaging_.update( time_ );
     workers_.update( time_ );
+    brain_.update( time_, delta );
 
     players_.draw();
     brain_.draw();
     workers_.draw();
 
     map_.draw();
-    // baseManager_.update( time_, delta );
+    baseManager_.draw();
 
     for ( const sc2::Unit& unit : observation_->GetUnits() )
       if ( unit.is_selected && utils::isMine( unit ) )

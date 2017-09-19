@@ -34,8 +34,11 @@ namespace hivemind {
 
   using MessageVector = vector<Message>;
 
+  class Messaging;
+
   class Listener {
-  public:
+    friend class Messaging;
+  private:
     virtual void onMessage( const Message& msg ) = 0;
   };
 

@@ -22,23 +22,19 @@ namespace hivemind {
     Real bottom_;
     bool startLocation_;
     Vector2 depotPosition_;
-    std::map<int, bool> playerOccupying_;
-    std::map<int, bool> playerStartLocation_;
   public:
     BaseLocation( Bot* bot, size_t baseID, const UnitVector& resources );
     int getGroundDistance( const Vector2& pos ) const;
     bool isStartLocation() const;
-    bool isPlayerStartLocation( int player ) const;
     bool containsPosition( const Vector2& pos ) const;
     const Vector2& getPosition() const { return position_; }
     const bool hasMinerals() const { return !minerals_.empty(); }
     const bool hasGeysers() const { return !geysers_.empty(); }
     const UnitVector& getGeysers() const { return minerals_; }
     const UnitVector& getMinerals() const { return geysers_; }
-    bool isOccupiedByPlayer( int player ) const;
     bool isInResourceBox( int x, int y ) const;
-    void setPlayerOccupying( int player, bool occupying );
     const vector<Vector2>& getClosestTiles() const;
+    const Vector2& getDepotPosition() const;
   };
 
   using BaseLocationVector = vector<BaseLocation>;
