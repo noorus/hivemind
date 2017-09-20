@@ -111,6 +111,9 @@ namespace hivemind {
 
     fileOut_->write( fullbuf );
     ::printf( fullbuf );
+  #ifdef _DEBUG
+    OutputDebugStringA( fullbuf );
+  #endif
   }
 
   void Console::gameEnd()
