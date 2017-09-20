@@ -38,15 +38,16 @@ namespace hivemind {
 
   void Messaging::update( GameTime time )
   {
-    for ( auto& msg : messages_ )
+    MessageVector messagesBuffer;
+    messagesBuffer.swap( messages_ );
+
+    for ( auto& msg : messagesBuffer )
     {
       if ( msg.code > M_Min_Global && msg.code < M_Max_Global ) {
         for ( auto& listener : globalListeners_ )
           listener.callback_->onMessage( msg );
       }
     }
-
-    messages_.clear();
   }
 
   void Messaging::gameEnd()
