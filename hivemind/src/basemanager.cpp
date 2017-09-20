@@ -25,7 +25,7 @@ namespace hivemind {
 
     bot_->console().printf( "Adding base (%s) at location %llu", sc2::UnitTypeToName( depot.unit_type ), location->baseID_ );
 
-    bases_.emplace_back( bases_.size(), location, depot );
+    bases_.emplace_back( this, bases_.size(), location, depot );
 
     return true;
   }
@@ -50,6 +50,8 @@ namespace hivemind {
 
   void BaseManager::update( const GameTime time, const GameTime delta )
   {
+    for ( auto& base : bases_ )
+      base.update( *bot_ );
   }
 
   void BaseManager::draw()
@@ -57,7 +59,8 @@ namespace hivemind {
     for ( auto& base : bases_ )
     {
       char asd[128];
-      sprintf_s( asd, 128, "Base %llu\nWorkers %llu\nQueens %llu\nBuildings %llu", base.id(), base.workers().size(), base.queens().size(), base.buildings().size() );
+      sprintf_s( asd, 128, "Base %llu\nWorkers %llu\nQueens %llu\nLarvae %llu\nBuildings %llu",
+        base.id(), base.workers().size(), base.queens().size(), base.larvae().size(),  base.buildings().size() );
       bot_->debug().DebugTextOut( asd, Point3D( base.location()->position_.x, base.location()->position_.y, bot_->map().maxZ_ + 0.1f ), sc2::Colors::Purple );
     }
   }
@@ -78,29 +81,36 @@ namespace hivemind {
       }
       else
       {
+        // Workers are added through separate AddWorker message from WorkerManager
         auto base = findClosest( msg.unit()->pos );
         if ( msg.unit()->unit_type.ToType() == sc2::UNIT_TYPEID::ZERG_LARVA && base )
         {
-          bot_->console().printf( "Base %llu adding larva %llu", base->id(), msg.unit()->tag );
+          bot_->console().printf( "Base %llu: adding larva %llu", base->id(), msg.unit()->tag );
           base->addLarva( msg.unit()->tag );
-        }
-        else if ( msg.unit()->unit_type.ToType() == sc2::UNIT_TYPEID::ZERG_DRONE && base )
-        {
-          // bot_->console().printf( "Base %llu adding drone %llu", base->id(), msg.unit()->tag );
-          // base->addQueen( msg.unit()->tag );
         }
         else if ( msg.unit()->unit_type.ToType() == sc2::UNIT_TYPEID::ZERG_QUEEN && base )
         {
-          bot_->console().printf( "Base %llu adding queen %llu", base->id(), msg.unit()->tag );
+          bot_->console().printf( "Base %llu: adding queen %llu", base->id(), msg.unit()->tag );
           base->addQueen( msg.unit()->tag );
         }
       }
     }
+    else if ( msg.code == M_Global_AddWorker )
+    {
+      auto unit = bot_->observation().GetUnit( msg.tag() );
+      if ( unit )
+        addWorker( *unit );
+    }
+    else if ( msg.code == M_Global_RemoveWorker )
+    {
+      removeWorker( msg.tag() );
+    }
     else if ( msg.code == M_Global_UnitDestroyed && utils::isMine( *msg.unit() ) )
     {
       assignedUnits_.erase( msg.unit()->tag );
-      for ( auto& base : bases_ )
-        base.onDestroyed( *msg.unit() );
+      if ( !utils::isWorker( *msg.unit() ) )
+        for ( auto& base : bases_ )
+          base.remove( *msg.unit() );
     }
   }
 
@@ -152,6 +162,23 @@ namespace hivemind {
       if ( base )
         base->addBuilding( building );
     }
+  }
+
+  void BaseManager::addWorker( const Unit& unit )
+  {
+    // TODO Find base by need vs. distance
+    auto base = findClosest( unit.pos );
+    if ( base )
+    {
+      bot_->console().printf( "Base %llu: adding worker %llu", base->id(), unit.tag );
+      base->addWorker( unit );
+    }
+  }
+
+  void BaseManager::removeWorker( const Tag unit )
+  {
+    for ( auto& base : bases_ )
+      base.remove( unit );
   }
 
   BaseVector& BaseManager::bases()

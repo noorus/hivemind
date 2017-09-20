@@ -9,6 +9,7 @@
 namespace hivemind {
 
   class BaseManager: public Subsystem, private Listener {
+    friend class Base;
   private:
     BaseVector bases_;
     TagSet depots_;
@@ -23,6 +24,8 @@ namespace hivemind {
     void draw() final;
     Base* findClosest( const Vector3& pos );
     void addBuilding( const Unit& unit );
+    void addWorker( const Unit& unit );
+    void removeWorker( const Tag unit );
     BaseVector& bases();
   };
 

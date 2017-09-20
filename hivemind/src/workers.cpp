@@ -99,6 +99,9 @@ namespace hivemind {
       return false;
 
     workers_.insert( worker );
+
+    bot_->messaging().sendGlobal( M_Global_AddWorker, worker );
+
     return true;
   }
 
@@ -145,6 +148,8 @@ namespace hivemind {
     workers_.erase( worker );
     ignored_.erase( worker );
     idle_.erase( worker );
+
+    bot_->messaging().sendGlobal( M_Global_RemoveWorker, worker );
   }
 
   Tag WorkerManager::release()
@@ -156,6 +161,9 @@ namespace hivemind {
     std::advance( it, utils::randomBetween( 0, (int)workers_.size() - 1 ) );
 
     auto tag = ( *it );
+
+    bot_->messaging().sendGlobal( M_Global_RemoveWorker, tag );
+
     workers_.erase( it );
     idle_.erase( tag );
     ignored_.insert( tag );

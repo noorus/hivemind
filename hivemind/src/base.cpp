@@ -8,8 +8,8 @@ namespace hivemind {
   const size_t c_minersPerPatch = 2;
   const size_t c_collectorsPerGeyser = 3;
 
-  Base::Base( size_t index, BaseLocation* location, const Unit& depot ):
-  index_( index ), location_( location )
+  Base::Base( BaseManager* owner, size_t index, BaseLocation* location, const Unit& depot ):
+  manager_( owner ), index_( index ), location_( location )
   {
     assert( location );
     addDepot( depot );
@@ -96,6 +96,16 @@ namespace hivemind {
     return buildings_;
   }
 
+  const TagSet & Base::larvae() const
+  {
+    return larvae_;
+  }
+
+  const TagSet& Base::depots() const
+  {
+    return depots_;
+  }
+
   bool Base::hasWorker( Tag worker ) const
   {
     return ( workers_.find( worker ) != workers_.end() );
@@ -137,8 +147,9 @@ namespace hivemind {
     larvae_.insert( larva );
   }
 
-  void Base::onDestroyed( Tag unit )
+  void Base::remove( Tag unit )
   {
+    // Note: This gets called a lot for units that we don't own in the first place
     workers_.erase( unit );
     larvae_.erase( unit );
     queens_.erase( unit );
@@ -153,6 +164,23 @@ namespace hivemind {
   void Base::addBuilding( const Unit & building )
   {
     buildings_[building.tag] = building.unit_type;
+  }
+
+  void Base::update( Bot & bot )
+  {
+    // For whatever reason, larvae/eggs don't get "destroyed" events when they morph to other units.
+    // So we have to check whether they still exist and clean up ourselves.
+    for ( TagSet::iterator it = larvae_.begin(); it != larvae_.end(); )
+    {
+      auto unit = bot.observation().GetUnit( (*it) );
+      if ( !unit )
+      {
+        manager_->bot_->console().printf( "Base %llu: Removing larva %llu", index_, ( *it ) );
+        it = larvae_.erase( it );
+      }
+      else
+        it++;
+    }
   }
 
   Point2D Base::findBuildingPlacement( UnitTypeID structure, BuildingPlacement type )

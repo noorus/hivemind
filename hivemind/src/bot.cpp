@@ -59,6 +59,8 @@ namespace hivemind {
     workers_.update( time_ );
     brain_.update( time_, delta );
 
+    action_->SendActions();
+
     players_.draw();
     brain_.draw();
     workers_.draw();
@@ -69,7 +71,7 @@ namespace hivemind {
     for ( const sc2::Unit& unit : observation_->GetUnits() )
       if ( unit.is_selected && utils::isMine( unit ) )
       {
-        string txt = sc2::UnitTypeToName( unit.unit_type );
+        string txt = std::to_string( unit.tag ) + " " + sc2::UnitTypeToName( unit.unit_type );
         txt.append( " (" + std::to_string( unit.unit_type ) + ")\n" );
         for ( auto& order : unit.orders )
           txt.append( GetAbilityText( order.ability_id ) + "\n" );
@@ -89,14 +91,16 @@ namespace hivemind {
     console_.gameEnd();
   }
 
-  void Bot::OnUnitDestroyed( const Unit& unit )
-  {
-    messaging_.sendGlobal( M_Global_UnitDestroyed, &unit );
-  }
-
   void Bot::OnUnitCreated( const Unit& unit )
   {
+    console_.printf( "Bot::UnitCreated %s", sc2::UnitTypeToName( unit.unit_type ) );
     messaging_.sendGlobal( M_Global_UnitCreated, &unit );
+  }
+
+  void Bot::OnUnitDestroyed( const Unit& unit )
+  {
+    console_.printf( "Bot::UnitDestroyed %s", sc2::UnitTypeToName( unit.unit_type ) );
+    messaging_.sendGlobal( M_Global_UnitDestroyed, &unit );
   }
 
   void Bot::OnUnitIdle( const Unit& unit )

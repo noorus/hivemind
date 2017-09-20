@@ -10,14 +10,16 @@ namespace hivemind {
 
   enum MessageCode {
     M_Min_Global,
-    M_Global_UnitCreated,
-    M_Global_UnitDestroyed,
-    M_Global_UnitIdle,
-    M_Global_UpgradeCompleted,
-    M_Global_ConstructionCompleted,
-    M_Global_NydusDetected,
-    M_Global_NuclearLaunchDetected,
-    M_Global_UnitEnterVision,
+    M_Global_UnitCreated, //!< args: Unit
+    M_Global_UnitDestroyed, //!< args: Unit
+    M_Global_UnitIdle, //!< args: Unit
+    M_Global_UpgradeCompleted, //!< args: UpgradeID
+    M_Global_ConstructionCompleted, //!< args: Unit
+    M_Global_NydusDetected, //!< args: None
+    M_Global_NuclearLaunchDetected, //!< args: None
+    M_Global_UnitEnterVision, //!< args: Unit
+    M_Global_AddWorker, //!< args: Tag
+    M_Global_RemoveWorker, //!< args: Tag
     M_Max_Global
   };
 
@@ -30,6 +32,7 @@ namespace hivemind {
     vector<void*> arguments;
     inline const Unit* unit( int index = 0 ) const { return (Unit*)( arguments[index] ); }
     inline const UpgradeID upgrade( int index = 0 ) const { return (uint32_t)( arguments[index] ); }
+    inline const Tag tag( int index = 0 ) const { return (Tag)( arguments[index] ); }
   };
 
   using MessageVector = vector<Message>;

@@ -13,6 +13,8 @@ namespace hivemind {
     BuildPlacement_Hidden //!< As stealthy as possible
   };
 
+  class BaseManager;
+
   class Base {
   public:
     struct WantedWorkers {
@@ -28,6 +30,7 @@ namespace hivemind {
       size_t total() const; //!< Total ideal amount of queens
     };
   private:
+    BaseManager* manager_;
     size_t index_;
     BaseLocation* location_; //!< Base location
     TagSet workers_; //!< Workers in this base
@@ -46,6 +49,7 @@ namespace hivemind {
     Real importance_; //!< Importance of this base, 0..1
   public:
     void refresh();
+    inline BaseManager* manager() { return manager_; }
     inline const size_t id() const { return index_; }
     BaseLocation* location() const; //!< Base location
     Real saturation() const; //!< Worker saturation between 0..1
@@ -56,6 +60,8 @@ namespace hivemind {
     const TagSet& workers() const; //!< Return our set of workers
     const TagSet& queens() const; //!< Return our set of queens
     const UnitMap& buildings() const; //!< Return our buildings
+    const TagSet& larvae() const; //!< Return our larvae
+    const TagSet& depots() const; //!< Return our main buildings
     bool hasWorker( Tag worker ) const; //!< Is a given worker mine?
     bool hasQueen( Tag queen ) const; //!< Is a given queen mine?
     void addWorker( Tag worker, bool refresh = true ); //!< Assign a worker to this base
@@ -63,11 +69,12 @@ namespace hivemind {
     void addQueen( Tag queen, bool refresh = true ); //!< Assign a queen to this base
     void addQueens( const TagSet& queens ); //!< Assign queens to this base
     void addLarva( Tag larva );
-    void onDestroyed( Tag unit );
+    void remove( Tag unit );
     void addDepot( const Unit& depot );
     void addBuilding( const Unit& building );
+    void update( Bot& bot );
     Point2D findBuildingPlacement( UnitTypeID structure, BuildingPlacement type );
-    Base( size_t index, BaseLocation* location, const Unit& depot );
+    Base( BaseManager* owner, size_t index, BaseLocation* location, const Unit& depot );
   };
 
   using BaseVector = vector<Base>;

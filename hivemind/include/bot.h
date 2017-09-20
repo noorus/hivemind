@@ -43,8 +43,8 @@ namespace hivemind {
     virtual void OnGameStart() final;
     virtual void OnStep() final;
     virtual void OnGameEnd() final;
-    virtual void OnUnitDestroyed( const Unit& unit ) final;
     virtual void OnUnitCreated( const Unit& unit ) final;
+    virtual void OnUnitDestroyed( const Unit& unit ) final;
     virtual void OnUnitIdle( const Unit& unit ) final;
     virtual void OnUpgradeCompleted( UpgradeID upgrade ) final;
     virtual void OnBuildingConstructionComplete( const Unit& unit ) final;
