@@ -50,6 +50,21 @@ namespace hivemind {
       return decoded;
     }
 
+    inline const Vector2 calculateCenter( const UnitVector& units )
+    {
+      Vector2 total( 0.0f, 0.0f );
+      if ( units.empty() )
+        return total;
+
+      for ( auto & unit : units )
+      {
+        total.x += unit.pos.x;
+        total.y += unit.pos.y;
+      }
+
+      return ( total / (Real)units.size() );
+    }
+
     inline const bool isMine( const Unit& unit )
     {
       return ( unit.alliance == Unit::Alliance::Self );
