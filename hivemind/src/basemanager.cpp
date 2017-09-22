@@ -57,12 +57,7 @@ namespace hivemind {
   void BaseManager::draw()
   {
     for ( auto& base : bases_ )
-    {
-      char asd[128];
-      sprintf_s( asd, 128, "Base %llu\nWorkers %llu\nQueens %llu\nLarvae %llu\nBuildings %llu",
-        base.id(), base.workers().size(), base.queens().size(), base.larvae().size(),  base.buildings().size() );
-      bot_->debug().DebugTextOut( asd, Point3D( base.location()->position_.x, base.location()->position_.y, bot_->map().maxZ_ + 0.1f ), sc2::Colors::Purple );
-    }
+      base.draw( bot_ );
   }
 
   void BaseManager::onMessage( const Message & msg )

@@ -37,6 +37,34 @@ namespace hivemind {
     wantWorkers_.overhead_ = 0;
   }
 
+  void Base::draw( Bot* bot )
+  {
+    uint8_t rgb[3];
+    utils::hsl2rgb( index_ + 42 * 120, 0xff, 220, rgb );
+    sc2::Color color;
+    color.r = rgb[0];
+    color.g = rgb[1];
+    color.b = rgb[2];
+
+    char asd[128];
+    sprintf_s( asd, 128, "Base %llu\nWorkers %llu\nQueens %llu\nLarvae %llu\nBuildings %llu",
+      index_, workers_.size(), queens_.size(), larvae_.size(), buildings_.size() );
+    bot->debug().DebugTextOut( asd, Point3D( location_->position_.x, location_ ->position_.y, bot->map().maxZ_ + 0.1f ), color );
+
+    for ( auto& it : depots_ )
+    {
+      auto building = bot->observation().GetUnit( it );
+      if ( building )
+        bot->debug().DebugSphereOut( building->pos, building->radius, color );
+    }
+    for ( auto& it : buildings_ )
+    {
+      auto building = bot->observation().GetUnit( it.first );
+      if ( building )
+        bot->debug().DebugSphereOut( building->pos, building->radius, color );
+    }
+  }
+
   BaseLocation* Base::location() const
   {
     return location_;

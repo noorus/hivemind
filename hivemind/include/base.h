@@ -49,6 +49,7 @@ namespace hivemind {
     Real importance_; //!< Importance of this base, 0..1
   public:
     void refresh();
+    void draw( Bot* bot );
     inline BaseManager* manager() { return manager_; }
     inline const size_t id() const { return index_; }
     BaseLocation* location() const; //!< Base location
