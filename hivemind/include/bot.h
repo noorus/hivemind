@@ -7,6 +7,8 @@
 #include "map.h"
 #include "workers.h"
 #include "basemanager.h"
+#include "intelligence.h"
+#include "utilities.h"
 
 namespace hivemind {
 
@@ -25,8 +27,10 @@ namespace hivemind {
     Map map_;
     WorkerManager workers_;
     BaseManager baseManager_;
+    Intelligence intelligence_;
   public:
     inline const GameTime time() const { return time_; }
+    inline const RealTime timeSeconds() const { return utils::ticksToTime( time_ ); }
     inline const sc2::ObservationInterface& observation() { return *observation_; }
     inline sc2::QueryInterface& query() { return *query_; }
     inline sc2::ActionInterface& action() { return *action_; }
@@ -38,6 +42,7 @@ namespace hivemind {
     inline Map& map() { return map_; }
     inline WorkerManager& workers() { return workers_; }
     inline BaseManager& bases() { return baseManager_; }
+    inline Intelligence& intelligence() { return intelligence_; }
   public:
     //! Callbacks
     virtual void OnGameStart() final;

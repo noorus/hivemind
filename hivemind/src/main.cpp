@@ -6,7 +6,7 @@
 using sc2::Coordinator;
 
 const unsigned int c_updateSleepTime = 10; // 10 milliseconds
-const char* c_mapName = "Interloper LE";
+const char* c_mapName = "Fractured Glacier"; // "Interloper LE";
 
 int main( int argc, char* argv[] )
 {
@@ -27,6 +27,7 @@ int main( int argc, char* argv[] )
 
     coordinator.SetParticipants( {
       CreateParticipant( sc2::Zerg, &hivemindBot ),
+      CreateComputer( sc2::Terran, sc2::Difficulty::Medium ),
       CreateComputer( sc2::Terran, sc2::Difficulty::Medium )
     } );
 

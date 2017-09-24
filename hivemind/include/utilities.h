@@ -70,6 +70,16 @@ namespace hivemind {
       return ( unit.alliance == Unit::Alliance::Self );
     }
 
+    inline const bool isEnemy( const Unit& unit )
+    {
+      return ( unit.alliance == Unit::Alliance::Enemy );
+    }
+
+    inline const bool isNeutral( const Unit& unit )
+    {
+      return ( unit.alliance == Unit::Alliance::Neutral );
+    }
+
     struct isFlying {
       inline bool operator()( const Unit& unit ) {
         return unit.is_flying;

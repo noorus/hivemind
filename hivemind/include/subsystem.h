@@ -5,7 +5,7 @@ namespace hivemind {
   class Bot;
 
   class Subsystem {
-  protected:
+  public:
     Bot* bot_;
   public:
     Subsystem( Bot* bot ): bot_( bot ) {}

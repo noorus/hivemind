@@ -38,6 +38,7 @@ namespace hivemind {
   };
 
   using PlayerVector = vector<Player>;
+  using PlayerIDSet = set<PlayerID>;
 
   class PlayerManager: public Subsystem {
   private:
@@ -46,6 +47,7 @@ namespace hivemind {
   public:
     PlayerManager( Bot* bot );
     const Player& self() const;
+    inline const PlayerVector& all() const { return players_; }
     void gameBegin() final;
     void gameEnd() final;
     void draw() final;

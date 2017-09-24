@@ -5,7 +5,8 @@
 namespace hivemind {
 
   Bot::Bot(): time_( 0 ),
-  console_( this ), players_( this ), brain_( this ), messaging_( this ), map_( this ), workers_( this ), baseManager_( this )
+  console_( this ), players_( this ), brain_( this ), messaging_( this ),
+  map_( this ), workers_( this ), baseManager_( this ), intelligence_( this )
   {
   }
 
@@ -21,6 +22,7 @@ namespace hivemind {
     observation_ = Observation();
 
     console_.gameBegin();
+
     messaging_.gameBegin();
 
     map_.rebuild();
@@ -31,6 +33,8 @@ namespace hivemind {
     brain_.gameBegin();
 
     baseManager_.gameBegin();
+
+    intelligence_.gameBegin();
   }
 
   static std::string GetAbilityText( sc2::AbilityID ability_id )
@@ -87,6 +91,7 @@ namespace hivemind {
     players_.gameEnd();
     workers_.gameEnd();
     baseManager_.gameEnd();
+    intelligence_.gameEnd();
     messaging_.gameEnd();
     console_.gameEnd();
   }
@@ -110,12 +115,14 @@ namespace hivemind {
 
   void Bot::OnUpgradeCompleted( UpgradeID upgrade )
   {
+    console_.printf( "Bot::UpgradeCompleted %s", sc2::UpgradeIDToName( upgrade ) );
     messaging_.sendGlobal( M_Global_UpgradeCompleted, (uint32_t)upgrade );
   }
 
   void Bot::OnBuildingConstructionComplete( const Unit& unit )
   {
-    messaging_.sendGlobal( M_Global_UpgradeCompleted, &unit );
+    console_.printf( "Bot::ConstructionCompleted %s", sc2::UnitTypeToName( unit.unit_type ) );
+    messaging_.sendGlobal( M_Global_ConstructionCompleted, &unit );
   }
 
   void Bot::OnNydusDetected()

@@ -14,9 +14,21 @@ namespace hivemind {
 
   void Messaging::listen( size_t groups, Listener* callback )
   {
+    remove( callback );
+
     ListenEntry entry( groups, callback );
     if ( groups & Listen_Global )
       globalListeners_.push_back( entry );
+    if ( groups & Listen_Intel )
+      intelListeners_.push_back( entry );
+  }
+
+  void Messaging::remove( Listener* callback )
+  {
+    for ( auto it = globalListeners_.begin(); it != globalListeners_.end(); )
+      if ( (*it).callback_ == callback ) { it = globalListeners_.erase( it ); } else { it++; }
+    for ( auto it = intelListeners_.begin(); it != intelListeners_.end(); )
+      if ( ( *it ).callback_ == callback ) { it = intelListeners_.erase( it ); } else { it++; }
   }
 
   void Messaging::sendGlobal( MessageCode code, int numargs, ... )
@@ -47,12 +59,17 @@ namespace hivemind {
         for ( auto& listener : globalListeners_ )
           listener.callback_->onMessage( msg );
       }
+      else if ( msg.code > M_Min_Intel && msg.code < M_Max_Intel ) {
+        for ( auto& listener : intelListeners_ )
+          listener.callback_->onMessage( msg );
+      }
     }
   }
 
   void Messaging::gameEnd()
   {
     globalListeners_.clear();
+    intelListeners_.clear();
   }
 
 }

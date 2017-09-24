@@ -128,6 +128,7 @@
     <ClInclude Include="include\workers.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="include\intelligence.h" />
     <ClCompile Include="src\ai_finitestatemachine.cpp" />
     <ClCompile Include="src\ai_goals.cpp" />
     <ClCompile Include="src\base.cpp" />
@@ -141,6 +142,7 @@
     <ClCompile Include="src\console.cpp" />
     <ClCompile Include="src\distancemap.cpp" />
     <ClCompile Include="src\exception.cpp" />
+    <ClCompile Include="src\intelligence.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\map.cpp" />
     <ClCompile Include="src\map_analysis.cpp" />
