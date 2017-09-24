@@ -6,7 +6,8 @@ namespace hivemind {
 
   Bot::Bot(): time_( 0 ),
   console_( this ), players_( this ), brain_( this ), messaging_( this ),
-  map_( this ), workers_( this ), baseManager_( this ), intelligence_( this )
+  map_( this ), workers_( this ), baseManager_( this ), intelligence_( this ),
+  strategy_( this )
   {
   }
 
@@ -35,6 +36,8 @@ namespace hivemind {
     baseManager_.gameBegin();
 
     intelligence_.gameBegin();
+
+    strategy_.gameBegin();
   }
 
   static std::string GetAbilityText( sc2::AbilityID ability_id )
@@ -62,11 +65,13 @@ namespace hivemind {
     messaging_.update( time_ );
     workers_.update( time_ );
     brain_.update( time_, delta );
+    strategy_.update( time_, delta );
 
     action_->SendActions();
 
     players_.draw();
     brain_.draw();
+    strategy_.draw();
     workers_.draw();
 
     map_.draw();
@@ -87,6 +92,7 @@ namespace hivemind {
 
   void Bot::OnGameEnd()
   {
+    strategy_.gameEnd();
     brain_.gameEnd();
     players_.gameEnd();
     workers_.gameEnd();

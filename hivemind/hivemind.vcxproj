@@ -96,6 +96,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="include\ai_agent.h" />
+    <ClInclude Include="include\ai_fuzzy.h" />
     <ClInclude Include="include\ai_goals.h" />
     <ClInclude Include="include\ai_statemachines.h" />
     <ClInclude Include="include\base.h" />
@@ -115,6 +116,7 @@
     <ClInclude Include="include\hive_types.h" />
     <ClInclude Include="include\hive_vector2.h" />
     <ClInclude Include="include\hive_vector3.h" />
+    <ClInclude Include="include\intelligence.h" />
     <ClInclude Include="include\map.h" />
     <ClInclude Include="include\map_analysis.h" />
     <ClInclude Include="include\messaging.h" />
@@ -122,14 +124,16 @@
     <ClInclude Include="include\regiongraph.h" />
     <ClInclude Include="include\sc2_forward.h" />
     <ClInclude Include="include\stdafx.h" />
+    <ClInclude Include="include\strategy.h" />
     <ClInclude Include="include\subsystem.h" />
     <ClInclude Include="include\targetver.h" />
     <ClInclude Include="include\utilities.h" />
     <ClInclude Include="include\workers.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="include\intelligence.h" />
     <ClCompile Include="src\ai_finitestatemachine.cpp" />
+    <ClCompile Include="src\ai_fuzzy.cpp" />
+    <ClCompile Include="src\ai_fuzzyoperators.cpp" />
     <ClCompile Include="src\ai_goals.cpp" />
     <ClCompile Include="src\base.cpp" />
     <ClCompile Include="src\baselocation.cpp" />
@@ -154,6 +158,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="src\strategy.cpp" />
     <ClCompile Include="src\workers.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

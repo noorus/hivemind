@@ -147,6 +147,15 @@
     <ClInclude Include="include\basemanager.h">
       <Filter>Header Files\Systems</Filter>
     </ClInclude>
+    <ClInclude Include="include\intelligence.h">
+      <Filter>Header Files\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ai_fuzzy.h">
+      <Filter>Header Files\AI Primitives</Filter>
+    </ClInclude>
+    <ClInclude Include="include\strategy.h">
+      <Filter>Header Files\Systems</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\stdafx.cpp">
@@ -215,10 +224,16 @@
     <ClCompile Include="src\brain_scouting.cpp">
       <Filter>Source Files\Brain</Filter>
     </ClCompile>
-    <ClCompile Include="include\intelligence.h">
-      <Filter>Header Files\Systems</Filter>
-    </ClCompile>
     <ClCompile Include="src\intelligence.cpp">
+      <Filter>Source Files\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ai_fuzzy.cpp">
+      <Filter>Source Files\AI Primitives</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ai_fuzzyoperators.cpp">
+      <Filter>Source Files\AI Primitives</Filter>
+    </ClCompile>
+    <ClCompile Include="src\strategy.cpp">
       <Filter>Source Files\Systems</Filter>
     </ClCompile>
   </ItemGroup>
