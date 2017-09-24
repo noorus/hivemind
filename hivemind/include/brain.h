@@ -3,6 +3,8 @@
 #include "subsystem.h"
 #include "ai_goals.h"
 #include "ai_agent.h"
+#include "messaging.h"
+#include "hive_vector2.h"
 
 namespace hivemind {
 
@@ -10,11 +12,29 @@ namespace hivemind {
 
   namespace Goals {
 
-    class Brain_WorkerScout: public AI::CompositeGoal {
+    class Brain_WorkerScout: public AI::CompositeGoal, public hivemind::Listener {
+    private:
+      Tag worker_;
+      set<int> unexploredStartLocations_;
+      set<int> exploredStartLocations_;
+      Path route_;
+      size_t routeIndex_;
+      void _foundPlayer( PlayerID player, const Unit* unit );
+      void _routeAdvance();
+      void _replanRoute();
+      void _sendWorker();
+    public:
+      enum State {
+
+      };
+      static size_t lostScouts_;
+      static GameTime lostScoutTime_;
     public:
       virtual const string& getName() const final { static string name = "Brain_WorkerScout"; return name; }
+      virtual void onMessage( const Message& msg ) final;
     public:
       Brain_WorkerScout( AI::Agent* agent );
+      virtual ~Brain_WorkerScout();
       virtual void activate() final;
       virtual Status process() final;
       virtual void terminate() final;
@@ -69,7 +89,7 @@ namespace hivemind {
 
   }
 
-  class Brain: public Subsystem, AI::Agent {
+  class Brain: public Subsystem, public AI::Agent {
   protected:
     Goals::Brain_Root goals_;
   public:

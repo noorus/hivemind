@@ -254,4 +254,6 @@ namespace hivemind {
     }
   };
 
+  using Path = vector<Vector2>;
+
 }

@@ -99,6 +99,7 @@ namespace hivemind {
       return false;
 
     workers_.insert( worker );
+    ignored_.erase( worker );
 
     bot_->messaging().sendGlobal( M_Global_AddWorker, worker );
 

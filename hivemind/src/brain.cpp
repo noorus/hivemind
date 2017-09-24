@@ -19,12 +19,10 @@ namespace hivemind {
     Brain_Root::Brain_Root( AI::Agent* agent ):
     AI::GoalCollection( agent )
     {
-      activate();
     }
 
     Brain_Root::~Brain_Root()
     {
-      terminate();
     }
 
     void Brain_Root::activate()
@@ -56,10 +54,12 @@ namespace hivemind {
 
   void Brain::gameBegin()
   {
+    goals_.activate();
   }
 
   void Brain::gameEnd()
   {
+    goals_.terminate();
   }
 
   void Brain::update( const GameTime time, const GameTime delta )

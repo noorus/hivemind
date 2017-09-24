@@ -20,6 +20,11 @@ namespace hivemind {
       return ::fabsf( value );
     }
 
+    inline Real clamp( Real value, Real low, Real high )
+    {
+      return ( value < low ? low : ( value > high ? high : value ) );
+    }
+
   }
 
 }

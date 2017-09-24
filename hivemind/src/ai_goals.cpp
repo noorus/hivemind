@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "ai_goals.h"
 #include "exception.h"
+#include "brain.h"
 
 namespace hivemind {
 
@@ -20,9 +21,9 @@ namespace hivemind {
         status_ = Status_Inactive;
     }
 
-    Goal::Goal( Agent* owner ): owner_( owner ), status_( Status_Inactive ), importance_( 0.0f )
+    Goal::Goal( Agent* owner ): owner_( owner ), status_( Status_Inactive ),
+    importance_( 0.0f ), bot_( ((hivemind::Brain*)owner)->bot_ )
     {
-      //
     }
 
     Goal::~Goal()
@@ -58,7 +59,6 @@ namespace hivemind {
 
     CompositeGoal::CompositeGoal( Agent* owner ): Goal( owner )
     {
-      //
     }
 
     CompositeGoal::~CompositeGoal()

@@ -3,6 +3,8 @@
 
 namespace hivemind {
 
+  class Bot;
+
   namespace AI {
 
     class Agent;
@@ -17,6 +19,7 @@ namespace hivemind {
       };
     protected:
       Agent* owner_;
+      hivemind::Bot* bot_; // hacked in here 'cause it's needed everywhere
       Status status_;
       Real importance_;
       void activateIfInactive();

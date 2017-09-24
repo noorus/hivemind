@@ -168,9 +168,11 @@ namespace hivemind {
 
     Analysis::Map_ComponentPolygons( components_, polygons_ );
 
-    bot_->console().printf( "Map: Inverting walkable polygons to obstacles..." );
+    //bot_->console().printf( "Map: Inverting walkable polygons to obstacles..." );
 
-    Analysis::Map_InvertPolygons( polygons_, obstacles_, Rect2( info.playable_min, info.playable_max ), Vector2( (Real)info.width, (Real)info.height ) );
+    //Analysis::Map_InvertPolygons( polygons_, obstacles_, Rect2( info.playable_min, info.playable_max ), Vector2( (Real)info.width, (Real)info.height ) );
+    
+    obstacles_ = polygons_;
 
     bot_->console().printf( "Map: Generating Voronoi diagram..." );
 
@@ -265,6 +267,59 @@ namespace hivemind {
         Point3D( location.right_, location.bottom_, maxZ_ + 1.0f ), sc2::Colors::White );
       bot_->debug().DebugSphereOut( Point3D( location.position_.x, location.position_.y, maxZ_ ), 10.0f, sc2::Colors::White );
     }
+  }
+
+  BaseLocation* Map::closestLocation( const Vector2 & position )
+  {
+    Real bestDist = 30000.0f;
+    BaseLocation* best = nullptr;
+    for ( auto& loc : baseLocations_ )
+    {
+      if ( loc.containsPosition( position ) )
+        return &loc;
+      auto dist = loc.getPosition().squaredDistance( position );
+      if ( dist < bestDist )
+      {
+        bestDist = dist;
+        best = &loc;
+      }
+    }
+    return best;
+  }
+
+  Vector2 Map::closestByGround( const Vector2 & from, const list<Vector2> & to )
+  {
+    if ( to.empty() )
+      return from;
+
+    Real bestDistance = 30000.0f;
+    Vector2 retval;
+    for ( auto& loc : to )
+    {
+      auto dist = bot_->query().PathingDistance( from, loc );
+      if ( dist < bestDistance )
+      {
+        bestDistance = dist;
+        retval = loc;
+      }
+    }
+    return retval;
+  }
+
+  Path Map::shortestScoutPath( const Vector2& start, vector<Vector2>& locations )
+  {
+    Path retval;
+    list<Vector2> loclist( locations.begin(), locations.end() );
+    std::function<void( const Vector2&, Path&, list<Vector2>& )> recurse = [&]( const Vector2& pos, Path& out, list<Vector2>& in )
+    {
+      Vector2 closest = closestByGround( pos, in );
+      out.push_back( closest );
+      in.remove( closest ); // somewhat dangerous float == float comparison for value removal
+      if ( !in.empty() )
+        recurse( closest, out, in );
+    };
+    recurse( start, retval, loclist );
+    return retval;
   }
 
   bool Map::isValid( size_t x, size_t y ) const

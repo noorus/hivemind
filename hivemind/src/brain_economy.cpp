@@ -21,8 +21,7 @@ namespace hivemind {
 
     AI::Goal::Status Brain_UpdateHarvesters::process()
     {
-      auto bot = (Bot*)owner_;
-      for ( auto& base : bot->bases().bases() )
+      for ( auto& base : bot_->bases().bases() )
       {
         // base.saturation()
       }

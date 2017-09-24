@@ -400,6 +400,10 @@ namespace hivemind {
 
         const BoostVoronoi::vertex_type* v0 = edge.vertex0();
         const BoostVoronoi::vertex_type* v1 = edge.vertex1();
+
+        if ( ::isnan( v0->x() ) || ::isnan( v0->y() ) || ::isnan( v1->x() ) || ::isnan( v1->y() ) )
+          continue;
+
         Vector2 p0( (Real)v0->x(), (Real)v0->y() );
         Vector2 p1( (Real)v1->x(), (Real)v1->y() );
 

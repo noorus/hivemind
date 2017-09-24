@@ -66,6 +66,9 @@ namespace hivemind {
     void draw();
     const size_t width() const { return width_; }
     const size_t height() const { return height_; }
+    BaseLocation* closestLocation( const Vector2& position );
+    Vector2 closestByGround( const Vector2& from, const list<Vector2>& to );
+    Path shortestScoutPath( const Vector2& start, vector<Vector2>& locations );
     bool isValid( size_t x, size_t y ) const;
     bool isValid( const Vector2& position ) const { return isValid( (size_t)position.x, (size_t)position.y ); }
     bool isPowered( const Vector2& position ) const;
