@@ -15,8 +15,8 @@ namespace hivemind {
     class Brain_WorkerScout: public AI::CompositeGoal, public hivemind::Listener {
     private:
       Tag worker_;
-      set<int> unexploredStartLocations_;
-      set<int> exploredStartLocations_;
+      set<size_t> unexploredStartLocations_;
+      set<size_t> exploredStartLocations_;
       Path route_;
       size_t routeIndex_;
       void _foundPlayer( PlayerID player, const Unit* unit );

@@ -40,7 +40,7 @@ namespace hivemind {
   void Base::draw( Bot* bot )
   {
     uint8_t rgb[3];
-    utils::hsl2rgb( index_ + 42 * 120, 0xff, 220, rgb );
+    utils::hsl2rgb( (uint16_t)index_ + 42 * 120, 0xff, 220, rgb );
     sc2::Color color;
     color.r = rgb[0];
     color.g = rgb[1];
