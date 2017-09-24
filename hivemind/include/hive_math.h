@@ -15,9 +15,10 @@ namespace hivemind {
       return ::sqrtf( value );
     }
 
-    inline Real abs( Real value )
+    template <typename T>
+    inline T abs( T value )
     {
-      return ::fabsf( value );
+      return ::abs( value );
     }
 
     inline Real clamp( Real value, Real low, Real high )

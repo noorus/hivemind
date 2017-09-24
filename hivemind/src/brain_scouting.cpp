@@ -42,7 +42,7 @@ namespace hivemind {
 
     void Brain_WorkerScout::onMessage( const Message & msg )
     {
-      if ( worker_ && msg.code == M_Global_UnitDestroyed && msg.unit()->tag == worker_ )
+      if ( worker_ && msg.code == M_Global_UnitDestroyed && msg.unit() == worker_ )
       {
         lostScouts_++;
         lostScoutTime_ = bot_->time();
@@ -54,7 +54,7 @@ namespace hivemind {
       }
     }
 
-    void Brain_WorkerScout::_foundPlayer( PlayerID player, const Unit* unit )
+    void Brain_WorkerScout::_foundPlayer( PlayerID player, UnitRef unit )
     {
       bot_->console().printf( "WorkerScout: Found player %llu (%s)", player, sc2::UnitTypeToName( unit->unit_type ) );
 
@@ -71,7 +71,7 @@ namespace hivemind {
 
     void Brain_WorkerScout::_sendWorker()
     {
-      bot_->console().printf( "WorkerScout: Sending worker %llu", worker_ );
+      bot_->console().printf( "WorkerScout: Sending worker 0xI64X", worker_ );
 
       _routeAdvance();
     }
@@ -110,8 +110,6 @@ namespace hivemind {
           break;
         }
 
-      auto unit = bot_->observation().GetUnit( worker_ );
-
       if ( undiscoveredPlayers && !unexploredStartLocations_.empty() )
       {
         if ( route_.empty() || routeIndex_ == route_.size() )
@@ -121,7 +119,7 @@ namespace hivemind {
             locations.emplace_back( bot_->map().baseLocations_[locId].getPosition() );
 
           routeIndex_ = -1;
-          route_ = bot_->map().shortestScoutPath( unit->pos, locations );
+          route_ = bot_->map().shortestScoutPath( worker_->pos, locations );
 
           bot_->console().printf( "WorkerScout: Route planned with %llu nodes", route_.size() );
 
@@ -150,12 +148,11 @@ namespace hivemind {
       }
       else if ( !route_.empty() && routeIndex_ < route_.size() )
       {
-        auto unit = bot_->observation().GetUnit( worker_ );
-        if ( route_[routeIndex_].distance( unit->pos ) < 5.0f )
+        if ( route_[routeIndex_].distance( worker_->pos ) < 5.0f )
         {
           bot_->console().printf( "WorkerScout: Reached route node %llu, nothing here" );
           for ( auto& locId : unexploredStartLocations_ )
-            if ( bot_->map().baseLocations_[locId].containsPosition( unit->pos ) )
+            if ( bot_->map().baseLocations_[locId].containsPosition( worker_->pos ) )
             {
               unexploredStartLocations_.erase( locId );
               exploredStartLocations_.insert( locId );
@@ -174,7 +171,7 @@ namespace hivemind {
       if ( worker_ )
       {
         bot_->workers().add( worker_ );
-        worker_ = 0;
+        worker_ = nullptr;
       }
     }
 

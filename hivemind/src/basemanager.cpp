@@ -6,15 +6,15 @@
 
 namespace hivemind {
 
-  BaseManager::BaseManager( Bot * bot ): Subsystem( bot )
+  BaseManager::BaseManager( Bot* bot ): Subsystem( bot )
   {
   }
 
-  bool BaseManager::addBase( const Unit& depot )
+  bool BaseManager::addBase( UnitRef depot )
   {
     BaseLocation* location = nullptr;
     for ( auto& it : bot_->map().baseLocations_ )
-      if ( it.containsPosition( depot.pos ) )
+      if ( it.containsPosition( depot->pos ) )
       {
         location = &it;
         break;
@@ -23,7 +23,7 @@ namespace hivemind {
     if ( !location )
       return false;
 
-    bot_->console().printf( "Adding base (%s) at location %llu", sc2::UnitTypeToName( depot.unit_type ), location->baseID_ );
+    bot_->console().printf( "Adding base (%s) at location %llu", sc2::UnitTypeToName( depot->unit_type ), location->baseID_ );
 
     bases_.emplace_back( this, bases_.size(), location, depot );
 
@@ -33,7 +33,7 @@ namespace hivemind {
   void BaseManager::gameBegin()
   {
     // add initial base here because we can't know the order of initial creation events for adding units to the base.
-    for ( auto& unit : bot_->observation().GetUnits( sc2::Unit::Alliance::Self ) )
+    for ( auto unit : bot_->observation().GetUnits( sc2::Unit::Alliance::Self ) )
     {
       if ( utils::isMainStructure( unit ) )
         addBase( unit );
@@ -60,19 +60,19 @@ namespace hivemind {
       base.draw( bot_ );
   }
 
-  void BaseManager::onMessage( const Message & msg )
+  void BaseManager::onMessage( const Message& msg )
   {
-    if ( msg.code == M_Global_UnitCreated && utils::isMine( *msg.unit() ) )
+    if ( msg.code == M_Global_UnitCreated && utils::isMine( msg.unit() ) )
     {
       // Hack to avoid double events in the beginning.
-      if ( assignedUnits_.find( msg.unit()->tag ) != assignedUnits_.end() )
+      if ( assignedUnits_.find( msg.unit() ) != assignedUnits_.end() )
         return;
-      assignedUnits_.insert( msg.unit()->tag );
+      assignedUnits_.insert( msg.unit() );
 
-      if ( utils::isBuilding( *msg.unit() ) )
+      if ( utils::isBuilding( msg.unit() ) )
       {
-        bot_->console().printf( "Building created: %s", sc2::UnitTypeToName( (*msg.unit()).unit_type ) );
-        addBuilding( *msg.unit() );
+        bot_->console().printf( "Building created: %s", sc2::UnitTypeToName( msg.unit()->unit_type ) );
+        addBuilding( msg.unit() );
       }
       else
       {
@@ -80,32 +80,30 @@ namespace hivemind {
         auto base = findClosest( msg.unit()->pos );
         if ( msg.unit()->unit_type.ToType() == sc2::UNIT_TYPEID::ZERG_LARVA && base )
         {
-          bot_->console().printf( "Base %llu: adding larva %llu", base->id(), msg.unit()->tag );
-          base->addLarva( msg.unit()->tag );
+          bot_->console().printf( "Base %llu: adding larva %I64X", base->id(), msg.unit() );
+          base->addLarva( msg.unit() );
         }
         else if ( msg.unit()->unit_type.ToType() == sc2::UNIT_TYPEID::ZERG_QUEEN && base )
         {
-          bot_->console().printf( "Base %llu: adding queen %llu", base->id(), msg.unit()->tag );
-          base->addQueen( msg.unit()->tag );
+          bot_->console().printf( "Base %llu: adding queen %I64X", base->id(), msg.unit() );
+          base->addQueen( msg.unit() );
         }
       }
     }
     else if ( msg.code == M_Global_AddWorker )
     {
-      auto unit = bot_->observation().GetUnit( msg.tag() );
-      if ( unit )
-        addWorker( *unit );
+      addWorker( msg.unit() );
     }
     else if ( msg.code == M_Global_RemoveWorker )
     {
-      removeWorker( msg.tag() );
+      removeWorker( msg.unit() );
     }
-    else if ( msg.code == M_Global_UnitDestroyed && utils::isMine( *msg.unit() ) )
+    else if ( msg.code == M_Global_UnitDestroyed && utils::isMine( msg.unit() ) )
     {
-      assignedUnits_.erase( msg.unit()->tag );
-      if ( !utils::isWorker( *msg.unit() ) )
+      assignedUnits_.erase( msg.unit() );
+      if ( !utils::isWorker( msg.unit() ) )
         for ( auto& base : bases_ )
-          base.remove( *msg.unit() );
+          base.remove( msg.unit() );
     }
   }
 
@@ -126,7 +124,7 @@ namespace hivemind {
     return ret;
   }
 
-  void BaseManager::addBuilding( const Unit& building )
+  void BaseManager::addBuilding( UnitRef building )
   {
     Base* base = nullptr;
     if ( utils::isMainStructure( building ) )
@@ -135,9 +133,9 @@ namespace hivemind {
       // otherwise if building is inside a base location's area, create a new base with that location.
       // otherwise just add it to whatever is the closest base.
       // TODO Find base by polygonal region rather than distance, distance throws off way too easily.
-      depots_.insert( building.tag );
+      depots_.insert( building );
       for ( auto& it : bases_ )
-        if ( it.location()->containsPosition( building.pos ) )
+        if ( it.location()->containsPosition( building->pos ) )
           base = &it;
       if ( base )
         base->addDepot( building );
@@ -145,7 +143,7 @@ namespace hivemind {
       {
         if ( !addBase( building ) )
         {
-          base = findClosest( building.pos );
+          base = findClosest( building->pos );
           if ( base )
             base->addDepot( building );
         }
@@ -153,24 +151,24 @@ namespace hivemind {
     }
     else
     {
-      base = findClosest( building.pos );
+      base = findClosest( building->pos );
       if ( base )
         base->addBuilding( building );
     }
   }
 
-  void BaseManager::addWorker( const Unit& unit )
+  void BaseManager::addWorker( UnitRef unit )
   {
     // TODO Find base by need vs. distance
-    auto base = findClosest( unit.pos );
+    auto base = findClosest( unit->pos );
     if ( base )
     {
-      bot_->console().printf( "Base %llu: adding worker %llu", base->id(), unit.tag );
+      bot_->console().printf( "Base %llu: adding worker %llu", base->id(), unit->tag );
       base->addWorker( unit );
     }
   }
 
-  void BaseManager::removeWorker( const Tag unit )
+  void BaseManager::removeWorker( UnitRef unit )
   {
     for ( auto& base : bases_ )
       base.remove( unit );

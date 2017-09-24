@@ -18,8 +18,8 @@ namespace hivemind {
     M_Global_NydusDetected, //!< args: None
     M_Global_NuclearLaunchDetected, //!< args: None
     M_Global_UnitEnterVision, //!< args: Unit
-    M_Global_AddWorker, //!< args: Tag
-    M_Global_RemoveWorker, //!< args: Tag
+    M_Global_AddWorker, //!< args: Unit
+    M_Global_RemoveWorker, //!< args: Unit
     M_Max_Global,
     M_Min_Intel,
     M_Intel_FoundPlayer, //!< args: PlayerID, Unit
@@ -34,7 +34,7 @@ namespace hivemind {
   struct Message {
     MessageCode code;
     vector<void*> arguments;
-    inline const Unit* unit( int index = 0 ) const { return (Unit*)( arguments[index] ); }
+    inline UnitRef unit( int index = 0 ) const { return (UnitRef)( arguments[index] ); }
     inline const UpgradeID upgrade( int index = 0 ) const { return (uint32_t)( arguments[index] ); }
     inline const Tag tag( int index = 0 ) const { return (Tag)( arguments[index] ); }
     inline const PlayerID player( int index = 0 ) const { return (PlayerID)( arguments[index] ); }

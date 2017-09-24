@@ -5,31 +5,31 @@
 
 namespace hivemind {
 
-  void WorkerManager::_created( const Unit* unit )
+  void WorkerManager::_created( UnitRef unit )
   {
-    if ( exists( unit->tag ) )
+    if ( exists( unit ) )
       return;
 
-    add( unit->tag );
+    add( unit );
   }
 
-  void WorkerManager::_destroyed( const Unit* unit )
+  void WorkerManager::_destroyed( UnitRef unit )
   {
-    remove( unit->tag );
+    remove( unit );
   }
 
-  void WorkerManager::_idle( const Unit* unit )
+  void WorkerManager::_idle( UnitRef unit )
   {
-    if ( ignored( unit->tag ) )
+    if ( ignored( unit ) )
       return;
   }
 
-  void WorkerManager::_onIdle( Tag worker )
+  void WorkerManager::_onIdle( UnitRef worker )
   {
     idle_.insert( worker );
   }
 
-  void WorkerManager::_onActivate( Tag worker )
+  void WorkerManager::_onActivate( UnitRef worker )
   {
     idle_.erase( worker );
   }
@@ -40,9 +40,9 @@ namespace hivemind {
       return utils::isWorker( unit );
     } );
 
-    for ( auto& worker : workers )
-      if ( !exists( worker.tag ) )
-        _created( &worker );
+    for ( auto worker : workers )
+      if ( !exists( worker ) )
+        _created( worker );
   }
 
   WorkerManager::WorkerManager( Bot* bot ): Subsystem( bot )
@@ -60,7 +60,7 @@ namespace hivemind {
     shutdown();
   }
 
-  const TagSet & WorkerManager::all() const
+  const UnitSet & WorkerManager::all() const
   {
     return workers_;
   }
@@ -69,7 +69,7 @@ namespace hivemind {
   {
     if ( msg.code == M_Global_UnitCreated || msg.code == M_Global_UnitIdle || msg.code == M_Global_UnitDestroyed )
     {
-      if ( !utils::isWorker( *msg.unit() ) || !utils::isMine( *msg.unit() ) )
+      if ( !utils::isWorker( msg.unit() ) || !utils::isMine( msg.unit() ) )
         return;
       if ( msg.code == M_Global_UnitCreated )
         _created( msg.unit() );
@@ -89,13 +89,12 @@ namespace hivemind {
     _refreshWorkers();
   }
 
-  bool WorkerManager::add( Tag worker )
+  bool WorkerManager::add( UnitRef worker )
   {
     if ( exists( worker ) )
       return true;
 
-    auto unit = bot_->observation().GetUnit( worker );
-    if ( !unit || !utils::isWorker( *unit ) || !utils::isMine( *unit ) )
+    if ( !worker || !utils::isWorker( worker ) || !utils::isMine( worker ) )
       return false;
 
     workers_.insert( worker );
@@ -106,32 +105,31 @@ namespace hivemind {
     return true;
   }
 
-  const bool WorkerManager::exists( Tag worker ) const
+  const bool WorkerManager::exists( UnitRef worker ) const
   {
     return ( workers_.find( worker ) != workers_.end() );
   }
 
-  const bool WorkerManager::ignored( Tag worker ) const
+  const bool WorkerManager::ignored( UnitRef worker ) const
   {
     return ( ignored_.find( worker ) != ignored_.end() );
   }
 
-  const bool WorkerManager::idle( Tag worker ) const
+  const bool WorkerManager::idle( UnitRef worker ) const
   {
     return ( idle_.find( worker ) != idle_.end() );
   }
 
   void WorkerManager::update( GameTime time )
   {
-    TagSet removals;
+    UnitSet removals;
 
     _refreshWorkers();
 
-    for ( auto& worker : workers_ )
+    for ( auto worker : workers_ )
     {
-      auto unit = bot_->observation().GetUnit( worker );
-      if ( unit ) {
-        bool iddle = ( unit->orders.empty() );
+      if ( worker ) {
+        bool iddle = ( worker->orders.empty() );
         if ( iddle && !idle( worker ) )
           _onIdle( worker );
         else if ( !iddle && idle( worker ) )
@@ -140,11 +138,11 @@ namespace hivemind {
       else
         removals.insert( worker );
     }
-    for ( auto& worker : removals )
+    for ( auto worker : removals )
       remove( worker );
   }
 
-  void WorkerManager::remove( Tag worker )
+  void WorkerManager::remove( UnitRef worker )
   {
     workers_.erase( worker );
     ignored_.erase( worker );
@@ -153,23 +151,23 @@ namespace hivemind {
     bot_->messaging().sendGlobal( M_Global_RemoveWorker, worker );
   }
 
-  Tag WorkerManager::release()
+  UnitRef WorkerManager::release()
   {
     if ( workers_.empty() )
-      return 0;
+      return nullptr;
 
     auto it = workers_.cbegin();
     std::advance( it, utils::randomBetween( 0, (int)workers_.size() - 1 ) );
 
-    auto tag = ( *it );
+    auto worker = ( *it );
 
-    bot_->messaging().sendGlobal( M_Global_RemoveWorker, tag );
+    bot_->messaging().sendGlobal( M_Global_RemoveWorker, worker );
 
     workers_.erase( it );
-    idle_.erase( tag );
-    ignored_.insert( tag );
+    idle_.erase( worker );
+    ignored_.insert( worker );
 
-    return tag;
+    return worker;
   }
 
   void WorkerManager::shutdown()

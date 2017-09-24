@@ -14,19 +14,19 @@ namespace hivemind {
   {
     Point2D resourceCenter( 0.0f, 0.0f );
 
-    for ( auto& resource : resources )
+    for ( auto resource : resources )
     {
       if ( utils::isMineral( resource ) )
         minerals_.push_back( resource );
       else
         geysers_.push_back( resource );
-      resourceCenter += resource.pos;
+      resourceCenter += resource->pos;
       Real resWidth = 1.0f;
       Real resHeight = 0.5f;
-      left_ = std::min( left_, resource.pos.x - resWidth );
-      right_ = std::max( right_, resource.pos.x + resWidth );
-      top_ = std::max( top_, resource.pos.y + resHeight );
-      bottom_ = std::min( bottom_, resource.pos.y - resHeight );
+      left_ = std::min( left_, resource->pos.x - resWidth );
+      right_ = std::max( right_, resource->pos.x + resWidth );
+      top_ = std::max( top_, resource->pos.y + resHeight );
+      bottom_ = std::min( bottom_, resource->pos.y - resHeight );
     }
 
     auto numResources = minerals_.size() + geysers_.size();
@@ -41,11 +41,11 @@ namespace hivemind {
         break;
       }
 
-    for ( auto& unit : bot_->observation().GetUnits() )
-      if ( utils::isMine( unit ) && utils::isMainStructure( unit ) && containsPosition( unit.pos ) )
+    for ( auto unit : bot_->observation().GetUnits() )
+      if ( utils::isMine( unit ) && utils::isMainStructure( unit ) && containsPosition( unit->pos ) )
       {
         startLocation_ = true;
-        depotPosition_ = unit.pos;
+        depotPosition_ = unit->pos;
         break;
       }
   }

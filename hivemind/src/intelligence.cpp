@@ -32,15 +32,15 @@ namespace hivemind {
   {
   }
 
-  void Intelligence::onMessage( const Message & msg )
+  void Intelligence::onMessage( const Message& msg )
   {
-    if ( msg.code == M_Global_UnitEnterVision && utils::isEnemy( *msg.unit() ) )
+    if ( msg.code == M_Global_UnitEnterVision && utils::isEnemy( msg.unit() ) )
     {
       auto enemy = &enemies_[msg.unit()->owner];
       if ( enemy->lastSeen_ == 0 )
       {
         // this should be safe, closestLocation could only return false if the map's base location vector is empty
-        if ( utils::isMainStructure( *msg.unit() ) || bot_->map().closestLocation( msg.unit()->pos )->isStartLocation() )
+        if ( utils::isMainStructure( msg.unit() ) || bot_->map().closestLocation( msg.unit()->pos )->isStartLocation() )
         {
           bot_->messaging().sendGlobal( M_Intel_FoundPlayer, 2, (size_t)msg.unit()->owner, msg.unit() );
           // TODO separate baseSeen value etc.

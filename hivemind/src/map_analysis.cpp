@@ -889,16 +889,16 @@ namespace hivemind {
     **/
     void Map_FindResourceClusters( const sc2::ObservationInterface& observation, vector<UnitVector>& clusters_out, size_t minClusterSize, Real maxResourceDistance )
     {
-      for ( auto& mineral : observation.GetUnits( Unit::Alliance::Neutral ) )
+      for ( auto mineral : observation.GetUnits( Unit::Alliance::Neutral ) )
       {
         if ( !utils::isMineral( mineral ) )
           continue;
 
         bool foundCluster = false;
 
-        for ( auto& cluster : clusters_out )
+        for ( auto cluster : clusters_out )
         {
-          Real dist = utils::calculateCenter( cluster ).distance( mineral.pos );
+          Real dist = utils::calculateCenter( cluster ).distance( mineral->pos );
           if ( dist < 14 )
           {
             Real groundDist = dist;
@@ -917,13 +917,13 @@ namespace hivemind {
         }
       }
 
-      for ( auto& geyser : observation.GetUnits( Unit::Alliance::Neutral ) )
+      for ( auto geyser : observation.GetUnits( Unit::Alliance::Neutral ) )
       {
         if ( !utils::isGeyser( geyser ) )
           continue;
         for ( auto& cluster : clusters_out )
         {
-          Real groundDist = utils::calculateCenter( cluster ).distance( geyser.pos );
+          Real groundDist = utils::calculateCenter( cluster ).distance( geyser->pos );
           if ( groundDist >= 0.0f && groundDist < 14 )
           {
             cluster.push_back( geyser );

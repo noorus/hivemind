@@ -28,7 +28,8 @@ namespace hivemind {
   using sc2::Tag;
 
   using UnitTag = uint64_t;
-  using UnitMap = std::map<Tag, sc2::UNIT_TYPEID>;
+  using UnitRef = const Unit*;
+  using UnitMap = std::map<UnitRef, sc2::UNIT_TYPEID>;
 
   using Point2Vector = vector<Point2D>;
   using Point3Vector = vector<Point3D>;
@@ -36,10 +37,9 @@ namespace hivemind {
   using BoolMap = vector<vector<bool>>;
   using IntMap = vector<vector<int>>;
   using FloatMap = vector<vector<float>>;
-  using TagVector = vector<Tag>;
-  using TagSet = set<Tag>;
+  using UnitSet = set<UnitRef>;
 
-  struct UnitVector: public std::vector<Unit> {
+  struct UnitVector: public std::vector<UnitRef> {
   public:
     inline hivemind::Vector2 center() const
     {
@@ -48,8 +48,8 @@ namespace hivemind {
       if ( empty() )
         return cntr;
 
-      for ( auto& unit : *this )
-        cntr += hivemind::Vector2( unit.pos.x, unit.pos.y );
+      for ( auto unit : *this )
+        cntr += hivemind::Vector2( unit->pos.x, unit->pos.y );
 
       return ( cntr / (Real)size() );
     }

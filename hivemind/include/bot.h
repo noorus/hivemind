@@ -51,14 +51,14 @@ namespace hivemind {
     virtual void OnGameStart() final;
     virtual void OnStep() final;
     virtual void OnGameEnd() final;
-    virtual void OnUnitCreated( const Unit& unit ) final;
-    virtual void OnUnitDestroyed( const Unit& unit ) final;
-    virtual void OnUnitIdle( const Unit& unit ) final;
+    virtual void OnUnitCreated( const Unit* unit ) final;
+    virtual void OnUnitDestroyed( const Unit* unit ) final;
+    virtual void OnUnitIdle( const Unit* unit ) final;
     virtual void OnUpgradeCompleted( UpgradeID upgrade ) final;
-    virtual void OnBuildingConstructionComplete( const Unit& unit ) final;
+    virtual void OnBuildingConstructionComplete( const Unit* unit ) final;
     virtual void OnNydusDetected() final;
     virtual void OnNuclearLaunchDetected() final;
-    virtual void OnUnitEnterVision( const Unit& unit ) final;
+    virtual void OnUnitEnterVision( const Unit* unit ) final;
     virtual void OnError( const std::vector<ClientError>& client_errors, const std::vector<std::string>& protocol_errors = {} ) final;
   public:
     Bot();

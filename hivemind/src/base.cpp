@@ -8,7 +8,7 @@ namespace hivemind {
   const size_t c_minersPerPatch = 2;
   const size_t c_collectorsPerGeyser = 3;
 
-  Base::Base( BaseManager* owner, size_t index, BaseLocation* location, const Unit& depot ):
+  Base::Base( BaseManager* owner, size_t index, BaseLocation* location, UnitRef depot ):
   manager_( owner ), index_( index ), location_( location )
   {
     assert( location );
@@ -51,18 +51,10 @@ namespace hivemind {
       index_, workers_.size(), queens_.size(), larvae_.size(), buildings_.size() );
     bot->debug().DebugTextOut( asd, Point3D( location_->position_.x, location_ ->position_.y, bot->map().maxZ_ + 0.1f ), color );
 
-    for ( auto& it : depots_ )
-    {
-      auto building = bot->observation().GetUnit( it );
-      if ( building )
-        bot->debug().DebugSphereOut( building->pos, building->radius, color );
-    }
-    for ( auto& it : buildings_ )
-    {
-      auto building = bot->observation().GetUnit( it.first );
-      if ( building )
-        bot->debug().DebugSphereOut( building->pos, building->radius, color );
-    }
+    for ( auto building : depots_ )
+      bot->debug().DebugSphereOut( building->pos, building->radius, color );
+    for ( auto building : buildings_ )
+      bot->debug().DebugSphereOut( building.first->pos, building.first->radius, color );
   }
 
   BaseLocation* Base::location() const
@@ -78,9 +70,9 @@ namespace hivemind {
   {
   }
 
-  TagSet Base::releaseWorkers( int count )
+  UnitSet Base::releaseWorkers( int count )
   {
-    TagSet set;
+    UnitSet set;
     for ( int i = 0; i < count; i++ )
     {
       /*for ( auto worker : workers_ ) {
@@ -90,9 +82,9 @@ namespace hivemind {
     return set;
   }
 
-  TagSet Base::releaseQueens( int count )
+  UnitSet Base::releaseQueens( int count )
   {
-    TagSet set;
+    UnitSet set;
     for ( int i = 0; i < count; i++ )
     {
     }
@@ -109,12 +101,12 @@ namespace hivemind {
     return wantQueens_;
   }
 
-  const TagSet & Base::workers() const
+  const UnitSet & Base::workers() const
   {
     return workers_;
   }
 
-  const TagSet & Base::queens() const
+  const UnitSet & Base::queens() const
   {
     return queens_;
   }
@@ -124,58 +116,58 @@ namespace hivemind {
     return buildings_;
   }
 
-  const TagSet & Base::larvae() const
+  const UnitSet & Base::larvae() const
   {
     return larvae_;
   }
 
-  const TagSet& Base::depots() const
+  const UnitSet& Base::depots() const
   {
     return depots_;
   }
 
-  bool Base::hasWorker( Tag worker ) const
+  bool Base::hasWorker( UnitRef worker ) const
   {
     return ( workers_.find( worker ) != workers_.end() );
   }
 
-  bool Base::hasQueen( Tag queen ) const
+  bool Base::hasQueen( UnitRef queen ) const
   {
     return ( queens_.find( queen ) != queens_.end() );
   }
 
-  void Base::addWorker( Tag worker, bool refresh )
+  void Base::addWorker( UnitRef worker, bool refresh )
   {
     workers_.insert( worker );
     if ( refresh )
       _refreshWorkers();
   }
 
-  void Base::addWorkers( const TagSet & workers )
+  void Base::addWorkers( const UnitSet & workers )
   {
     for ( auto worker : workers )
       addWorker( worker );
   }
 
-  void Base::addQueen( Tag queen, bool refresh )
+  void Base::addQueen( UnitRef queen, bool refresh )
   {
     queens_.insert( queen );
     if ( refresh )
       _refreshQueens();
   }
 
-  void Base::addQueens( const TagSet & queens )
+  void Base::addQueens( const UnitSet & queens )
   {
     for ( auto queen : queens )
       addQueen( queen );
   }
 
-  void Base::addLarva( Tag larva )
+  void Base::addLarva( UnitRef larva )
   {
     larvae_.insert( larva );
   }
 
-  void Base::remove( Tag unit )
+  void Base::remove( UnitRef unit )
   {
     // Note: This gets called a lot for units that we don't own in the first place
     workers_.erase( unit );
@@ -184,24 +176,23 @@ namespace hivemind {
     buildings_.erase( unit );
   }
 
-  void Base::addDepot( const Unit & depot )
+  void Base::addDepot( UnitRef depot )
   {
-    depots_.insert( depot.tag );
+    depots_.insert( depot );
   }
 
-  void Base::addBuilding( const Unit & building )
+  void Base::addBuilding( UnitRef building )
   {
-    buildings_[building.tag] = building.unit_type;
+    buildings_[building] = building->unit_type;
   }
 
-  void Base::update( Bot & bot )
+  void Base::update( Bot& bot )
   {
     // For whatever reason, larvae/eggs don't get "destroyed" events when they morph to other units.
     // So we have to check whether they still exist and clean up ourselves.
-    for ( TagSet::iterator it = larvae_.begin(); it != larvae_.end(); )
+    for ( UnitSet::iterator it = larvae_.begin(); it != larvae_.end(); )
     {
-      auto unit = bot.observation().GetUnit( (*it) );
-      if ( !unit )
+      if ( !( *it )->is_alive )
       {
         manager_->bot_->console().printf( "Base %llu: Removing larva %llu", index_, ( *it ) );
         it = larvae_.erase( it );

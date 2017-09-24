@@ -92,8 +92,8 @@ namespace hivemind {
         for ( auto& cluster : clusters )
         {
           bool gotit = false;
-          for ( auto& unit : cluster )
-            if ( pos.distance( Vector2( unit.pos ) ) <= unit.radius ) {
+          for ( auto unit : cluster )
+            if ( pos.distance( unit->pos ) <= unit->radius ) {
               rgb8[y][x] = ( utils::isMineral( unit ) ? mineral : gas );
               gotit = true;
               break;
@@ -146,8 +146,8 @@ namespace hivemind {
 
     Analysis::Map_BuildBasics( info, width_, height_, flagsMap_, heightMap_ );
 
-    for ( auto& unit : bot_->observation().GetUnits( Unit::Alliance::Neutral ) )
-      maxZ_ = std::max( unit.pos.z, maxZ_ );
+    for ( auto unit : bot_->observation().GetUnits( Unit::Alliance::Neutral ) )
+      maxZ_ = std::max( unit->pos.z, maxZ_ );
 
     bot_->console().printf( "Map: Width %d, height %d", width_, height_ );
     bot_->console().printf( "Map: Got build-, walkability- and height map" );
@@ -254,8 +254,8 @@ namespace hivemind {
     {
       auto pos = cluster.center();
       // bot_->debug().DebugSphereOut( Point3D( pos.x, pos.y, maxZ_ ), 10.0f );
-      for ( auto& res : cluster )
-        bot_->debug().DebugSphereOut( res.pos, 1.0f, sc2::Colors::Yellow );
+      for ( auto res : cluster )
+        bot_->debug().DebugSphereOut( res->pos, 1.0f, sc2::Colors::Yellow );
     }
     for ( auto& location : baseLocations_ )
     {

@@ -77,14 +77,14 @@ namespace hivemind {
     map_.draw();
     baseManager_.draw();
 
-    for ( const sc2::Unit& unit : observation_->GetUnits() )
-      if ( unit.is_selected && utils::isMine( unit ) )
+    for ( auto unit : observation_->GetUnits() )
+      if ( unit->is_selected && utils::isMine( unit ) )
       {
-        string txt = std::to_string( unit.tag ) + " " + sc2::UnitTypeToName( unit.unit_type );
-        txt.append( " (" + std::to_string( unit.unit_type ) + ")\n" );
-        for ( auto& order : unit.orders )
+        string txt = std::to_string( unit->tag ) + " " + sc2::UnitTypeToName( unit->unit_type );
+        txt.append( " (" + std::to_string( unit->unit_type ) + ")\n" );
+        for ( auto& order : unit->orders )
           txt.append( GetAbilityText( order.ability_id ) + "\n" );
-        debug_->DebugTextOut( txt, unit.pos, sc2::Colors::Green );
+        debug_->DebugTextOut( txt, unit->pos, sc2::Colors::Green );
       }
 
     debug_->SendDebug();
@@ -102,21 +102,21 @@ namespace hivemind {
     console_.gameEnd();
   }
 
-  void Bot::OnUnitCreated( const Unit& unit )
+  void Bot::OnUnitCreated( const Unit* unit )
   {
-    console_.printf( "Bot::UnitCreated %s", sc2::UnitTypeToName( unit.unit_type ) );
-    messaging_.sendGlobal( M_Global_UnitCreated, &unit );
+    console_.printf( "Bot::UnitCreated %s", sc2::UnitTypeToName( unit->unit_type ) );
+    messaging_.sendGlobal( M_Global_UnitCreated, unit );
   }
 
-  void Bot::OnUnitDestroyed( const Unit& unit )
+  void Bot::OnUnitDestroyed( const Unit* unit )
   {
-    console_.printf( "Bot::UnitDestroyed %s", sc2::UnitTypeToName( unit.unit_type ) );
-    messaging_.sendGlobal( M_Global_UnitDestroyed, &unit );
+    console_.printf( "Bot::UnitDestroyed %s", sc2::UnitTypeToName( unit->unit_type ) );
+    messaging_.sendGlobal( M_Global_UnitDestroyed, unit );
   }
 
-  void Bot::OnUnitIdle( const Unit& unit )
+  void Bot::OnUnitIdle( const Unit* unit )
   {
-    messaging_.sendGlobal( M_Global_UnitIdle, &unit );
+    messaging_.sendGlobal( M_Global_UnitIdle, unit );
   }
 
   void Bot::OnUpgradeCompleted( UpgradeID upgrade )
@@ -125,10 +125,10 @@ namespace hivemind {
     messaging_.sendGlobal( M_Global_UpgradeCompleted, (uint32_t)upgrade );
   }
 
-  void Bot::OnBuildingConstructionComplete( const Unit& unit )
+  void Bot::OnBuildingConstructionComplete( const Unit* unit )
   {
-    console_.printf( "Bot::ConstructionCompleted %s", sc2::UnitTypeToName( unit.unit_type ) );
-    messaging_.sendGlobal( M_Global_ConstructionCompleted, &unit );
+    console_.printf( "Bot::ConstructionCompleted %s", sc2::UnitTypeToName( unit->unit_type ) );
+    messaging_.sendGlobal( M_Global_ConstructionCompleted, unit );
   }
 
   void Bot::OnNydusDetected()
@@ -143,9 +143,9 @@ namespace hivemind {
     messaging_.sendGlobal( M_Global_NuclearLaunchDetected );
   }
 
-  void Bot::OnUnitEnterVision( const Unit& unit )
+  void Bot::OnUnitEnterVision( const Unit* unit )
   {
-    messaging_.sendGlobal( M_Global_UnitEnterVision, &unit );
+    messaging_.sendGlobal( M_Global_UnitEnterVision, unit );
   }
 
   const char* c_clientErrorText[11] = {

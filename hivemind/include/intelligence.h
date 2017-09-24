@@ -20,19 +20,19 @@ namespace hivemind {
   using EnemyBaseVector = vector<EnemyBase>;
 
   struct EnemyUnit {
-    Tag id_;
+    UnitRef id_;
     PlayerID player_;
     GameTime firstSeen_;
     GameTime lastSeen_;
     GameTime died_;
     Vector2 lastPosition_;
-    explicit EnemyUnit( Tag id, PlayerID player, const Vector2& position, GameTime time ):
+    explicit EnemyUnit( UnitRef id, PlayerID player, const Vector2& position, GameTime time ):
     id_( id ), player_( player ), lastPosition_( position ), firstSeen_( time ), lastSeen_( time ), died_( 0 )
     {
     }
   };
- 
-  using EnemyUnitMap = std::map<Tag, EnemyUnit>;
+
+  using EnemyUnitMap = std::map<UnitRef, EnemyUnit>;
 
   struct EnemyIntelligence {
     bool alive_;

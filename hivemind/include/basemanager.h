@@ -12,20 +12,20 @@ namespace hivemind {
     friend class Base;
   private:
     BaseVector bases_;
-    TagSet depots_;
-    TagSet assignedUnits_;
+    UnitSet depots_;
+    UnitSet assignedUnits_;
     void onMessage( const Message& msg ) final;
   public:
     BaseManager( Bot* bot );
-    bool addBase( const Unit& depot );
+    bool addBase( UnitRef depot );
     void gameBegin() final;
     void gameEnd() final;
     void update( const GameTime time, const GameTime delta );
     void draw() final;
     Base* findClosest( const Vector3& pos );
-    void addBuilding( const Unit& unit );
-    void addWorker( const Unit& unit );
-    void removeWorker( const Tag unit );
+    void addBuilding( UnitRef unit );
+    void addWorker( UnitRef unit );
+    void removeWorker( UnitRef unit );
     BaseVector& bases();
   };
 

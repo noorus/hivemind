@@ -58,27 +58,21 @@ namespace hivemind {
 
       for ( auto & unit : units )
       {
-        total.x += unit.pos.x;
-        total.y += unit.pos.y;
+        total.x += unit->pos.x;
+        total.y += unit->pos.y;
       }
 
       return ( total / (Real)units.size() );
     }
 
-    inline const bool isMine( const Unit& unit )
-    {
-      return ( unit.alliance == Unit::Alliance::Self );
-    }
+    inline const bool isMine( const Unit& unit ) { return ( unit.alliance == Unit::Alliance::Self ); }
+    inline const bool isMine( const Unit* unit ) { return ( unit->alliance == Unit::Alliance::Self ); }
 
-    inline const bool isEnemy( const Unit& unit )
-    {
-      return ( unit.alliance == Unit::Alliance::Enemy );
-    }
+    inline const bool isEnemy( const Unit& unit ) { return ( unit.alliance == Unit::Alliance::Enemy ); }
+    inline const bool isEnemy( const Unit* unit ) { return ( unit->alliance == Unit::Alliance::Enemy ); }
 
-    inline const bool isNeutral( const Unit& unit )
-    {
-      return ( unit.alliance == Unit::Alliance::Neutral );
-    }
+    inline const bool isNeutral( const Unit& unit ) { return ( unit.alliance == Unit::Alliance::Neutral ); }
+    inline const bool isNeutral( const Unit* unit ) { return ( unit->alliance == Unit::Alliance::Neutral ); }
 
     struct isFlying {
       inline bool operator()( const Unit& unit ) {
@@ -104,10 +98,8 @@ namespace hivemind {
       }
     }
 
-    inline const bool isMainStructure( const Unit& unit )
-    {
-      return isMainStructure( unit.unit_type );
-    }
+    inline const bool isMainStructure( const Unit& unit ) { return isMainStructure( unit.unit_type ); }
+    inline const bool isMainStructure( const Unit* unit ) { return isMainStructure( unit->unit_type ); }
 
     struct isMainStructure {
       inline bool operator()( const Unit& unit ) {
@@ -128,14 +120,12 @@ namespace hivemind {
       }
     }
 
-    inline const bool isRefinery( const Unit& unit )
-    {
-      return isRefinery( unit.unit_type );
-    }
+    inline const bool isRefinery( const Unit& unit ) { return isRefinery( unit.unit_type ); }
+    inline const bool isRefinery( const Unit* unit ) { return isRefinery( unit->unit_type ); }
 
-    inline const bool isMineral( const Unit& unit )
+    inline const bool isMineral( const UnitTypeID& type )
     {
-      switch ( unit.unit_type.ToType() )
+      switch ( type.ToType() )
       {
         case sc2::UNIT_TYPEID::NEUTRAL_MINERALFIELD:
         case sc2::UNIT_TYPEID::NEUTRAL_MINERALFIELD750:
@@ -147,9 +137,12 @@ namespace hivemind {
       }
     }
 
-    inline const bool isGeyser( const Unit& unit )
+    inline const bool isMineral( const Unit& unit ) { return isMineral( unit.unit_type ); }
+    inline const bool isMineral( const Unit* unit ) { return isMineral( unit->unit_type ); }
+
+    inline const bool isGeyser( const UnitTypeID& type )
     {
-      switch ( unit.unit_type.ToType() )
+      switch ( type.ToType() )
       {
         case sc2::UNIT_TYPEID::NEUTRAL_VESPENEGEYSER:
         case sc2::UNIT_TYPEID::NEUTRAL_PROTOSSVESPENEGEYSER:
@@ -159,6 +152,9 @@ namespace hivemind {
           return false;
       }
     }
+
+    inline const bool isGeyser( const Unit& unit ) { return isGeyser( unit.unit_type ); }
+    inline const bool isGeyser( const Unit* unit ) { return isGeyser( unit->unit_type ); }
 
     inline const bool isWorker( const UnitTypeID& type )
     {
@@ -174,10 +170,8 @@ namespace hivemind {
       }
     }
 
-    inline const bool isWorker( const Unit& unit )
-    {
-      return isWorker( unit.unit_type );
-    }
+    inline const bool isWorker( const Unit& unit ) { return isWorker( unit.unit_type ); }
+    inline const bool isWorker( const Unit* unit ) { return isWorker( unit->unit_type ); }
 
     inline const bool isSupplyProvider( const UnitTypeID& type )
     {
@@ -194,10 +188,8 @@ namespace hivemind {
       }
     }
 
-    inline  const bool isSupplyProvider( const Unit& unit )
-    {
-      return isSupplyProvider( unit.unit_type );
-    }
+    inline const bool isSupplyProvider( const Unit& unit ) { return isSupplyProvider( unit.unit_type ); }
+    inline const bool isSupplyProvider( const Unit* unit ) { return isSupplyProvider( unit->unit_type ); }
 
     inline const bool isBuilding( const UnitTypeID& type )
     {
@@ -225,10 +217,8 @@ namespace hivemind {
       }
     }
 
-    inline  const bool isBuilding( const Unit& unit )
-    {
-      return isBuilding( unit.unit_type );
-    }
+    inline  const bool isBuilding( const Unit& unit ) { return isBuilding( unit.unit_type ); }
+    inline  const bool isBuilding( const Unit* unit ) { return isBuilding( unit->unit_type ); }
 
     inline void hsl2rgb( uint16_t hue, uint8_t sat, uint8_t lum, uint8_t rgb[3] )
     {
