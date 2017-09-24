@@ -18,6 +18,7 @@
 #include <math.h>
 #include <eh.h>
 #include <intrin.h>
+#include <assert.h>
 
 #include <exception>
 #include <memory>
