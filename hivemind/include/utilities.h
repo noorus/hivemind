@@ -56,7 +56,7 @@ namespace hivemind {
       if ( units.empty() )
         return total;
 
-      for ( auto & unit : units )
+      for ( auto unit : units )
       {
         total.x += unit->pos.x;
         total.y += unit->pos.y;

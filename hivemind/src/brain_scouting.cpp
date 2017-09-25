@@ -28,7 +28,7 @@ namespace hivemind {
     void Brain_WorkerScout::activate()
     {
       status_ = AI::Goal::Status_Active;
-      worker_ = 0;
+      worker_ = nullptr;
 
       unexploredStartLocations_.clear();
       for ( auto& location : bot_->map().baseLocations_ )
@@ -46,7 +46,7 @@ namespace hivemind {
       {
         lostScouts_++;
         lostScoutTime_ = bot_->time();
-        worker_ = 0;
+        worker_ = nullptr;
       }
       else if ( msg.code == M_Intel_FoundPlayer )
       {
@@ -96,7 +96,7 @@ namespace hivemind {
 
       bot_->console().printf( "WorkerScout: Replanning worker scout route" );
 
-      if ( worker_ == 0 )
+      if ( worker_ == nullptr )
       {
         bot_->console().printf( "WorkerScout: Aborting route plan, no worker assigned" );
         return;
@@ -140,7 +140,7 @@ namespace hivemind {
 
     AI::Goal::Status Brain_WorkerScout::process()
     {
-      if ( worker_ == 0 )
+      if ( worker_ == nullptr )
       {
         worker_ = bot_->workers().release();
         if ( worker_ )
@@ -151,7 +151,7 @@ namespace hivemind {
         if ( route_[routeIndex_].distance( worker_->pos ) < 5.0f )
         {
           bot_->console().printf( "WorkerScout: Reached route node %llu, nothing here" );
-          for ( auto& locId : unexploredStartLocations_ )
+          for ( auto locId : unexploredStartLocations_ )
             if ( bot_->map().baseLocations_[locId].containsPosition( worker_->pos ) )
             {
               unexploredStartLocations_.erase( locId );

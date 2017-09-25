@@ -889,31 +889,30 @@ namespace hivemind {
     **/
     void Map_FindResourceClusters( const sc2::ObservationInterface& observation, vector<UnitVector>& clusters_out, size_t minClusterSize, Real maxResourceDistance )
     {
+      vector<UnitVector> tempClusters;
       for ( auto mineral : observation.GetUnits( Unit::Alliance::Neutral ) )
       {
         if ( !utils::isMineral( mineral ) )
           continue;
 
-        bool foundCluster = false;
+        UnitVector* bestCluster = nullptr;
+        Real bestDistance = std::numeric_limits<Real>::max();
 
-        for ( auto cluster : clusters_out )
+        for ( auto& cluster : tempClusters )
         {
-          Real dist = utils::calculateCenter( cluster ).distance( mineral->pos );
-          if ( dist < 14 )
+          Real distance = utils::calculateCenter( cluster ).distance( mineral->pos );
+          if ( distance >= 0.0f && distance < maxResourceDistance && distance < bestDistance )
           {
-            Real groundDist = dist;
-            if ( groundDist >= 0.0f && groundDist < 14 )
-            {
-              cluster.push_back( mineral );
-              foundCluster = true;
-              break;
-            }
+            bestCluster = &cluster;
+            bestDistance = distance;
           }
         }
-        if ( !foundCluster )
-        {
-          clusters_out.emplace_back();
-          clusters_out.back().push_back( mineral );
+
+        if ( bestCluster )
+          bestCluster->push_back( mineral );
+        else {
+          tempClusters.emplace_back();
+          tempClusters.back().push_back( mineral );
         }
       }
 
@@ -921,15 +920,29 @@ namespace hivemind {
       {
         if ( !utils::isGeyser( geyser ) )
           continue;
-        for ( auto& cluster : clusters_out )
+
+        UnitVector* bestCluster = nullptr;
+        Real bestDistance = std::numeric_limits<Real>::max();
+
+        for ( auto& cluster : tempClusters )
         {
-          Real groundDist = utils::calculateCenter( cluster ).distance( geyser->pos );
-          if ( groundDist >= 0.0f && groundDist < 14 )
+          Real distance = utils::calculateCenter( cluster ).distance( geyser->pos );
+          if ( distance >= 0.0f && distance < maxResourceDistance && distance < bestDistance )
           {
-            cluster.push_back( geyser );
-            break;
+            bestCluster = &cluster;
+            bestDistance = distance;
           }
         }
+
+        if ( bestCluster )
+          bestCluster->push_back( geyser );
+      }
+
+      clusters_out.clear();
+      for ( auto& cluster : tempClusters )
+      {
+        if ( cluster.size() >= minClusterSize )
+          clusters_out.push_back( cluster );
       }
     }
 

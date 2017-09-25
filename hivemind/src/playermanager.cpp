@@ -30,7 +30,7 @@ namespace hivemind {
     {
       // FIXME This is hardcoded hack for now, the real data is not yet in the API
       PlayerAlliance alliance = ( player.player_id == myID_ ? Alliance_Self : Alliance_Enemy );
-      players_[player.player_id] = Player( player.player_id, player.race_requested, player.player_type, alliance ); 
+      players_[player.player_id] = Player( player.player_id, player.race_requested, player.player_type, alliance );
     }
 
     for ( auto& player : players_ )

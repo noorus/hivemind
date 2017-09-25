@@ -43,7 +43,7 @@ namespace hivemind {
     strats_.push_back( new Strategy_Economic( bot_ ) );
     strats_.push_back( new Strategy_Aggressive( bot_ ) );
     strats_.push_back( new Strategy_Defensive( bot_ ) );
-    
+
     fzGameTime_ = &fuzzyMod_.createVariable( "GameTime" );
     fzGameTime_->addLeftShoulder( "Time_Early", 0.0f, (Real)c_time3Minutes, (Real)c_time6Minutes ); // 0-3, -> 3-6
     fzGameTime_->addTrapezoid( "Time_Mid", (Real)c_time3Minutes, (Real)c_time6Minutes, (Real)c_time12Minutes, (Real)c_time15Minutes ); // 3-6-12-15

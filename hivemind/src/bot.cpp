@@ -119,6 +119,11 @@ namespace hivemind {
     messaging_.sendGlobal( M_Global_UnitIdle, unit );
   }
 
+  void Bot::OnUnitEnterVision( const Unit* unit )
+  {
+    messaging_.sendGlobal( M_Global_UnitEnterVision, unit );
+  }
+
   void Bot::OnUpgradeCompleted( UpgradeID upgrade )
   {
     console_.printf( "Bot::UpgradeCompleted %s", sc2::UpgradeIDToName( upgrade ) );
@@ -141,11 +146,6 @@ namespace hivemind {
   {
     console_.printf( "GLOBAL: Nuclear launch detected!" );
     messaging_.sendGlobal( M_Global_NuclearLaunchDetected );
-  }
-
-  void Bot::OnUnitEnterVision( const Unit* unit )
-  {
-    messaging_.sendGlobal( M_Global_UnitEnterVision, unit );
   }
 
   const char* c_clientErrorText[11] = {

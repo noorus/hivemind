@@ -205,7 +205,7 @@ namespace hivemind {
 
     resourceClusters_.clear();
 
-    Analysis::Map_FindResourceClusters( bot_->observation(), resourceClusters_, 4, 10.0f );
+    Analysis::Map_FindResourceClusters( bot_->observation(), resourceClusters_, 4, 16.0f );
 
     debugDumpResources( resourceClusters_, info );
 

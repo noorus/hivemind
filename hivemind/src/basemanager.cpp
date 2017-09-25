@@ -80,12 +80,12 @@ namespace hivemind {
         auto base = findClosest( msg.unit()->pos );
         if ( msg.unit()->unit_type.ToType() == sc2::UNIT_TYPEID::ZERG_LARVA && base )
         {
-          bot_->console().printf( "Base %llu: adding larva %I64X", base->id(), msg.unit() );
+          bot_->console().printf( "Base %llu: adding larva %I64x", base->id(), msg.unit() );
           base->addLarva( msg.unit() );
         }
         else if ( msg.unit()->unit_type.ToType() == sc2::UNIT_TYPEID::ZERG_QUEEN && base )
         {
-          bot_->console().printf( "Base %llu: adding queen %I64X", base->id(), msg.unit() );
+          bot_->console().printf( "Base %llu: adding queen %I64x", base->id(), msg.unit() );
           base->addQueen( msg.unit() );
         }
       }
@@ -163,7 +163,7 @@ namespace hivemind {
     auto base = findClosest( unit->pos );
     if ( base )
     {
-      bot_->console().printf( "Base %llu: adding worker %llu", base->id(), unit->tag );
+      bot_->console().printf( "Base %llu: adding worker %I64x", base->id(), unit );
       base->addWorker( unit );
     }
   }
