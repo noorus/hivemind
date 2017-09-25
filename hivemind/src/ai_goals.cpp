@@ -110,7 +110,7 @@ namespace hivemind {
     {
       Real best = 0.0f;
       GoalEvaluator* mostDesirable = nullptr;
-      for ( auto evaluator : mEvaluators )
+      for ( auto evaluator : evaluators_ )
       {
         Real desirability = evaluator->calculateDesirability( owner_ );
         if ( desirability >= best )

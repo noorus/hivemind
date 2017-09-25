@@ -195,7 +195,7 @@ namespace hivemind {
     Brain_ScoutEnemy::Brain_ScoutEnemy( AI::Agent* agent ):
     AI::ThinkGoal( agent )
     {
-      mEvaluators.push_back( new WorkerScoutEvaluator() );
+      evaluators_.push_back( new WorkerScoutEvaluator() );
     }
 
     void Brain_ScoutEnemy::activate()

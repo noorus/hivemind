@@ -69,7 +69,7 @@ namespace hivemind {
 
     class ThinkGoal: public CompositeGoal {
     protected:
-      GoalEvaluatorVector mEvaluators;
+      GoalEvaluatorVector evaluators_;
     public:
       ThinkGoal( Agent* owner );
       void arbitrate();

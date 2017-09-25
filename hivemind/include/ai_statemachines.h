@@ -10,12 +10,12 @@ namespace hivemind {
 
     class State {
     protected:
-      GameTime mTime;
+      GameTime time_;
     public:
-      virtual void enter( FiniteStateMachine* machine, Agent* agent ) { mTime = 0; };
+      virtual void enter( FiniteStateMachine* machine, Agent* agent ) { time_ = 0; };
       virtual void pause( FiniteStateMachine* machine, Agent* agent ) { leave( machine, agent ); };
       virtual void resume( FiniteStateMachine* machine, Agent* agent ) { enter( machine, agent ); };
-      virtual void execute( FiniteStateMachine* machine, Agent* agent, const GameTime delta ) { mTime += delta; };
+      virtual void execute( FiniteStateMachine* machine, Agent* agent, const GameTime delta ) { time_ += delta; };
       virtual void leave( FiniteStateMachine* machine, Agent* agent ) {};
     };
 
@@ -23,8 +23,8 @@ namespace hivemind {
 
     class FiniteStateMachine {
     protected:
-      StateVector mStates;
-      Agent* mOwner;
+      StateVector states_;
+      Agent* owner_;
     public:
       FiniteStateMachine( Agent* owner );
       void pushState( State* state );
