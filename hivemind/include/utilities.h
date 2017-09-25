@@ -20,7 +20,7 @@ namespace hivemind {
     {
       const float speed_multiplier = 1.4f; // faster
       const float ticks_per_second = 16.0f; // 32 updates per second / 2 updates per tick
-      return (RealTime)Math::round( ( (float)ticks / speed_multiplier ) / ticks_per_second );
+      return (RealTime)math::round( ( (float)ticks / speed_multiplier ) / ticks_per_second );
     }
 
     inline int randomBetween( int imin, int imax )

@@ -206,7 +206,7 @@ namespace hivemind {
     //! Operations
     inline Real length() const
     {
-      return Math::sqrt( x * x + y * y );
+      return math::sqrt( x * x + y * y );
     }
     inline Real squaredLength() const
     {

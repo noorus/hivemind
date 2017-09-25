@@ -192,7 +192,7 @@ namespace hivemind {
     }
     inline Real length() const
     {
-      return Math::sqrt( x * x + y * y + z * z );
+      return math::sqrt( x * x + y * y + z * z );
     }
     inline Real squaredLength() const
     {
