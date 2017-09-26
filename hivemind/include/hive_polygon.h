@@ -18,7 +18,7 @@ namespace hivemind {
       {
         a += this->at( i ).x * this->at( j ).y - this->at( j ).x * this->at( i ).y;
       }
-      return Math::abs( a / 2.0f );
+      return math::abs( a / 2.0f );
     }
   };
 

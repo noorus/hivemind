@@ -498,7 +498,7 @@ namespace hivemind {
 
       auto fnEnoughDifference = []( const double& a, const double& b ) -> bool
       {
-        double diff = Math::abs( a - b );
+        double diff = math::abs( a - b );
         double largest = std::max( a, b );
         double minDiff = std::max( 2.0, largest * DIFF_COEFICIENT );
         return ( diff > minDiff );

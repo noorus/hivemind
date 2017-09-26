@@ -3,7 +3,7 @@
 
 namespace hivemind {
 
-  namespace Math {
+  namespace math {
 
     inline Real round( Real value )
     {

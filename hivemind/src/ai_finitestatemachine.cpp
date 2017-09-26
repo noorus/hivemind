@@ -5,50 +5,50 @@ namespace hivemind {
 
   namespace AI {
 
-    FiniteStateMachine::FiniteStateMachine( Agent* owner ): mOwner( owner )
+    FiniteStateMachine::FiniteStateMachine( Agent* owner ): owner_( owner )
     {
       //
     }
 
     void FiniteStateMachine::pushState( State* state )
     {
-      if ( !mStates.empty() )
-        mStates.back()->pause( this, mOwner );
+      if ( !states_.empty() )
+        states_.back()->pause( this, owner_ );
 
-      mStates.push_back( state );
+      states_.push_back( state );
 
-      state->enter( this, mOwner );
+      state->enter( this, owner_ );
     }
 
     void FiniteStateMachine::popState()
     {
-      if ( !mStates.empty() )
+      if ( !states_.empty() )
       {
-        mStates.back()->leave( this, mOwner );
-        mStates.pop_back();
+        states_.back()->leave( this, owner_ );
+        states_.pop_back();
       }
 
-      if ( !mStates.empty() )
-        mStates.back()->resume( this, mOwner );
+      if ( !states_.empty() )
+        states_.back()->resume( this, owner_ );
     }
 
     void FiniteStateMachine::changeState( State* state )
     {
-      if ( !mStates.empty() )
+      if ( !states_.empty() )
       {
-        mStates.back()->leave( this, mOwner );
-        mStates.pop_back();
+        states_.back()->leave( this, owner_ );
+        states_.pop_back();
       }
 
-      mStates.push_back( state );
+      states_.push_back( state );
 
-      state->enter( this, mOwner );
+      state->enter( this, owner_ );
     }
 
     void FiniteStateMachine::execute( const GameTime delta )
     {
-      if ( !mStates.empty() )
-        mStates.back()->execute( this, mOwner, delta );
+      if ( !states_.empty() )
+        states_.back()->execute( this, owner_, delta );
     }
 
   }
