@@ -106,7 +106,7 @@ namespace hivemind {
     stbi_write_png( "debug_map_clusters.png", (int)info.width, (int)info.height, 3, rgb8.data(), (int)info.width * 3 );
   }
 
-  void dumpPolygons( size_t width, size_t height, PolygonComponentVector& polys, std::map<Analysis::nodeID, Analysis::chokeSides_t>& chokes )
+  void dumpPolygons( size_t width, size_t height, PolygonComponentVector& polys, std::map<Analysis::RegionNodeID, Analysis::Chokepoint>& chokes )
   {
     svg::Dimensions dim( (double)width * 16.0, (double)height * 16.0 );
     svg::Document doc( "debug_map_polygons_invert.svg", svg::Layout( dim, svg::Layout::TopLeft ) );

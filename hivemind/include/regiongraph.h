@@ -9,40 +9,44 @@ namespace hivemind {
 
   namespace Analysis {
 
-    typedef size_t nodeID;
+    using RegionNodeID = size_t;
 
-    struct chokeSides_t {
+    struct Chokepoint {
       Vector2 side1;
       Vector2 side2;
-      chokeSides_t( Vector2 s1, Vector2 s2 ): side1( s1 ), side2( s2 ) {};
+      Chokepoint( Vector2 s1, Vector2 s2 ): side1( s1 ), side2( s2 ) {}
     };
 
     class RegionGraph {
-    private:
-      // mapping between Voronoi vertices and graph nodes
-      std::map<const BoostVoronoi::vertex_type*, nodeID> voronoiVertexToNode;
-
     public:
-      enum NodeType { NONE, REGION, CHOKEPOINT, CHOKEGATEA, CHOKEGATEB };
-
+      enum NodeType {
+        NodeType_None,
+        NodeType_Region,
+        NodeType_Chokepoint,
+        NodeType_ChokeGateA,
+        NodeType_ChokeGateB
+      };
+    private:
+      std::map<const BoostVoronoi::vertex_type*, RegionNodeID> voronoiVertexToNode_;
+    public:
       // TODO, create struct
       std::vector<Vector2> nodes;
-      std::vector<std::set<nodeID>> adjacencyList;
+      std::vector<std::set<RegionNodeID>> adjacencyList;
       std::vector<double> minDistToObstacle;
       std::vector<NodeType> nodeType;
 
-      std::set<nodeID> regionNodes;
-      std::set<nodeID> chokeNodes;
-      std::set<nodeID> gateNodesA;
-      std::set<nodeID> gateNodesB;
+      std::set<RegionNodeID> regionNodes;
+      std::set<RegionNodeID> chokeNodes;
+      std::set<RegionNodeID> gateNodesA;
+      std::set<RegionNodeID> gateNodesB;
 
-      nodeID addNode( const BoostVoronoi::vertex_type* vertex, const Vector2& pos );
-      nodeID addNode( const Vector2& pos, const double& minDist );
-      void addEdge( const nodeID& v0, const nodeID& v1 );
-      void markNodeAsRegion( const nodeID& v0 );
-      void markNodeAsChoke( const nodeID& v0 );
-      void unmarkRegionNode( const nodeID& v0 );
-      void unmarkChokeNode( const nodeID& v0 );
+      RegionNodeID addNode( const BoostVoronoi::vertex_type* vertex, const Vector2& pos );
+      RegionNodeID addNode( const Vector2& pos, const double& minDist );
+      void addEdge( const RegionNodeID& v0, const RegionNodeID& v1 );
+      void markNodeAsRegion( const RegionNodeID& v0 );
+      void markNodeAsChoke( const RegionNodeID& v0 );
+      void unmarkRegionNode( const RegionNodeID& v0 );
+      void unmarkChokeNode( const RegionNodeID& v0 );
     };
 
   }

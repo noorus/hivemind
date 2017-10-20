@@ -58,7 +58,7 @@ namespace hivemind {
     Analysis::RegionGraph graph_;
     Analysis::RegionGraph graphSimplified_;
     PolygonComponentVector obstacles_;
-    std::map<Analysis::nodeID, Analysis::chokeSides_t> chokepointSides_;
+    std::map<Analysis::RegionNodeID, Analysis::Chokepoint> chokepointSides_;
     BaseLocationVector baseLocations_;
   public:
     Map( Bot* bot );
