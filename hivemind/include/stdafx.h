@@ -47,13 +47,14 @@
 #include <sc2renderer/sc2_renderer.h>
 #pragma warning(pop)
 
+#pragma warning(push)
 #pragma warning(disable: 4244)
 #include <boost/geometry.hpp>
-#pragma warning(default: 4244) 
 #include <boost/geometry/geometries/point_xy.hpp>
 #include <boost/polygon/voronoi.hpp>
 #include <boost/polygon/polygon.hpp>
 #include <boost/geometry/index/rtree.hpp>
+#pragma warning(pop)
 
 #include <CGAL/basic.h>
 #include <CGAL/Simple_cartesian.h>
