@@ -73,6 +73,11 @@
 #include <CGAL/Arr_extended_dcel.h>
 #include <CGAL/Gmpq.h>
 
+#pragma warning(push)
+#pragma warning(disable: 4275 4996)
+#include <json/json.h>
+#pragma warning(pop)
+
 #ifndef SAFE_DELETE
 # define SAFE_DELETE(p) {if(p){delete p;(p)=NULL;}}
 #endif
