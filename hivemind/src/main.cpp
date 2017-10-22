@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "bot.h"
 #include "exception.h"
-#include "hive_array2.h"
+#include "database.h"
 
 using sc2::Coordinator;
 
@@ -10,6 +10,10 @@ const char* c_mapName = "Fractured Glacier"; // "Interloper LE";
 
 int main( int argc, char* argv[] )
 {
+  // test database & tech tree stuff
+  // hivemind::Database::load();
+  // return 0;
+
 #ifndef _DEBUG
   try
   {

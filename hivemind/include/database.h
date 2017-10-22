@@ -1,0 +1,96 @@
+#pragma once
+#include "hive_types.h"
+#include "sc2_forward.h"
+
+namespace hivemind {
+
+  using UnitType64 = size_t;
+  using UnitTypeSet = set<UnitType64>;
+
+  struct UnitData {
+    UnitType64 id;
+    string name;
+    Real acceleration;
+    bool armored;
+    bool biological;
+    int cargoSize;
+    int food;
+    int lifeArmor;
+    int lifeMax;
+    Real lifeRegenRate;
+    int lifeStart;
+    bool light;
+    bool massive;
+    bool mechanical;
+    int mineralCost;
+    bool flying;
+    bool psionic;
+    Race race;
+    Real radius;
+    int scoreKill;
+    int scoreMake;
+    int shieldRegenDelay;
+    Real shieldRegenRate;
+    int shieldsMax;
+    int shieldsStart;
+    Real sight;
+    Real speed;
+    Real speedMultiplierCreep;
+    bool structure;
+    Real turningRate;
+    int vespeneCost;
+    inline operator UnitTypeID() const
+    {
+      UnitTypeID ret( (uint32_t)id );
+      return ret;
+    }
+  };
+
+  using UnitDataMap = std::map<UnitType64, UnitData>;
+
+  struct TechTreeUnitRequirement {
+    UnitTypeIDSet units; //!< One of (aliases)
+    bool not; //!< Is this a negative requirement (may only have one mothership)
+    bool attached; //!< Must be attached, such as a tech lab
+  };
+
+  using TechTreeUnitRequirements = vector<TechTreeUnitRequirement>;
+
+  struct TechTreeUpgradeRequirement {
+    UpgradeID upgrade;
+  };
+
+  using TechTreeUpgradeRequirements = vector<TechTreeUpgradeRequirement>;
+
+  struct TechTreeRelationship {
+    UnitTypeID source; //!< Which unit
+    AbilityID ability; //!< Using which ability
+    Real time; //!< In how long a time
+    UnitTypeID target; //!< Builds/trains/morphs into which unit
+    bool isMorph; //!< Is this a morph, i.e. consumes source unit
+    TechTreeUnitRequirements unitRequirements; //!< Additional unit requirements TODO parse
+    TechTreeUpgradeRequirements upgradeRequirements; //!< Additional upgrade requirements TODO parse
+  };
+
+  using TechTreeRelationshipVector = vector<TechTreeRelationship>;
+
+  class TechTree {
+  protected:
+    TechTreeRelationshipVector relationships_;
+  public:
+    void load( const string& filename );
+    void findTechChain( UnitTypeID target );
+  };
+
+  class Database {
+  protected:
+    static UnitDataMap unitData_;
+    static TechTree techTree_;
+  public:
+    static void load();
+    inline const UnitDataMap& units() const { return unitData_; }
+    inline const UnitData& unit( UnitType64 id ) const { return unitData_[id]; }
+    inline const TechTree& techTree() const { return techTree_; }
+  };
+
+}

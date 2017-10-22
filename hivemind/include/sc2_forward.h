@@ -27,9 +27,17 @@ namespace hivemind {
   using sc2::PlayerType;
   using sc2::Tag;
 
+  using sc2::ABILITY_ID;
+  using sc2::AbilityID;
+
+  using sc2::UPGRADE_ID;
+  using sc2::UpgradeID;
+
   using UnitTag = uint64_t;
   using UnitRef = const Unit*;
   using UnitMap = std::map<UnitRef, sc2::UNIT_TYPEID>;
+
+  using UnitTypeIDSet = set<UnitTypeID>;
 
   using Point2Vector = vector<Point2D>;
   using Point3Vector = vector<Point3D>;
