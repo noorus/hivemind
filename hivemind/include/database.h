@@ -87,7 +87,7 @@ namespace hivemind {
     static UnitDataMap unitData_;
     static TechTree techTree_;
   public:
-    static void load();
+    static void load( const string& dataPath );
     inline const UnitDataMap& units() const { return unitData_; }
     inline const UnitData& unit( UnitType64 id ) const { return unitData_[id]; }
     inline const TechTree& techTree() const { return techTree_; }

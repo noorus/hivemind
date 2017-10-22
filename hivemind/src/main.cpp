@@ -7,17 +7,16 @@ using sc2::Coordinator;
 
 const unsigned int c_updateSleepTime = 10; // 10 milliseconds
 const char* c_mapName = "Fractured Glacier"; // "Interloper LE";
+const char* c_dataPath = "..\\data";
 
 int main( int argc, char* argv[] )
 {
-  // test database & tech tree stuff
-  // hivemind::Database::load();
-  // return 0;
-
 #ifndef _DEBUG
   try
   {
 #endif
+    hivemind::Database::load( c_dataPath );
+
     Coordinator coordinator;
 
     if ( !coordinator.LoadSettings( argc, argv ) )

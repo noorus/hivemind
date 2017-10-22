@@ -115,11 +115,11 @@ namespace hivemind {
   UnitDataMap Database::unitData_;
   TechTree Database::techTree_;
 
-  void Database::load()
+  void Database::load( const string& dataPath )
   {
     unitData_.clear();
-    loadUnitData( "../data/units.json", unitData_ );
-    techTree_.load( "../data/techtree.json" );
+    loadUnitData( dataPath + "\\units.json", unitData_ );
+    techTree_.load( dataPath + "\\techtree.json" );
   }
 
 }
