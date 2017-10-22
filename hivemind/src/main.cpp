@@ -8,19 +8,6 @@ using sc2::Coordinator;
 const unsigned int c_updateSleepTime = 10; // 10 milliseconds
 const char* c_mapName = "Fractured Glacier"; // "Interloper LE";
 
-/*
-  Json::Value root;
-  std::ifstream infile;
-  infile.open( "techtree.json", std::ifstream::in );
-  if ( !infile.is_open() )
-    HIVE_EXCEPT( "Failed to open techtree.json" );
-  infile >> root;
-  infile.close();
-
-  printf_s( "stay" );
-  return EXIT_SUCCESS;
-*/
-
 int main( int argc, char* argv[] )
 {
 #ifndef _DEBUG

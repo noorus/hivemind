@@ -2,7 +2,7 @@
   "AiurLightBridgeAbandonedNE10" : 
   {
     "commands" : {},
-    "id" : "AiurLightBridgeAbandonedNE10",
+    "name" : "AiurLightBridgeAbandonedNE10",
     "type" : "morph"
   },
   "AiurLightBridgeAbandonedNE10Out" : 
@@ -11,18 +11,18 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 2568,
         "time" : 0.0,
         "units" : [ "AiurLightBridgeAbandonedNE10Out" ]
       }
     },
-    "id" : "AiurLightBridgeAbandonedNE10Out",
+    "name" : "AiurLightBridgeAbandonedNE10Out",
     "type" : "morph"
   },
   "AiurLightBridgeAbandonedNE12" : 
   {
     "commands" : {},
-    "id" : "AiurLightBridgeAbandonedNE12",
+    "name" : "AiurLightBridgeAbandonedNE12",
     "type" : "morph"
   },
   "AiurLightBridgeAbandonedNE12Out" : 
@@ -31,18 +31,18 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 2572,
         "time" : 0.0,
         "units" : [ "AiurLightBridgeAbandonedNE12Out" ]
       }
     },
-    "id" : "AiurLightBridgeAbandonedNE12Out",
+    "name" : "AiurLightBridgeAbandonedNE12Out",
     "type" : "morph"
   },
   "AiurLightBridgeAbandonedNE8" : 
   {
     "commands" : {},
-    "id" : "AiurLightBridgeAbandonedNE8",
+    "name" : "AiurLightBridgeAbandonedNE8",
     "type" : "morph"
   },
   "AiurLightBridgeAbandonedNE8Out" : 
@@ -51,18 +51,18 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 2564,
         "time" : 0.0,
         "units" : [ "AiurLightBridgeAbandonedNE8Out" ]
       }
     },
-    "id" : "AiurLightBridgeAbandonedNE8Out",
+    "name" : "AiurLightBridgeAbandonedNE8Out",
     "type" : "morph"
   },
   "AiurLightBridgeAbandonedNW10" : 
   {
     "commands" : {},
-    "id" : "AiurLightBridgeAbandonedNW10",
+    "name" : "AiurLightBridgeAbandonedNW10",
     "type" : "morph"
   },
   "AiurLightBridgeAbandonedNW10Out" : 
@@ -71,18 +71,18 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 2580,
         "time" : 0.0,
         "units" : [ "AiurLightBridgeAbandonedNW10Out" ]
       }
     },
-    "id" : "AiurLightBridgeAbandonedNW10Out",
+    "name" : "AiurLightBridgeAbandonedNW10Out",
     "type" : "morph"
   },
   "AiurLightBridgeAbandonedNW12" : 
   {
     "commands" : {},
-    "id" : "AiurLightBridgeAbandonedNW12",
+    "name" : "AiurLightBridgeAbandonedNW12",
     "type" : "morph"
   },
   "AiurLightBridgeAbandonedNW12Out" : 
@@ -91,18 +91,18 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 2584,
         "time" : 0.0,
         "units" : [ "AiurLightBridgeAbandonedNW12Out" ]
       }
     },
-    "id" : "AiurLightBridgeAbandonedNW12Out",
+    "name" : "AiurLightBridgeAbandonedNW12Out",
     "type" : "morph"
   },
   "AiurLightBridgeAbandonedNW8" : 
   {
     "commands" : {},
-    "id" : "AiurLightBridgeAbandonedNW8",
+    "name" : "AiurLightBridgeAbandonedNW8",
     "type" : "morph"
   },
   "AiurLightBridgeAbandonedNW8Out" : 
@@ -111,18 +111,18 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 2576,
         "time" : 0.0,
         "units" : [ "AiurLightBridgeAbandonedNW8Out" ]
       }
     },
-    "id" : "AiurLightBridgeAbandonedNW8Out",
+    "name" : "AiurLightBridgeAbandonedNW8Out",
     "type" : "morph"
   },
   "AiurLightBridgeNE10" : 
   {
     "commands" : {},
-    "id" : "AiurLightBridgeNE10",
+    "name" : "AiurLightBridgeNE10",
     "type" : "morph"
   },
   "AiurLightBridgeNE10Out" : 
@@ -131,18 +131,18 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 2401,
         "time" : 0.0,
         "units" : [ "AiurLightBridgeNE10Out" ]
       }
     },
-    "id" : "AiurLightBridgeNE10Out",
+    "name" : "AiurLightBridgeNE10Out",
     "type" : "morph"
   },
   "AiurLightBridgeNE12" : 
   {
     "commands" : {},
-    "id" : "AiurLightBridgeNE12",
+    "name" : "AiurLightBridgeNE12",
     "type" : "morph"
   },
   "AiurLightBridgeNE12Out" : 
@@ -151,18 +151,18 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 2405,
         "time" : 0.0,
         "units" : [ "AiurLightBridgeNE12Out" ]
       }
     },
-    "id" : "AiurLightBridgeNE12Out",
+    "name" : "AiurLightBridgeNE12Out",
     "type" : "morph"
   },
   "AiurLightBridgeNE8" : 
   {
     "commands" : {},
-    "id" : "AiurLightBridgeNE8",
+    "name" : "AiurLightBridgeNE8",
     "type" : "morph"
   },
   "AiurLightBridgeNE8Out" : 
@@ -171,18 +171,18 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 2397,
         "time" : 0.0,
         "units" : [ "AiurLightBridgeNE8Out" ]
       }
     },
-    "id" : "AiurLightBridgeNE8Out",
+    "name" : "AiurLightBridgeNE8Out",
     "type" : "morph"
   },
   "AiurLightBridgeNW10" : 
   {
     "commands" : {},
-    "id" : "AiurLightBridgeNW10",
+    "name" : "AiurLightBridgeNW10",
     "type" : "morph"
   },
   "AiurLightBridgeNW10Out" : 
@@ -191,18 +191,18 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 2413,
         "time" : 0.0,
         "units" : [ "AiurLightBridgeNW10Out" ]
       }
     },
-    "id" : "AiurLightBridgeNW10Out",
+    "name" : "AiurLightBridgeNW10Out",
     "type" : "morph"
   },
   "AiurLightBridgeNW12" : 
   {
     "commands" : {},
-    "id" : "AiurLightBridgeNW12",
+    "name" : "AiurLightBridgeNW12",
     "type" : "morph"
   },
   "AiurLightBridgeNW12Out" : 
@@ -211,18 +211,18 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 2417,
         "time" : 0.0,
         "units" : [ "AiurLightBridgeNW12Out" ]
       }
     },
-    "id" : "AiurLightBridgeNW12Out",
+    "name" : "AiurLightBridgeNW12Out",
     "type" : "morph"
   },
   "AiurLightBridgeNW8" : 
   {
     "commands" : {},
-    "id" : "AiurLightBridgeNW8",
+    "name" : "AiurLightBridgeNW8",
     "type" : "morph"
   },
   "AiurLightBridgeNW8Out" : 
@@ -231,84 +231,84 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 2409,
         "time" : 0.0,
         "units" : [ "AiurLightBridgeNW8Out" ]
       }
     },
-    "id" : "AiurLightBridgeNW8Out",
+    "name" : "AiurLightBridgeNW8Out",
     "type" : "morph"
   },
   "AiurTempleBridgeNE10" : 
   {
     "commands" : {},
-    "id" : "AiurTempleBridgeNE10",
+    "name" : "AiurTempleBridgeNE10",
     "type" : "morph"
   },
   "AiurTempleBridgeNE10Out" : 
   {
     "commands" : {},
-    "id" : "AiurTempleBridgeNE10Out",
+    "name" : "AiurTempleBridgeNE10Out",
     "type" : "morph"
   },
   "AiurTempleBridgeNE12" : 
   {
     "commands" : {},
-    "id" : "AiurTempleBridgeNE12",
+    "name" : "AiurTempleBridgeNE12",
     "type" : "morph"
   },
   "AiurTempleBridgeNE12Out" : 
   {
     "commands" : {},
-    "id" : "AiurTempleBridgeNE12Out",
+    "name" : "AiurTempleBridgeNE12Out",
     "type" : "morph"
   },
   "AiurTempleBridgeNE8" : 
   {
     "commands" : {},
-    "id" : "AiurTempleBridgeNE8",
+    "name" : "AiurTempleBridgeNE8",
     "type" : "morph"
   },
   "AiurTempleBridgeNE8Out" : 
   {
     "commands" : {},
-    "id" : "AiurTempleBridgeNE8Out",
+    "name" : "AiurTempleBridgeNE8Out",
     "type" : "morph"
   },
   "AiurTempleBridgeNW10" : 
   {
     "commands" : {},
-    "id" : "AiurTempleBridgeNW10",
+    "name" : "AiurTempleBridgeNW10",
     "type" : "morph"
   },
   "AiurTempleBridgeNW10Out" : 
   {
     "commands" : {},
-    "id" : "AiurTempleBridgeNW10Out",
+    "name" : "AiurTempleBridgeNW10Out",
     "type" : "morph"
   },
   "AiurTempleBridgeNW12" : 
   {
     "commands" : {},
-    "id" : "AiurTempleBridgeNW12",
+    "name" : "AiurTempleBridgeNW12",
     "type" : "morph"
   },
   "AiurTempleBridgeNW12Out" : 
   {
     "commands" : {},
-    "id" : "AiurTempleBridgeNW12Out",
+    "name" : "AiurTempleBridgeNW12Out",
     "type" : "morph"
   },
   "AiurTempleBridgeNW8" : 
   {
     "commands" : {},
-    "id" : "AiurTempleBridgeNW8",
+    "name" : "AiurTempleBridgeNW8",
     "type" : "morph"
   },
   "AiurTempleBridgeNW8Out" : 
   {
     "commands" : {},
-    "id" : "AiurTempleBridgeNW8Out",
+    "name" : "AiurTempleBridgeNW8Out",
     "type" : "morph"
   },
   "AssaultMode" : 
@@ -317,12 +317,12 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 403,
         "time" : 0.0,
         "units" : [ "VikingAssault" ]
       }
     },
-    "id" : "AssaultMode",
+    "name" : "AssaultMode",
     "type" : "morph"
   },
   "BarracksAddOns" : 
@@ -331,24 +331,24 @@
     {
       "Build1" : 
       {
-        "index" : "Build1",
+        "index" : 421,
         "time" : 25.0,
         "units" : [ "BarracksTechLab" ]
       },
       "Build2" : 
       {
-        "index" : "Build2",
+        "index" : 422,
         "time" : 50.0,
         "units" : [ "BarracksReactor" ]
       }
     },
-    "id" : "BarracksAddOns",
+    "name" : "BarracksAddOns",
     "type" : "build"
   },
   "BarracksLiftOff" : 
   {
     "commands" : {},
-    "id" : "BarracksLiftOff",
+    "name" : "BarracksLiftOff",
     "type" : "morph"
   },
   "BarracksReactorMorph" : 
@@ -357,13 +357,19 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
-        "requires" : [],
+        "index" : 1676,
+        "requires" : 
+        [
+          {
+            "type" : "value",
+            "value" : 0
+          }
+        ],
         "time" : 0.0,
         "units" : [ "BarracksReactor" ]
       }
     },
-    "id" : "BarracksReactorMorph",
+    "name" : "BarracksReactorMorph",
     "type" : "morph"
   },
   "BarracksTechLabMorph" : 
@@ -372,13 +378,19 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
-        "requires" : [],
+        "index" : 1668,
+        "requires" : 
+        [
+          {
+            "type" : "value",
+            "value" : 0
+          }
+        ],
         "time" : 0.0,
         "units" : [ "BarracksTechLab" ]
       }
     },
-    "id" : "BarracksTechLabMorph",
+    "name" : "BarracksTechLabMorph",
     "type" : "morph"
   },
   "BarracksTrain" : 
@@ -387,39 +399,60 @@
     {
       "Train1" : 
       {
-        "index" : "Train1",
+        "index" : 560,
         "time" : 25.0,
         "units" : [ "Marine" ]
       },
       "Train2" : 
       {
-        "index" : "Train2",
+        "index" : 561,
         "time" : 45.0,
         "units" : [ "Reaper" ]
       },
       "Train3" : 
       {
-        "index" : "Train3",
-        "requires" : [],
+        "index" : 562,
+        "requires" : 
+        [
+          {
+            "operands" : 
+            [
+              {
+                "state" : "CompleteOnlyAtUnit",
+                "type" : "unitCount",
+                "unit" : [ 37 ],
+                "unitName" : [ "BarracksTechLab" ]
+              },
+              {
+                "state" : "CompleteOnly",
+                "type" : "unitCount",
+                "unit" : [ 26 ],
+                "unitName" : [ "GhostAcademy" ]
+              }
+            ],
+            "type" : "and"
+          }
+        ],
         "time" : 40.0,
         "units" : [ "Ghost" ]
       },
       "Train4" : 
       {
-        "index" : "Train4",
+        "index" : 563,
         "requires" : 
         [
           {
-            "name" : "TechLab",
             "state" : "CompleteOnlyAtUnit",
-            "type" : "unit"
+            "type" : "unitCount",
+            "unit" : [ 5 ],
+            "unitName" : [ "TechLab" ]
           }
         ],
         "time" : 30.0,
         "units" : [ "Marauder" ]
       }
     },
-    "id" : "BarracksTrain",
+    "name" : "BarracksTrain",
     "type" : "train"
   },
   "BridgeExtend" : 
@@ -428,12 +461,12 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 0,
         "time" : 0.0,
         "units" : [ "##id##" ]
       }
     },
-    "id" : "BridgeExtend",
+    "name" : "BridgeExtend",
     "type" : "morph"
   },
   "BridgeRetract" : 
@@ -442,12 +475,12 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 0,
         "time" : 0.0,
         "units" : [ "##id##" ]
       }
     },
-    "id" : "BridgeRetract",
+    "name" : "BridgeRetract",
     "type" : "morph"
   },
   "BuildNydusCanal" : 
@@ -456,13 +489,14 @@
     {
       "Build1" : 
       {
-        "index" : "Build1",
+        "index" : 1768,
         "requires" : 
         [
           {
-            "name" : "NydusNetwork",
             "state" : "CompleteOnly",
-            "type" : "unit"
+            "type" : "unitCount",
+            "unit" : [ 95 ],
+            "unitName" : [ "NydusNetwork" ]
           }
         ],
         "time" : 20.0,
@@ -470,18 +504,18 @@
       },
       "Build2" : 
       {
-        "index" : "Build2",
+        "index" : 1769,
         "time" : 20.0,
-        "units" : [ "NydusCanalAttacker", "" ]
+        "units" : [ "NydusCanalAttacker" ]
       },
       "Build3" : 
       {
-        "index" : "Build3",
+        "index" : 1770,
         "time" : 0.0,
-        "units" : [ "NydusCanalCreeper", "", "" ]
+        "units" : [ "NydusCanalCreeper" ]
       }
     },
-    "id" : "BuildNydusCanal",
+    "name" : "BuildNydusCanal",
     "type" : "build"
   },
   "BurrowBanelingDown" : 
@@ -490,20 +524,21 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 1374,
         "requires" : 
         [
           {
-            "name" : "Burrow",
             "state" : "CompleteOnly",
-            "type" : "upgrade"
+            "type" : "upgradeCount",
+            "upgrade" : 64,
+            "upgradeName" : "Burrow"
           }
         ],
         "time" : 0.0,
         "units" : [ "BanelingBurrowed" ]
       }
     },
-    "id" : "BurrowBanelingDown",
+    "name" : "BurrowBanelingDown",
     "type" : "morph"
   },
   "BurrowBanelingUp" : 
@@ -512,12 +547,12 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 1376,
         "time" : 0.0,
         "units" : [ "Baneling" ]
       }
     },
-    "id" : "BurrowBanelingUp",
+    "name" : "BurrowBanelingUp",
     "type" : "morph"
   },
   "BurrowCreepTumorDown" : 
@@ -526,12 +561,12 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 1662,
         "time" : 0.0,
         "units" : [ "CreepTumorBurrowed" ]
       }
     },
-    "id" : "BurrowCreepTumorDown",
+    "name" : "BurrowCreepTumorDown",
     "type" : "morph"
   },
   "BurrowDroneDown" : 
@@ -540,20 +575,21 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 1378,
         "requires" : 
         [
           {
-            "name" : "Burrow",
             "state" : "CompleteOnly",
-            "type" : "upgrade"
+            "type" : "upgradeCount",
+            "upgrade" : 64,
+            "upgradeName" : "Burrow"
           }
         ],
         "time" : 0.0,
         "units" : [ "DroneBurrowed" ]
       }
     },
-    "id" : "BurrowDroneDown",
+    "name" : "BurrowDroneDown",
     "type" : "morph"
   },
   "BurrowDroneUp" : 
@@ -562,12 +598,12 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 1380,
         "time" : 0.0,
         "units" : [ "Drone" ]
       }
     },
-    "id" : "BurrowDroneUp",
+    "name" : "BurrowDroneUp",
     "type" : "morph"
   },
   "BurrowHydraliskDown" : 
@@ -576,20 +612,21 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 1382,
         "requires" : 
         [
           {
-            "name" : "Burrow",
             "state" : "CompleteOnly",
-            "type" : "upgrade"
+            "type" : "upgradeCount",
+            "upgrade" : 64,
+            "upgradeName" : "Burrow"
           }
         ],
         "time" : 0.0,
         "units" : [ "HydraliskBurrowed" ]
       }
     },
-    "id" : "BurrowHydraliskDown",
+    "name" : "BurrowHydraliskDown",
     "type" : "morph"
   },
   "BurrowHydraliskUp" : 
@@ -598,12 +635,12 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 1384,
         "time" : 0.0,
         "units" : [ "Hydralisk" ]
       }
     },
-    "id" : "BurrowHydraliskUp",
+    "name" : "BurrowHydraliskUp",
     "type" : "morph"
   },
   "BurrowInfestorDown" : 
@@ -612,20 +649,21 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 1444,
         "requires" : 
         [
           {
-            "name" : "Burrow",
             "state" : "CompleteOnly",
-            "type" : "upgrade"
+            "type" : "upgradeCount",
+            "upgrade" : 64,
+            "upgradeName" : "Burrow"
           }
         ],
         "time" : 0.0,
         "units" : [ "InfestorBurrowed" ]
       }
     },
-    "id" : "BurrowInfestorDown",
+    "name" : "BurrowInfestorDown",
     "type" : "morph"
   },
   "BurrowInfestorTerranDown" : 
@@ -634,20 +672,21 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 1394,
         "requires" : 
         [
           {
-            "name" : "Burrow",
             "state" : "CompleteOnly",
-            "type" : "upgrade"
+            "type" : "upgradeCount",
+            "upgrade" : 64,
+            "upgradeName" : "Burrow"
           }
         ],
         "time" : 0.0,
         "units" : [ "InfestorTerranBurrowed" ]
       }
     },
-    "id" : "BurrowInfestorTerranDown",
+    "name" : "BurrowInfestorTerranDown",
     "type" : "morph"
   },
   "BurrowInfestorTerranUp" : 
@@ -656,12 +695,12 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 1396,
         "time" : 0.0,
         "units" : [ "InfestorTerran" ]
       }
     },
-    "id" : "BurrowInfestorTerranUp",
+    "name" : "BurrowInfestorTerranUp",
     "type" : "morph"
   },
   "BurrowInfestorUp" : 
@@ -670,12 +709,12 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 1446,
         "time" : 0.0,
         "units" : [ "Infestor" ]
       }
     },
-    "id" : "BurrowInfestorUp",
+    "name" : "BurrowInfestorUp",
     "type" : "morph"
   },
   "BurrowLurkerMPDown" : 
@@ -684,12 +723,12 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 2108,
         "time" : 0.0,
         "units" : [ "LurkerMPBurrowed", "LurkerMPBurrowed" ]
       }
     },
-    "id" : "BurrowLurkerMPDown",
+    "name" : "BurrowLurkerMPDown",
     "type" : "morph"
   },
   "BurrowLurkerMPUp" : 
@@ -698,12 +737,12 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 2110,
         "time" : 0.0,
         "units" : [ "LurkerMP", "LurkerMP" ]
       }
     },
-    "id" : "BurrowLurkerMPUp",
+    "name" : "BurrowLurkerMPUp",
     "type" : "morph"
   },
   "BurrowQueenDown" : 
@@ -712,20 +751,21 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 1433,
         "requires" : 
         [
           {
-            "name" : "Burrow",
             "state" : "CompleteOnly",
-            "type" : "upgrade"
+            "type" : "upgradeCount",
+            "upgrade" : 64,
+            "upgradeName" : "Burrow"
           }
         ],
         "time" : 0.0,
         "units" : [ "QueenBurrowed" ]
       }
     },
-    "id" : "BurrowQueenDown",
+    "name" : "BurrowQueenDown",
     "type" : "morph"
   },
   "BurrowQueenUp" : 
@@ -734,12 +774,12 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 1435,
         "time" : 0.0,
         "units" : [ "Queen" ]
       }
     },
-    "id" : "BurrowQueenUp",
+    "name" : "BurrowQueenUp",
     "type" : "morph"
   },
   "BurrowRavagerDown" : 
@@ -748,20 +788,21 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 2340,
         "requires" : 
         [
           {
-            "name" : "Burrow",
             "state" : "CompleteOnly",
-            "type" : "upgrade"
+            "type" : "upgradeCount",
+            "upgrade" : 64,
+            "upgradeName" : "Burrow"
           }
         ],
         "time" : 0.0,
         "units" : [ "RavagerBurrowed" ]
       }
     },
-    "id" : "BurrowRavagerDown",
+    "name" : "BurrowRavagerDown",
     "type" : "morph"
   },
   "BurrowRavagerUp" : 
@@ -770,12 +811,12 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 2342,
         "time" : 0.0,
         "units" : [ "Ravager" ]
       }
     },
-    "id" : "BurrowRavagerUp",
+    "name" : "BurrowRavagerUp",
     "type" : "morph"
   },
   "BurrowRoachDown" : 
@@ -784,20 +825,21 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 1386,
         "requires" : 
         [
           {
-            "name" : "Burrow",
             "state" : "CompleteOnly",
-            "type" : "upgrade"
+            "type" : "upgradeCount",
+            "upgrade" : 64,
+            "upgradeName" : "Burrow"
           }
         ],
         "time" : 0.0,
         "units" : [ "RoachBurrowed" ]
       }
     },
-    "id" : "BurrowRoachDown",
+    "name" : "BurrowRoachDown",
     "type" : "morph"
   },
   "BurrowRoachUp" : 
@@ -806,12 +848,12 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 1388,
         "time" : 0.0,
         "units" : [ "Roach" ]
       }
     },
-    "id" : "BurrowRoachUp",
+    "name" : "BurrowRoachUp",
     "type" : "morph"
   },
   "BurrowUltraliskDown" : 
@@ -820,20 +862,21 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 1512,
         "requires" : 
         [
           {
-            "name" : "Burrow",
             "state" : "CompleteOnly",
-            "type" : "upgrade"
+            "type" : "upgradeCount",
+            "upgrade" : 64,
+            "upgradeName" : "Burrow"
           }
         ],
         "time" : 0.0,
         "units" : [ "UltraliskBurrowed" ]
       }
     },
-    "id" : "BurrowUltraliskDown",
+    "name" : "BurrowUltraliskDown",
     "type" : "morph"
   },
   "BurrowUltraliskUp" : 
@@ -842,12 +885,12 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 1514,
         "time" : 0.0,
         "units" : [ "Ultralisk" ]
       }
     },
-    "id" : "BurrowUltraliskUp",
+    "name" : "BurrowUltraliskUp",
     "type" : "morph"
   },
   "BurrowZerglingDown" : 
@@ -856,20 +899,21 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 1390,
         "requires" : 
         [
           {
-            "name" : "Burrow",
             "state" : "CompleteOnly",
-            "type" : "upgrade"
+            "type" : "upgradeCount",
+            "upgrade" : 64,
+            "upgradeName" : "Burrow"
           }
         ],
         "time" : 0.0,
         "units" : [ "ZerglingBurrowed" ]
       }
     },
-    "id" : "BurrowZerglingDown",
+    "name" : "BurrowZerglingDown",
     "type" : "morph"
   },
   "BurrowZerglingUp" : 
@@ -878,18 +922,18 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 1392,
         "time" : 0.0,
         "units" : [ "Zergling" ]
       }
     },
-    "id" : "BurrowZerglingUp",
+    "name" : "BurrowZerglingUp",
     "type" : "morph"
   },
   "CommandCenterLiftOff" : 
   {
     "commands" : {},
-    "id" : "CommandCenterLiftOff",
+    "name" : "CommandCenterLiftOff",
     "type" : "morph"
   },
   "CommandCenterTrain" : 
@@ -898,60 +942,60 @@
     {
       "Train1" : 
       {
-        "index" : "Train1",
+        "index" : 524,
         "time" : 17.0,
         "units" : [ "SCV" ]
       }
     },
-    "id" : "CommandCenterTrain",
+    "name" : "CommandCenterTrain",
     "type" : "train"
   },
   "CompoundMansion_DoorE" : 
   {
     "commands" : {},
-    "id" : "CompoundMansion_DoorE",
+    "name" : "CompoundMansion_DoorE",
     "type" : "morph"
   },
   "CompoundMansion_DoorELowered" : 
   {
     "commands" : {},
-    "id" : "CompoundMansion_DoorELowered",
+    "name" : "CompoundMansion_DoorELowered",
     "type" : "morph"
   },
   "CompoundMansion_DoorN" : 
   {
     "commands" : {},
-    "id" : "CompoundMansion_DoorN",
+    "name" : "CompoundMansion_DoorN",
     "type" : "morph"
   },
   "CompoundMansion_DoorNE" : 
   {
     "commands" : {},
-    "id" : "CompoundMansion_DoorNE",
+    "name" : "CompoundMansion_DoorNE",
     "type" : "morph"
   },
   "CompoundMansion_DoorNELowered" : 
   {
     "commands" : {},
-    "id" : "CompoundMansion_DoorNELowered",
+    "name" : "CompoundMansion_DoorNELowered",
     "type" : "morph"
   },
   "CompoundMansion_DoorNLowered" : 
   {
     "commands" : {},
-    "id" : "CompoundMansion_DoorNLowered",
+    "name" : "CompoundMansion_DoorNLowered",
     "type" : "morph"
   },
   "CompoundMansion_DoorNW" : 
   {
     "commands" : {},
-    "id" : "CompoundMansion_DoorNW",
+    "name" : "CompoundMansion_DoorNW",
     "type" : "morph"
   },
   "CompoundMansion_DoorNWLowered" : 
   {
     "commands" : {},
-    "id" : "CompoundMansion_DoorNWLowered",
+    "name" : "CompoundMansion_DoorNWLowered",
     "type" : "morph"
   },
   "CreepTumorBuild" : 
@@ -960,12 +1004,12 @@
     {
       "Build1" : 
       {
-        "index" : "Build1",
+        "index" : 1733,
         "time" : 15.0,
         "units" : [ "CreepTumor" ]
       }
     },
-    "id" : "CreepTumorBuild",
+    "name" : "CreepTumorBuild",
     "type" : "build"
   },
   "DefilerMPBurrow" : 
@@ -974,20 +1018,21 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 2489,
         "requires" : 
         [
           {
-            "name" : "Burrow",
             "state" : "CompleteOnly",
-            "type" : "upgrade"
+            "type" : "upgradeCount",
+            "upgrade" : 64,
+            "upgradeName" : "Burrow"
           }
         ],
         "time" : 0.0,
         "units" : [ "DefilerMPBurrowed" ]
       }
     },
-    "id" : "DefilerMPBurrow",
+    "name" : "DefilerMPBurrow",
     "type" : "morph"
   },
   "DefilerMPUnburrow" : 
@@ -996,12 +1041,12 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 2491,
         "time" : 0.0,
         "units" : [ "DefilerMP" ]
       }
     },
-    "id" : "DefilerMPUnburrow",
+    "name" : "DefilerMPUnburrow",
     "type" : "morph"
   },
   "DisguiseAsMarineWithShield" : 
@@ -1010,12 +1055,12 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 185,
         "time" : 0.5,
         "units" : [ "ChangelingMarineShield", "ChangelingMarineShield" ]
       }
     },
-    "id" : "DisguiseAsMarineWithShield",
+    "name" : "DisguiseAsMarineWithShield",
     "type" : "morph"
   },
   "DisguiseAsMarineWithoutShield" : 
@@ -1024,12 +1069,12 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 187,
         "time" : 0.5,
         "units" : [ "ChangelingMarine", "ChangelingMarine" ]
       }
     },
-    "id" : "DisguiseAsMarineWithoutShield",
+    "name" : "DisguiseAsMarineWithoutShield",
     "type" : "morph"
   },
   "DisguiseAsZealot" : 
@@ -1038,12 +1083,12 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 183,
         "time" : 0.5,
         "units" : [ "ChangelingZealot", "ChangelingZealot" ]
       }
     },
-    "id" : "DisguiseAsZealot",
+    "name" : "DisguiseAsZealot",
     "type" : "morph"
   },
   "DisguiseAsZerglingWithWings" : 
@@ -1052,12 +1097,12 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 189,
         "time" : 0.5,
         "units" : [ "ChangelingZerglingWings", "ChangelingZerglingWings" ]
       }
     },
-    "id" : "DisguiseAsZerglingWithWings",
+    "name" : "DisguiseAsZerglingWithWings",
     "type" : "morph"
   },
   "DisguiseAsZerglingWithoutWings" : 
@@ -1066,90 +1111,90 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 191,
         "time" : 0.5,
         "units" : [ "ChangelingZergling", "ChangelingZergling" ]
       }
     },
-    "id" : "DisguiseAsZerglingWithoutWings",
+    "name" : "DisguiseAsZerglingWithoutWings",
     "type" : "morph"
   },
   "DisguiseChangeling" : 
   {
     "commands" : {},
-    "id" : "DisguiseChangeling",
+    "name" : "DisguiseChangeling",
     "type" : "morph"
   },
   "ExtendingBridgeNEWide10" : 
   {
     "commands" : {},
-    "id" : "ExtendingBridgeNEWide10",
+    "name" : "ExtendingBridgeNEWide10",
     "type" : "morph"
   },
   "ExtendingBridgeNEWide10Out" : 
   {
     "commands" : {},
-    "id" : "ExtendingBridgeNEWide10Out",
+    "name" : "ExtendingBridgeNEWide10Out",
     "type" : "morph"
   },
   "ExtendingBridgeNEWide12" : 
   {
     "commands" : {},
-    "id" : "ExtendingBridgeNEWide12",
+    "name" : "ExtendingBridgeNEWide12",
     "type" : "morph"
   },
   "ExtendingBridgeNEWide12Out" : 
   {
     "commands" : {},
-    "id" : "ExtendingBridgeNEWide12Out",
+    "name" : "ExtendingBridgeNEWide12Out",
     "type" : "morph"
   },
   "ExtendingBridgeNEWide8" : 
   {
     "commands" : {},
-    "id" : "ExtendingBridgeNEWide8",
+    "name" : "ExtendingBridgeNEWide8",
     "type" : "morph"
   },
   "ExtendingBridgeNEWide8Out" : 
   {
     "commands" : {},
-    "id" : "ExtendingBridgeNEWide8Out",
+    "name" : "ExtendingBridgeNEWide8Out",
     "type" : "morph"
   },
   "ExtendingBridgeNWWide10" : 
   {
     "commands" : {},
-    "id" : "ExtendingBridgeNWWide10",
+    "name" : "ExtendingBridgeNWWide10",
     "type" : "morph"
   },
   "ExtendingBridgeNWWide10Out" : 
   {
     "commands" : {},
-    "id" : "ExtendingBridgeNWWide10Out",
+    "name" : "ExtendingBridgeNWWide10Out",
     "type" : "morph"
   },
   "ExtendingBridgeNWWide12" : 
   {
     "commands" : {},
-    "id" : "ExtendingBridgeNWWide12",
+    "name" : "ExtendingBridgeNWWide12",
     "type" : "morph"
   },
   "ExtendingBridgeNWWide12Out" : 
   {
     "commands" : {},
-    "id" : "ExtendingBridgeNWWide12Out",
+    "name" : "ExtendingBridgeNWWide12Out",
     "type" : "morph"
   },
   "ExtendingBridgeNWWide8" : 
   {
     "commands" : {},
-    "id" : "ExtendingBridgeNWWide8",
+    "name" : "ExtendingBridgeNWWide8",
     "type" : "morph"
   },
   "ExtendingBridgeNWWide8Out" : 
   {
     "commands" : {},
-    "id" : "ExtendingBridgeNWWide8Out",
+    "name" : "ExtendingBridgeNWWide8Out",
     "type" : "morph"
   },
   "FactoryAddOns" : 
@@ -1158,24 +1203,24 @@
     {
       "Build1" : 
       {
-        "index" : "Build1",
+        "index" : 454,
         "time" : 25.0,
         "units" : [ "FactoryTechLab" ]
       },
       "Build2" : 
       {
-        "index" : "Build2",
+        "index" : 455,
         "time" : 50.0,
         "units" : [ "FactoryReactor" ]
       }
     },
-    "id" : "FactoryAddOns",
+    "name" : "FactoryAddOns",
     "type" : "build"
   },
   "FactoryLiftOff" : 
   {
     "commands" : {},
-    "id" : "FactoryLiftOff",
+    "name" : "FactoryLiftOff",
     "type" : "morph"
   },
   "FactoryReactorMorph" : 
@@ -1184,13 +1229,19 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
-        "requires" : [],
+        "index" : 1678,
+        "requires" : 
+        [
+          {
+            "type" : "value",
+            "value" : 0
+          }
+        ],
         "time" : 0.0,
         "units" : [ "FactoryReactor" ]
       }
     },
-    "id" : "FactoryReactorMorph",
+    "name" : "FactoryReactorMorph",
     "type" : "morph"
   },
   "FactoryTechLabMorph" : 
@@ -1199,13 +1250,19 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
-        "requires" : [],
+        "index" : 1670,
+        "requires" : 
+        [
+          {
+            "type" : "value",
+            "value" : 0
+          }
+        ],
         "time" : 0.0,
         "units" : [ "FactoryTechLab" ]
       }
     },
-    "id" : "FactoryTechLabMorph",
+    "name" : "FactoryTechLabMorph",
     "type" : "morph"
   },
   "FactoryTrain" : 
@@ -1214,13 +1271,14 @@
     {
       "Train2" : 
       {
-        "index" : "Train2",
+        "index" : 591,
         "requires" : 
         [
           {
-            "name" : "TechLab",
             "state" : "CompleteOnlyAtUnit",
-            "type" : "unit"
+            "type" : "unitCount",
+            "unit" : [ 5 ],
+            "unitName" : [ "TechLab" ]
           }
         ],
         "time" : 45.0,
@@ -1228,32 +1286,53 @@
       },
       "Train25" : 
       {
-        "index" : "Train25",
+        "index" : 614,
         "time" : 40.0,
         "units" : [ "WidowMine" ]
       },
       "Train5" : 
       {
-        "index" : "Train5",
-        "requires" : [],
+        "index" : 594,
+        "requires" : 
+        [
+          {
+            "operands" : 
+            [
+              {
+                "state" : "CompleteOnlyAtUnit",
+                "type" : "unitCount",
+                "unit" : [ 39 ],
+                "unitName" : [ "FactoryTechLab" ]
+              },
+              {
+                "state" : "CompleteOnly",
+                "type" : "unitCount",
+                "unit" : [ 29 ],
+                "unitName" : [ "Armory" ]
+              }
+            ],
+            "type" : "and"
+          }
+        ],
         "time" : 60.0,
         "units" : [ "Thor" ]
       },
       "Train6" : 
       {
-        "index" : "Train6",
+        "index" : 595,
         "time" : 30.0,
         "units" : [ "Hellion" ]
       },
       "Train7" : 
       {
-        "index" : "Train7",
+        "index" : 596,
         "requires" : 
         [
           {
-            "name" : "Armory",
             "state" : "CompleteOnly",
-            "type" : "unit"
+            "type" : "unitCount",
+            "unit" : [ 29 ],
+            "unitName" : [ "Armory" ]
           }
         ],
         "time" : 30.0,
@@ -1261,12 +1340,12 @@
       },
       "Train8" : 
       {
-        "index" : "Train8",
+        "index" : 597,
         "time" : 45.0,
         "units" : [ "Cyclone" ]
       }
     },
-    "id" : "FactoryTrain",
+    "name" : "FactoryTrain",
     "type" : "train"
   },
   "FighterMode" : 
@@ -1275,13 +1354,19 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
-        "requires" : [],
+        "index" : 405,
+        "requires" : 
+        [
+          {
+            "type" : "value",
+            "value" : 0
+          }
+        ],
         "time" : 0.0,
         "units" : [ "VikingFighter" ]
       }
     },
-    "id" : "FighterMode",
+    "name" : "FighterMode",
     "type" : "morph"
   },
   "GatewayTrain" : 
@@ -1290,19 +1375,20 @@
     {
       "Train1" : 
       {
-        "index" : "Train1",
+        "index" : 916,
         "time" : 38.0,
         "units" : [ "Zealot" ]
       },
       "Train2" : 
       {
-        "index" : "Train2",
+        "index" : 917,
         "requires" : 
         [
           {
-            "name" : "CyberneticsCore",
             "state" : "CompleteOnly",
-            "type" : "unit"
+            "type" : "unitCount",
+            "unit" : [ 72 ],
+            "unitName" : [ "CyberneticsCore" ]
           }
         ],
         "time" : 42.0,
@@ -1310,13 +1396,14 @@
       },
       "Train4" : 
       {
-        "index" : "Train4",
+        "index" : 919,
         "requires" : 
         [
           {
-            "name" : "TemplarArchive",
             "state" : "CompleteOnly",
-            "type" : "unit"
+            "type" : "unitCount",
+            "unit" : [ 68 ],
+            "unitName" : [ "TemplarArchive" ]
           }
         ],
         "time" : 55.0,
@@ -1324,13 +1411,14 @@
       },
       "Train5" : 
       {
-        "index" : "Train5",
+        "index" : 920,
         "requires" : 
         [
           {
-            "name" : "DarkShrine",
             "state" : "CompleteOnly",
-            "type" : "unit"
+            "type" : "unitCount",
+            "unit" : [ 69 ],
+            "unitName" : [ "DarkShrine" ]
           }
         ],
         "time" : 55.0,
@@ -1338,13 +1426,14 @@
       },
       "Train6" : 
       {
-        "index" : "Train6",
+        "index" : 921,
         "requires" : 
         [
           {
-            "name" : "CyberneticsCore",
             "state" : "CompleteOnly",
-            "type" : "unit"
+            "type" : "unitCount",
+            "unit" : [ 72 ],
+            "unitName" : [ "CyberneticsCore" ]
           }
         ],
         "time" : 37.0,
@@ -1352,20 +1441,21 @@
       },
       "Train7" : 
       {
-        "index" : "Train7",
+        "index" : 922,
         "requires" : 
         [
           {
-            "name" : "CyberneticsCore",
             "state" : "CompleteOnly",
-            "type" : "unit"
+            "type" : "unitCount",
+            "unit" : [ 72 ],
+            "unitName" : [ "CyberneticsCore" ]
           }
         ],
         "time" : 38.0,
         "units" : [ "Adept" ]
       }
     },
-    "id" : "GatewayTrain",
+    "name" : "GatewayTrain",
     "type" : "train"
   },
   "LarvaTrain" : 
@@ -1374,19 +1464,20 @@
     {
       "Train1" : 
       {
-        "index" : "Train1",
+        "index" : 1342,
         "time" : 17.0,
         "units" : [ "Drone" ]
       },
       "Train10" : 
       {
-        "index" : "Train10",
+        "index" : 1351,
         "requires" : 
         [
           {
-            "name" : "RoachWarren",
             "state" : "CompleteOnly",
-            "type" : "unit"
+            "type" : "unitCount",
+            "unit" : [ 97 ],
+            "unitName" : [ "RoachWarren" ]
           }
         ],
         "time" : 27.0,
@@ -1394,13 +1485,14 @@
       },
       "Train11" : 
       {
-        "index" : "Train11",
+        "index" : 1352,
         "requires" : 
         [
           {
-            "name" : "InfestationPit",
             "state" : "CompleteOnly",
-            "type" : "unit"
+            "type" : "unitCount",
+            "unit" : [ 94 ],
+            "unitName" : [ "InfestationPit" ]
           }
         ],
         "time" : 50.0,
@@ -1408,13 +1500,14 @@
       },
       "Train12" : 
       {
-        "index" : "Train12",
+        "index" : 1353,
         "requires" : 
         [
           {
-            "name" : "GreaterSpire|Spire",
             "state" : "CompleteOnly",
-            "type" : "unit"
+            "type" : "unitCount",
+            "unit" : [ 102, 92 ],
+            "unitName" : [ "GreaterSpire", "Spire" ]
           }
         ],
         "time" : 40.0,
@@ -1422,13 +1515,14 @@
       },
       "Train13" : 
       {
-        "index" : "Train13",
+        "index" : 1354,
         "requires" : 
         [
           {
-            "name" : "Hive",
             "state" : "CompleteOnly",
-            "type" : "unit"
+            "type" : "unitCount",
+            "unit" : [ 101 ],
+            "unitName" : [ "Hive" ]
           }
         ],
         "time" : 40.0,
@@ -1436,13 +1530,14 @@
       },
       "Train15" : 
       {
-        "index" : "Train15",
+        "index" : 1356,
         "requires" : 
         [
           {
-            "name" : "InfestationPit",
             "state" : "CompleteOnly",
-            "type" : "unit"
+            "type" : "unitCount",
+            "unit" : [ 94 ],
+            "unitName" : [ "InfestationPit" ]
           }
         ],
         "time" : 40.0,
@@ -1450,13 +1545,14 @@
       },
       "Train2" : 
       {
-        "index" : "Train2",
+        "index" : 1343,
         "requires" : 
         [
           {
-            "name" : "SpawningPool",
             "state" : "CompleteOnly",
-            "type" : "unit"
+            "type" : "unitCount",
+            "unit" : [ 89 ],
+            "unitName" : [ "SpawningPool" ]
           }
         ],
         "time" : 24.0,
@@ -1464,19 +1560,20 @@
       },
       "Train3" : 
       {
-        "index" : "Train3",
+        "index" : 1344,
         "time" : 25.0,
         "units" : [ "Overlord" ]
       },
       "Train4" : 
       {
-        "index" : "Train4",
+        "index" : 1345,
         "requires" : 
         [
           {
-            "name" : "HydraliskDen|LurkerDenMP",
             "state" : "CompleteOnly",
-            "type" : "unit"
+            "type" : "unitCount",
+            "unit" : [ 91, 504 ],
+            "unitName" : [ "HydraliskDen", "LurkerDenMP" ]
           }
         ],
         "time" : 33.0,
@@ -1484,13 +1581,14 @@
       },
       "Train5" : 
       {
-        "index" : "Train5",
+        "index" : 1346,
         "requires" : 
         [
           {
-            "name" : "GreaterSpire|Spire",
             "state" : "CompleteOnly",
-            "type" : "unit"
+            "type" : "unitCount",
+            "unit" : [ 102, 92 ],
+            "unitName" : [ "GreaterSpire", "Spire" ]
           }
         ],
         "time" : 33.0,
@@ -1498,21 +1596,22 @@
       },
       "Train7" : 
       {
-        "index" : "Train7",
+        "index" : 1348,
         "requires" : 
         [
           {
-            "name" : "UltraliskCavern",
             "state" : "CompleteOnly",
-            "type" : "unit"
+            "type" : "unitCount",
+            "unit" : [ 93 ],
+            "unitName" : [ "UltraliskCavern" ]
           }
         ],
         "time" : 55.0,
         "units" : [ "Ultralisk" ]
       }
     },
-    "id" : "LarvaTrain",
     "morphUnit" : "Egg",
+    "name" : "LarvaTrain",
     "type" : "train"
   },
   "LiberatorMorphtoAA" : 
@@ -1521,12 +1620,12 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 2556,
         "time" : 0.5,
         "units" : [ "Liberator" ]
       }
     },
-    "id" : "LiberatorMorphtoAA",
+    "name" : "LiberatorMorphtoAA",
     "type" : "morph"
   },
   "LiberatorMorphtoAG" : 
@@ -1535,12 +1634,12 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 2554,
         "time" : 0.5,
         "units" : [ "LiberatorAG" ]
       }
     },
-    "id" : "LiberatorMorphtoAG",
+    "name" : "LiberatorMorphtoAG",
     "type" : "morph"
   },
   "LocustMPFlyingMorphToGround" : 
@@ -1549,12 +1648,12 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 2383,
         "time" : 0.0,
         "units" : [ "LocustMP", "LocustMP" ]
       }
     },
-    "id" : "LocustMPFlyingMorphToGround",
+    "name" : "LocustMPFlyingMorphToGround",
     "type" : "morph"
   },
   "LocustMPMorphToAir" : 
@@ -1563,12 +1662,12 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 2385,
         "time" : 0.0,
         "units" : [ "LocustMPFlying", "LocustMPFlying" ]
       }
     },
-    "id" : "LocustMPMorphToAir",
+    "name" : "LocustMPMorphToAir",
     "type" : "morph"
   },
   "LocustTrain" : 
@@ -1577,13 +1676,13 @@
     {
       "Train1" : 
       {
-        "index" : "Train1",
+        "index" : 1944,
         "time" : 2.7999999999999998,
         "units" : [ "LocustMP" ]
       }
     },
-    "id" : "LocustTrain",
     "morphUnit" : "LocustEgg",
+    "name" : "LocustTrain",
     "type" : "train"
   },
   "LurkerAspectMP" : 
@@ -1592,13 +1691,19 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
-        "requires" : [],
+        "index" : 2106,
+        "requires" : 
+        [
+          {
+            "type" : "value",
+            "value" : 0
+          }
+        ],
         "time" : 33.0,
         "units" : [ "LurkerMPEgg", "LurkerMP" ]
       }
     },
-    "id" : "LurkerAspectMP",
+    "name" : "LurkerAspectMP",
     "type" : "morph"
   },
   "LurkerAspectMPFromHydraliskBurrowed" : 
@@ -1607,20 +1712,21 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 2104,
         "requires" : 
         [
           {
-            "name" : "LurkerDenMP",
             "state" : "CompleteOnly",
-            "type" : "unit"
+            "type" : "unitCount",
+            "unit" : [ 504 ],
+            "unitName" : [ "LurkerDenMP" ]
           }
         ],
         "time" : 33.0,
         "units" : [ "Hydralisk", "LurkerMPEgg", "LurkerMP" ]
       }
     },
-    "id" : "LurkerAspectMPFromHydraliskBurrowed",
+    "name" : "LurkerAspectMPFromHydraliskBurrowed",
     "type" : "morph"
   },
   "MetalGateDefaultLower" : 
@@ -1629,12 +1735,12 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 0,
         "time" : 0.0,
         "units" : [ "##id##" ]
       }
     },
-    "id" : "MetalGateDefaultLower",
+    "name" : "MetalGateDefaultLower",
     "type" : "morph"
   },
   "MetalGateDefaultRaise" : 
@@ -1643,12 +1749,12 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 0,
         "time" : 0.0,
         "units" : [ "##id##" ]
       }
     },
-    "id" : "MetalGateDefaultRaise",
+    "name" : "MetalGateDefaultRaise",
     "type" : "morph"
   },
   "MorphBackToGateway" : 
@@ -1657,12 +1763,12 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 1520,
         "time" : 0.0,
         "units" : [ "Gateway" ]
       }
     },
-    "id" : "MorphBackToGateway",
+    "name" : "MorphBackToGateway",
     "type" : "morph"
   },
   "MorphToBroodLord" : 
@@ -1671,20 +1777,21 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 1372,
         "requires" : 
         [
           {
-            "name" : "GreaterSpire",
             "state" : "CompleteOnly",
-            "type" : "unit"
+            "type" : "unitCount",
+            "unit" : [ 102 ],
+            "unitName" : [ "GreaterSpire" ]
           }
         ],
         "time" : 33.833199999999998,
         "units" : [ "BroodLordCocoon", "BroodLord" ]
       }
     },
-    "id" : "MorphToBroodLord",
+    "name" : "MorphToBroodLord",
     "type" : "morph"
   },
   "MorphToCollapsiblePurifierTowerDebris" : 
@@ -1693,12 +1800,12 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 2600,
         "time" : 0.0,
         "units" : [ "CollapsiblePurifierTowerDebris" ]
       }
     },
-    "id" : "MorphToCollapsiblePurifierTowerDebris",
+    "name" : "MorphToCollapsiblePurifierTowerDebris",
     "type" : "morph"
   },
   "MorphToCollapsibleRockTowerDebris" : 
@@ -1707,12 +1814,12 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 1996,
         "time" : 0.0,
         "units" : [ "CollapsibleRockTowerDebris" ]
       }
     },
-    "id" : "MorphToCollapsibleRockTowerDebris",
+    "name" : "MorphToCollapsibleRockTowerDebris",
     "type" : "morph"
   },
   "MorphToCollapsibleRockTowerDebrisRampLeft" : 
@@ -1721,12 +1828,12 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 2154,
         "time" : 0.0,
         "units" : [ "CollapsibleRockTowerDebrisRampLeft" ]
       }
     },
-    "id" : "MorphToCollapsibleRockTowerDebrisRampLeft",
+    "name" : "MorphToCollapsibleRockTowerDebrisRampLeft",
     "type" : "morph"
   },
   "MorphToCollapsibleRockTowerDebrisRampRight" : 
@@ -1735,12 +1842,12 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 2152,
         "time" : 0.0,
         "units" : [ "CollapsibleRockTowerDebrisRampRight" ]
       }
     },
-    "id" : "MorphToCollapsibleRockTowerDebrisRampRight",
+    "name" : "MorphToCollapsibleRockTowerDebrisRampRight",
     "type" : "morph"
   },
   "MorphToCollapsibleTerranTowerDebris" : 
@@ -1749,12 +1856,12 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 1841,
         "time" : 0.0,
         "units" : [ "CollapsibleTerranTowerDebris" ]
       }
     },
-    "id" : "MorphToCollapsibleTerranTowerDebris",
+    "name" : "MorphToCollapsibleTerranTowerDebris",
     "type" : "morph"
   },
   "MorphToCollapsibleTerranTowerDebrisRampLeft" : 
@@ -1763,12 +1870,12 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 1843,
         "time" : 0.0,
         "units" : [ "DebrisRampLeft" ]
       }
     },
-    "id" : "MorphToCollapsibleTerranTowerDebrisRampLeft",
+    "name" : "MorphToCollapsibleTerranTowerDebrisRampLeft",
     "type" : "morph"
   },
   "MorphToCollapsibleTerranTowerDebrisRampRight" : 
@@ -1777,12 +1884,12 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 1845,
         "time" : 0.0,
         "units" : [ "DebrisRampRight" ]
       }
     },
-    "id" : "MorphToCollapsibleTerranTowerDebrisRampRight",
+    "name" : "MorphToCollapsibleTerranTowerDebrisRampRight",
     "type" : "morph"
   },
   "MorphToDevourerMP" : 
@@ -1791,20 +1898,21 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 2481,
         "requires" : 
         [
           {
-            "name" : "GreaterSpire",
             "state" : "CompleteOnly",
-            "type" : "unit"
+            "type" : "unitCount",
+            "unit" : [ 102 ],
+            "unitName" : [ "GreaterSpire" ]
           }
         ],
         "time" : 40.0,
         "units" : [ "DevourerCocoonMP", "DevourerMP" ]
       }
     },
-    "id" : "MorphToDevourerMP",
+    "name" : "MorphToDevourerMP",
     "type" : "morph"
   },
   "MorphToGhostAlternate" : 
@@ -1813,12 +1921,12 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 1835,
         "time" : 0.0,
         "units" : [ "GhostAlternate" ]
       }
     },
-    "id" : "MorphToGhostAlternate",
+    "name" : "MorphToGhostAlternate",
     "type" : "morph"
   },
   "MorphToGhostNova" : 
@@ -1827,12 +1935,12 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 1837,
         "time" : 0.0,
         "units" : [ "GhostNova" ]
       }
     },
-    "id" : "MorphToGhostNova",
+    "name" : "MorphToGhostNova",
     "type" : "morph"
   },
   "MorphToGuardianMP" : 
@@ -1841,20 +1949,21 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 2479,
         "requires" : 
         [
           {
-            "name" : "GreaterSpire",
             "state" : "CompleteOnly",
-            "type" : "unit"
+            "type" : "unitCount",
+            "unit" : [ 102 ],
+            "unitName" : [ "GreaterSpire" ]
           }
         ],
         "time" : 40.0,
         "units" : [ "GuardianCocoonMP", "GuardianMP" ]
       }
     },
-    "id" : "MorphToGuardianMP",
+    "name" : "MorphToGuardianMP",
     "type" : "morph"
   },
   "MorphToHellion" : 
@@ -1863,20 +1972,21 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 1978,
         "requires" : 
         [
           {
-            "name" : "Armory",
             "state" : "CompleteOnly",
-            "type" : "unit"
+            "type" : "unitCount",
+            "unit" : [ 29 ],
+            "unitName" : [ "Armory" ]
           }
         ],
         "time" : 0.33000000000000002,
         "units" : [ "Hellion" ]
       }
     },
-    "id" : "MorphToHellion",
+    "name" : "MorphToHellion",
     "type" : "morph"
   },
   "MorphToHellionTank" : 
@@ -1885,20 +1995,21 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 1998,
         "requires" : 
         [
           {
-            "name" : "Armory",
             "state" : "CompleteOnly",
-            "type" : "unit"
+            "type" : "unitCount",
+            "unit" : [ 29 ],
+            "unitName" : [ "Armory" ]
           }
         ],
         "time" : 0.33000000000000002,
         "units" : [ "HellionTank" ]
       }
     },
-    "id" : "MorphToHellionTank",
+    "name" : "MorphToHellionTank",
     "type" : "morph"
   },
   "MorphToInfestedTerran" : 
@@ -1907,12 +2018,12 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 40,
         "time" : 4.875,
         "units" : [ "InfestorTerran" ]
       }
     },
-    "id" : "MorphToInfestedTerran",
+    "name" : "MorphToInfestedTerran",
     "type" : "morph"
   },
   "MorphToLurker" : 
@@ -1921,20 +2032,21 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 2332,
         "requires" : 
         [
           {
-            "name" : "LurkerDenMP",
             "state" : "CompleteOnly",
-            "type" : "unit"
+            "type" : "unitCount",
+            "unit" : [ 504 ],
+            "unitName" : [ "LurkerDenMP" ]
           }
         ],
         "time" : 25.0,
         "units" : [ "LurkerMPEgg", "LurkerMP" ]
       }
     },
-    "id" : "MorphToLurker",
+    "name" : "MorphToLurker",
     "type" : "morph"
   },
   "MorphToMothership" : 
@@ -1943,13 +2055,43 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
-        "requires" : [],
+        "index" : 1847,
+        "requires" : 
+        [
+          {
+            "operands" : 
+            [
+              {
+                "state" : "CompleteOnly",
+                "type" : "unitCount",
+                "unit" : [ 64 ],
+                "unitName" : [ "FleetBeacon" ]
+              },
+              {
+                "operands" : 
+                [
+                  {
+                    "state" : "QueuedOrBetter",
+                    "type" : "unitCount",
+                    "unit" : [ 10 ],
+                    "unitName" : [ "Mothership" ]
+                  },
+                  {
+                    "type" : "value",
+                    "value" : 0
+                  }
+                ],
+                "type" : "eq"
+              }
+            ],
+            "type" : "and"
+          }
+        ],
         "time" : 100.0,
         "units" : [ "Mothership" ]
       }
     },
-    "id" : "MorphToMothership",
+    "name" : "MorphToMothership",
     "type" : "morph"
   },
   "MorphToOverseer" : 
@@ -1958,20 +2100,21 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 1448,
         "requires" : 
         [
           {
-            "name" : "Hive|Lair",
             "state" : "CompleteOnly",
-            "type" : "unit"
+            "type" : "unitCount",
+            "unit" : [ 101, 100 ],
+            "unitName" : [ "Hive", "Lair" ]
           }
         ],
         "time" : 16.666499999999999,
         "units" : [ "OverlordCocoon", "Overseer" ]
       }
     },
-    "id" : "MorphToOverseer",
+    "name" : "MorphToOverseer",
     "type" : "morph"
   },
   "MorphToRavager" : 
@@ -1980,20 +2123,21 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 2330,
         "requires" : 
         [
           {
-            "name" : "RoachWarren",
             "state" : "CompleteOnly",
-            "type" : "unit"
+            "type" : "unitCount",
+            "unit" : [ 97 ],
+            "unitName" : [ "RoachWarren" ]
           }
         ],
         "time" : 12.0,
         "units" : [ "RavagerCocoon", "Ravager" ]
       }
     },
-    "id" : "MorphToRavager",
+    "name" : "MorphToRavager",
     "type" : "morph"
   },
   "MorphToSwarmHostBurrowedMP" : 
@@ -2002,20 +2146,21 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 2014,
         "requires" : 
         [
           {
-            "name" : "Burrow",
             "state" : "CompleteOnly",
-            "type" : "upgrade"
+            "type" : "upgradeCount",
+            "upgrade" : 64,
+            "upgradeName" : "Burrow"
           }
         ],
         "time" : 0.0,
         "units" : [ "SwarmHostBurrowedMP" ]
       }
     },
-    "id" : "MorphToSwarmHostBurrowedMP",
+    "name" : "MorphToSwarmHostBurrowedMP",
     "type" : "morph"
   },
   "MorphToSwarmHostMP" : 
@@ -2024,12 +2169,12 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 2016,
         "time" : 0.5,
         "units" : [ "SwarmHostMP" ]
       }
     },
-    "id" : "MorphToSwarmHostMP",
+    "name" : "MorphToSwarmHostMP",
     "type" : "morph"
   },
   "MorphToTransportOverlord" : 
@@ -2038,20 +2183,21 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 2708,
         "requires" : 
         [
           {
-            "name" : "EvolutionChamber",
             "state" : "CompleteOnly",
-            "type" : "unit"
+            "type" : "unitCount",
+            "unit" : [ 90 ],
+            "unitName" : [ "EvolutionChamber" ]
           }
         ],
         "time" : 16.666499999999999,
         "units" : [ "TransportOverlordCocoon", "OverlordTransport" ]
       }
     },
-    "id" : "MorphToTransportOverlord",
+    "name" : "MorphToTransportOverlord",
     "type" : "morph"
   },
   "MorphZerglingToBaneling" : 
@@ -2060,21 +2206,22 @@
     {
       "Train1" : 
       {
-        "index" : "Train1",
+        "index" : 80,
         "requires" : 
         [
           {
-            "name" : "BanelingNest",
             "state" : "CompleteOnly",
-            "type" : "unit"
+            "type" : "unitCount",
+            "unit" : [ 96 ],
+            "unitName" : [ "BanelingNest" ]
           }
         ],
         "time" : 20.0,
         "units" : [ "Baneling" ]
       }
     },
-    "id" : "MorphZerglingToBaneling",
     "morphUnit" : "BanelingCocoon",
+    "name" : "MorphZerglingToBaneling",
     "type" : "train"
   },
   "NexusTrain" : 
@@ -2083,12 +2230,12 @@
     {
       "Train1" : 
       {
-        "index" : "Train1",
+        "index" : 1006,
         "time" : 17.0,
         "units" : [ "Probe" ]
       }
     },
-    "id" : "NexusTrain",
+    "name" : "NexusTrain",
     "type" : "train"
   },
   "NexusTrainMothership" : 
@@ -2097,13 +2244,43 @@
     {
       "Train1" : 
       {
-        "index" : "Train1",
-        "requires" : [],
+        "index" : 110,
+        "requires" : 
+        [
+          {
+            "operands" : 
+            [
+              {
+                "state" : "CompleteOnly",
+                "type" : "unitCount",
+                "unit" : [ 64 ],
+                "unitName" : [ "FleetBeacon" ]
+              },
+              {
+                "operands" : 
+                [
+                  {
+                    "state" : "QueuedOrBetter",
+                    "type" : "unitCount",
+                    "unit" : [ 10 ],
+                    "unitName" : [ "Mothership" ]
+                  },
+                  {
+                    "type" : "value",
+                    "value" : 0
+                  }
+                ],
+                "type" : "eq"
+              }
+            ],
+            "type" : "and"
+          }
+        ],
         "time" : 160.0,
         "units" : [ "Mothership" ]
       }
     },
-    "id" : "NexusTrainMothership",
+    "name" : "NexusTrainMothership",
     "type" : "train"
   },
   "NexusTrainMothershipCore" : 
@@ -2112,13 +2289,59 @@
     {
       "Train1" : 
       {
-        "index" : "Train1",
-        "requires" : [],
+        "index" : 1853,
+        "requires" : 
+        [
+          {
+            "operands" : 
+            [
+              {
+                "operands" : 
+                [
+                  {
+                    "state" : "QueuedOrBetter",
+                    "type" : "unitCount",
+                    "unit" : [ 488 ],
+                    "unitName" : [ "MothershipCore" ]
+                  },
+                  {
+                    "type" : "value",
+                    "value" : 0
+                  }
+                ],
+                "type" : "eq"
+              },
+              {
+                "operands" : 
+                [
+                  {
+                    "state" : "QueuedOrBetter",
+                    "type" : "unitCount",
+                    "unit" : [ 10 ],
+                    "unitName" : [ "Mothership" ]
+                  },
+                  {
+                    "type" : "value",
+                    "value" : 0
+                  }
+                ],
+                "type" : "eq"
+              },
+              {
+                "state" : "CompleteOnly",
+                "type" : "unitCount",
+                "unit" : [ 72 ],
+                "unitName" : [ "CyberneticsCore" ]
+              }
+            ],
+            "type" : "and"
+          }
+        ],
         "time" : 30.0,
         "units" : [ "MothershipCore" ]
       }
     },
-    "id" : "NexusTrainMothershipCore",
+    "name" : "NexusTrainMothershipCore",
     "type" : "train"
   },
   "OracleNormalMode" : 
@@ -2127,12 +2350,12 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 2150,
         "time" : 0.0,
         "units" : [ "Oracle" ]
       }
     },
-    "id" : "OracleNormalMode",
+    "name" : "OracleNormalMode",
     "type" : "morph"
   },
   "OracleRevelationMode" : 
@@ -2141,12 +2364,12 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 2148,
         "time" : 0.0,
         "units" : [ "OracleRevelation" ]
       }
     },
-    "id" : "OracleRevelationMode",
+    "name" : "OracleRevelationMode",
     "type" : "morph"
   },
   "OracleStasisTrapBuild" : 
@@ -2155,18 +2378,18 @@
     {
       "Build1" : 
       {
-        "index" : "Build1",
+        "index" : 2505,
         "time" : 5.0,
         "units" : [ "OracleStasisTrap" ]
       }
     },
-    "id" : "OracleStasisTrapBuild",
+    "name" : "OracleStasisTrapBuild",
     "type" : "build"
   },
   "OrbitalLiftOff" : 
   {
     "commands" : {},
-    "id" : "OrbitalLiftOff",
+    "name" : "OrbitalLiftOff",
     "type" : "morph"
   },
   "PhasingMode" : 
@@ -2175,300 +2398,300 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 1528,
         "time" : 0.0,
         "units" : [ "WarpPrismPhasing" ]
       }
     },
-    "id" : "PhasingMode",
+    "name" : "PhasingMode",
     "type" : "morph"
   },
   "PortCity_Bridge_UnitE10" : 
   {
     "commands" : {},
-    "id" : "PortCity_Bridge_UnitE10",
+    "name" : "PortCity_Bridge_UnitE10",
     "type" : "morph"
   },
   "PortCity_Bridge_UnitE10Out" : 
   {
     "commands" : {},
-    "id" : "PortCity_Bridge_UnitE10Out",
+    "name" : "PortCity_Bridge_UnitE10Out",
     "type" : "morph"
   },
   "PortCity_Bridge_UnitE12" : 
   {
     "commands" : {},
-    "id" : "PortCity_Bridge_UnitE12",
+    "name" : "PortCity_Bridge_UnitE12",
     "type" : "morph"
   },
   "PortCity_Bridge_UnitE12Out" : 
   {
     "commands" : {},
-    "id" : "PortCity_Bridge_UnitE12Out",
+    "name" : "PortCity_Bridge_UnitE12Out",
     "type" : "morph"
   },
   "PortCity_Bridge_UnitE8" : 
   {
     "commands" : {},
-    "id" : "PortCity_Bridge_UnitE8",
+    "name" : "PortCity_Bridge_UnitE8",
     "type" : "morph"
   },
   "PortCity_Bridge_UnitE8Out" : 
   {
     "commands" : {},
-    "id" : "PortCity_Bridge_UnitE8Out",
+    "name" : "PortCity_Bridge_UnitE8Out",
     "type" : "morph"
   },
   "PortCity_Bridge_UnitN10" : 
   {
     "commands" : {},
-    "id" : "PortCity_Bridge_UnitN10",
+    "name" : "PortCity_Bridge_UnitN10",
     "type" : "morph"
   },
   "PortCity_Bridge_UnitN10Out" : 
   {
     "commands" : {},
-    "id" : "PortCity_Bridge_UnitN10Out",
+    "name" : "PortCity_Bridge_UnitN10Out",
     "type" : "morph"
   },
   "PortCity_Bridge_UnitN12" : 
   {
     "commands" : {},
-    "id" : "PortCity_Bridge_UnitN12",
+    "name" : "PortCity_Bridge_UnitN12",
     "type" : "morph"
   },
   "PortCity_Bridge_UnitN12Out" : 
   {
     "commands" : {},
-    "id" : "PortCity_Bridge_UnitN12Out",
+    "name" : "PortCity_Bridge_UnitN12Out",
     "type" : "morph"
   },
   "PortCity_Bridge_UnitN8" : 
   {
     "commands" : {},
-    "id" : "PortCity_Bridge_UnitN8",
+    "name" : "PortCity_Bridge_UnitN8",
     "type" : "morph"
   },
   "PortCity_Bridge_UnitN8Out" : 
   {
     "commands" : {},
-    "id" : "PortCity_Bridge_UnitN8Out",
+    "name" : "PortCity_Bridge_UnitN8Out",
     "type" : "morph"
   },
   "PortCity_Bridge_UnitNE10" : 
   {
     "commands" : {},
-    "id" : "PortCity_Bridge_UnitNE10",
+    "name" : "PortCity_Bridge_UnitNE10",
     "type" : "morph"
   },
   "PortCity_Bridge_UnitNE10Out" : 
   {
     "commands" : {},
-    "id" : "PortCity_Bridge_UnitNE10Out",
+    "name" : "PortCity_Bridge_UnitNE10Out",
     "type" : "morph"
   },
   "PortCity_Bridge_UnitNE12" : 
   {
     "commands" : {},
-    "id" : "PortCity_Bridge_UnitNE12",
+    "name" : "PortCity_Bridge_UnitNE12",
     "type" : "morph"
   },
   "PortCity_Bridge_UnitNE12Out" : 
   {
     "commands" : {},
-    "id" : "PortCity_Bridge_UnitNE12Out",
+    "name" : "PortCity_Bridge_UnitNE12Out",
     "type" : "morph"
   },
   "PortCity_Bridge_UnitNE8" : 
   {
     "commands" : {},
-    "id" : "PortCity_Bridge_UnitNE8",
+    "name" : "PortCity_Bridge_UnitNE8",
     "type" : "morph"
   },
   "PortCity_Bridge_UnitNE8Out" : 
   {
     "commands" : {},
-    "id" : "PortCity_Bridge_UnitNE8Out",
+    "name" : "PortCity_Bridge_UnitNE8Out",
     "type" : "morph"
   },
   "PortCity_Bridge_UnitNW10" : 
   {
     "commands" : {},
-    "id" : "PortCity_Bridge_UnitNW10",
+    "name" : "PortCity_Bridge_UnitNW10",
     "type" : "morph"
   },
   "PortCity_Bridge_UnitNW10Out" : 
   {
     "commands" : {},
-    "id" : "PortCity_Bridge_UnitNW10Out",
+    "name" : "PortCity_Bridge_UnitNW10Out",
     "type" : "morph"
   },
   "PortCity_Bridge_UnitNW12" : 
   {
     "commands" : {},
-    "id" : "PortCity_Bridge_UnitNW12",
+    "name" : "PortCity_Bridge_UnitNW12",
     "type" : "morph"
   },
   "PortCity_Bridge_UnitNW12Out" : 
   {
     "commands" : {},
-    "id" : "PortCity_Bridge_UnitNW12Out",
+    "name" : "PortCity_Bridge_UnitNW12Out",
     "type" : "morph"
   },
   "PortCity_Bridge_UnitNW8" : 
   {
     "commands" : {},
-    "id" : "PortCity_Bridge_UnitNW8",
+    "name" : "PortCity_Bridge_UnitNW8",
     "type" : "morph"
   },
   "PortCity_Bridge_UnitNW8Out" : 
   {
     "commands" : {},
-    "id" : "PortCity_Bridge_UnitNW8Out",
+    "name" : "PortCity_Bridge_UnitNW8Out",
     "type" : "morph"
   },
   "PortCity_Bridge_UnitS10" : 
   {
     "commands" : {},
-    "id" : "PortCity_Bridge_UnitS10",
+    "name" : "PortCity_Bridge_UnitS10",
     "type" : "morph"
   },
   "PortCity_Bridge_UnitS10Out" : 
   {
     "commands" : {},
-    "id" : "PortCity_Bridge_UnitS10Out",
+    "name" : "PortCity_Bridge_UnitS10Out",
     "type" : "morph"
   },
   "PortCity_Bridge_UnitS12" : 
   {
     "commands" : {},
-    "id" : "PortCity_Bridge_UnitS12",
+    "name" : "PortCity_Bridge_UnitS12",
     "type" : "morph"
   },
   "PortCity_Bridge_UnitS12Out" : 
   {
     "commands" : {},
-    "id" : "PortCity_Bridge_UnitS12Out",
+    "name" : "PortCity_Bridge_UnitS12Out",
     "type" : "morph"
   },
   "PortCity_Bridge_UnitS8" : 
   {
     "commands" : {},
-    "id" : "PortCity_Bridge_UnitS8",
+    "name" : "PortCity_Bridge_UnitS8",
     "type" : "morph"
   },
   "PortCity_Bridge_UnitS8Out" : 
   {
     "commands" : {},
-    "id" : "PortCity_Bridge_UnitS8Out",
+    "name" : "PortCity_Bridge_UnitS8Out",
     "type" : "morph"
   },
   "PortCity_Bridge_UnitSE10" : 
   {
     "commands" : {},
-    "id" : "PortCity_Bridge_UnitSE10",
+    "name" : "PortCity_Bridge_UnitSE10",
     "type" : "morph"
   },
   "PortCity_Bridge_UnitSE10Out" : 
   {
     "commands" : {},
-    "id" : "PortCity_Bridge_UnitSE10Out",
+    "name" : "PortCity_Bridge_UnitSE10Out",
     "type" : "morph"
   },
   "PortCity_Bridge_UnitSE12" : 
   {
     "commands" : {},
-    "id" : "PortCity_Bridge_UnitSE12",
+    "name" : "PortCity_Bridge_UnitSE12",
     "type" : "morph"
   },
   "PortCity_Bridge_UnitSE12Out" : 
   {
     "commands" : {},
-    "id" : "PortCity_Bridge_UnitSE12Out",
+    "name" : "PortCity_Bridge_UnitSE12Out",
     "type" : "morph"
   },
   "PortCity_Bridge_UnitSE8" : 
   {
     "commands" : {},
-    "id" : "PortCity_Bridge_UnitSE8",
+    "name" : "PortCity_Bridge_UnitSE8",
     "type" : "morph"
   },
   "PortCity_Bridge_UnitSE8Out" : 
   {
     "commands" : {},
-    "id" : "PortCity_Bridge_UnitSE8Out",
+    "name" : "PortCity_Bridge_UnitSE8Out",
     "type" : "morph"
   },
   "PortCity_Bridge_UnitSW10" : 
   {
     "commands" : {},
-    "id" : "PortCity_Bridge_UnitSW10",
+    "name" : "PortCity_Bridge_UnitSW10",
     "type" : "morph"
   },
   "PortCity_Bridge_UnitSW10Out" : 
   {
     "commands" : {},
-    "id" : "PortCity_Bridge_UnitSW10Out",
+    "name" : "PortCity_Bridge_UnitSW10Out",
     "type" : "morph"
   },
   "PortCity_Bridge_UnitSW12" : 
   {
     "commands" : {},
-    "id" : "PortCity_Bridge_UnitSW12",
+    "name" : "PortCity_Bridge_UnitSW12",
     "type" : "morph"
   },
   "PortCity_Bridge_UnitSW12Out" : 
   {
     "commands" : {},
-    "id" : "PortCity_Bridge_UnitSW12Out",
+    "name" : "PortCity_Bridge_UnitSW12Out",
     "type" : "morph"
   },
   "PortCity_Bridge_UnitSW8" : 
   {
     "commands" : {},
-    "id" : "PortCity_Bridge_UnitSW8",
+    "name" : "PortCity_Bridge_UnitSW8",
     "type" : "morph"
   },
   "PortCity_Bridge_UnitSW8Out" : 
   {
     "commands" : {},
-    "id" : "PortCity_Bridge_UnitSW8Out",
+    "name" : "PortCity_Bridge_UnitSW8Out",
     "type" : "morph"
   },
   "PortCity_Bridge_UnitW10" : 
   {
     "commands" : {},
-    "id" : "PortCity_Bridge_UnitW10",
+    "name" : "PortCity_Bridge_UnitW10",
     "type" : "morph"
   },
   "PortCity_Bridge_UnitW10Out" : 
   {
     "commands" : {},
-    "id" : "PortCity_Bridge_UnitW10Out",
+    "name" : "PortCity_Bridge_UnitW10Out",
     "type" : "morph"
   },
   "PortCity_Bridge_UnitW12" : 
   {
     "commands" : {},
-    "id" : "PortCity_Bridge_UnitW12",
+    "name" : "PortCity_Bridge_UnitW12",
     "type" : "morph"
   },
   "PortCity_Bridge_UnitW12Out" : 
   {
     "commands" : {},
-    "id" : "PortCity_Bridge_UnitW12Out",
+    "name" : "PortCity_Bridge_UnitW12Out",
     "type" : "morph"
   },
   "PortCity_Bridge_UnitW8" : 
   {
     "commands" : {},
-    "id" : "PortCity_Bridge_UnitW8",
+    "name" : "PortCity_Bridge_UnitW8",
     "type" : "morph"
   },
   "PortCity_Bridge_UnitW8Out" : 
   {
     "commands" : {},
-    "id" : "PortCity_Bridge_UnitW8Out",
+    "name" : "PortCity_Bridge_UnitW8Out",
     "type" : "morph"
   },
   "ProtossBuild" : 
@@ -2477,19 +2700,20 @@
     {
       "Build1" : 
       {
-        "index" : "Build1",
+        "index" : 880,
         "time" : 100.0,
         "units" : [ "Nexus" ]
       },
       "Build10" : 
       {
-        "index" : "Build10",
+        "index" : 889,
         "requires" : 
         [
           {
-            "name" : "CyberneticsCore",
             "state" : "CompleteOnly",
-            "type" : "unit"
+            "type" : "unitCount",
+            "unit" : [ 72 ],
+            "unitName" : [ "CyberneticsCore" ]
           }
         ],
         "time" : 60.0,
@@ -2497,13 +2721,14 @@
       },
       "Build11" : 
       {
-        "index" : "Build11",
+        "index" : 890,
         "requires" : 
         [
           {
-            "name" : "TwilightCouncil",
             "state" : "CompleteOnly",
-            "type" : "unit"
+            "type" : "unitCount",
+            "unit" : [ 65 ],
+            "unitName" : [ "TwilightCouncil" ]
           }
         ],
         "time" : 50.0,
@@ -2511,13 +2736,14 @@
       },
       "Build12" : 
       {
-        "index" : "Build12",
+        "index" : 891,
         "requires" : 
         [
           {
-            "name" : "TwilightCouncil",
             "state" : "CompleteOnly",
-            "type" : "unit"
+            "type" : "unitCount",
+            "unit" : [ 65 ],
+            "unitName" : [ "TwilightCouncil" ]
           }
         ],
         "time" : 100.0,
@@ -2525,13 +2751,14 @@
       },
       "Build13" : 
       {
-        "index" : "Build13",
+        "index" : 892,
         "requires" : 
         [
           {
-            "name" : "RoboticsFacility",
             "state" : "CompleteOnly",
-            "type" : "unit"
+            "type" : "unitCount",
+            "unit" : [ 71 ],
+            "unitName" : [ "RoboticsFacility" ]
           }
         ],
         "time" : 65.0,
@@ -2539,13 +2766,14 @@
       },
       "Build14" : 
       {
-        "index" : "Build14",
+        "index" : 893,
         "requires" : 
         [
           {
-            "name" : "CyberneticsCore",
             "state" : "CompleteOnly",
-            "type" : "unit"
+            "type" : "unitCount",
+            "unit" : [ 72 ],
+            "unitName" : [ "CyberneticsCore" ]
           }
         ],
         "time" : 65.0,
@@ -2553,13 +2781,14 @@
       },
       "Build15" : 
       {
-        "index" : "Build15",
+        "index" : 894,
         "requires" : 
         [
           {
-            "name" : "Gateway|WarpGate",
             "state" : "CompleteOnly",
-            "type" : "unit"
+            "type" : "unitCount",
+            "unit" : [ 62, 133 ],
+            "unitName" : [ "Gateway", "WarpGate" ]
           }
         ],
         "time" : 50.0,
@@ -2567,25 +2796,26 @@
       },
       "Build2" : 
       {
-        "index" : "Build2",
+        "index" : 881,
         "time" : 25.0,
         "units" : [ "Pylon" ]
       },
       "Build3" : 
       {
-        "index" : "Build3",
+        "index" : 882,
         "time" : 30.0,
         "units" : [ "Assimilator" ]
       },
       "Build4" : 
       {
-        "index" : "Build4",
+        "index" : 883,
         "requires" : 
         [
           {
-            "name" : "Nexus",
             "state" : "CompleteOnly",
-            "type" : "unit"
+            "type" : "unitCount",
+            "unit" : [ 59 ],
+            "unitName" : [ "Nexus" ]
           }
         ],
         "time" : 65.0,
@@ -2593,13 +2823,14 @@
       },
       "Build5" : 
       {
-        "index" : "Build5",
+        "index" : 884,
         "requires" : 
         [
           {
-            "name" : "Nexus",
             "state" : "CompleteOnly",
-            "type" : "unit"
+            "type" : "unitCount",
+            "unit" : [ 59 ],
+            "unitName" : [ "Nexus" ]
           }
         ],
         "time" : 45.0,
@@ -2607,13 +2838,14 @@
       },
       "Build6" : 
       {
-        "index" : "Build6",
+        "index" : 885,
         "requires" : 
         [
           {
-            "name" : "Stargate",
             "state" : "CompleteOnly",
-            "type" : "unit"
+            "type" : "unitCount",
+            "unit" : [ 67 ],
+            "unitName" : [ "Stargate" ]
           }
         ],
         "time" : 60.0,
@@ -2621,13 +2853,14 @@
       },
       "Build7" : 
       {
-        "index" : "Build7",
+        "index" : 886,
         "requires" : 
         [
           {
-            "name" : "CyberneticsCore",
             "state" : "CompleteOnly",
-            "type" : "unit"
+            "type" : "unitCount",
+            "unit" : [ 72 ],
+            "unitName" : [ "CyberneticsCore" ]
           }
         ],
         "time" : 50.0,
@@ -2635,13 +2868,14 @@
       },
       "Build8" : 
       {
-        "index" : "Build8",
+        "index" : 887,
         "requires" : 
         [
           {
-            "name" : "Forge",
             "state" : "CompleteOnly",
-            "type" : "unit"
+            "type" : "unitCount",
+            "unit" : [ 63 ],
+            "unitName" : [ "Forge" ]
           }
         ],
         "time" : 40.0,
@@ -2649,11 +2883,11 @@
       },
       "Build9" : 
       {
-        "index" : "Build9",
+        "index" : 888,
         "time" : 25.0
       }
     },
-    "id" : "ProtossBuild",
+    "name" : "ProtossBuild",
     "type" : "build"
   },
   "PurificationNovaMorph" : 
@@ -2662,12 +2896,12 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 2546,
         "time" : 0.0,
         "units" : [ "DisruptorPhased" ]
       }
     },
-    "id" : "PurificationNovaMorph",
+    "name" : "PurificationNovaMorph",
     "type" : "morph"
   },
   "PurificationNovaMorphBack" : 
@@ -2676,12 +2910,12 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 2548,
         "time" : 0.0,
         "units" : [ "Disruptor" ]
       }
     },
-    "id" : "PurificationNovaMorphBack",
+    "name" : "PurificationNovaMorphBack",
     "type" : "morph"
   },
   "PurifyMorphPylon" : 
@@ -2690,12 +2924,12 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 2716,
         "time" : 0.0,
         "units" : [ "PylonOvercharged" ]
       }
     },
-    "id" : "PurifyMorphPylon",
+    "name" : "PurifyMorphPylon",
     "type" : "morph"
   },
   "PurifyMorphPylonBack" : 
@@ -2704,12 +2938,12 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 2718,
         "time" : 0.0,
         "units" : [ "Pylon" ]
       }
     },
-    "id" : "PurifyMorphPylonBack",
+    "name" : "PurifyMorphPylonBack",
     "type" : "morph"
   },
   "QueenBuild" : 
@@ -2718,22 +2952,22 @@
     {
       "Build1" : 
       {
-        "index" : "Build1",
+        "index" : 1694,
         "time" : 15.0,
         "units" : [ "CreepTumorQueen" ]
       },
       "Build2" : 
       {
-        "index" : "Build2",
+        "index" : 1695,
         "time" : 30.0
       },
       "Build3" : 
       {
-        "index" : "Build3",
+        "index" : 1696,
         "time" : 30.0
       }
     },
-    "id" : "QueenBuild",
+    "name" : "QueenBuild",
     "type" : "build"
   },
   "QueenFly" : 
@@ -2742,12 +2976,12 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 1938,
         "time" : 0.5,
         "units" : [ "QueenFlying" ]
       }
     },
-    "id" : "QueenFly",
+    "name" : "QueenFly",
     "type" : "morph"
   },
   "QueenLand" : 
@@ -2756,12 +2990,12 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 1936,
         "time" : 0.5,
         "units" : [ "Queen" ]
       }
     },
-    "id" : "QueenLand",
+    "name" : "QueenLand",
     "type" : "morph"
   },
   "RavenBuild" : 
@@ -2770,12 +3004,12 @@
     {
       "Build1" : 
       {
-        "index" : "Build1",
+        "index" : 349,
         "time" : 1.0,
         "units" : [ "AutoTurret" ]
       }
     },
-    "id" : "RavenBuild",
+    "name" : "RavenBuild",
     "type" : "build"
   },
   "ReactorMorph" : 
@@ -2784,13 +3018,19 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
-        "requires" : [],
+        "index" : 1674,
+        "requires" : 
+        [
+          {
+            "type" : "value",
+            "value" : 0
+          }
+        ],
         "time" : 0.0,
         "units" : [ "Reactor" ]
       }
     },
-    "id" : "ReactorMorph",
+    "name" : "ReactorMorph",
     "type" : "morph"
   },
   "RedstoneLavaCritterBurrow" : 
@@ -2799,12 +3039,12 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 1398,
         "time" : 0.0,
         "units" : [ "RedstoneLavaCritterBurrowed" ]
       }
     },
-    "id" : "RedstoneLavaCritterBurrow",
+    "name" : "RedstoneLavaCritterBurrow",
     "type" : "morph"
   },
   "RedstoneLavaCritterInjuredBurrow" : 
@@ -2813,12 +3053,12 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 1400,
         "time" : 0.0,
         "units" : [ "RedstoneLavaCritterInjuredBurrowed" ]
       }
     },
-    "id" : "RedstoneLavaCritterInjuredBurrow",
+    "name" : "RedstoneLavaCritterInjuredBurrow",
     "type" : "morph"
   },
   "RedstoneLavaCritterInjuredUnburrow" : 
@@ -2827,12 +3067,12 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 1404,
         "time" : 0.0,
         "units" : [ "RedstoneLavaCritterInjured" ]
       }
     },
-    "id" : "RedstoneLavaCritterInjuredUnburrow",
+    "name" : "RedstoneLavaCritterInjuredUnburrow",
     "type" : "morph"
   },
   "RedstoneLavaCritterUnburrow" : 
@@ -2841,12 +3081,12 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 1402,
         "time" : 0.0,
         "units" : [ "RedstoneLavaCritter" ]
       }
     },
-    "id" : "RedstoneLavaCritterUnburrow",
+    "name" : "RedstoneLavaCritterUnburrow",
     "type" : "morph"
   },
   "RoboticsFacilityTrain" : 
@@ -2855,19 +3095,20 @@
     {
       "Train1" : 
       {
-        "index" : "Train1",
+        "index" : 976,
         "time" : 50.0,
         "units" : [ "WarpPrism" ]
       },
       "Train19" : 
       {
-        "index" : "Train19",
+        "index" : 994,
         "requires" : 
         [
           {
-            "name" : "RoboticsBay",
             "state" : "CompleteOnly",
-            "type" : "unit"
+            "type" : "unitCount",
+            "unit" : [ 70 ],
+            "unitName" : [ "RoboticsBay" ]
           }
         ],
         "time" : 50.0,
@@ -2875,19 +3116,20 @@
       },
       "Train2" : 
       {
-        "index" : "Train2",
+        "index" : 977,
         "time" : 30.0,
         "units" : [ "Observer" ]
       },
       "Train3" : 
       {
-        "index" : "Train3",
+        "index" : 978,
         "requires" : 
         [
           {
-            "name" : "RoboticsBay",
             "state" : "CompleteOnly",
-            "type" : "unit"
+            "type" : "unitCount",
+            "unit" : [ 70 ],
+            "unitName" : [ "RoboticsBay" ]
           }
         ],
         "time" : 75.0,
@@ -2895,18 +3137,18 @@
       },
       "Train4" : 
       {
-        "index" : "Train4",
+        "index" : 979,
         "time" : 55.0,
         "units" : [ "Immortal" ]
       }
     },
-    "id" : "RoboticsFacilityTrain",
+    "name" : "RoboticsFacilityTrain",
     "type" : "train"
   },
   "ShakurasLightBridgeNE10" : 
   {
     "commands" : {},
-    "id" : "ShakurasLightBridgeNE10",
+    "name" : "ShakurasLightBridgeNE10",
     "type" : "morph"
   },
   "ShakurasLightBridgeNE10Out" : 
@@ -2915,18 +3157,18 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 2449,
         "time" : 0.0,
         "units" : [ "ShakurasLightBridgeNE10Out" ]
       }
     },
-    "id" : "ShakurasLightBridgeNE10Out",
+    "name" : "ShakurasLightBridgeNE10Out",
     "type" : "morph"
   },
   "ShakurasLightBridgeNE12" : 
   {
     "commands" : {},
-    "id" : "ShakurasLightBridgeNE12",
+    "name" : "ShakurasLightBridgeNE12",
     "type" : "morph"
   },
   "ShakurasLightBridgeNE12Out" : 
@@ -2935,18 +3177,18 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 2453,
         "time" : 0.0,
         "units" : [ "ShakurasLightBridgeNE12Out" ]
       }
     },
-    "id" : "ShakurasLightBridgeNE12Out",
+    "name" : "ShakurasLightBridgeNE12Out",
     "type" : "morph"
   },
   "ShakurasLightBridgeNE8" : 
   {
     "commands" : {},
-    "id" : "ShakurasLightBridgeNE8",
+    "name" : "ShakurasLightBridgeNE8",
     "type" : "morph"
   },
   "ShakurasLightBridgeNE8Out" : 
@@ -2955,18 +3197,18 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 2445,
         "time" : 0.0,
         "units" : [ "ShakurasLightBridgeNE8Out" ]
       }
     },
-    "id" : "ShakurasLightBridgeNE8Out",
+    "name" : "ShakurasLightBridgeNE8Out",
     "type" : "morph"
   },
   "ShakurasLightBridgeNW10" : 
   {
     "commands" : {},
-    "id" : "ShakurasLightBridgeNW10",
+    "name" : "ShakurasLightBridgeNW10",
     "type" : "morph"
   },
   "ShakurasLightBridgeNW10Out" : 
@@ -2975,18 +3217,18 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 2461,
         "time" : 0.0,
         "units" : [ "ShakurasLightBridgeNW10Out" ]
       }
     },
-    "id" : "ShakurasLightBridgeNW10Out",
+    "name" : "ShakurasLightBridgeNW10Out",
     "type" : "morph"
   },
   "ShakurasLightBridgeNW12" : 
   {
     "commands" : {},
-    "id" : "ShakurasLightBridgeNW12",
+    "name" : "ShakurasLightBridgeNW12",
     "type" : "morph"
   },
   "ShakurasLightBridgeNW12Out" : 
@@ -2995,18 +3237,18 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 2465,
         "time" : 0.0,
         "units" : [ "ShakurasLightBridgeNW12Out" ]
       }
     },
-    "id" : "ShakurasLightBridgeNW12Out",
+    "name" : "ShakurasLightBridgeNW12Out",
     "type" : "morph"
   },
   "ShakurasLightBridgeNW8" : 
   {
     "commands" : {},
-    "id" : "ShakurasLightBridgeNW8",
+    "name" : "ShakurasLightBridgeNW8",
     "type" : "morph"
   },
   "ShakurasLightBridgeNW8Out" : 
@@ -3015,12 +3257,12 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 2457,
         "time" : 0.0,
         "units" : [ "ShakurasLightBridgeNW8Out" ]
       }
     },
-    "id" : "ShakurasLightBridgeNW8Out",
+    "name" : "ShakurasLightBridgeNW8Out",
     "type" : "morph"
   },
   "SiegeMode" : 
@@ -3029,60 +3271,60 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 388,
         "time" : 0.5,
         "units" : [ "SiegeTankSieged" ]
       }
     },
-    "id" : "SiegeMode",
+    "name" : "SiegeMode",
     "type" : "morph"
   },
   "SnowRefinery_Terran_ExtendingBridgeNEShort10" : 
   {
     "commands" : {},
-    "id" : "SnowRefinery_Terran_ExtendingBridgeNEShort10",
+    "name" : "SnowRefinery_Terran_ExtendingBridgeNEShort10",
     "type" : "morph"
   },
   "SnowRefinery_Terran_ExtendingBridgeNEShort10Out" : 
   {
     "commands" : {},
-    "id" : "SnowRefinery_Terran_ExtendingBridgeNEShort10Out",
+    "name" : "SnowRefinery_Terran_ExtendingBridgeNEShort10Out",
     "type" : "morph"
   },
   "SnowRefinery_Terran_ExtendingBridgeNEShort8" : 
   {
     "commands" : {},
-    "id" : "SnowRefinery_Terran_ExtendingBridgeNEShort8",
+    "name" : "SnowRefinery_Terran_ExtendingBridgeNEShort8",
     "type" : "morph"
   },
   "SnowRefinery_Terran_ExtendingBridgeNEShort8Out" : 
   {
     "commands" : {},
-    "id" : "SnowRefinery_Terran_ExtendingBridgeNEShort8Out",
+    "name" : "SnowRefinery_Terran_ExtendingBridgeNEShort8Out",
     "type" : "morph"
   },
   "SnowRefinery_Terran_ExtendingBridgeNWShort10" : 
   {
     "commands" : {},
-    "id" : "SnowRefinery_Terran_ExtendingBridgeNWShort10",
+    "name" : "SnowRefinery_Terran_ExtendingBridgeNWShort10",
     "type" : "morph"
   },
   "SnowRefinery_Terran_ExtendingBridgeNWShort10Out" : 
   {
     "commands" : {},
-    "id" : "SnowRefinery_Terran_ExtendingBridgeNWShort10Out",
+    "name" : "SnowRefinery_Terran_ExtendingBridgeNWShort10Out",
     "type" : "morph"
   },
   "SnowRefinery_Terran_ExtendingBridgeNWShort8" : 
   {
     "commands" : {},
-    "id" : "SnowRefinery_Terran_ExtendingBridgeNWShort8",
+    "name" : "SnowRefinery_Terran_ExtendingBridgeNWShort8",
     "type" : "morph"
   },
   "SnowRefinery_Terran_ExtendingBridgeNWShort8Out" : 
   {
     "commands" : {},
-    "id" : "SnowRefinery_Terran_ExtendingBridgeNWShort8Out",
+    "name" : "SnowRefinery_Terran_ExtendingBridgeNWShort8Out",
     "type" : "morph"
   },
   "SpawnInfestedTerran" : 
@@ -3091,13 +3333,12 @@
     {
       "Train1" : 
       {
-        "index" : "Train1",
-        "requires" : [],
+        "index" : 2018,
         "time" : 0.0,
         "units" : [ "LocustMP", "LocustMP" ]
       }
     },
-    "id" : "SpawnInfestedTerran",
+    "name" : "SpawnInfestedTerran",
     "type" : "train"
   },
   "SpineCrawlerUproot" : 
@@ -3106,12 +3347,12 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 1725,
         "time" : 0.0,
         "units" : [ "SpineCrawlerUprooted" ]
       }
     },
-    "id" : "SpineCrawlerUproot",
+    "name" : "SpineCrawlerUproot",
     "type" : "morph"
   },
   "SporeCrawlerUproot" : 
@@ -3120,12 +3361,12 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 1727,
         "time" : 0.0,
         "units" : [ "SporeCrawlerUprooted" ]
       }
     },
-    "id" : "SporeCrawlerUproot",
+    "name" : "SporeCrawlerUproot",
     "type" : "morph"
   },
   "StargateTrain" : 
@@ -3134,19 +3375,20 @@
     {
       "Train1" : 
       {
-        "index" : "Train1",
+        "index" : 946,
         "time" : 35.0,
         "units" : [ "Phoenix" ]
       },
       "Train10" : 
       {
-        "index" : "Train10",
+        "index" : 955,
         "requires" : 
         [
           {
-            "name" : "FleetBeacon",
             "state" : "CompleteOnly",
-            "type" : "unit"
+            "type" : "unitCount",
+            "unit" : [ 64 ],
+            "unitName" : [ "FleetBeacon" ]
           }
         ],
         "time" : 60.0,
@@ -3154,13 +3396,14 @@
       },
       "Train2" : 
       {
-        "index" : "Train2",
+        "index" : 947,
         "requires" : 
         [
           {
-            "name" : "FleetBeacon",
             "state" : "CompleteOnly",
-            "type" : "unit"
+            "type" : "unitCount",
+            "unit" : [ 64 ],
+            "unitName" : [ "FleetBeacon" ]
           }
         ],
         "time" : 120.0,
@@ -3168,18 +3411,18 @@
       },
       "Train5" : 
       {
-        "index" : "Train5",
+        "index" : 950,
         "time" : 60.0,
         "units" : [ "VoidRay" ]
       },
       "Train9" : 
       {
-        "index" : "Train9",
+        "index" : 954,
         "time" : 50.0,
         "units" : [ "Oracle" ]
       }
     },
-    "id" : "StargateTrain",
+    "name" : "StargateTrain",
     "type" : "train"
   },
   "StarportAddOns" : 
@@ -3188,24 +3431,24 @@
     {
       "Build1" : 
       {
-        "index" : "Build1",
+        "index" : 487,
         "time" : 25.0,
         "units" : [ "StarportTechLab" ]
       },
       "Build2" : 
       {
-        "index" : "Build2",
+        "index" : 488,
         "time" : 50.0,
         "units" : [ "StarportReactor" ]
       }
     },
-    "id" : "StarportAddOns",
+    "name" : "StarportAddOns",
     "type" : "build"
   },
   "StarportLiftOff" : 
   {
     "commands" : {},
-    "id" : "StarportLiftOff",
+    "name" : "StarportLiftOff",
     "type" : "morph"
   },
   "StarportReactorMorph" : 
@@ -3214,13 +3457,19 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
-        "requires" : [],
+        "index" : 1680,
+        "requires" : 
+        [
+          {
+            "type" : "value",
+            "value" : 0
+          }
+        ],
         "time" : 0.0,
         "units" : [ "StarportReactor" ]
       }
     },
-    "id" : "StarportReactorMorph",
+    "name" : "StarportReactorMorph",
     "type" : "morph"
   },
   "StarportTechLabMorph" : 
@@ -3229,13 +3478,19 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
-        "requires" : [],
+        "index" : 1672,
+        "requires" : 
+        [
+          {
+            "type" : "value",
+            "value" : 0
+          }
+        ],
         "time" : 0.0,
         "units" : [ "StarportTechLab" ]
       }
     },
-    "id" : "StarportTechLabMorph",
+    "name" : "StarportTechLabMorph",
     "type" : "morph"
   },
   "StarportTrain" : 
@@ -3244,19 +3499,20 @@
     {
       "Train1" : 
       {
-        "index" : "Train1",
+        "index" : 620,
         "time" : 42.0,
         "units" : [ "Medivac" ]
       },
       "Train2" : 
       {
-        "index" : "Train2",
+        "index" : 621,
         "requires" : 
         [
           {
-            "name" : "TechLab",
             "state" : "CompleteOnlyAtUnit",
-            "type" : "unit"
+            "type" : "unitCount",
+            "unit" : [ 5 ],
+            "unitName" : [ "TechLab" ]
           }
         ],
         "time" : 60.0,
@@ -3264,13 +3520,14 @@
       },
       "Train3" : 
       {
-        "index" : "Train3",
+        "index" : 622,
         "requires" : 
         [
           {
-            "name" : "TechLab",
             "state" : "CompleteOnlyAtUnit",
-            "type" : "unit"
+            "type" : "unitCount",
+            "unit" : [ 5 ],
+            "unitName" : [ "TechLab" ]
           }
         ],
         "time" : 60.0,
@@ -3278,25 +3535,45 @@
       },
       "Train4" : 
       {
-        "index" : "Train4",
-        "requires" : [],
+        "index" : 623,
+        "requires" : 
+        [
+          {
+            "operands" : 
+            [
+              {
+                "state" : "CompleteOnlyAtUnit",
+                "type" : "unitCount",
+                "unit" : [ 5 ],
+                "unitName" : [ "TechLab" ]
+              },
+              {
+                "state" : "CompleteOnly",
+                "type" : "unitCount",
+                "unit" : [ 30 ],
+                "unitName" : [ "FusionCore" ]
+              }
+            ],
+            "type" : "and"
+          }
+        ],
         "time" : 90.0,
         "units" : [ "Battlecruiser" ]
       },
       "Train5" : 
       {
-        "index" : "Train5",
+        "index" : 624,
         "time" : 42.0,
         "units" : [ "VikingFighter" ]
       },
       "Train7" : 
       {
-        "index" : "Train7",
+        "index" : 626,
         "time" : 60.0,
         "units" : [ "Liberator" ]
       }
     },
-    "id" : "StarportTrain",
+    "name" : "StarportTrain",
     "type" : "train"
   },
   "SupplyDepotLower" : 
@@ -3305,12 +3582,12 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 556,
         "time" : 0.0,
         "units" : [ "SupplyDepotLowered" ]
       }
     },
-    "id" : "SupplyDepotLower",
+    "name" : "SupplyDepotLower",
     "type" : "morph"
   },
   "SupplyDepotRaise" : 
@@ -3319,12 +3596,12 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 558,
         "time" : 0.0,
         "units" : [ "SupplyDepot" ]
       }
     },
-    "id" : "SupplyDepotRaise",
+    "name" : "SupplyDepotRaise",
     "type" : "morph"
   },
   "Tarsonis_DoorDefaultLower" : 
@@ -3333,12 +3610,12 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 0,
         "time" : 0.0,
         "units" : [ "##id##" ]
       }
     },
-    "id" : "Tarsonis_DoorDefaultLower",
+    "name" : "Tarsonis_DoorDefaultLower",
     "type" : "morph"
   },
   "Tarsonis_DoorDefaultRaise" : 
@@ -3347,60 +3624,60 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 0,
         "time" : 0.0,
         "units" : [ "##id##" ]
       }
     },
-    "id" : "Tarsonis_DoorDefaultRaise",
+    "name" : "Tarsonis_DoorDefaultRaise",
     "type" : "morph"
   },
   "Tarsonis_DoorE" : 
   {
     "commands" : {},
-    "id" : "Tarsonis_DoorE",
+    "name" : "Tarsonis_DoorE",
     "type" : "morph"
   },
   "Tarsonis_DoorELowered" : 
   {
     "commands" : {},
-    "id" : "Tarsonis_DoorELowered",
+    "name" : "Tarsonis_DoorELowered",
     "type" : "morph"
   },
   "Tarsonis_DoorN" : 
   {
     "commands" : {},
-    "id" : "Tarsonis_DoorN",
+    "name" : "Tarsonis_DoorN",
     "type" : "morph"
   },
   "Tarsonis_DoorNE" : 
   {
     "commands" : {},
-    "id" : "Tarsonis_DoorNE",
+    "name" : "Tarsonis_DoorNE",
     "type" : "morph"
   },
   "Tarsonis_DoorNELowered" : 
   {
     "commands" : {},
-    "id" : "Tarsonis_DoorNELowered",
+    "name" : "Tarsonis_DoorNELowered",
     "type" : "morph"
   },
   "Tarsonis_DoorNLowered" : 
   {
     "commands" : {},
-    "id" : "Tarsonis_DoorNLowered",
+    "name" : "Tarsonis_DoorNLowered",
     "type" : "morph"
   },
   "Tarsonis_DoorNW" : 
   {
     "commands" : {},
-    "id" : "Tarsonis_DoorNW",
+    "name" : "Tarsonis_DoorNW",
     "type" : "morph"
   },
   "Tarsonis_DoorNWLowered" : 
   {
     "commands" : {},
-    "id" : "Tarsonis_DoorNWLowered",
+    "name" : "Tarsonis_DoorNWLowered",
     "type" : "morph"
   },
   "TechLabMorph" : 
@@ -3409,13 +3686,19 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
-        "requires" : [],
+        "index" : 1666,
+        "requires" : 
+        [
+          {
+            "type" : "value",
+            "value" : 0
+          }
+        ],
         "time" : 0.0,
         "units" : [ "TechLab" ]
       }
     },
-    "id" : "TechLabMorph",
+    "name" : "TechLabMorph",
     "type" : "morph"
   },
   "TerranAddOns" : 
@@ -3424,18 +3707,18 @@
     {
       "Build1" : 
       {
-        "index" : "Build1",
+        "index" : 0,
         "time" : 30.0,
         "units" : [ "TechLab" ]
       },
       "Build2" : 
       {
-        "index" : "Build2",
+        "index" : 0,
         "time" : 40.0,
         "units" : [ "Reactor" ]
       }
     },
-    "id" : "TerranAddOns",
+    "name" : "TerranAddOns",
     "type" : "build"
   },
   "TerranBuild" : 
@@ -3444,19 +3727,20 @@
     {
       "Build1" : 
       {
-        "index" : "Build1",
+        "index" : 318,
         "time" : 100.0,
         "units" : [ "CommandCenter" ]
       },
       "Build10" : 
       {
-        "index" : "Build10",
+        "index" : 327,
         "requires" : 
         [
           {
-            "name" : "Barracks|BarracksFlying",
             "state" : "CompleteOnly",
-            "type" : "unit"
+            "type" : "unitCount",
+            "unit" : [ 21, 46 ],
+            "unitName" : [ "Barracks", "BarracksFlying" ]
           }
         ],
         "time" : 40.0,
@@ -3464,13 +3748,14 @@
       },
       "Build11" : 
       {
-        "index" : "Build11",
+        "index" : 328,
         "requires" : 
         [
           {
-            "name" : "Barracks|BarracksFlying",
             "state" : "CompleteOnly",
-            "type" : "unit"
+            "type" : "unitCount",
+            "unit" : [ 21, 46 ],
+            "unitName" : [ "Barracks", "BarracksFlying" ]
           }
         ],
         "time" : 60.0,
@@ -3478,13 +3763,14 @@
       },
       "Build12" : 
       {
-        "index" : "Build12",
+        "index" : 329,
         "requires" : 
         [
           {
-            "name" : "Factory|FactoryFlying",
             "state" : "CompleteOnly",
-            "type" : "unit"
+            "type" : "unitCount",
+            "unit" : [ 27, 43 ],
+            "unitName" : [ "Factory", "FactoryFlying" ]
           }
         ],
         "time" : 50.0,
@@ -3492,27 +3778,29 @@
       },
       "Build13" : 
       {
-        "index" : "Build13",
+        "index" : 330,
         "requires" : 
         [
           {
-            "name" : "Barracks|BarracksFlying",
             "state" : "CompleteOnly",
-            "type" : "unit"
+            "type" : "unitCount",
+            "unit" : [ 21, 46 ],
+            "unitName" : [ "Barracks", "BarracksFlying" ]
           }
         ],
         "time" : 50.0,
-        "units" : [ "MercCompound", "", "" ]
+        "units" : [ "MercCompound" ]
       },
       "Build14" : 
       {
-        "index" : "Build14",
+        "index" : 331,
         "requires" : 
         [
           {
-            "name" : "Factory|FactoryFlying",
             "state" : "CompleteOnly",
-            "type" : "unit"
+            "type" : "unitCount",
+            "unit" : [ 27, 43 ],
+            "unitName" : [ "Factory", "FactoryFlying" ]
           }
         ],
         "time" : 65.0,
@@ -3520,13 +3808,14 @@
       },
       "Build16" : 
       {
-        "index" : "Build16",
+        "index" : 333,
         "requires" : 
         [
           {
-            "name" : "Starport|StarportFlying",
             "state" : "CompleteOnly",
-            "type" : "unit"
+            "type" : "unitCount",
+            "unit" : [ 28, 44 ],
+            "unitName" : [ "Starport", "StarportFlying" ]
           }
         ],
         "time" : 65.0,
@@ -3534,25 +3823,26 @@
       },
       "Build2" : 
       {
-        "index" : "Build2",
+        "index" : 319,
         "time" : 30.0,
         "units" : [ "SupplyDepot" ]
       },
       "Build3" : 
       {
-        "index" : "Build3",
+        "index" : 320,
         "time" : 30.0,
         "units" : [ "Refinery" ]
       },
       "Build30" : 
       {
-        "index" : "Build30",
+        "index" : 347,
         "requires" : 
         [
           {
-            "name" : "Factory|FactoryFlying",
             "state" : "CompleteOnly",
-            "type" : "unit"
+            "type" : "unitCount",
+            "unit" : [ 27, 43 ],
+            "unitName" : [ "Factory", "FactoryFlying" ]
           }
         ],
         "time" : 30.0,
@@ -3560,13 +3850,14 @@
       },
       "Build4" : 
       {
-        "index" : "Build4",
+        "index" : 321,
         "requires" : 
         [
           {
-            "name" : "SupplyDepot|SupplyDepotLowered",
             "state" : "CompleteOnly",
-            "type" : "unit"
+            "type" : "unitCount",
+            "unit" : [ 19, 47 ],
+            "unitName" : [ "SupplyDepot", "SupplyDepotLowered" ]
           }
         ],
         "time" : 65.0,
@@ -3574,13 +3865,21 @@
       },
       "Build5" : 
       {
-        "index" : "Build5",
+        "index" : 322,
         "requires" : 
         [
           {
-            "name" : "CommandCenter|CommandCenterFlying|OrbitalCommand|OrbitalCommandFlying|PlanetaryFortress",
             "state" : "CompleteOnly",
-            "type" : "unit"
+            "type" : "unitCount",
+            "unit" : [ 18, 36, 132, 134, 130 ],
+            "unitName" : 
+            [
+              "CommandCenter",
+              "CommandCenterFlying",
+              "OrbitalCommand",
+              "OrbitalCommandFlying",
+              "PlanetaryFortress"
+            ]
           }
         ],
         "time" : 35.0,
@@ -3588,13 +3887,14 @@
       },
       "Build6" : 
       {
-        "index" : "Build6",
+        "index" : 323,
         "requires" : 
         [
           {
-            "name" : "EngineeringBay",
             "state" : "CompleteOnly",
-            "type" : "unit"
+            "type" : "unitCount",
+            "unit" : [ 22 ],
+            "unitName" : [ "EngineeringBay" ]
           }
         ],
         "time" : 25.0,
@@ -3602,13 +3902,14 @@
       },
       "Build7" : 
       {
-        "index" : "Build7",
+        "index" : 324,
         "requires" : 
         [
           {
-            "name" : "Barracks|BarracksFlying",
             "state" : "CompleteOnly",
-            "type" : "unit"
+            "type" : "unitCount",
+            "unit" : [ 21, 46 ],
+            "unitName" : [ "Barracks", "BarracksFlying" ]
           }
         ],
         "time" : 40.0,
@@ -3616,25 +3917,26 @@
       },
       "Build8" : 
       {
-        "index" : "Build8",
+        "index" : 325,
         "time" : 15.0
       },
       "Build9" : 
       {
-        "index" : "Build9",
+        "index" : 326,
         "requires" : 
         [
           {
-            "name" : "EngineeringBay",
             "state" : "CompleteOnly",
-            "type" : "unit"
+            "type" : "unitCount",
+            "unit" : [ 22 ],
+            "unitName" : [ "EngineeringBay" ]
           }
         ],
         "time" : 25.0,
         "units" : [ "SensorTower" ]
       }
     },
-    "id" : "TerranBuild",
+    "name" : "TerranBuild",
     "type" : "build"
   },
   "TerranBuildingLiftOff" : 
@@ -3643,12 +3945,12 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 0,
         "time" : 0.0,
         "units" : [ "##unit##" ]
       }
     },
-    "id" : "TerranBuildingLiftOff",
+    "name" : "TerranBuildingLiftOff",
     "type" : "morph"
   },
   "ThorAPMode" : 
@@ -3657,12 +3959,12 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 2362,
         "time" : 0.0,
         "units" : [ "ThorAP", "ThorAP", "ThorAP" ]
       }
     },
-    "id" : "ThorAPMode",
+    "name" : "ThorAPMode",
     "type" : "morph"
   },
   "ThorNormalMode" : 
@@ -3671,12 +3973,12 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 2364,
         "time" : 0.0,
         "units" : [ "Thor", "Thor", "Thor" ]
       }
     },
-    "id" : "ThorNormalMode",
+    "name" : "ThorNormalMode",
     "type" : "morph"
   },
   "TrainQueen" : 
@@ -3685,20 +3987,21 @@
     {
       "Train1" : 
       {
-        "index" : "Train1",
+        "index" : 1632,
         "requires" : 
         [
           {
-            "name" : "SpawningPool",
             "state" : "CompleteOnly",
-            "type" : "unit"
+            "type" : "unitCount",
+            "unit" : [ 89 ],
+            "unitName" : [ "SpawningPool" ]
           }
         ],
         "time" : 50.0,
         "units" : [ "Queen" ]
       }
     },
-    "id" : "TrainQueen",
+    "name" : "TrainQueen",
     "type" : "train"
   },
   "TransportMode" : 
@@ -3707,12 +4010,12 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 1530,
         "time" : 0.0,
         "units" : [ "WarpPrism" ]
       }
     },
-    "id" : "TransportMode",
+    "name" : "TransportMode",
     "type" : "morph"
   },
   "Unsiege" : 
@@ -3721,12 +4024,12 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 390,
         "time" : 0.0,
         "units" : [ "SiegeTank", "SiegeTank" ]
       }
     },
-    "id" : "Unsiege",
+    "name" : "Unsiege",
     "type" : "morph"
   },
   "UpgradeToGreaterSpire" : 
@@ -3735,20 +4038,21 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 1220,
         "requires" : 
         [
           {
-            "name" : "Hive",
             "state" : "CompleteOnly",
-            "type" : "unit"
+            "type" : "unitCount",
+            "unit" : [ 101 ],
+            "unitName" : [ "Hive" ]
           }
         ],
         "time" : 0.0,
         "units" : [ "GreaterSpire" ]
       }
     },
-    "id" : "UpgradeToGreaterSpire",
+    "name" : "UpgradeToGreaterSpire",
     "type" : "morph"
   },
   "UpgradeToHive" : 
@@ -3757,20 +4061,21 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 1218,
         "requires" : 
         [
           {
-            "name" : "InfestationPit",
             "state" : "CompleteOnly",
-            "type" : "unit"
+            "type" : "unitCount",
+            "unit" : [ 94 ],
+            "unitName" : [ "InfestationPit" ]
           }
         ],
         "time" : 0.0,
         "units" : [ "Hive" ]
       }
     },
-    "id" : "UpgradeToHive",
+    "name" : "UpgradeToHive",
     "type" : "morph"
   },
   "UpgradeToLair" : 
@@ -3779,20 +4084,21 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 1216,
         "requires" : 
         [
           {
-            "name" : "SpawningPool",
             "state" : "CompleteOnly",
-            "type" : "unit"
+            "type" : "unitCount",
+            "unit" : [ 89 ],
+            "unitName" : [ "SpawningPool" ]
           }
         ],
         "time" : 0.0,
         "units" : [ "Lair" ]
       }
     },
-    "id" : "UpgradeToLair",
+    "name" : "UpgradeToLair",
     "type" : "morph"
   },
   "UpgradeToLurkerDenMP" : 
@@ -3801,20 +4107,21 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 2112,
         "requires" : 
         [
           {
-            "name" : "Hive|Lair",
             "state" : "CompleteOnly",
-            "type" : "unit"
+            "type" : "unitCount",
+            "unit" : [ 101, 100 ],
+            "unitName" : [ "Hive", "Lair" ]
           }
         ],
         "time" : 0.0,
         "units" : [ "LurkerDenMP", "LurkerDenMP" ]
       }
     },
-    "id" : "UpgradeToLurkerDenMP",
+    "name" : "UpgradeToLurkerDenMP",
     "type" : "morph"
   },
   "UpgradeToOrbital" : 
@@ -3823,20 +4130,21 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 1516,
         "requires" : 
         [
           {
-            "name" : "Barracks|BarracksFlying",
             "state" : "CompleteOnly",
-            "type" : "unit"
+            "type" : "unitCount",
+            "unit" : [ 21, 46 ],
+            "unitName" : [ "Barracks", "BarracksFlying" ]
           }
         ],
         "time" : 0.0,
         "units" : [ "OrbitalCommand" ]
       }
     },
-    "id" : "UpgradeToOrbital",
+    "name" : "UpgradeToOrbital",
     "type" : "morph"
   },
   "UpgradeToPlanetaryFortress" : 
@@ -3845,20 +4153,21 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 1450,
         "requires" : 
         [
           {
-            "name" : "EngineeringBay",
             "state" : "CompleteOnly",
-            "type" : "unit"
+            "type" : "unitCount",
+            "unit" : [ 22 ],
+            "unitName" : [ "EngineeringBay" ]
           }
         ],
         "time" : 0.0,
         "units" : [ "PlanetaryFortress" ]
       }
     },
-    "id" : "UpgradeToPlanetaryFortress",
+    "name" : "UpgradeToPlanetaryFortress",
     "type" : "morph"
   },
   "UpgradeToWarpGate" : 
@@ -3867,20 +4176,21 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 1518,
         "requires" : 
         [
           {
-            "name" : "WarpGateResearch",
             "state" : "CompleteOnly",
-            "type" : "upgrade"
+            "type" : "upgradeCount",
+            "upgrade" : 84,
+            "upgradeName" : "WarpGateResearch"
           }
         ],
         "time" : 0.0,
         "units" : [ "WarpGate" ]
       }
     },
-    "id" : "UpgradeToWarpGate",
+    "name" : "UpgradeToWarpGate",
     "type" : "morph"
   },
   "VoidMPImmortalReviveDeath" : 
@@ -3889,20 +4199,21 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 2471,
         "requires" : 
         [
           {
-            "name" : "ImmortalRevive",
             "state" : "CompleteOnly",
-            "type" : "upgrade"
+            "type" : "upgradeCount",
+            "upgrade" : 121,
+            "upgradeName" : "ImmortalRevive"
           }
         ],
         "time" : 0.0,
         "units" : [ "VoidMPImmortalReviveCorpse" ]
       }
     },
-    "id" : "VoidMPImmortalReviveDeath",
+    "name" : "VoidMPImmortalReviveDeath",
     "type" : "morph"
   },
   "VoidMPImmortalReviveRebuild" : 
@@ -3911,12 +4222,12 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 2469,
         "time" : 30.0,
         "units" : [ "Immortal" ]
       }
     },
-    "id" : "VoidMPImmortalReviveRebuild",
+    "name" : "VoidMPImmortalReviveRebuild",
     "type" : "morph"
   },
   "WidowMineBurrow" : 
@@ -3925,12 +4236,12 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 2095,
         "time" : 0.0,
         "units" : [ "WidowMineBurrowed" ]
       }
     },
-    "id" : "WidowMineBurrow",
+    "name" : "WidowMineBurrow",
     "type" : "morph"
   },
   "WidowMineUnburrow" : 
@@ -3939,12 +4250,12 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 2097,
         "time" : 0.0,
         "units" : [ "WidowMine" ]
       }
     },
-    "id" : "WidowMineUnburrow",
+    "name" : "WidowMineUnburrow",
     "type" : "morph"
   },
   "XelNaga_Caverns_DoorDefaultClose" : 
@@ -3953,12 +4264,12 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 0,
         "time" : 0.0,
         "units" : [ "##id##" ]
       }
     },
-    "id" : "XelNaga_Caverns_DoorDefaultClose",
+    "name" : "XelNaga_Caverns_DoorDefaultClose",
     "type" : "morph"
   },
   "XelNaga_Caverns_DoorDefaultOpen" : 
@@ -3967,252 +4278,252 @@
     {
       "Execute" : 
       {
-        "index" : "Execute",
+        "index" : 0,
         "time" : 0.0,
         "units" : [ "##id##" ]
       }
     },
-    "id" : "XelNaga_Caverns_DoorDefaultOpen",
+    "name" : "XelNaga_Caverns_DoorDefaultOpen",
     "type" : "morph"
   },
   "XelNaga_Caverns_DoorE" : 
   {
     "commands" : {},
-    "id" : "XelNaga_Caverns_DoorE",
+    "name" : "XelNaga_Caverns_DoorE",
     "type" : "morph"
   },
   "XelNaga_Caverns_DoorEOpened" : 
   {
     "commands" : {},
-    "id" : "XelNaga_Caverns_DoorEOpened",
+    "name" : "XelNaga_Caverns_DoorEOpened",
     "type" : "morph"
   },
   "XelNaga_Caverns_DoorN" : 
   {
     "commands" : {},
-    "id" : "XelNaga_Caverns_DoorN",
+    "name" : "XelNaga_Caverns_DoorN",
     "type" : "morph"
   },
   "XelNaga_Caverns_DoorNE" : 
   {
     "commands" : {},
-    "id" : "XelNaga_Caverns_DoorNE",
+    "name" : "XelNaga_Caverns_DoorNE",
     "type" : "morph"
   },
   "XelNaga_Caverns_DoorNEOpened" : 
   {
     "commands" : {},
-    "id" : "XelNaga_Caverns_DoorNEOpened",
+    "name" : "XelNaga_Caverns_DoorNEOpened",
     "type" : "morph"
   },
   "XelNaga_Caverns_DoorNOpened" : 
   {
     "commands" : {},
-    "id" : "XelNaga_Caverns_DoorNOpened",
+    "name" : "XelNaga_Caverns_DoorNOpened",
     "type" : "morph"
   },
   "XelNaga_Caverns_DoorNW" : 
   {
     "commands" : {},
-    "id" : "XelNaga_Caverns_DoorNW",
+    "name" : "XelNaga_Caverns_DoorNW",
     "type" : "morph"
   },
   "XelNaga_Caverns_DoorNWOpened" : 
   {
     "commands" : {},
-    "id" : "XelNaga_Caverns_DoorNWOpened",
+    "name" : "XelNaga_Caverns_DoorNWOpened",
     "type" : "morph"
   },
   "XelNaga_Caverns_DoorS" : 
   {
     "commands" : {},
-    "id" : "XelNaga_Caverns_DoorS",
+    "name" : "XelNaga_Caverns_DoorS",
     "type" : "morph"
   },
   "XelNaga_Caverns_DoorSE" : 
   {
     "commands" : {},
-    "id" : "XelNaga_Caverns_DoorSE",
+    "name" : "XelNaga_Caverns_DoorSE",
     "type" : "morph"
   },
   "XelNaga_Caverns_DoorSEOpened" : 
   {
     "commands" : {},
-    "id" : "XelNaga_Caverns_DoorSEOpened",
+    "name" : "XelNaga_Caverns_DoorSEOpened",
     "type" : "morph"
   },
   "XelNaga_Caverns_DoorSOpened" : 
   {
     "commands" : {},
-    "id" : "XelNaga_Caverns_DoorSOpened",
+    "name" : "XelNaga_Caverns_DoorSOpened",
     "type" : "morph"
   },
   "XelNaga_Caverns_DoorSW" : 
   {
     "commands" : {},
-    "id" : "XelNaga_Caverns_DoorSW",
+    "name" : "XelNaga_Caverns_DoorSW",
     "type" : "morph"
   },
   "XelNaga_Caverns_DoorSWOpened" : 
   {
     "commands" : {},
-    "id" : "XelNaga_Caverns_DoorSWOpened",
+    "name" : "XelNaga_Caverns_DoorSWOpened",
     "type" : "morph"
   },
   "XelNaga_Caverns_DoorW" : 
   {
     "commands" : {},
-    "id" : "XelNaga_Caverns_DoorW",
+    "name" : "XelNaga_Caverns_DoorW",
     "type" : "morph"
   },
   "XelNaga_Caverns_DoorWOpened" : 
   {
     "commands" : {},
-    "id" : "XelNaga_Caverns_DoorWOpened",
+    "name" : "XelNaga_Caverns_DoorWOpened",
     "type" : "morph"
   },
   "XelNaga_Caverns_Floating_BridgeH10" : 
   {
     "commands" : {},
-    "id" : "XelNaga_Caverns_Floating_BridgeH10",
+    "name" : "XelNaga_Caverns_Floating_BridgeH10",
     "type" : "morph"
   },
   "XelNaga_Caverns_Floating_BridgeH10Out" : 
   {
     "commands" : {},
-    "id" : "XelNaga_Caverns_Floating_BridgeH10Out",
+    "name" : "XelNaga_Caverns_Floating_BridgeH10Out",
     "type" : "morph"
   },
   "XelNaga_Caverns_Floating_BridgeH12" : 
   {
     "commands" : {},
-    "id" : "XelNaga_Caverns_Floating_BridgeH12",
+    "name" : "XelNaga_Caverns_Floating_BridgeH12",
     "type" : "morph"
   },
   "XelNaga_Caverns_Floating_BridgeH12Out" : 
   {
     "commands" : {},
-    "id" : "XelNaga_Caverns_Floating_BridgeH12Out",
+    "name" : "XelNaga_Caverns_Floating_BridgeH12Out",
     "type" : "morph"
   },
   "XelNaga_Caverns_Floating_BridgeH8" : 
   {
     "commands" : {},
-    "id" : "XelNaga_Caverns_Floating_BridgeH8",
+    "name" : "XelNaga_Caverns_Floating_BridgeH8",
     "type" : "morph"
   },
   "XelNaga_Caverns_Floating_BridgeH8Out" : 
   {
     "commands" : {},
-    "id" : "XelNaga_Caverns_Floating_BridgeH8Out",
+    "name" : "XelNaga_Caverns_Floating_BridgeH8Out",
     "type" : "morph"
   },
   "XelNaga_Caverns_Floating_BridgeNE10" : 
   {
     "commands" : {},
-    "id" : "XelNaga_Caverns_Floating_BridgeNE10",
+    "name" : "XelNaga_Caverns_Floating_BridgeNE10",
     "type" : "morph"
   },
   "XelNaga_Caverns_Floating_BridgeNE10Out" : 
   {
     "commands" : {},
-    "id" : "XelNaga_Caverns_Floating_BridgeNE10Out",
+    "name" : "XelNaga_Caverns_Floating_BridgeNE10Out",
     "type" : "morph"
   },
   "XelNaga_Caverns_Floating_BridgeNE12" : 
   {
     "commands" : {},
-    "id" : "XelNaga_Caverns_Floating_BridgeNE12",
+    "name" : "XelNaga_Caverns_Floating_BridgeNE12",
     "type" : "morph"
   },
   "XelNaga_Caverns_Floating_BridgeNE12Out" : 
   {
     "commands" : {},
-    "id" : "XelNaga_Caverns_Floating_BridgeNE12Out",
+    "name" : "XelNaga_Caverns_Floating_BridgeNE12Out",
     "type" : "morph"
   },
   "XelNaga_Caverns_Floating_BridgeNE8" : 
   {
     "commands" : {},
-    "id" : "XelNaga_Caverns_Floating_BridgeNE8",
+    "name" : "XelNaga_Caverns_Floating_BridgeNE8",
     "type" : "morph"
   },
   "XelNaga_Caverns_Floating_BridgeNE8Out" : 
   {
     "commands" : {},
-    "id" : "XelNaga_Caverns_Floating_BridgeNE8Out",
+    "name" : "XelNaga_Caverns_Floating_BridgeNE8Out",
     "type" : "morph"
   },
   "XelNaga_Caverns_Floating_BridgeNW10" : 
   {
     "commands" : {},
-    "id" : "XelNaga_Caverns_Floating_BridgeNW10",
+    "name" : "XelNaga_Caverns_Floating_BridgeNW10",
     "type" : "morph"
   },
   "XelNaga_Caverns_Floating_BridgeNW10Out" : 
   {
     "commands" : {},
-    "id" : "XelNaga_Caverns_Floating_BridgeNW10Out",
+    "name" : "XelNaga_Caverns_Floating_BridgeNW10Out",
     "type" : "morph"
   },
   "XelNaga_Caverns_Floating_BridgeNW12" : 
   {
     "commands" : {},
-    "id" : "XelNaga_Caverns_Floating_BridgeNW12",
+    "name" : "XelNaga_Caverns_Floating_BridgeNW12",
     "type" : "morph"
   },
   "XelNaga_Caverns_Floating_BridgeNW12Out" : 
   {
     "commands" : {},
-    "id" : "XelNaga_Caverns_Floating_BridgeNW12Out",
+    "name" : "XelNaga_Caverns_Floating_BridgeNW12Out",
     "type" : "morph"
   },
   "XelNaga_Caverns_Floating_BridgeNW8" : 
   {
     "commands" : {},
-    "id" : "XelNaga_Caverns_Floating_BridgeNW8",
+    "name" : "XelNaga_Caverns_Floating_BridgeNW8",
     "type" : "morph"
   },
   "XelNaga_Caverns_Floating_BridgeNW8Out" : 
   {
     "commands" : {},
-    "id" : "XelNaga_Caverns_Floating_BridgeNW8Out",
+    "name" : "XelNaga_Caverns_Floating_BridgeNW8Out",
     "type" : "morph"
   },
   "XelNaga_Caverns_Floating_BridgeV10" : 
   {
     "commands" : {},
-    "id" : "XelNaga_Caverns_Floating_BridgeV10",
+    "name" : "XelNaga_Caverns_Floating_BridgeV10",
     "type" : "morph"
   },
   "XelNaga_Caverns_Floating_BridgeV10Out" : 
   {
     "commands" : {},
-    "id" : "XelNaga_Caverns_Floating_BridgeV10Out",
+    "name" : "XelNaga_Caverns_Floating_BridgeV10Out",
     "type" : "morph"
   },
   "XelNaga_Caverns_Floating_BridgeV12" : 
   {
     "commands" : {},
-    "id" : "XelNaga_Caverns_Floating_BridgeV12",
+    "name" : "XelNaga_Caverns_Floating_BridgeV12",
     "type" : "morph"
   },
   "XelNaga_Caverns_Floating_BridgeV12Out" : 
   {
     "commands" : {},
-    "id" : "XelNaga_Caverns_Floating_BridgeV12Out",
+    "name" : "XelNaga_Caverns_Floating_BridgeV12Out",
     "type" : "morph"
   },
   "XelNaga_Caverns_Floating_BridgeV8" : 
   {
     "commands" : {},
-    "id" : "XelNaga_Caverns_Floating_BridgeV8",
+    "name" : "XelNaga_Caverns_Floating_BridgeV8",
     "type" : "morph"
   },
   "XelNaga_Caverns_Floating_BridgeV8Out" : 
   {
     "commands" : {},
-    "id" : "XelNaga_Caverns_Floating_BridgeV8Out",
+    "name" : "XelNaga_Caverns_Floating_BridgeV8Out",
     "type" : "morph"
   },
   "ZergBuild" : 
@@ -4221,19 +4532,20 @@
     {
       "Build1" : 
       {
-        "index" : "Build1",
+        "index" : 1152,
         "time" : 100.0,
         "units" : [ "Hatchery" ]
       },
       "Build10" : 
       {
-        "index" : "Build10",
+        "index" : 1161,
         "requires" : 
         [
           {
-            "name" : "Hive|Lair",
             "state" : "CompleteOnly",
-            "type" : "unit"
+            "type" : "unitCount",
+            "unit" : [ 101, 100 ],
+            "unitName" : [ "Hive", "Lair" ]
           }
         ],
         "time" : 50.0,
@@ -4241,13 +4553,14 @@
       },
       "Build11" : 
       {
-        "index" : "Build11",
+        "index" : 1162,
         "requires" : 
         [
           {
-            "name" : "SpawningPool",
             "state" : "CompleteOnly",
-            "type" : "unit"
+            "type" : "unitCount",
+            "unit" : [ 89 ],
+            "unitName" : [ "SpawningPool" ]
           }
         ],
         "time" : 60.0,
@@ -4255,18 +4568,19 @@
       },
       "Build13" : 
       {
-        "index" : "Build13",
+        "index" : 1164,
         "time" : 70.0
       },
       "Build14" : 
       {
-        "index" : "Build14",
+        "index" : 1165,
         "requires" : 
         [
           {
-            "name" : "SpawningPool",
             "state" : "CompleteOnly",
-            "type" : "unit"
+            "type" : "unitCount",
+            "unit" : [ 89 ],
+            "unitName" : [ "SpawningPool" ]
           }
         ],
         "time" : 55.0,
@@ -4274,13 +4588,14 @@
       },
       "Build15" : 
       {
-        "index" : "Build15",
+        "index" : 1166,
         "requires" : 
         [
           {
-            "name" : "SpawningPool",
             "state" : "CompleteOnly",
-            "type" : "unit"
+            "type" : "unitCount",
+            "unit" : [ 89 ],
+            "unitName" : [ "SpawningPool" ]
           }
         ],
         "time" : 50.0,
@@ -4288,13 +4603,14 @@
       },
       "Build16" : 
       {
-        "index" : "Build16",
+        "index" : 1167,
         "requires" : 
         [
           {
-            "name" : "SpawningPool",
             "state" : "CompleteOnly",
-            "type" : "unit"
+            "type" : "unitCount",
+            "unit" : [ 89 ],
+            "unitName" : [ "SpawningPool" ]
           }
         ],
         "time" : 30.0,
@@ -4302,19 +4618,20 @@
       },
       "Build2" : 
       {
-        "index" : "Build2",
+        "index" : 1153,
         "time" : 15.0,
-        "units" : [ "CreepTumor", "" ]
+        "units" : [ "CreepTumor" ]
       },
       "Build21" : 
       {
-        "index" : "Build21",
+        "index" : 1172,
         "requires" : 
         [
           {
-            "name" : "SpawningPool",
             "state" : "CompleteOnly",
-            "type" : "unit"
+            "type" : "unitCount",
+            "unit" : [ 89 ],
+            "unitName" : [ "SpawningPool" ]
           }
         ],
         "time" : 30.0,
@@ -4322,19 +4639,20 @@
       },
       "Build3" : 
       {
-        "index" : "Build3",
+        "index" : 1154,
         "time" : 30.0,
         "units" : [ "Extractor" ]
       },
       "Build4" : 
       {
-        "index" : "Build4",
+        "index" : 1155,
         "requires" : 
         [
           {
-            "name" : "Hatchery|Hive|Lair",
             "state" : "CompleteOnly",
-            "type" : "unit"
+            "type" : "unitCount",
+            "unit" : [ 86, 101, 100 ],
+            "unitName" : [ "Hatchery", "Hive", "Lair" ]
           }
         ],
         "time" : 65.0,
@@ -4342,13 +4660,14 @@
       },
       "Build5" : 
       {
-        "index" : "Build5",
+        "index" : 1156,
         "requires" : 
         [
           {
-            "name" : "Hatchery|Hive|Lair",
             "state" : "CompleteOnly",
-            "type" : "unit"
+            "type" : "unitCount",
+            "unit" : [ 86, 101, 100 ],
+            "unitName" : [ "Hatchery", "Hive", "Lair" ]
           }
         ],
         "time" : 35.0,
@@ -4356,13 +4675,14 @@
       },
       "Build6" : 
       {
-        "index" : "Build6",
+        "index" : 1157,
         "requires" : 
         [
           {
-            "name" : "Hive|Lair",
             "state" : "CompleteOnly",
-            "type" : "unit"
+            "type" : "unitCount",
+            "unit" : [ 101, 100 ],
+            "unitName" : [ "Hive", "Lair" ]
           }
         ],
         "time" : 40.0,
@@ -4370,13 +4690,14 @@
       },
       "Build7" : 
       {
-        "index" : "Build7",
+        "index" : 1158,
         "requires" : 
         [
           {
-            "name" : "Hive|Lair",
             "state" : "CompleteOnly",
-            "type" : "unit"
+            "type" : "unitCount",
+            "unit" : [ 101, 100 ],
+            "unitName" : [ "Hive", "Lair" ]
           }
         ],
         "time" : 100.0,
@@ -4384,13 +4705,14 @@
       },
       "Build8" : 
       {
-        "index" : "Build8",
+        "index" : 1159,
         "requires" : 
         [
           {
-            "name" : "Hive",
             "state" : "CompleteOnly",
-            "type" : "unit"
+            "type" : "unitCount",
+            "unit" : [ 101 ],
+            "unitName" : [ "Hive" ]
           }
         ],
         "time" : 65.0,
@@ -4398,20 +4720,21 @@
       },
       "Build9" : 
       {
-        "index" : "Build9",
+        "index" : 1160,
         "requires" : 
         [
           {
-            "name" : "Hive|Lair",
             "state" : "CompleteOnly",
-            "type" : "unit"
+            "type" : "unitCount",
+            "unit" : [ 101, 100 ],
+            "unitName" : [ "Hive", "Lair" ]
           }
         ],
         "time" : 50.0,
         "units" : [ "InfestationPit" ]
       }
     },
-    "id" : "ZergBuild",
+    "name" : "ZergBuild",
     "type" : "build"
   }
 }

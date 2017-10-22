@@ -5,8 +5,6 @@ VisualStudioVersion = 15.0.27004.2005
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "hivemind", "hivemind\hivemind.vcxproj", "{3D1EC157-66C1-402E-8ADF-F0C74D43A7F5}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "generator", "generator\generator.vcxproj", "{29AB2204-10AA-494A-952E-522C47B6E63A}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "data", "data", "{23796E8C-E60A-455F-BB33-DAD217AC59E4}"
 	ProjectSection(SolutionItems) = preProject
 		data\abilities.json = data\abilities.json
@@ -25,10 +23,6 @@ Global
 		{3D1EC157-66C1-402E-8ADF-F0C74D43A7F5}.Debug|x64.Build.0 = Debug|x64
 		{3D1EC157-66C1-402E-8ADF-F0C74D43A7F5}.Release|x64.ActiveCfg = Release|x64
 		{3D1EC157-66C1-402E-8ADF-F0C74D43A7F5}.Release|x64.Build.0 = Release|x64
-		{29AB2204-10AA-494A-952E-522C47B6E63A}.Debug|x64.ActiveCfg = Debug|x64
-		{29AB2204-10AA-494A-952E-522C47B6E63A}.Debug|x64.Build.0 = Debug|x64
-		{29AB2204-10AA-494A-952E-522C47B6E63A}.Release|x64.ActiveCfg = Release|x64
-		{29AB2204-10AA-494A-952E-522C47B6E63A}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

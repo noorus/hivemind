@@ -1,1470 +1,1800 @@
 {
   "protoss" : 
   {
-    "Gateway" : 
+    "495" : 
     {
       "builds" : 
       [
         {
-          "ability" : "GatewayTrain",
-          "abilityCommand" : "Train1",
-          "time" : 38.0,
-          "unit" : "Zealot"
+          "ability" : 2505,
+          "abilityName" : "OracleStasisTrapBuild,Build1",
+          "time" : 5.0,
+          "unit" : 732,
+          "unitName" : "OracleStasisTrap"
+        }
+      ],
+      "name" : "Oracle"
+    },
+    "59" : 
+    {
+      "builds" : 
+      [
+        {
+          "ability" : 1006,
+          "abilityName" : "NexusTrain,Train1",
+          "time" : 17.0,
+          "unit" : 84,
+          "unitName" : "Probe"
         },
         {
-          "ability" : "GatewayTrain",
-          "abilityCommand" : "Train2",
+          "ability" : 110,
+          "abilityName" : "NexusTrainMothership,Train1",
           "requires" : 
           [
             {
-              "name" : "CyberneticsCore",
+              "operands" : 
+              [
+                {
+                  "state" : "CompleteOnly",
+                  "type" : "unitCount",
+                  "unit" : [ 64 ],
+                  "unitName" : [ "FleetBeacon" ]
+                },
+                {
+                  "operands" : 
+                  [
+                    {
+                      "state" : "QueuedOrBetter",
+                      "type" : "unitCount",
+                      "unit" : [ 10 ],
+                      "unitName" : [ "Mothership" ]
+                    },
+                    {
+                      "type" : "value",
+                      "value" : 0
+                    }
+                  ],
+                  "type" : "eq"
+                }
+              ],
+              "type" : "and"
+            }
+          ],
+          "time" : 160.0,
+          "unit" : 10,
+          "unitName" : "Mothership"
+        },
+        {
+          "ability" : 1853,
+          "abilityName" : "NexusTrainMothershipCore,Train1",
+          "requires" : 
+          [
+            {
+              "operands" : 
+              [
+                {
+                  "operands" : 
+                  [
+                    {
+                      "state" : "QueuedOrBetter",
+                      "type" : "unitCount",
+                      "unit" : [ 488 ],
+                      "unitName" : [ "MothershipCore" ]
+                    },
+                    {
+                      "type" : "value",
+                      "value" : 0
+                    }
+                  ],
+                  "type" : "eq"
+                },
+                {
+                  "operands" : 
+                  [
+                    {
+                      "state" : "QueuedOrBetter",
+                      "type" : "unitCount",
+                      "unit" : [ 10 ],
+                      "unitName" : [ "Mothership" ]
+                    },
+                    {
+                      "type" : "value",
+                      "value" : 0
+                    }
+                  ],
+                  "type" : "eq"
+                },
+                {
+                  "state" : "CompleteOnly",
+                  "type" : "unitCount",
+                  "unit" : [ 72 ],
+                  "unitName" : [ "CyberneticsCore" ]
+                }
+              ],
+              "type" : "and"
+            }
+          ],
+          "time" : 30.0,
+          "unit" : 488,
+          "unitName" : "MothershipCore"
+        }
+      ],
+      "name" : "Nexus"
+    },
+    "62" : 
+    {
+      "builds" : 
+      [
+        {
+          "ability" : 916,
+          "abilityName" : "GatewayTrain,Train1",
+          "time" : 38.0,
+          "unit" : 73,
+          "unitName" : "Zealot"
+        },
+        {
+          "ability" : 917,
+          "abilityName" : "GatewayTrain,Train2",
+          "requires" : 
+          [
+            {
               "state" : "CompleteOnly",
-              "type" : "unit"
+              "type" : "unitCount",
+              "unit" : [ 72 ],
+              "unitName" : [ "CyberneticsCore" ]
             }
           ],
           "time" : 42.0,
-          "unit" : "Stalker"
+          "unit" : 74,
+          "unitName" : "Stalker"
         },
         {
-          "ability" : "GatewayTrain",
-          "abilityCommand" : "Train4",
+          "ability" : 919,
+          "abilityName" : "GatewayTrain,Train4",
           "requires" : 
           [
             {
-              "name" : "TemplarArchive",
               "state" : "CompleteOnly",
-              "type" : "unit"
+              "type" : "unitCount",
+              "unit" : [ 68 ],
+              "unitName" : [ "TemplarArchive" ]
             }
           ],
           "time" : 55.0,
-          "unit" : "HighTemplar"
+          "unit" : 75,
+          "unitName" : "HighTemplar"
         },
         {
-          "ability" : "GatewayTrain",
-          "abilityCommand" : "Train5",
+          "ability" : 920,
+          "abilityName" : "GatewayTrain,Train5",
           "requires" : 
           [
             {
-              "name" : "DarkShrine",
               "state" : "CompleteOnly",
-              "type" : "unit"
+              "type" : "unitCount",
+              "unit" : [ 69 ],
+              "unitName" : [ "DarkShrine" ]
             }
           ],
           "time" : 55.0,
-          "unit" : "DarkTemplar"
+          "unit" : 76,
+          "unitName" : "DarkTemplar"
         },
         {
-          "ability" : "GatewayTrain",
-          "abilityCommand" : "Train6",
+          "ability" : 921,
+          "abilityName" : "GatewayTrain,Train6",
           "requires" : 
           [
             {
-              "name" : "CyberneticsCore",
               "state" : "CompleteOnly",
-              "type" : "unit"
+              "type" : "unitCount",
+              "unit" : [ 72 ],
+              "unitName" : [ "CyberneticsCore" ]
             }
           ],
           "time" : 37.0,
-          "unit" : "Sentry"
+          "unit" : 77,
+          "unitName" : "Sentry"
         },
         {
-          "ability" : "GatewayTrain",
-          "abilityCommand" : "Train7",
+          "ability" : 922,
+          "abilityName" : "GatewayTrain,Train7",
           "requires" : 
           [
             {
-              "name" : "CyberneticsCore",
               "state" : "CompleteOnly",
-              "type" : "unit"
+              "type" : "unitCount",
+              "unit" : [ 72 ],
+              "unitName" : [ "CyberneticsCore" ]
             }
           ],
           "time" : 38.0,
-          "unit" : "Adept"
+          "unit" : 311,
+          "unitName" : "Adept"
         }
       ],
-      "id" : "Gateway",
       "morphs" : 
       [
         {
-          "ability" : "UpgradeToWarpGate",
-          "abilityCommand" : "Execute",
+          "ability" : 1518,
+          "abilityName" : "UpgradeToWarpGate,Execute",
           "requires" : 
           [
             {
-              "name" : "WarpGateResearch",
               "state" : "CompleteOnly",
-              "type" : "upgrade"
+              "type" : "upgradeCount",
+              "upgrade" : 84,
+              "upgradeName" : "WarpGateResearch"
             }
           ],
           "time" : 0.0,
-          "unit" : "WarpGate"
-        }
-      ]
-    },
-    "Nexus" : 
-    {
-      "builds" : 
-      [
-        {
-          "ability" : "NexusTrain",
-          "abilityCommand" : "Train1",
-          "time" : 17.0,
-          "unit" : "Probe"
-        },
-        {
-          "ability" : "NexusTrainMothership",
-          "abilityCommand" : "Train1",
-          "requires" : [],
-          "time" : 160.0,
-          "unit" : "Mothership"
-        },
-        {
-          "ability" : "NexusTrainMothershipCore",
-          "abilityCommand" : "Train1",
-          "requires" : [],
-          "time" : 30.0,
-          "unit" : "MothershipCore"
+          "unit" : 133,
+          "unitName" : "WarpGate"
         }
       ],
-      "id" : "Nexus"
+      "name" : "Gateway"
     },
-    "Oracle" : 
+    "67" : 
     {
       "builds" : 
       [
         {
-          "ability" : "OracleStasisTrapBuild",
-          "abilityCommand" : "Build1",
-          "time" : 5.0,
-          "unit" : "OracleStasisTrap"
-        }
-      ],
-      "id" : "Oracle"
-    },
-    "Probe" : 
-    {
-      "builds" : 
-      [
-        {
-          "ability" : "ProtossBuild",
-          "abilityCommand" : "Build1",
-          "time" : 100.0,
-          "unit" : "Nexus"
-        },
-        {
-          "ability" : "ProtossBuild",
-          "abilityCommand" : "Build10",
-          "requires" : 
-          [
-            {
-              "name" : "CyberneticsCore",
-              "state" : "CompleteOnly",
-              "type" : "unit"
-            }
-          ],
-          "time" : 60.0,
-          "unit" : "Stargate"
-        },
-        {
-          "ability" : "ProtossBuild",
-          "abilityCommand" : "Build11",
-          "requires" : 
-          [
-            {
-              "name" : "TwilightCouncil",
-              "state" : "CompleteOnly",
-              "type" : "unit"
-            }
-          ],
-          "time" : 50.0,
-          "unit" : "TemplarArchive"
-        },
-        {
-          "ability" : "ProtossBuild",
-          "abilityCommand" : "Build12",
-          "requires" : 
-          [
-            {
-              "name" : "TwilightCouncil",
-              "state" : "CompleteOnly",
-              "type" : "unit"
-            }
-          ],
-          "time" : 100.0,
-          "unit" : "DarkShrine"
-        },
-        {
-          "ability" : "ProtossBuild",
-          "abilityCommand" : "Build13",
-          "requires" : 
-          [
-            {
-              "name" : "RoboticsFacility",
-              "state" : "CompleteOnly",
-              "type" : "unit"
-            }
-          ],
-          "time" : 65.0,
-          "unit" : "RoboticsBay"
-        },
-        {
-          "ability" : "ProtossBuild",
-          "abilityCommand" : "Build14",
-          "requires" : 
-          [
-            {
-              "name" : "CyberneticsCore",
-              "state" : "CompleteOnly",
-              "type" : "unit"
-            }
-          ],
-          "time" : 65.0,
-          "unit" : "RoboticsFacility"
-        },
-        {
-          "ability" : "ProtossBuild",
-          "abilityCommand" : "Build15",
-          "requires" : 
-          [
-            {
-              "name" : "Gateway|WarpGate",
-              "state" : "CompleteOnly",
-              "type" : "unit"
-            }
-          ],
-          "time" : 50.0,
-          "unit" : "CyberneticsCore"
-        },
-        {
-          "ability" : "ProtossBuild",
-          "abilityCommand" : "Build2",
-          "time" : 25.0,
-          "unit" : "Pylon"
-        },
-        {
-          "ability" : "ProtossBuild",
-          "abilityCommand" : "Build3",
-          "time" : 30.0,
-          "unit" : "Assimilator"
-        },
-        {
-          "ability" : "ProtossBuild",
-          "abilityCommand" : "Build4",
-          "requires" : 
-          [
-            {
-              "name" : "Nexus",
-              "state" : "CompleteOnly",
-              "type" : "unit"
-            }
-          ],
-          "time" : 65.0,
-          "unit" : "Gateway"
-        },
-        {
-          "ability" : "ProtossBuild",
-          "abilityCommand" : "Build5",
-          "requires" : 
-          [
-            {
-              "name" : "Nexus",
-              "state" : "CompleteOnly",
-              "type" : "unit"
-            }
-          ],
-          "time" : 45.0,
-          "unit" : "Forge"
-        },
-        {
-          "ability" : "ProtossBuild",
-          "abilityCommand" : "Build6",
-          "requires" : 
-          [
-            {
-              "name" : "Stargate",
-              "state" : "CompleteOnly",
-              "type" : "unit"
-            }
-          ],
-          "time" : 60.0,
-          "unit" : "FleetBeacon"
-        },
-        {
-          "ability" : "ProtossBuild",
-          "abilityCommand" : "Build7",
-          "requires" : 
-          [
-            {
-              "name" : "CyberneticsCore",
-              "state" : "CompleteOnly",
-              "type" : "unit"
-            }
-          ],
-          "time" : 50.0,
-          "unit" : "TwilightCouncil"
-        },
-        {
-          "ability" : "ProtossBuild",
-          "abilityCommand" : "Build8",
-          "requires" : 
-          [
-            {
-              "name" : "Forge",
-              "state" : "CompleteOnly",
-              "type" : "unit"
-            }
-          ],
-          "time" : 40.0,
-          "unit" : "PhotonCannon"
-        }
-      ],
-      "id" : "Probe"
-    },
-    "RoboticsFacility" : 
-    {
-      "builds" : 
-      [
-        {
-          "ability" : "RoboticsFacilityTrain",
-          "abilityCommand" : "Train1",
-          "time" : 50.0,
-          "unit" : "WarpPrism"
-        },
-        {
-          "ability" : "RoboticsFacilityTrain",
-          "abilityCommand" : "Train19",
-          "requires" : 
-          [
-            {
-              "name" : "RoboticsBay",
-              "state" : "CompleteOnly",
-              "type" : "unit"
-            }
-          ],
-          "time" : 50.0,
-          "unit" : "Disruptor"
-        },
-        {
-          "ability" : "RoboticsFacilityTrain",
-          "abilityCommand" : "Train2",
-          "time" : 30.0,
-          "unit" : "Observer"
-        },
-        {
-          "ability" : "RoboticsFacilityTrain",
-          "abilityCommand" : "Train3",
-          "requires" : 
-          [
-            {
-              "name" : "RoboticsBay",
-              "state" : "CompleteOnly",
-              "type" : "unit"
-            }
-          ],
-          "time" : 75.0,
-          "unit" : "Colossus"
-        },
-        {
-          "ability" : "RoboticsFacilityTrain",
-          "abilityCommand" : "Train4",
-          "time" : 55.0,
-          "unit" : "Immortal"
-        }
-      ],
-      "id" : "RoboticsFacility"
-    },
-    "Stargate" : 
-    {
-      "builds" : 
-      [
-        {
-          "ability" : "StargateTrain",
-          "abilityCommand" : "Train1",
+          "ability" : 946,
+          "abilityName" : "StargateTrain,Train1",
           "time" : 35.0,
-          "unit" : "Phoenix"
+          "unit" : 78,
+          "unitName" : "Phoenix"
         },
         {
-          "ability" : "StargateTrain",
-          "abilityCommand" : "Train10",
+          "ability" : 955,
+          "abilityName" : "StargateTrain,Train10",
           "requires" : 
           [
             {
-              "name" : "FleetBeacon",
               "state" : "CompleteOnly",
-              "type" : "unit"
+              "type" : "unitCount",
+              "unit" : [ 64 ],
+              "unitName" : [ "FleetBeacon" ]
             }
           ],
           "time" : 60.0,
-          "unit" : "Tempest"
+          "unit" : 496,
+          "unitName" : "Tempest"
         },
         {
-          "ability" : "StargateTrain",
-          "abilityCommand" : "Train2",
+          "ability" : 947,
+          "abilityName" : "StargateTrain,Train2",
           "requires" : 
           [
             {
-              "name" : "FleetBeacon",
               "state" : "CompleteOnly",
-              "type" : "unit"
+              "type" : "unitCount",
+              "unit" : [ 64 ],
+              "unitName" : [ "FleetBeacon" ]
             }
           ],
           "time" : 120.0,
-          "unit" : "Carrier"
+          "unit" : 79,
+          "unitName" : "Carrier"
         },
         {
-          "ability" : "StargateTrain",
-          "abilityCommand" : "Train5",
+          "ability" : 950,
+          "abilityName" : "StargateTrain,Train5",
           "time" : 60.0,
-          "unit" : "VoidRay"
+          "unit" : 80,
+          "unitName" : "VoidRay"
         },
         {
-          "ability" : "StargateTrain",
-          "abilityCommand" : "Train9",
+          "ability" : 954,
+          "abilityName" : "StargateTrain,Train9",
           "time" : 50.0,
-          "unit" : "Oracle"
+          "unit" : 495,
+          "unitName" : "Oracle"
         }
       ],
-      "id" : "Stargate"
+      "name" : "Stargate"
+    },
+    "71" : 
+    {
+      "builds" : 
+      [
+        {
+          "ability" : 976,
+          "abilityName" : "RoboticsFacilityTrain,Train1",
+          "time" : 50.0,
+          "unit" : 81,
+          "unitName" : "WarpPrism"
+        },
+        {
+          "ability" : 994,
+          "abilityName" : "RoboticsFacilityTrain,Train19",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "unitCount",
+              "unit" : [ 70 ],
+              "unitName" : [ "RoboticsBay" ]
+            }
+          ],
+          "time" : 50.0,
+          "unit" : 694,
+          "unitName" : "Disruptor"
+        },
+        {
+          "ability" : 977,
+          "abilityName" : "RoboticsFacilityTrain,Train2",
+          "time" : 30.0,
+          "unit" : 82,
+          "unitName" : "Observer"
+        },
+        {
+          "ability" : 978,
+          "abilityName" : "RoboticsFacilityTrain,Train3",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "unitCount",
+              "unit" : [ 70 ],
+              "unitName" : [ "RoboticsBay" ]
+            }
+          ],
+          "time" : 75.0,
+          "unit" : 4,
+          "unitName" : "Colossus"
+        },
+        {
+          "ability" : 979,
+          "abilityName" : "RoboticsFacilityTrain,Train4",
+          "time" : 55.0,
+          "unit" : 83,
+          "unitName" : "Immortal"
+        }
+      ],
+      "name" : "RoboticsFacility"
+    },
+    "84" : 
+    {
+      "builds" : 
+      [
+        {
+          "ability" : 880,
+          "abilityName" : "ProtossBuild,Build1",
+          "time" : 100.0,
+          "unit" : 59,
+          "unitName" : "Nexus"
+        },
+        {
+          "ability" : 889,
+          "abilityName" : "ProtossBuild,Build10",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "unitCount",
+              "unit" : [ 72 ],
+              "unitName" : [ "CyberneticsCore" ]
+            }
+          ],
+          "time" : 60.0,
+          "unit" : 67,
+          "unitName" : "Stargate"
+        },
+        {
+          "ability" : 890,
+          "abilityName" : "ProtossBuild,Build11",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "unitCount",
+              "unit" : [ 65 ],
+              "unitName" : [ "TwilightCouncil" ]
+            }
+          ],
+          "time" : 50.0,
+          "unit" : 68,
+          "unitName" : "TemplarArchive"
+        },
+        {
+          "ability" : 891,
+          "abilityName" : "ProtossBuild,Build12",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "unitCount",
+              "unit" : [ 65 ],
+              "unitName" : [ "TwilightCouncil" ]
+            }
+          ],
+          "time" : 100.0,
+          "unit" : 69,
+          "unitName" : "DarkShrine"
+        },
+        {
+          "ability" : 892,
+          "abilityName" : "ProtossBuild,Build13",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "unitCount",
+              "unit" : [ 71 ],
+              "unitName" : [ "RoboticsFacility" ]
+            }
+          ],
+          "time" : 65.0,
+          "unit" : 70,
+          "unitName" : "RoboticsBay"
+        },
+        {
+          "ability" : 893,
+          "abilityName" : "ProtossBuild,Build14",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "unitCount",
+              "unit" : [ 72 ],
+              "unitName" : [ "CyberneticsCore" ]
+            }
+          ],
+          "time" : 65.0,
+          "unit" : 71,
+          "unitName" : "RoboticsFacility"
+        },
+        {
+          "ability" : 894,
+          "abilityName" : "ProtossBuild,Build15",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "unitCount",
+              "unit" : [ 62, 133 ],
+              "unitName" : [ "Gateway", "WarpGate" ]
+            }
+          ],
+          "time" : 50.0,
+          "unit" : 72,
+          "unitName" : "CyberneticsCore"
+        },
+        {
+          "ability" : 881,
+          "abilityName" : "ProtossBuild,Build2",
+          "time" : 25.0,
+          "unit" : 60,
+          "unitName" : "Pylon"
+        },
+        {
+          "ability" : 882,
+          "abilityName" : "ProtossBuild,Build3",
+          "time" : 30.0,
+          "unit" : 61,
+          "unitName" : "Assimilator"
+        },
+        {
+          "ability" : 883,
+          "abilityName" : "ProtossBuild,Build4",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "unitCount",
+              "unit" : [ 59 ],
+              "unitName" : [ "Nexus" ]
+            }
+          ],
+          "time" : 65.0,
+          "unit" : 62,
+          "unitName" : "Gateway"
+        },
+        {
+          "ability" : 884,
+          "abilityName" : "ProtossBuild,Build5",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "unitCount",
+              "unit" : [ 59 ],
+              "unitName" : [ "Nexus" ]
+            }
+          ],
+          "time" : 45.0,
+          "unit" : 63,
+          "unitName" : "Forge"
+        },
+        {
+          "ability" : 885,
+          "abilityName" : "ProtossBuild,Build6",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "unitCount",
+              "unit" : [ 67 ],
+              "unitName" : [ "Stargate" ]
+            }
+          ],
+          "time" : 60.0,
+          "unit" : 64,
+          "unitName" : "FleetBeacon"
+        },
+        {
+          "ability" : 886,
+          "abilityName" : "ProtossBuild,Build7",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "unitCount",
+              "unit" : [ 72 ],
+              "unitName" : [ "CyberneticsCore" ]
+            }
+          ],
+          "time" : 50.0,
+          "unit" : 65,
+          "unitName" : "TwilightCouncil"
+        },
+        {
+          "ability" : 887,
+          "abilityName" : "ProtossBuild,Build8",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "unitCount",
+              "unit" : [ 63 ],
+              "unitName" : [ "Forge" ]
+            }
+          ],
+          "time" : 40.0,
+          "unit" : 66,
+          "unitName" : "PhotonCannon"
+        }
+      ],
+      "name" : "Probe"
     }
   },
   "terran" : 
   {
-    "Barracks" : 
+    "130" : 
     {
       "builds" : 
       [
         {
-          "ability" : "BarracksAddOns",
-          "abilityCommand" : "Build1",
-          "time" : 25.0,
-          "unit" : "BarracksTechLab"
-        },
-        {
-          "ability" : "BarracksAddOns",
-          "abilityCommand" : "Build2",
-          "time" : 50.0,
-          "unit" : "BarracksReactor"
-        },
-        {
-          "ability" : "BarracksTrain",
-          "abilityCommand" : "Train1",
-          "time" : 25.0,
-          "unit" : "Marine"
-        },
-        {
-          "ability" : "BarracksTrain",
-          "abilityCommand" : "Train2",
-          "time" : 45.0,
-          "unit" : "Reaper"
-        },
-        {
-          "ability" : "BarracksTrain",
-          "abilityCommand" : "Train3",
-          "requires" : [],
-          "time" : 40.0,
-          "unit" : "Ghost"
-        },
-        {
-          "ability" : "BarracksTrain",
-          "abilityCommand" : "Train4",
-          "requires" : 
-          [
-            {
-              "name" : "TechLab",
-              "state" : "CompleteOnlyAtUnit",
-              "type" : "unit"
-            }
-          ],
-          "time" : 30.0,
-          "unit" : "Marauder"
-        }
-      ],
-      "id" : "Barracks"
-    },
-    "BarracksFlying" : 
-    {
-      "builds" : 
-      [
-        {
-          "ability" : "BarracksAddOns",
-          "abilityCommand" : "Build1",
-          "time" : 25.0,
-          "unit" : "BarracksTechLab"
-        },
-        {
-          "ability" : "BarracksAddOns",
-          "abilityCommand" : "Build2",
-          "time" : 50.0,
-          "unit" : "BarracksReactor"
-        }
-      ],
-      "id" : "BarracksFlying"
-    },
-    "CommandCenter" : 
-    {
-      "builds" : 
-      [
-        {
-          "ability" : "CommandCenterTrain",
-          "abilityCommand" : "Train1",
+          "ability" : 524,
+          "abilityName" : "CommandCenterTrain,Train1",
           "time" : 17.0,
-          "unit" : "SCV"
+          "unit" : 45,
+          "unitName" : "SCV"
         }
       ],
-      "id" : "CommandCenter",
+      "name" : "PlanetaryFortress"
+    },
+    "132" : 
+    {
+      "builds" : 
+      [
+        {
+          "ability" : 524,
+          "abilityName" : "CommandCenterTrain,Train1",
+          "time" : 17.0,
+          "unit" : 45,
+          "unitName" : "SCV"
+        }
+      ],
+      "name" : "OrbitalCommand"
+    },
+    "18" : 
+    {
+      "builds" : 
+      [
+        {
+          "ability" : 524,
+          "abilityName" : "CommandCenterTrain,Train1",
+          "time" : 17.0,
+          "unit" : 45,
+          "unitName" : "SCV"
+        }
+      ],
       "morphs" : 
       [
         {
-          "ability" : "UpgradeToOrbital",
-          "abilityCommand" : "Execute",
+          "ability" : 1516,
+          "abilityName" : "UpgradeToOrbital,Execute",
           "requires" : 
           [
             {
-              "name" : "Barracks|BarracksFlying",
               "state" : "CompleteOnly",
-              "type" : "unit"
+              "type" : "unitCount",
+              "unit" : [ 21, 46 ],
+              "unitName" : [ "Barracks", "BarracksFlying" ]
             }
           ],
           "time" : 0.0,
-          "unit" : "OrbitalCommand"
+          "unit" : 132,
+          "unitName" : "OrbitalCommand"
         },
         {
-          "ability" : "UpgradeToPlanetaryFortress",
-          "abilityCommand" : "Execute",
+          "ability" : 1450,
+          "abilityName" : "UpgradeToPlanetaryFortress,Execute",
           "requires" : 
           [
             {
-              "name" : "EngineeringBay",
               "state" : "CompleteOnly",
-              "type" : "unit"
+              "type" : "unitCount",
+              "unit" : [ 22 ],
+              "unitName" : [ "EngineeringBay" ]
             }
           ],
           "time" : 0.0,
-          "unit" : "PlanetaryFortress"
+          "unit" : 130,
+          "unitName" : "PlanetaryFortress"
         }
-      ]
+      ],
+      "name" : "CommandCenter"
     },
-    "Factory" : 
+    "21" : 
     {
       "builds" : 
       [
         {
-          "ability" : "FactoryAddOns",
-          "abilityCommand" : "Build1",
+          "ability" : 421,
+          "abilityName" : "BarracksAddOns,Build1",
           "time" : 25.0,
-          "unit" : "FactoryTechLab"
+          "unit" : 37,
+          "unitName" : "BarracksTechLab"
         },
         {
-          "ability" : "FactoryAddOns",
-          "abilityCommand" : "Build2",
+          "ability" : 422,
+          "abilityName" : "BarracksAddOns,Build2",
           "time" : 50.0,
-          "unit" : "FactoryReactor"
+          "unit" : 38,
+          "unitName" : "BarracksReactor"
         },
         {
-          "ability" : "FactoryTrain",
-          "abilityCommand" : "Train2",
+          "ability" : 560,
+          "abilityName" : "BarracksTrain,Train1",
+          "time" : 25.0,
+          "unit" : 48,
+          "unitName" : "Marine"
+        },
+        {
+          "ability" : 561,
+          "abilityName" : "BarracksTrain,Train2",
+          "time" : 45.0,
+          "unit" : 49,
+          "unitName" : "Reaper"
+        },
+        {
+          "ability" : 562,
+          "abilityName" : "BarracksTrain,Train3",
           "requires" : 
           [
             {
-              "name" : "TechLab",
+              "operands" : 
+              [
+                {
+                  "state" : "CompleteOnlyAtUnit",
+                  "type" : "unitCount",
+                  "unit" : [ 37 ],
+                  "unitName" : [ "BarracksTechLab" ]
+                },
+                {
+                  "state" : "CompleteOnly",
+                  "type" : "unitCount",
+                  "unit" : [ 26 ],
+                  "unitName" : [ "GhostAcademy" ]
+                }
+              ],
+              "type" : "and"
+            }
+          ],
+          "time" : 40.0,
+          "unit" : 50,
+          "unitName" : "Ghost"
+        },
+        {
+          "ability" : 563,
+          "abilityName" : "BarracksTrain,Train4",
+          "requires" : 
+          [
+            {
               "state" : "CompleteOnlyAtUnit",
-              "type" : "unit"
-            }
-          ],
-          "time" : 45.0,
-          "unit" : "SiegeTank"
-        },
-        {
-          "ability" : "FactoryTrain",
-          "abilityCommand" : "Train25",
-          "time" : 40.0,
-          "unit" : "WidowMine"
-        },
-        {
-          "ability" : "FactoryTrain",
-          "abilityCommand" : "Train5",
-          "requires" : [],
-          "time" : 60.0,
-          "unit" : "Thor"
-        },
-        {
-          "ability" : "FactoryTrain",
-          "abilityCommand" : "Train6",
-          "time" : 30.0,
-          "unit" : "Hellion"
-        },
-        {
-          "ability" : "FactoryTrain",
-          "abilityCommand" : "Train7",
-          "requires" : 
-          [
-            {
-              "name" : "Armory",
-              "state" : "CompleteOnly",
-              "type" : "unit"
+              "type" : "unitCount",
+              "unit" : [ 5 ],
+              "unitName" : [ "TechLab" ]
             }
           ],
           "time" : 30.0,
-          "unit" : "HellionTank"
-        },
-        {
-          "ability" : "FactoryTrain",
-          "abilityCommand" : "Train8",
-          "time" : 45.0,
-          "unit" : "Cyclone"
+          "unit" : 51,
+          "unitName" : "Marauder"
         }
       ],
-      "id" : "Factory"
+      "name" : "Barracks"
     },
-    "FactoryFlying" : 
+    "27" : 
     {
       "builds" : 
       [
         {
-          "ability" : "FactoryAddOns",
-          "abilityCommand" : "Build1",
+          "ability" : 454,
+          "abilityName" : "FactoryAddOns,Build1",
           "time" : 25.0,
-          "unit" : "FactoryTechLab"
+          "unit" : 39,
+          "unitName" : "FactoryTechLab"
         },
         {
-          "ability" : "FactoryAddOns",
-          "abilityCommand" : "Build2",
+          "ability" : 455,
+          "abilityName" : "FactoryAddOns,Build2",
           "time" : 50.0,
-          "unit" : "FactoryReactor"
-        }
-      ],
-      "id" : "FactoryFlying"
-    },
-    "OrbitalCommand" : 
-    {
-      "builds" : 
-      [
-        {
-          "ability" : "CommandCenterTrain",
-          "abilityCommand" : "Train1",
-          "time" : 17.0,
-          "unit" : "SCV"
-        }
-      ],
-      "id" : "OrbitalCommand"
-    },
-    "PlanetaryFortress" : 
-    {
-      "builds" : 
-      [
-        {
-          "ability" : "CommandCenterTrain",
-          "abilityCommand" : "Train1",
-          "time" : 17.0,
-          "unit" : "SCV"
-        }
-      ],
-      "id" : "PlanetaryFortress"
-    },
-    "SCV" : 
-    {
-      "builds" : 
-      [
-        {
-          "ability" : "TerranBuild",
-          "abilityCommand" : "Build1",
-          "time" : 100.0,
-          "unit" : "CommandCenter"
+          "unit" : 40,
+          "unitName" : "FactoryReactor"
         },
         {
-          "ability" : "TerranBuild",
-          "abilityCommand" : "Build10",
+          "ability" : 591,
+          "abilityName" : "FactoryTrain,Train2",
           "requires" : 
           [
             {
-              "name" : "Barracks|BarracksFlying",
-              "state" : "CompleteOnly",
-              "type" : "unit"
+              "state" : "CompleteOnlyAtUnit",
+              "type" : "unitCount",
+              "unit" : [ 5 ],
+              "unitName" : [ "TechLab" ]
             }
           ],
-          "time" : 40.0,
-          "unit" : "GhostAcademy"
+          "time" : 45.0,
+          "unit" : 33,
+          "unitName" : "SiegeTank"
         },
         {
-          "ability" : "TerranBuild",
-          "abilityCommand" : "Build11",
+          "ability" : 614,
+          "abilityName" : "FactoryTrain,Train25",
+          "time" : 40.0,
+          "unit" : 498,
+          "unitName" : "WidowMine"
+        },
+        {
+          "ability" : 594,
+          "abilityName" : "FactoryTrain,Train5",
           "requires" : 
           [
             {
-              "name" : "Barracks|BarracksFlying",
-              "state" : "CompleteOnly",
-              "type" : "unit"
+              "operands" : 
+              [
+                {
+                  "state" : "CompleteOnlyAtUnit",
+                  "type" : "unitCount",
+                  "unit" : [ 39 ],
+                  "unitName" : [ "FactoryTechLab" ]
+                },
+                {
+                  "state" : "CompleteOnly",
+                  "type" : "unitCount",
+                  "unit" : [ 29 ],
+                  "unitName" : [ "Armory" ]
+                }
+              ],
+              "type" : "and"
             }
           ],
           "time" : 60.0,
-          "unit" : "Factory"
+          "unit" : 52,
+          "unitName" : "Thor"
         },
         {
-          "ability" : "TerranBuild",
-          "abilityCommand" : "Build12",
+          "ability" : 595,
+          "abilityName" : "FactoryTrain,Train6",
+          "time" : 30.0,
+          "unit" : 53,
+          "unitName" : "Hellion"
+        },
+        {
+          "ability" : 596,
+          "abilityName" : "FactoryTrain,Train7",
           "requires" : 
           [
             {
-              "name" : "Factory|FactoryFlying",
               "state" : "CompleteOnly",
-              "type" : "unit"
+              "type" : "unitCount",
+              "unit" : [ 29 ],
+              "unitName" : [ "Armory" ]
+            }
+          ],
+          "time" : 30.0,
+          "unit" : 484,
+          "unitName" : "HellionTank"
+        },
+        {
+          "ability" : 597,
+          "abilityName" : "FactoryTrain,Train8",
+          "time" : 45.0,
+          "unit" : 692,
+          "unitName" : "Cyclone"
+        }
+      ],
+      "name" : "Factory"
+    },
+    "28" : 
+    {
+      "builds" : 
+      [
+        {
+          "ability" : 487,
+          "abilityName" : "StarportAddOns,Build1",
+          "time" : 25.0,
+          "unit" : 41,
+          "unitName" : "StarportTechLab"
+        },
+        {
+          "ability" : 488,
+          "abilityName" : "StarportAddOns,Build2",
+          "time" : 50.0,
+          "unit" : 42,
+          "unitName" : "StarportReactor"
+        },
+        {
+          "ability" : 620,
+          "abilityName" : "StarportTrain,Train1",
+          "time" : 42.0,
+          "unit" : 54,
+          "unitName" : "Medivac"
+        },
+        {
+          "ability" : 621,
+          "abilityName" : "StarportTrain,Train2",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnlyAtUnit",
+              "type" : "unitCount",
+              "unit" : [ 5 ],
+              "unitName" : [ "TechLab" ]
+            }
+          ],
+          "time" : 60.0,
+          "unit" : 55,
+          "unitName" : "Banshee"
+        },
+        {
+          "ability" : 622,
+          "abilityName" : "StarportTrain,Train3",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnlyAtUnit",
+              "type" : "unitCount",
+              "unit" : [ 5 ],
+              "unitName" : [ "TechLab" ]
+            }
+          ],
+          "time" : 60.0,
+          "unit" : 56,
+          "unitName" : "Raven"
+        },
+        {
+          "ability" : 623,
+          "abilityName" : "StarportTrain,Train4",
+          "requires" : 
+          [
+            {
+              "operands" : 
+              [
+                {
+                  "state" : "CompleteOnlyAtUnit",
+                  "type" : "unitCount",
+                  "unit" : [ 5 ],
+                  "unitName" : [ "TechLab" ]
+                },
+                {
+                  "state" : "CompleteOnly",
+                  "type" : "unitCount",
+                  "unit" : [ 30 ],
+                  "unitName" : [ "FusionCore" ]
+                }
+              ],
+              "type" : "and"
+            }
+          ],
+          "time" : 90.0,
+          "unit" : 57,
+          "unitName" : "Battlecruiser"
+        },
+        {
+          "ability" : 624,
+          "abilityName" : "StarportTrain,Train5",
+          "time" : 42.0,
+          "unit" : 35,
+          "unitName" : "VikingFighter"
+        },
+        {
+          "ability" : 626,
+          "abilityName" : "StarportTrain,Train7",
+          "time" : 60.0,
+          "unit" : 689,
+          "unitName" : "Liberator"
+        }
+      ],
+      "name" : "Starport"
+    },
+    "43" : 
+    {
+      "builds" : 
+      [
+        {
+          "ability" : 454,
+          "abilityName" : "FactoryAddOns,Build1",
+          "time" : 25.0,
+          "unit" : 39,
+          "unitName" : "FactoryTechLab"
+        },
+        {
+          "ability" : 455,
+          "abilityName" : "FactoryAddOns,Build2",
+          "time" : 50.0,
+          "unit" : 40,
+          "unitName" : "FactoryReactor"
+        }
+      ],
+      "name" : "FactoryFlying"
+    },
+    "44" : 
+    {
+      "builds" : 
+      [
+        {
+          "ability" : 487,
+          "abilityName" : "StarportAddOns,Build1",
+          "time" : 25.0,
+          "unit" : 41,
+          "unitName" : "StarportTechLab"
+        },
+        {
+          "ability" : 488,
+          "abilityName" : "StarportAddOns,Build2",
+          "time" : 50.0,
+          "unit" : 42,
+          "unitName" : "StarportReactor"
+        }
+      ],
+      "name" : "StarportFlying"
+    },
+    "45" : 
+    {
+      "builds" : 
+      [
+        {
+          "ability" : 318,
+          "abilityName" : "TerranBuild,Build1",
+          "time" : 100.0,
+          "unit" : 18,
+          "unitName" : "CommandCenter"
+        },
+        {
+          "ability" : 327,
+          "abilityName" : "TerranBuild,Build10",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "unitCount",
+              "unit" : [ 21, 46 ],
+              "unitName" : [ "Barracks", "BarracksFlying" ]
+            }
+          ],
+          "time" : 40.0,
+          "unit" : 26,
+          "unitName" : "GhostAcademy"
+        },
+        {
+          "ability" : 328,
+          "abilityName" : "TerranBuild,Build11",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "unitCount",
+              "unit" : [ 21, 46 ],
+              "unitName" : [ "Barracks", "BarracksFlying" ]
+            }
+          ],
+          "time" : 60.0,
+          "unit" : 27,
+          "unitName" : "Factory"
+        },
+        {
+          "ability" : 329,
+          "abilityName" : "TerranBuild,Build12",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "unitCount",
+              "unit" : [ 27, 43 ],
+              "unitName" : [ "Factory", "FactoryFlying" ]
             }
           ],
           "time" : 50.0,
-          "unit" : "Starport"
+          "unit" : 28,
+          "unitName" : "Starport"
         },
         {
-          "ability" : "TerranBuild",
-          "abilityCommand" : "Build14",
+          "ability" : 331,
+          "abilityName" : "TerranBuild,Build14",
           "requires" : 
           [
             {
-              "name" : "Factory|FactoryFlying",
               "state" : "CompleteOnly",
-              "type" : "unit"
+              "type" : "unitCount",
+              "unit" : [ 27, 43 ],
+              "unitName" : [ "Factory", "FactoryFlying" ]
             }
           ],
           "time" : 65.0,
-          "unit" : "Armory"
+          "unit" : 29,
+          "unitName" : "Armory"
         },
         {
-          "ability" : "TerranBuild",
-          "abilityCommand" : "Build16",
+          "ability" : 333,
+          "abilityName" : "TerranBuild,Build16",
           "requires" : 
           [
             {
-              "name" : "Starport|StarportFlying",
               "state" : "CompleteOnly",
-              "type" : "unit"
+              "type" : "unitCount",
+              "unit" : [ 28, 44 ],
+              "unitName" : [ "Starport", "StarportFlying" ]
             }
           ],
           "time" : 65.0,
-          "unit" : "FusionCore"
+          "unit" : 30,
+          "unitName" : "FusionCore"
         },
         {
-          "ability" : "TerranBuild",
-          "abilityCommand" : "Build2",
+          "ability" : 319,
+          "abilityName" : "TerranBuild,Build2",
           "time" : 30.0,
-          "unit" : "SupplyDepot"
+          "unit" : 19,
+          "unitName" : "SupplyDepot"
         },
         {
-          "ability" : "TerranBuild",
-          "abilityCommand" : "Build3",
+          "ability" : 320,
+          "abilityName" : "TerranBuild,Build3",
           "time" : 30.0,
-          "unit" : "Refinery"
+          "unit" : 20,
+          "unitName" : "Refinery"
         },
         {
-          "ability" : "TerranBuild",
-          "abilityCommand" : "Build4",
+          "ability" : 321,
+          "abilityName" : "TerranBuild,Build4",
           "requires" : 
           [
             {
-              "name" : "SupplyDepot|SupplyDepotLowered",
               "state" : "CompleteOnly",
-              "type" : "unit"
+              "type" : "unitCount",
+              "unit" : [ 19, 47 ],
+              "unitName" : [ "SupplyDepot", "SupplyDepotLowered" ]
             }
           ],
           "time" : 65.0,
-          "unit" : "Barracks"
+          "unit" : 21,
+          "unitName" : "Barracks"
         },
         {
-          "ability" : "TerranBuild",
-          "abilityCommand" : "Build5",
+          "ability" : 322,
+          "abilityName" : "TerranBuild,Build5",
           "requires" : 
           [
             {
-              "name" : "CommandCenter|CommandCenterFlying|OrbitalCommand|OrbitalCommandFlying|PlanetaryFortress",
               "state" : "CompleteOnly",
-              "type" : "unit"
+              "type" : "unitCount",
+              "unit" : [ 18, 36, 132, 134, 130 ],
+              "unitName" : 
+              [
+                "CommandCenter",
+                "CommandCenterFlying",
+                "OrbitalCommand",
+                "OrbitalCommandFlying",
+                "PlanetaryFortress"
+              ]
             }
           ],
           "time" : 35.0,
-          "unit" : "EngineeringBay"
+          "unit" : 22,
+          "unitName" : "EngineeringBay"
         },
         {
-          "ability" : "TerranBuild",
-          "abilityCommand" : "Build6",
+          "ability" : 323,
+          "abilityName" : "TerranBuild,Build6",
           "requires" : 
           [
             {
-              "name" : "EngineeringBay",
               "state" : "CompleteOnly",
-              "type" : "unit"
+              "type" : "unitCount",
+              "unit" : [ 22 ],
+              "unitName" : [ "EngineeringBay" ]
             }
           ],
           "time" : 25.0,
-          "unit" : "MissileTurret"
+          "unit" : 23,
+          "unitName" : "MissileTurret"
         },
         {
-          "ability" : "TerranBuild",
-          "abilityCommand" : "Build7",
+          "ability" : 324,
+          "abilityName" : "TerranBuild,Build7",
           "requires" : 
           [
             {
-              "name" : "Barracks|BarracksFlying",
               "state" : "CompleteOnly",
-              "type" : "unit"
+              "type" : "unitCount",
+              "unit" : [ 21, 46 ],
+              "unitName" : [ "Barracks", "BarracksFlying" ]
             }
           ],
           "time" : 40.0,
-          "unit" : "Bunker"
+          "unit" : 24,
+          "unitName" : "Bunker"
         },
         {
-          "ability" : "TerranBuild",
-          "abilityCommand" : "Build9",
+          "ability" : 326,
+          "abilityName" : "TerranBuild,Build9",
           "requires" : 
           [
             {
-              "name" : "EngineeringBay",
               "state" : "CompleteOnly",
-              "type" : "unit"
+              "type" : "unitCount",
+              "unit" : [ 22 ],
+              "unitName" : [ "EngineeringBay" ]
             }
           ],
           "time" : 25.0,
-          "unit" : "SensorTower"
+          "unit" : 25,
+          "unitName" : "SensorTower"
         }
       ],
-      "id" : "SCV"
+      "name" : "SCV"
     },
-    "Starport" : 
+    "46" : 
     {
       "builds" : 
       [
         {
-          "ability" : "StarportAddOns",
-          "abilityCommand" : "Build1",
+          "ability" : 421,
+          "abilityName" : "BarracksAddOns,Build1",
           "time" : 25.0,
-          "unit" : "StarportTechLab"
+          "unit" : 37,
+          "unitName" : "BarracksTechLab"
         },
         {
-          "ability" : "StarportAddOns",
-          "abilityCommand" : "Build2",
+          "ability" : 422,
+          "abilityName" : "BarracksAddOns,Build2",
           "time" : 50.0,
-          "unit" : "StarportReactor"
-        },
-        {
-          "ability" : "StarportTrain",
-          "abilityCommand" : "Train1",
-          "time" : 42.0,
-          "unit" : "Medivac"
-        },
-        {
-          "ability" : "StarportTrain",
-          "abilityCommand" : "Train2",
-          "requires" : 
-          [
-            {
-              "name" : "TechLab",
-              "state" : "CompleteOnlyAtUnit",
-              "type" : "unit"
-            }
-          ],
-          "time" : 60.0,
-          "unit" : "Banshee"
-        },
-        {
-          "ability" : "StarportTrain",
-          "abilityCommand" : "Train3",
-          "requires" : 
-          [
-            {
-              "name" : "TechLab",
-              "state" : "CompleteOnlyAtUnit",
-              "type" : "unit"
-            }
-          ],
-          "time" : 60.0,
-          "unit" : "Raven"
-        },
-        {
-          "ability" : "StarportTrain",
-          "abilityCommand" : "Train4",
-          "requires" : [],
-          "time" : 90.0,
-          "unit" : "Battlecruiser"
-        },
-        {
-          "ability" : "StarportTrain",
-          "abilityCommand" : "Train5",
-          "time" : 42.0,
-          "unit" : "VikingFighter"
-        },
-        {
-          "ability" : "StarportTrain",
-          "abilityCommand" : "Train7",
-          "time" : 60.0,
-          "unit" : "Liberator"
+          "unit" : 38,
+          "unitName" : "BarracksReactor"
         }
       ],
-      "id" : "Starport"
-    },
-    "StarportFlying" : 
-    {
-      "builds" : 
-      [
-        {
-          "ability" : "StarportAddOns",
-          "abilityCommand" : "Build1",
-          "time" : 25.0,
-          "unit" : "StarportTechLab"
-        },
-        {
-          "ability" : "StarportAddOns",
-          "abilityCommand" : "Build2",
-          "time" : 50.0,
-          "unit" : "StarportReactor"
-        }
-      ],
-      "id" : "StarportFlying"
+      "name" : "BarracksFlying"
     }
   },
   "zerg" : 
   {
-    "CreepTumorBurrowed" : 
+    "100" : 
     {
       "builds" : 
       [
         {
-          "ability" : "CreepTumorBuild",
-          "abilityCommand" : "Build1",
-          "time" : 15.0,
-          "unit" : "CreepTumor"
-        }
-      ],
-      "id" : "CreepTumorBurrowed"
-    },
-    "Drone" : 
-    {
-      "builds" : 
-      [
-        {
-          "ability" : "ZergBuild",
-          "abilityCommand" : "Build1",
-          "time" : 100.0,
-          "unit" : "Hatchery"
-        },
-        {
-          "ability" : "ZergBuild",
-          "abilityCommand" : "Build10",
+          "ability" : 1632,
+          "abilityName" : "TrainQueen,Train1",
           "requires" : 
           [
             {
-              "name" : "Hive|Lair",
               "state" : "CompleteOnly",
-              "type" : "unit"
+              "type" : "unitCount",
+              "unit" : [ 89 ],
+              "unitName" : [ "SpawningPool" ]
             }
           ],
           "time" : 50.0,
-          "unit" : "NydusNetwork"
-        },
+          "unit" : 126,
+          "unitName" : "Queen"
+        }
+      ],
+      "morphs" : 
+      [
         {
-          "ability" : "ZergBuild",
-          "abilityCommand" : "Build11",
+          "ability" : 1218,
+          "abilityName" : "UpgradeToHive,Execute",
           "requires" : 
           [
             {
-              "name" : "SpawningPool",
               "state" : "CompleteOnly",
-              "type" : "unit"
+              "type" : "unitCount",
+              "unit" : [ 94 ],
+              "unitName" : [ "InfestationPit" ]
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 101,
+          "unitName" : "Hive"
+        }
+      ],
+      "name" : "Lair"
+    },
+    "101" : 
+    {
+      "builds" : 
+      [
+        {
+          "ability" : 1632,
+          "abilityName" : "TrainQueen,Train1",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "unitCount",
+              "unit" : [ 89 ],
+              "unitName" : [ "SpawningPool" ]
+            }
+          ],
+          "time" : 50.0,
+          "unit" : 126,
+          "unitName" : "Queen"
+        }
+      ],
+      "name" : "Hive"
+    },
+    "104" : 
+    {
+      "builds" : 
+      [
+        {
+          "ability" : 1152,
+          "abilityName" : "ZergBuild,Build1",
+          "time" : 100.0,
+          "unit" : 86,
+          "unitName" : "Hatchery"
+        },
+        {
+          "ability" : 1161,
+          "abilityName" : "ZergBuild,Build10",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "unitCount",
+              "unit" : [ 101, 100 ],
+              "unitName" : [ "Hive", "Lair" ]
+            }
+          ],
+          "time" : 50.0,
+          "unit" : 95,
+          "unitName" : "NydusNetwork"
+        },
+        {
+          "ability" : 1162,
+          "abilityName" : "ZergBuild,Build11",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "unitCount",
+              "unit" : [ 89 ],
+              "unitName" : [ "SpawningPool" ]
             }
           ],
           "time" : 60.0,
-          "unit" : "BanelingNest"
+          "unit" : 96,
+          "unitName" : "BanelingNest"
         },
         {
-          "ability" : "ZergBuild",
-          "abilityCommand" : "Build14",
+          "ability" : 1165,
+          "abilityName" : "ZergBuild,Build14",
           "requires" : 
           [
             {
-              "name" : "SpawningPool",
               "state" : "CompleteOnly",
-              "type" : "unit"
+              "type" : "unitCount",
+              "unit" : [ 89 ],
+              "unitName" : [ "SpawningPool" ]
             }
           ],
           "time" : 55.0,
-          "unit" : "RoachWarren"
+          "unit" : 97,
+          "unitName" : "RoachWarren"
         },
         {
-          "ability" : "ZergBuild",
-          "abilityCommand" : "Build15",
+          "ability" : 1166,
+          "abilityName" : "ZergBuild,Build15",
           "requires" : 
           [
             {
-              "name" : "SpawningPool",
               "state" : "CompleteOnly",
-              "type" : "unit"
+              "type" : "unitCount",
+              "unit" : [ 89 ],
+              "unitName" : [ "SpawningPool" ]
             }
           ],
           "time" : 50.0,
-          "unit" : "SpineCrawler"
+          "unit" : 98,
+          "unitName" : "SpineCrawler"
         },
         {
-          "ability" : "ZergBuild",
-          "abilityCommand" : "Build16",
+          "ability" : 1167,
+          "abilityName" : "ZergBuild,Build16",
           "requires" : 
           [
             {
-              "name" : "SpawningPool",
               "state" : "CompleteOnly",
-              "type" : "unit"
+              "type" : "unitCount",
+              "unit" : [ 89 ],
+              "unitName" : [ "SpawningPool" ]
             }
           ],
           "time" : 30.0,
-          "unit" : "SporeCrawler"
+          "unit" : 99,
+          "unitName" : "SporeCrawler"
         },
         {
-          "ability" : "ZergBuild",
-          "abilityCommand" : "Build3",
+          "ability" : 1154,
+          "abilityName" : "ZergBuild,Build3",
           "time" : 30.0,
-          "unit" : "Extractor"
+          "unit" : 88,
+          "unitName" : "Extractor"
         },
         {
-          "ability" : "ZergBuild",
-          "abilityCommand" : "Build4",
+          "ability" : 1155,
+          "abilityName" : "ZergBuild,Build4",
           "requires" : 
           [
             {
-              "name" : "Hatchery|Hive|Lair",
               "state" : "CompleteOnly",
-              "type" : "unit"
+              "type" : "unitCount",
+              "unit" : [ 86, 101, 100 ],
+              "unitName" : [ "Hatchery", "Hive", "Lair" ]
             }
           ],
           "time" : 65.0,
-          "unit" : "SpawningPool"
+          "unit" : 89,
+          "unitName" : "SpawningPool"
         },
         {
-          "ability" : "ZergBuild",
-          "abilityCommand" : "Build5",
+          "ability" : 1156,
+          "abilityName" : "ZergBuild,Build5",
           "requires" : 
           [
             {
-              "name" : "Hatchery|Hive|Lair",
               "state" : "CompleteOnly",
-              "type" : "unit"
+              "type" : "unitCount",
+              "unit" : [ 86, 101, 100 ],
+              "unitName" : [ "Hatchery", "Hive", "Lair" ]
             }
           ],
           "time" : 35.0,
-          "unit" : "EvolutionChamber"
+          "unit" : 90,
+          "unitName" : "EvolutionChamber"
         },
         {
-          "ability" : "ZergBuild",
-          "abilityCommand" : "Build6",
+          "ability" : 1157,
+          "abilityName" : "ZergBuild,Build6",
           "requires" : 
           [
             {
-              "name" : "Hive|Lair",
               "state" : "CompleteOnly",
-              "type" : "unit"
+              "type" : "unitCount",
+              "unit" : [ 101, 100 ],
+              "unitName" : [ "Hive", "Lair" ]
             }
           ],
           "time" : 40.0,
-          "unit" : "HydraliskDen"
+          "unit" : 91,
+          "unitName" : "HydraliskDen"
         },
         {
-          "ability" : "ZergBuild",
-          "abilityCommand" : "Build7",
+          "ability" : 1158,
+          "abilityName" : "ZergBuild,Build7",
           "requires" : 
           [
             {
-              "name" : "Hive|Lair",
               "state" : "CompleteOnly",
-              "type" : "unit"
+              "type" : "unitCount",
+              "unit" : [ 101, 100 ],
+              "unitName" : [ "Hive", "Lair" ]
             }
           ],
           "time" : 100.0,
-          "unit" : "Spire"
+          "unit" : 92,
+          "unitName" : "Spire"
         },
         {
-          "ability" : "ZergBuild",
-          "abilityCommand" : "Build8",
+          "ability" : 1159,
+          "abilityName" : "ZergBuild,Build8",
           "requires" : 
           [
             {
-              "name" : "Hive",
               "state" : "CompleteOnly",
-              "type" : "unit"
+              "type" : "unitCount",
+              "unit" : [ 101 ],
+              "unitName" : [ "Hive" ]
             }
           ],
           "time" : 65.0,
-          "unit" : "UltraliskCavern"
+          "unit" : 93,
+          "unitName" : "UltraliskCavern"
         },
         {
-          "ability" : "ZergBuild",
-          "abilityCommand" : "Build9",
+          "ability" : 1160,
+          "abilityName" : "ZergBuild,Build9",
           "requires" : 
           [
             {
-              "name" : "Hive|Lair",
               "state" : "CompleteOnly",
-              "type" : "unit"
+              "type" : "unitCount",
+              "unit" : [ 101, 100 ],
+              "unitName" : [ "Hive", "Lair" ]
             }
           ],
           "time" : 50.0,
-          "unit" : "InfestationPit"
+          "unit" : 94,
+          "unitName" : "InfestationPit"
         }
       ],
-      "id" : "Drone",
       "morphs" : 
       [
         {
-          "ability" : "BurrowDroneDown",
-          "abilityCommand" : "Execute",
+          "ability" : 1378,
+          "abilityName" : "BurrowDroneDown,Execute",
           "requires" : 
           [
             {
-              "name" : "Burrow",
               "state" : "CompleteOnly",
-              "type" : "upgrade"
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
             }
           ],
           "time" : 0.0,
-          "unit" : "DroneBurrowed"
+          "unit" : 116,
+          "unitName" : "DroneBurrowed"
         }
-      ]
+      ],
+      "name" : "Drone"
     },
-    "Hatchery" : 
+    "105" : 
     {
       "builds" : 
       [
         {
-          "ability" : "TrainQueen",
-          "abilityCommand" : "Train1",
+          "ability" : 80,
+          "abilityName" : "MorphZerglingToBaneling,Train1",
           "requires" : 
           [
             {
-              "name" : "SpawningPool",
               "state" : "CompleteOnly",
-              "type" : "unit"
+              "type" : "unitCount",
+              "unit" : [ 96 ],
+              "unitName" : [ "BanelingNest" ]
             }
           ],
-          "time" : 50.0,
-          "unit" : "Queen"
+          "time" : 20.0,
+          "unit" : 9,
+          "unitName" : "Baneling"
         }
       ],
-      "id" : "Hatchery",
       "morphs" : 
       [
         {
-          "ability" : "UpgradeToLair",
-          "abilityCommand" : "Execute",
+          "ability" : 1390,
+          "abilityName" : "BurrowZerglingDown,Execute",
           "requires" : 
           [
             {
-              "name" : "SpawningPool",
               "state" : "CompleteOnly",
-              "type" : "unit"
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
             }
           ],
           "time" : 0.0,
-          "unit" : "Lair"
+          "unit" : 119,
+          "unitName" : "ZerglingBurrowed"
         }
-      ]
+      ],
+      "name" : "Zergling"
     },
-    "Hive" : 
+    "126" : 
     {
       "builds" : 
       [
         {
-          "ability" : "TrainQueen",
-          "abilityCommand" : "Train1",
-          "requires" : 
-          [
-            {
-              "name" : "SpawningPool",
-              "state" : "CompleteOnly",
-              "type" : "unit"
-            }
-          ],
-          "time" : 50.0,
-          "unit" : "Queen"
+          "ability" : 1694,
+          "abilityName" : "QueenBuild,Build1",
+          "time" : 15.0,
+          "unit" : 138,
+          "unitName" : "CreepTumorQueen"
         }
       ],
-      "id" : "Hive"
-    },
-    "Lair" : 
-    {
-      "builds" : 
-      [
-        {
-          "ability" : "TrainQueen",
-          "abilityCommand" : "Train1",
-          "requires" : 
-          [
-            {
-              "name" : "SpawningPool",
-              "state" : "CompleteOnly",
-              "type" : "unit"
-            }
-          ],
-          "time" : 50.0,
-          "unit" : "Queen"
-        }
-      ],
-      "id" : "Lair",
       "morphs" : 
       [
         {
-          "ability" : "UpgradeToHive",
-          "abilityCommand" : "Execute",
+          "ability" : 1433,
+          "abilityName" : "BurrowQueenDown,Execute",
           "requires" : 
           [
             {
-              "name" : "InfestationPit",
               "state" : "CompleteOnly",
-              "type" : "unit"
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
             }
           ],
           "time" : 0.0,
-          "unit" : "Hive"
+          "unit" : 125,
+          "unitName" : "QueenBurrowed"
         }
-      ]
+      ],
+      "name" : "Queen"
     },
-    "Larva" : 
+    "137" : 
     {
       "builds" : 
       [
         {
-          "ability" : "LarvaTrain",
-          "abilityCommand" : "Train1",
+          "ability" : 1733,
+          "abilityName" : "CreepTumorBuild,Build1",
+          "time" : 15.0,
+          "unit" : 87,
+          "unitName" : "CreepTumor"
+        }
+      ],
+      "name" : "CreepTumorBurrowed"
+    },
+    "151" : 
+    {
+      "builds" : 
+      [
+        {
+          "ability" : 1342,
+          "abilityName" : "LarvaTrain,Train1",
           "time" : 17.0,
-          "unit" : "Drone"
+          "unit" : 104,
+          "unitName" : "Drone"
         },
         {
-          "ability" : "LarvaTrain",
-          "abilityCommand" : "Train10",
+          "ability" : 1351,
+          "abilityName" : "LarvaTrain,Train10",
           "requires" : 
           [
             {
-              "name" : "RoachWarren",
               "state" : "CompleteOnly",
-              "type" : "unit"
+              "type" : "unitCount",
+              "unit" : [ 97 ],
+              "unitName" : [ "RoachWarren" ]
             }
           ],
           "time" : 27.0,
-          "unit" : "Roach"
+          "unit" : 110,
+          "unitName" : "Roach"
         },
         {
-          "ability" : "LarvaTrain",
-          "abilityCommand" : "Train11",
+          "ability" : 1352,
+          "abilityName" : "LarvaTrain,Train11",
           "requires" : 
           [
             {
-              "name" : "InfestationPit",
               "state" : "CompleteOnly",
-              "type" : "unit"
+              "type" : "unitCount",
+              "unit" : [ 94 ],
+              "unitName" : [ "InfestationPit" ]
             }
           ],
           "time" : 50.0,
-          "unit" : "Infestor"
+          "unit" : 111,
+          "unitName" : "Infestor"
         },
         {
-          "ability" : "LarvaTrain",
-          "abilityCommand" : "Train12",
+          "ability" : 1353,
+          "abilityName" : "LarvaTrain,Train12",
           "requires" : 
           [
             {
-              "name" : "GreaterSpire|Spire",
               "state" : "CompleteOnly",
-              "type" : "unit"
+              "type" : "unitCount",
+              "unit" : [ 102, 92 ],
+              "unitName" : [ "GreaterSpire", "Spire" ]
             }
           ],
           "time" : 40.0,
-          "unit" : "Corruptor"
+          "unit" : 112,
+          "unitName" : "Corruptor"
         },
         {
-          "ability" : "LarvaTrain",
-          "abilityCommand" : "Train13",
+          "ability" : 1354,
+          "abilityName" : "LarvaTrain,Train13",
           "requires" : 
           [
             {
-              "name" : "Hive",
               "state" : "CompleteOnly",
-              "type" : "unit"
+              "type" : "unitCount",
+              "unit" : [ 101 ],
+              "unitName" : [ "Hive" ]
             }
           ],
           "time" : 40.0,
-          "unit" : "Viper"
+          "unit" : 499,
+          "unitName" : "Viper"
         },
         {
-          "ability" : "LarvaTrain",
-          "abilityCommand" : "Train15",
+          "ability" : 1356,
+          "abilityName" : "LarvaTrain,Train15",
           "requires" : 
           [
             {
-              "name" : "InfestationPit",
               "state" : "CompleteOnly",
-              "type" : "unit"
+              "type" : "unitCount",
+              "unit" : [ 94 ],
+              "unitName" : [ "InfestationPit" ]
             }
           ],
           "time" : 40.0,
-          "unit" : "SwarmHostMP"
+          "unit" : 494,
+          "unitName" : "SwarmHostMP"
         },
         {
-          "ability" : "LarvaTrain",
-          "abilityCommand" : "Train2",
+          "ability" : 1343,
+          "abilityName" : "LarvaTrain,Train2",
           "requires" : 
           [
             {
-              "name" : "SpawningPool",
               "state" : "CompleteOnly",
-              "type" : "unit"
+              "type" : "unitCount",
+              "unit" : [ 89 ],
+              "unitName" : [ "SpawningPool" ]
             }
           ],
           "time" : 24.0,
-          "unit" : "Zergling"
+          "unit" : 105,
+          "unitName" : "Zergling"
         },
         {
-          "ability" : "LarvaTrain",
-          "abilityCommand" : "Train3",
+          "ability" : 1344,
+          "abilityName" : "LarvaTrain,Train3",
           "time" : 25.0,
-          "unit" : "Overlord"
+          "unit" : 106,
+          "unitName" : "Overlord"
         },
         {
-          "ability" : "LarvaTrain",
-          "abilityCommand" : "Train4",
+          "ability" : 1345,
+          "abilityName" : "LarvaTrain,Train4",
           "requires" : 
           [
             {
-              "name" : "HydraliskDen|LurkerDenMP",
               "state" : "CompleteOnly",
-              "type" : "unit"
+              "type" : "unitCount",
+              "unit" : [ 91, 504 ],
+              "unitName" : [ "HydraliskDen", "LurkerDenMP" ]
             }
           ],
           "time" : 33.0,
-          "unit" : "Hydralisk"
+          "unit" : 107,
+          "unitName" : "Hydralisk"
         },
         {
-          "ability" : "LarvaTrain",
-          "abilityCommand" : "Train5",
+          "ability" : 1346,
+          "abilityName" : "LarvaTrain,Train5",
           "requires" : 
           [
             {
-              "name" : "GreaterSpire|Spire",
               "state" : "CompleteOnly",
-              "type" : "unit"
+              "type" : "unitCount",
+              "unit" : [ 102, 92 ],
+              "unitName" : [ "GreaterSpire", "Spire" ]
             }
           ],
           "time" : 33.0,
-          "unit" : "Mutalisk"
+          "unit" : 108,
+          "unitName" : "Mutalisk"
         },
         {
-          "ability" : "LarvaTrain",
-          "abilityCommand" : "Train7",
+          "ability" : 1348,
+          "abilityName" : "LarvaTrain,Train7",
           "requires" : 
           [
             {
-              "name" : "UltraliskCavern",
               "state" : "CompleteOnly",
-              "type" : "unit"
+              "type" : "unitCount",
+              "unit" : [ 93 ],
+              "unitName" : [ "UltraliskCavern" ]
             }
           ],
           "time" : 55.0,
-          "unit" : "Ultralisk"
+          "unit" : 109,
+          "unitName" : "Ultralisk"
         }
       ],
-      "id" : "Larva"
+      "name" : "Larva"
     },
-    "NydusNetwork" : 
+    "86" : 
     {
       "builds" : 
       [
         {
-          "ability" : "BuildNydusCanal",
-          "abilityCommand" : "Build1",
+          "ability" : 1632,
+          "abilityName" : "TrainQueen,Train1",
           "requires" : 
           [
             {
-              "name" : "NydusNetwork",
               "state" : "CompleteOnly",
-              "type" : "unit"
+              "type" : "unitCount",
+              "unit" : [ 89 ],
+              "unitName" : [ "SpawningPool" ]
             }
           ],
-          "time" : 20.0,
-          "unit" : "NydusCanal"
-        },
-        {
-          "ability" : "BuildNydusCanal",
-          "abilityCommand" : "Build2",
-          "time" : 20.0,
-          "unit" : "NydusCanalAttacker"
-        },
-        {
-          "ability" : "BuildNydusCanal",
-          "abilityCommand" : "Build3",
-          "time" : 0.0,
-          "unit" : "NydusCanalCreeper"
+          "time" : 50.0,
+          "unit" : 126,
+          "unitName" : "Queen"
         }
       ],
-      "id" : "NydusNetwork"
-    },
-    "Queen" : 
-    {
-      "builds" : 
-      [
-        {
-          "ability" : "QueenBuild",
-          "abilityCommand" : "Build1",
-          "time" : 15.0,
-          "unit" : "CreepTumorQueen"
-        }
-      ],
-      "id" : "Queen",
       "morphs" : 
       [
         {
-          "ability" : "BurrowQueenDown",
-          "abilityCommand" : "Execute",
+          "ability" : 1216,
+          "abilityName" : "UpgradeToLair,Execute",
           "requires" : 
           [
             {
-              "name" : "Burrow",
               "state" : "CompleteOnly",
-              "type" : "upgrade"
+              "type" : "unitCount",
+              "unit" : [ 89 ],
+              "unitName" : [ "SpawningPool" ]
             }
           ],
           "time" : 0.0,
-          "unit" : "QueenBurrowed"
+          "unit" : 100,
+          "unitName" : "Lair"
         }
-      ]
+      ],
+      "name" : "Hatchery"
     },
-    "Zergling" : 
+    "95" : 
     {
       "builds" : 
       [
         {
-          "ability" : "MorphZerglingToBaneling",
-          "abilityCommand" : "Train1",
+          "ability" : 1768,
+          "abilityName" : "BuildNydusCanal,Build1",
           "requires" : 
           [
             {
-              "name" : "BanelingNest",
               "state" : "CompleteOnly",
-              "type" : "unit"
+              "type" : "unitCount",
+              "unit" : [ 95 ],
+              "unitName" : [ "NydusNetwork" ]
             }
           ],
           "time" : 20.0,
-          "unit" : "Baneling"
+          "unit" : 142,
+          "unitName" : "NydusCanal"
+        },
+        {
+          "ability" : 1769,
+          "abilityName" : "BuildNydusCanal,Build2",
+          "time" : 20.0,
+          "unit" : 491,
+          "unitName" : "NydusCanalAttacker"
+        },
+        {
+          "ability" : 1770,
+          "abilityName" : "BuildNydusCanal,Build3",
+          "time" : 0.0,
+          "unit" : 492,
+          "unitName" : "NydusCanalCreeper"
         }
       ],
-      "id" : "Zergling",
-      "morphs" : 
-      [
-        {
-          "ability" : "BurrowZerglingDown",
-          "abilityCommand" : "Execute",
-          "requires" : 
-          [
-            {
-              "name" : "Burrow",
-              "state" : "CompleteOnly",
-              "type" : "upgrade"
-            }
-          ],
-          "time" : 0.0,
-          "unit" : "ZerglingBurrowed"
-        }
-      ]
+      "name" : "NydusNetwork"
     }
   }
 }
