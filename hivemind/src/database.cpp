@@ -65,6 +65,37 @@ namespace hivemind {
       entry.shieldsStart = unit["shieldsStart"].asInt();
       entry.vespeneCost = unit["vespeneCost"].asInt();
 
+      if ( unit["footprint"].isObject() && !unit["footprint"].empty() )
+      {
+        size_t width = 0;
+        size_t height = 0;
+
+        if ( unit["footprint"]["dimensions"].isArray() && unit["footprint"]["dimensions"].isValidIndex( 1 ) )
+        {
+          width = unit["footprint"]["dimensions"][0].asUInt64();
+          height = unit["footprint"]["dimensions"][1].asUInt64();
+        }
+
+        if ( width > 0 && height > 0 )
+        {
+          entry.footprint.resize( width, height );
+          entry.footprint.reset( false );
+          string data = unit["footprint"]["data"].asString();
+          if ( data.length() != ( width * height ) )
+            HIVE_EXCEPT( "units.json footprint data length mismatches given dimensions" );
+
+          entry.footprintOffset.x = unit["footprint"]["offset"][0].asInt();
+          entry.footprintOffset.y = unit["footprint"]["offset"][1].asInt();
+
+          for ( size_t y = 0; y < height; y++ )
+            for ( size_t x = 0; x < width; x++ )
+            {
+              auto idx = y * width + x;
+              entry.footprint[y][x] = ( data[idx] == 'x' );
+            }
+        }
+      }
+
       unitMap[id] = entry;
     }
   }
@@ -118,8 +149,8 @@ namespace hivemind {
   void Database::load( const string& dataPath )
   {
     unitData_.clear();
-    loadUnitData( dataPath + "\\units.json", unitData_ );
-    techTree_.load( dataPath + "\\techtree.json" );
+    loadUnitData( dataPath + R"(\units.json)", unitData_ );
+    techTree_.load( dataPath + R"(\techtree.json)" );
   }
 
 }

@@ -39,6 +39,8 @@ namespace hivemind {
     bool structure;
     Real turningRate;
     int vespeneCost;
+    Array2<bool> footprint; //!< Note: footprint has x & y flipped, otherwise there's a heap corruption on data load. (wtf?)
+    Point2DI footprintOffset;
     inline operator UnitTypeID() const
     {
       UnitTypeID ret( (uint32_t)id );
@@ -88,9 +90,9 @@ namespace hivemind {
     static TechTree techTree_;
   public:
     static void load( const string& dataPath );
-    inline const UnitDataMap& units() const { return unitData_; }
-    inline const UnitData& unit( UnitType64 id ) const { return unitData_[id]; }
-    inline const TechTree& techTree() const { return techTree_; }
+    inline static const UnitDataMap& units() { return unitData_; }
+    inline static const UnitData& unit( UnitType64 id ) { return unitData_[id]; }
+    inline static const TechTree& techTree() { return techTree_; }
   };
 
 }

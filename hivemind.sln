@@ -8,6 +8,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "data", "data", "{23796E8C-E60A-455F-BB33-DAD217AC59E4}"
 	ProjectSection(SolutionItems) = preProject
 		data\abilities.json = data\abilities.json
+		data\footprints.txt = data\footprints.txt
 		data\stableid.json = data\stableid.json
 		data\techtree.json = data\techtree.json
 		data\units.json = data\units.json

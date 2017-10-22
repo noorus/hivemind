@@ -5,6 +5,7 @@
 #include "map_analysis.h"
 #include "hive_geometry.h"
 #include "baselocation.h"
+#include "database.h"
 
 #pragma warning(disable: 4996)
 #define STB_IMAGE_WRITE_IMPLEMENTATION
@@ -154,6 +155,12 @@ namespace hivemind {
 
     debugDumpMaps( flagsMap_, heightMap_, info );
 
+    bot_->console().printf( "Map: Initializing dynamic data" );
+    creepMap_.resize( width_, height_ );
+    creepMap_.reset( false );
+    zergBuildable_.resize( width_, height_ );
+    zergBuildable_.reset( false );
+
     bot_->console().printf( "Map: Processing contours..." );
 
     components_.clear();
@@ -262,11 +269,76 @@ namespace hivemind {
       char msg[64];
       sprintf_s( msg, 64, "Base location %zd", location.baseID_ );
       bot_->debug().DebugTextOut( msg, Point3D( location.position_.x, location.position_.y, maxZ_ ), sc2::Colors::White );
+      Real height = heightMap_[math::floor( location.position_.x )][math::floor( location.position_.y )];
       bot_->debug().DebugBoxOut(
-        Point3D( location.left_, location.top_, maxZ_ ),
-        Point3D( location.right_, location.bottom_, maxZ_ + 1.0f ), sc2::Colors::White );
-      bot_->debug().DebugSphereOut( Point3D( location.position_.x, location.position_.y, maxZ_ ), 10.0f, sc2::Colors::White );
+        Point3D( location.left_, location.top_, height ),
+        Point3D( location.right_, location.bottom_, height + 1.0f ), sc2::Colors::White );
+      bot_->debug().DebugSphereOut( Point3D( location.position_.x, location.position_.y, height ), 10.0f, sc2::Colors::White );
     }
+    sc2::Color buildable;
+    buildable.r = 164;
+    buildable.g = 0;
+    buildable.b = 112;
+    for ( size_t x = 0; x < width_; x++ )
+      for ( size_t y = 0; y < height_; y++ )
+        if ( zergBuildable_[x][y] )
+          bot_->debug().DebugSphereOut( sc2::Point3D( (Real)x + 0.5f, (Real)y + 0.5f, heightMap_[x][y] ), 0.1f, buildable );
+  }
+
+  bool Map::updateCreep()
+  {
+    auto& rawData = bot_->observation().GetRawObservation()->raw_data();
+    if ( !rawData.has_map_state() || !rawData.map_state().has_creep() )
+      return false;
+
+    creepMap_.reset( false );
+
+    auto& creep = rawData.map_state().creep().data();
+    for ( size_t x = 0; x < width_; x++ )
+      for ( size_t y = 0; y < height_; y++ )
+        creepMap_[x][y] = ( creep[x + ( height_ - 1 - y ) * width_] ? true : false );
+
+    return true;
+  }
+
+  bool Map::updateZergBuildable()
+  {
+    zergBuildable_.reset( false );
+
+    // first mark all areas with creep as passable
+    for ( size_t x = 0; x < width_; x++ )
+      for ( size_t y = 0; y < height_; y++ )
+      {
+        if ( !( flagsMap_[x][y] & MapFlag_Buildable ) )
+          continue;
+        if ( !creepMap_[x][y] )
+          continue;
+        zergBuildable_[x][y] = true;
+      }
+
+    // get blocking units (i.e. structures)
+    auto blockingUnits = bot_->observation().GetUnits( []( const Unit& unit ) -> bool {
+      if ( !unit.is_alive )
+        return false;
+      auto& dbUnit = Database::unit( unit.unit_type );
+      return ( dbUnit.structure && !dbUnit.flying && !dbUnit.footprint.empty() );
+    } );
+
+    // loop through structures and subtract footprints from otherwise buildable area
+    for ( auto unit : blockingUnits )
+    {
+      auto& dbUnit = Database::unit( unit->unit_type );
+      Point2DI topleft(
+        math::floor( unit->pos.x ) + dbUnit.footprintOffset.x,
+        math::floor( unit->pos.y ) + dbUnit.footprintOffset.y
+      );
+      for ( size_t y = 0; y < dbUnit.footprint.height(); y++ )
+        for ( size_t x = 0; x < dbUnit.footprint.width(); x++ )
+          if ( dbUnit.footprint[y][x] )
+            zergBuildable_[topleft.x + x][topleft.y + y] = false;
+    }
+
+    return true;
   }
 
   BaseLocation* Map::closestLocation( const Vector2 & position )

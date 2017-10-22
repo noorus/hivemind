@@ -4,6 +4,8 @@
 
 namespace hivemind {
 
+  const GameTime cCreepUpdateDelay = 40;
+
   Bot::Bot(): time_( 0 ),
   console_( this ), players_( this ), brain_( this ), messaging_( this ),
   map_( this ), workers_( this ), baseManager_( this ), intelligence_( this ),
@@ -15,10 +17,15 @@ namespace hivemind {
   {
   }
 
+  // TODO move somewhere smart
+  static GameTime nextCreepUpdate = 0;
+
   void Bot::OnGameStart()
   {
     time_ = 0;
     lastStepTime_ = 0;
+
+    nextCreepUpdate = 0;
 
     observation_ = Observation();
 
@@ -60,6 +67,13 @@ namespace hivemind {
     time_ = observation_->GetGameLoop();
     auto delta = ( time_ - lastStepTime_ );
     lastStepTime_ = time_;
+
+    if ( time_ > nextCreepUpdate )
+    {
+      map_.updateCreep();
+      map_.updateZergBuildable();
+      nextCreepUpdate = time_ + cCreepUpdateDelay;
+    }
 
     baseManager_.update( time_, delta );
     messaging_.update( time_ );

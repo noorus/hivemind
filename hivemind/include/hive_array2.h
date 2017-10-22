@@ -4,6 +4,7 @@
 
 namespace hivemind {
 
+  //< Use accessors: Array2[x][y]
   template<typename T>
   class Array2 {
   private:
@@ -32,6 +33,7 @@ namespace hivemind {
       if ( data_ )
         free( data_ );
     }
+    const bool empty() const { return ( width_ == 0 && height_ == 0 ); }
     inline T* data() { return data_; }
     inline size_t width() const { return width_; }
     inline size_t height() const { return height_; }

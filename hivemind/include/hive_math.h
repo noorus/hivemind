@@ -15,6 +15,11 @@ namespace hivemind {
       return ::sqrtf( value );
     }
 
+    inline int floor( Real value )
+    {
+      return (int)::floorf( value );
+    }
+
     template <typename T>
     inline T abs( T value )
     {

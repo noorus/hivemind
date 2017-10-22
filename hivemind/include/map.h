@@ -47,9 +47,11 @@ namespace hivemind {
     Bot* bot_;
     size_t width_; //!< Map width
     size_t height_; //!< Map height
-    Array2<uint64_t> flagsMap_; //!< Map walkable & buildable flags
+    Array2<uint64_t> flagsMap_; //!< Static walkable & buildable flags
     Array2<Real> heightMap_; //!< Map heights
     Array2<int> labelsMap_;
+    Array2<bool> creepMap_; //!< Current creep spread visible to us
+    Array2<bool> zergBuildable_; //!< Space that is currently buildable to us
     ComponentVector components_;
     PolygonComponentVector polygons_;
     Real maxZ_;
@@ -64,6 +66,8 @@ namespace hivemind {
     Map( Bot* bot );
     void rebuild();
     void draw();
+    bool updateCreep();
+    bool updateZergBuildable(); // Be sure that creep is up to date first
     const size_t width() const { return width_; }
     const size_t height() const { return height_; }
     BaseLocation* closestLocation( const Vector2& position );

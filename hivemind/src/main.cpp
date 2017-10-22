@@ -2,12 +2,13 @@
 #include "bot.h"
 #include "exception.h"
 #include "database.h"
+#include "hive_array2.h"
 
 using sc2::Coordinator;
 
 const unsigned int c_updateSleepTime = 10; // 10 milliseconds
 const char* c_mapName = "Fractured Glacier"; // "Interloper LE";
-const char* c_dataPath = "..\\data";
+const char* c_dataPath = R"(..\data)";
 
 int main( int argc, char* argv[] )
 {
