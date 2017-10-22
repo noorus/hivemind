@@ -42,6 +42,19 @@ namespace hivemind {
 
   using PolygonComponentVector = vector<PolygonComponent>;
 
+  struct Creep {
+    int label;
+    Contour contour;
+  };
+
+  using CreepVector = vector<Creep>;
+
+  enum CreepTile: uint8_t {
+    CreepTile_No = 0,
+    CreepTile_Walkable,
+    CreepTile_Buildable
+  };
+
   class Map {
   public:
     Bot* bot_;
@@ -51,7 +64,10 @@ namespace hivemind {
     Array2<Real> heightMap_; //!< Map heights
     Array2<int> labelsMap_;
     Array2<bool> creepMap_; //!< Current creep spread visible to us
-    Array2<bool> zergBuildable_; //!< Space that is currently buildable to us
+    Array2<CreepTile> zergBuildable_; //!< Space that is currently buildable to us
+    Array2<int> labeledCreeps_; //!< Contour-traced buildable creeps by label (index)
+    CreepVector creeps_;
+    uint8_t* contourTraceImageBuffer_;
     ComponentVector components_;
     PolygonComponentVector polygons_;
     Real maxZ_;
@@ -62,8 +78,11 @@ namespace hivemind {
     PolygonComponentVector obstacles_;
     std::map<Analysis::RegionNodeID, Analysis::Chokepoint> chokepointSides_;
     BaseLocationVector baseLocations_;
+  private:
+    void labelBuildableCreeps();
   public:
     Map( Bot* bot );
+    ~Map();
     void rebuild();
     void draw();
     bool updateCreep();

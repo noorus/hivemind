@@ -6,6 +6,7 @@
 #include "hive_geometry.h"
 #include "baselocation.h"
 #include "database.h"
+#include "blob_algo.h"
 
 #pragma warning(disable: 4996)
 #define STB_IMAGE_WRITE_IMPLEMENTATION
@@ -19,8 +20,14 @@ namespace hivemind {
   const int c_actionX[c_legalActions] = { 1, -1, 0, 0 };
   const int c_actionY[c_legalActions] = { 0, 0, 1, -1 };
 
-  Map::Map( Bot* bot ): bot_( bot ), width_( 0 ), height_( 0 )
+  Map::Map( Bot* bot ): bot_( bot ), width_( 0 ), height_( 0 ), contourTraceImageBuffer_( nullptr )
   {
+  }
+
+  Map::~Map()
+  {
+    if ( contourTraceImageBuffer_ )
+      ::free( contourTraceImageBuffer_ );
   }
 
   void debugDumpMaps( Array2<uint64_t>& flagmap, Array2<Real>& heightmap, const GameInfo& info )
@@ -159,7 +166,14 @@ namespace hivemind {
     creepMap_.resize( width_, height_ );
     creepMap_.reset( false );
     zergBuildable_.resize( width_, height_ );
-    zergBuildable_.reset( false );
+    zergBuildable_.reset( CreepTile_No );
+    labeledCreeps_.resize( width_, height_ );
+    labeledCreeps_.reset( -1 );
+
+    if ( contourTraceImageBuffer_ )
+      ::free( contourTraceImageBuffer_ );
+
+    contourTraceImageBuffer_ = (uint8_t*)::malloc( width_ * height_ );
 
     bot_->console().printf( "Map: Processing contours..." );
 
@@ -275,14 +289,25 @@ namespace hivemind {
         Point3D( location.right_, location.bottom_, height + 1.0f ), sc2::Colors::White );
       bot_->debug().DebugSphereOut( Point3D( location.position_.x, location.position_.y, height ), 10.0f, sc2::Colors::White );
     }
-    sc2::Color buildable;
+    for ( auto& creep : creeps_ )
+    {
+      rgb tmp;
+      sc2::Color colorContour;
+      utils::hsl2rgb( ( (uint16_t)creep.label - 1 ) * 120, 230, 200, (uint8_t*)&tmp );
+      colorContour.r = tmp.r;
+      colorContour.g = tmp.g;
+      colorContour.b = tmp.b;
+      for ( auto& pt : creep.contour )
+        bot_->debug().DebugSphereOut( sc2::Point3D( (Real)pt.x + 0.5f, (Real)pt.y + 0.5f, heightMap_[pt.x][pt.y] + 0.5f ), 0.1f, colorContour );
+    }
+    /*sc2::Color buildable;
     buildable.r = 164;
     buildable.g = 0;
     buildable.b = 112;
     for ( size_t x = 0; x < width_; x++ )
       for ( size_t y = 0; y < height_; y++ )
         if ( zergBuildable_[x][y] )
-          bot_->debug().DebugSphereOut( sc2::Point3D( (Real)x + 0.5f, (Real)y + 0.5f, heightMap_[x][y] ), 0.1f, buildable );
+          bot_->debug().DebugSphereOut( sc2::Point3D( (Real)x + 0.5f, (Real)y + 0.5f, heightMap_[x][y] ), 0.1f, buildable );*/
   }
 
   bool Map::updateCreep()
@@ -303,17 +328,20 @@ namespace hivemind {
 
   bool Map::updateZergBuildable()
   {
-    zergBuildable_.reset( false );
+    zergBuildable_.reset( CreepTile_No );
 
     // first mark all areas with creep as passable
     for ( size_t x = 0; x < width_; x++ )
       for ( size_t y = 0; y < height_; y++ )
       {
-        if ( !( flagsMap_[x][y] & MapFlag_Buildable ) )
+        if ( !( flagsMap_[x][y] & MapFlag_Walkable ) )
           continue;
         if ( !creepMap_[x][y] )
           continue;
-        zergBuildable_[x][y] = true;
+        if ( !( flagsMap_[x][y] & MapFlag_Buildable ) )
+          zergBuildable_[x][y] = CreepTile_Walkable;
+        else
+          zergBuildable_[x][y] = CreepTile_Buildable;
       }
 
     // get blocking units (i.e. structures)
@@ -335,10 +363,65 @@ namespace hivemind {
       for ( size_t y = 0; y < dbUnit.footprint.height(); y++ )
         for ( size_t x = 0; x < dbUnit.footprint.width(); x++ )
           if ( dbUnit.footprint[y][x] )
-            zergBuildable_[topleft.x + x][topleft.y + y] = false;
+          {
+            auto& pixel = zergBuildable_[topleft.x + x][topleft.y + y];
+            pixel = ( pixel > CreepTile_No ? CreepTile_Walkable : CreepTile_No );
+          }
     }
 
+    // contour & label creep bitmap
+    labelBuildableCreeps();
+
     return true;
+  }
+
+  void Map::labelBuildableCreeps()
+  {
+    int16_t lbl_w = width_;
+    int16_t lbl_h = height_;
+    blob_algo::label_t* lbl_out = nullptr;
+    blob_algo::blob_t* blob_out = nullptr;
+
+    int blob_count = 0;
+    for ( size_t y = 0; y < height_; y++ )
+      for ( size_t x = 0; x < width_; x++ )
+      {
+        auto idx = ( y * width_ ) + x;
+        contourTraceImageBuffer_[idx] = ( zergBuildable_[x][y] != CreepTile_No ? 0xFF : 0x00 );
+      }
+
+    if ( blob_algo::find_blobs( 0, 0, (int16_t)width_, (int16_t)height_, contourTraceImageBuffer_, (int16_t)width_, (int16_t)height_, &lbl_out, &lbl_w, &lbl_h, &blob_out, &blob_count, 0 ) != 1 )
+      HIVE_EXCEPT( "find_blobs failed" );
+
+    if ( lbl_w != width_ || lbl_h != height_ )
+      HIVE_EXCEPT( "find_blobs returned changed label array dimensions" );
+
+    for ( size_t y = 0; y < lbl_h; y++ )
+      for ( size_t x = 0; x < lbl_w; x++ )
+      {
+        auto idx = ( y * lbl_w ) + x;
+        labeledCreeps_[x][y] = lbl_out[idx];
+      }
+
+    auto fnConvertContour = []( blob_algo::contour_t& in, Contour& out )
+    {
+      for ( int i = 0; i < in.count; i++ )
+        out.emplace_back( in.points[i * sizeof( int16_t )], in.points[( i * sizeof( int16_t ) ) + 1] );
+    };
+
+    creeps_.clear();
+
+    for ( int i = 0; i < blob_count; i++ )
+    {
+      Creep creep;
+      creep.label = blob_out[i].label;
+      fnConvertContour( blob_out[i].external, creep.contour );
+      creeps_.push_back( creep );
+    }
+
+    ::free( lbl_out );
+
+    blob_algo::destroy_blobs( blob_out, blob_count );
   }
 
   BaseLocation* Map::closestLocation( const Vector2 & position )
