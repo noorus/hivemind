@@ -5,14 +5,6 @@
 
 namespace hivemind {
 
-  enum BuildingPlacement {
-    BuildPlacement_Front, //!< Weighted toward front of the base
-    BuildPlacement_Back, //!< Weighted toward back of the base
-    BuildPlacement_MineralLine, //!< In the mineral line
-    BuildPlacement_Choke, //!< At the choke/ramp
-    BuildPlacement_Hidden //!< As stealthy as possible
-  };
-
   class BaseManager;
 
   class Base {
@@ -74,7 +66,6 @@ namespace hivemind {
     void addDepot( UnitRef depot );
     void addBuilding( UnitRef building );
     void update( Bot& bot );
-    Point2D findBuildingPlacement( UnitTypeID structure, BuildingPlacement type );
     Base( BaseManager* owner, size_t index, BaseLocation* location, UnitRef depot );
   };
 

@@ -105,6 +105,7 @@
     <ClInclude Include="include\blob_algo.h" />
     <ClInclude Include="include\bot.h" />
     <ClInclude Include="include\brain.h" />
+    <ClInclude Include="include\builder.h" />
     <ClInclude Include="include\console.h" />
     <ClInclude Include="include\database.h" />
     <ClInclude Include="include\distancemap.h" />
@@ -144,6 +145,7 @@
     <ClCompile Include="src\brain.cpp" />
     <ClCompile Include="src\brain_economy.cpp" />
     <ClCompile Include="src\brain_scouting.cpp" />
+    <ClCompile Include="src\builder.cpp" />
     <ClCompile Include="src\console.cpp" />
     <ClCompile Include="src\database.cpp" />
     <ClCompile Include="src\distancemap.cpp" />

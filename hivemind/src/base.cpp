@@ -202,9 +202,4 @@ namespace hivemind {
     }
   }
 
-  Point2D Base::findBuildingPlacement( UnitTypeID structure, BuildingPlacement type )
-  {
-    return Point2D();
-  }
-
 }
