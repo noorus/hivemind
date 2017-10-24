@@ -83,6 +83,30 @@ namespace hivemind {
     stbi_write_png( "debug_map_components.png", (int)labels.width(), (int)labels.height(), 3, rgb8.data(), (int)labels.width() * 3 );
   }
 
+  void debugDumpCreeps( Array2<int>& labels )
+  {
+    const rgb background = { 0, 0, 0 };
+    const rgb contour = { 255, 255, 255 };
+
+    Array2<rgb> rgb8( labels.width(), labels.height() );
+
+    for ( size_t y = 0; y < labels.height(); y++ )
+      for ( size_t x = 0; x < labels.width(); x++ )
+      {
+        if ( labels[x][y] == -1 )
+          rgb8[y][x] = contour;
+        else if ( labels[x][y] == 0 )
+          rgb8[y][x] = background;
+        else {
+          rgb tmp;
+          utils::hsl2rgb( ( (uint16_t)labels[x][y] - 1 ) * 120, 230, 200, (uint8_t*)&tmp );
+          rgb8[y][x] = tmp;
+        }
+      }
+
+    stbi_write_png( "debug_map_creep_realtime.png", (int)labels.width(), (int)labels.height(), 3, rgb8.data(), (int)labels.width() * 3 );
+  }
+
   void debugDumpResources( vector<UnitVector>& clusters, const GameInfo& info )
   {
     const rgb empty = { 0, 0, 0 };
@@ -168,12 +192,14 @@ namespace hivemind {
     zergBuildable_.resize( width_, height_ );
     zergBuildable_.reset( CreepTile_No );
     labeledCreeps_.resize( width_, height_ );
-    labeledCreeps_.reset( -1 );
+    labeledCreeps_.reset( 0 );
+    reservedMap_.resize( width_, height_ );
+    reservedMap_.reset( false );
 
     if ( contourTraceImageBuffer_ )
       ::free( contourTraceImageBuffer_ );
 
-    contourTraceImageBuffer_ = (uint8_t*)::malloc( width_ * height_ );
+    contourTraceImageBuffer_ = ( uint8_t* )::malloc( width_ * height_ );
 
     bot_->console().printf( "Map: Processing contours..." );
 
@@ -238,6 +264,8 @@ namespace hivemind {
     for ( auto& cluster : resourceClusters_ )
       baseLocations_.emplace_back( bot_, index++, cluster );
 
+    markResourceBoxes();
+
     bot_->console().printf( "Map: Rebuild done" );
   }
 
@@ -290,24 +318,17 @@ namespace hivemind {
       bot_->debug().DebugSphereOut( Point3D( location.position_.x, location.position_.y, height ), 10.0f, sc2::Colors::White );
     }
     for ( auto& creep : creeps_ )
-    {
-      rgb tmp;
-      sc2::Color colorContour;
-      utils::hsl2rgb( ( (uint16_t)creep.label - 1 ) * 120, 230, 200, (uint8_t*)&tmp );
-      colorContour.r = tmp.r;
-      colorContour.g = tmp.g;
-      colorContour.b = tmp.b;
-      for ( auto& pt : creep.contour )
-        bot_->debug().DebugSphereOut( sc2::Point3D( (Real)pt.x + 0.5f, (Real)pt.y + 0.5f, heightMap_[pt.x][pt.y] + 0.5f ), 0.1f, colorContour );
-    }
-    /*sc2::Color buildable;
-    buildable.r = 164;
-    buildable.g = 0;
-    buildable.b = 112;
-    for ( size_t x = 0; x < width_; x++ )
-      for ( size_t y = 0; y < height_; y++ )
-        if ( zergBuildable_[x][y] )
-          bot_->debug().DebugSphereOut( sc2::Point3D( (Real)x + 0.5f, (Real)y + 0.5f, heightMap_[x][y] ), 0.1f, buildable );*/
+      for ( size_t i = 0; i < creep.fronts.size(); i++ )
+      {
+        rgb tmp;
+        sc2::Color colorContour;
+        utils::hsl2rgb( (uint16_t)i * 120, 230, 200, (uint8_t*)&tmp );
+        colorContour.r = tmp.r;
+        colorContour.g = tmp.g;
+        colorContour.b = tmp.b;
+        for ( auto& pt : creep.fronts[i] )
+          bot_->debug().DebugSphereOut( sc2::Point3D( (Real)pt.x + 0.5f, (Real)pt.y + 0.5f, heightMap_[pt.x][pt.y] + 0.5f ), 0.1f, colorContour );
+      }
   }
 
   bool Map::updateCreep()
@@ -324,6 +345,75 @@ namespace hivemind {
         creepMap_[x][y] = ( creep[x + ( height_ - 1 - y ) * width_] ? true : false );
 
     return true;
+  }
+
+  void Map::updateReservedMap()
+  {
+    reservedMap_.reset( false );
+    creepTumors_.clear();
+
+    // get blocking units (i.e. structures)
+    auto blockingUnits = bot_->observation().GetUnits( []( const Unit& unit ) -> bool {
+      if ( !unit.is_alive )
+        return false;
+
+      if ( unit.unit_type == UNIT_TYPEID::ZERG_CREEPTUMOR || unit.unit_type == UNIT_TYPEID::ZERG_CREEPTUMORBURROWED )
+        return true;
+
+      auto& dbUnit = Database::unit( unit.unit_type );
+      return ( dbUnit.structure && !dbUnit.flying && !dbUnit.footprint.empty() );
+    } );
+
+    // loop through structures and subtract footprints from otherwise buildable area
+    for ( auto unit : blockingUnits )
+    {
+      if ( unit->unit_type == UNIT_TYPEID::ZERG_CREEPTUMOR || unit->unit_type == UNIT_TYPEID::ZERG_CREEPTUMORBURROWED )
+        creepTumors_.emplace_back( math::floor( unit->pos.x ), math::floor( unit->pos.y ) );
+
+      auto& dbUnit = Database::unit( unit->unit_type );
+      Point2DI topleft(
+        math::floor( unit->pos.x ) + dbUnit.footprintOffset.x,
+        math::floor( unit->pos.y ) + dbUnit.footprintOffset.y
+      );
+      for ( size_t y = 0; y < dbUnit.footprint.height(); y++ )
+        for ( size_t x = 0; x < dbUnit.footprint.width(); x++ )
+          if ( dbUnit.footprint[y][x] )
+          {
+            auto& pixel = zergBuildable_[topleft.x + x][topleft.y + y];
+            pixel = ( pixel > CreepTile_No ? CreepTile_Walkable : CreepTile_No );
+
+            reservedMap_[topleft.x + x][topleft.y + y] = true;
+          }
+    }
+  }
+
+  void Map::markResourceBoxes()
+  {
+    // only done once on map start
+    // actually this should probably be in map_analysis.cpp instead
+    for ( int x = 0; x < width_; x++ )
+      for ( int y = 0; y < height_; y++ )
+      {
+        for ( auto& loc : baseLocations_ )
+          if ( loc.isInResourceBox( x, y ) )
+            flagsMap_[x][y] |= MapFlag_ResourceBox;
+      }
+  }
+
+  Creep* Map::creep( size_t x, size_t y )
+  {
+    if ( !isValid( x, y ) )
+      return nullptr;
+
+    auto label = labeledCreeps_[x][y];
+    if ( label < 1 )
+      return nullptr;
+
+    for ( auto& creep : creeps_ )
+      if ( creep.label == label )
+        return &creep;
+
+    return nullptr;
   }
 
   bool Map::updateZergBuildable()
@@ -344,41 +434,71 @@ namespace hivemind {
           zergBuildable_[x][y] = CreepTile_Buildable;
       }
 
-    // get blocking units (i.e. structures)
-    auto blockingUnits = bot_->observation().GetUnits( []( const Unit& unit ) -> bool {
-      if ( !unit.is_alive )
-        return false;
-      auto& dbUnit = Database::unit( unit.unit_type );
-      return ( dbUnit.structure && !dbUnit.flying && !dbUnit.footprint.empty() );
-    } );
-
-    // loop through structures and subtract footprints from otherwise buildable area
-    for ( auto unit : blockingUnits )
-    {
-      auto& dbUnit = Database::unit( unit->unit_type );
-      Point2DI topleft(
-        math::floor( unit->pos.x ) + dbUnit.footprintOffset.x,
-        math::floor( unit->pos.y ) + dbUnit.footprintOffset.y
-      );
-      for ( size_t y = 0; y < dbUnit.footprint.height(); y++ )
-        for ( size_t x = 0; x < dbUnit.footprint.width(); x++ )
-          if ( dbUnit.footprint[y][x] )
-          {
-            auto& pixel = zergBuildable_[topleft.x + x][topleft.y + y];
-            pixel = ( pixel > CreepTile_No ? CreepTile_Walkable : CreepTile_No );
-          }
-    }
+    updateReservedMap();
 
     // contour & label creep bitmap
     labelBuildableCreeps();
 
+    // split to fronts
+    splitCreepFronts();
+
     return true;
+  }
+
+  bool Map::rampHasCreepTumor( int x, int y )
+  {
+    // this would be a lot less dumb and expensive if we ran contour/labeling on the ramps at startup
+    for ( auto& tumor : creepTumors_ )
+      if ( flagsMap_[x][y] & MapFlag_Ramp )
+        if ( math::manhattan( tumor.x, tumor.y, x, y ) < 10 )
+          return true;
+
+    return false;
+  }
+
+  void Map::splitCreepFronts()
+  {
+    // tile is valid for a creeping front if:
+    // - it's at least 5 tiles away from map edges
+    // - it's at least 2 tiles away from any (map) non-walkable tile
+    // - it's not dynamically blocked, i.e. have a structure in the way
+    // - it's not inside any base resource box
+    // - ...or is part of a ramp which has no creep tumor
+    auto fnCheckTile = [&]( int x, int y ) -> bool
+    {
+      if ( x < 5 || y < 5 || x >= ( width_ - 5 ) || y >= ( height_ - 5 ) )
+        return false;
+      if ( reservedMap_[x][y] )
+        return false;
+      if ( flagsMap_[x][y] & MapFlag_ResourceBox )
+        return false;
+      if ( flagsMap_[x][y] & MapFlag_Ramp && !rampHasCreepTumor( x, y ) )
+        return true;
+      return ( flagsMap_[x][y] & MapFlag_InnerWalkable );
+    };
+
+    for ( auto& creep : creeps_ )
+    {
+      creep.fronts.clear();
+      vector<MapPoint2> front;
+      for ( auto& tile : creep.contour )
+      {
+        if ( fnCheckTile( tile.x, tile.y ) && front.size() < 15 )
+          front.push_back( tile );
+        else
+        {
+          if ( !front.empty() )
+            creep.fronts.push_back( front );
+          front.clear();
+        }
+      }
+    }
   }
 
   void Map::labelBuildableCreeps()
   {
-    int16_t lbl_w = width_;
-    int16_t lbl_h = height_;
+    int16_t lbl_w = (int16_t)width_;
+    int16_t lbl_h = (int16_t)height_;
     blob_algo::label_t* lbl_out = nullptr;
     blob_algo::blob_t* blob_out = nullptr;
 
@@ -400,7 +520,7 @@ namespace hivemind {
       for ( size_t x = 0; x < lbl_w; x++ )
       {
         auto idx = ( y * lbl_w ) + x;
-        labeledCreeps_[x][y] = lbl_out[idx];
+        labeledCreeps_[x][y] = (int)lbl_out[idx];
       }
 
     auto fnConvertContour = []( blob_algo::contour_t& in, Contour& out )
@@ -411,6 +531,7 @@ namespace hivemind {
 
     creeps_.clear();
 
+    // TODO creep always has label (index+1), could use that
     for ( int i = 0; i < blob_count; i++ )
     {
       Creep creep;
@@ -432,7 +553,7 @@ namespace hivemind {
     {
       if ( loc.containsPosition( position ) )
         return &loc;
-      auto dist = loc.getPosition().squaredDistance( position );
+      auto dist = loc.position().squaredDistance( position );
       if ( dist < bestDist )
       {
         bestDist = dist;

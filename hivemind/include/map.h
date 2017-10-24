@@ -14,7 +14,11 @@ namespace hivemind {
 
   enum MapFlag {
     MapFlag_Walkable = 1,
-    MapFlag_Buildable = 2
+    MapFlag_Buildable = 2,
+    MapFlag_ResourceBox = 4, //!< Is this tile part of a base location's harvesting area
+    MapFlag_InnerWalkable = 8, //!< A walkable tile at least 2 tiles away from any non-walkable tile
+    MapFlag_Ramp = 16, //!< A tile that is part of a ramp
+    MapFlag_NearRamp = 32 //!< A tile that is at most 2 tiles away from a ramp tile
   };
 
   struct MapPoint2 {
@@ -45,6 +49,7 @@ namespace hivemind {
   struct Creep {
     int label;
     Contour contour;
+    vector<vector<MapPoint2>> fronts;
   };
 
   using CreepVector = vector<Creep>;
@@ -62,15 +67,17 @@ namespace hivemind {
     size_t height_; //!< Map height
     Array2<uint64_t> flagsMap_; //!< Static walkable & buildable flags
     Array2<Real> heightMap_; //!< Map heights
-    Array2<int> labelsMap_;
+    Array2<int> labelsMap_; //!< Map component labels
     Array2<bool> creepMap_; //!< Current creep spread visible to us
     Array2<CreepTile> zergBuildable_; //!< Space that is currently buildable to us
     Array2<int> labeledCreeps_; //!< Contour-traced buildable creeps by label (index)
+    Array2<bool> reservedMap_; //!< Spots that are used up by building footprints
+    vector<MapPoint2> creepTumors_;
     CreepVector creeps_;
     uint8_t* contourTraceImageBuffer_;
-    ComponentVector components_;
+    ComponentVector components_; //!< Map components
     PolygonComponentVector polygons_;
-    Real maxZ_;
+    Real maxZ_; //!< Highest terrain Z coordinate in the map
     mutable std::map<std::pair<size_t, size_t>, DistanceMap> distanceMapCache_;
     vector<UnitVector> resourceClusters_;
     Analysis::RegionGraph graph_;
@@ -79,14 +86,22 @@ namespace hivemind {
     std::map<Analysis::RegionNodeID, Analysis::Chokepoint> chokepointSides_;
     BaseLocationVector baseLocations_;
   private:
+    bool rampHasCreepTumor( int x, int y );
+    void updateReservedMap();
+    void splitCreepFronts();
     void labelBuildableCreeps();
+    void markResourceBoxes(); //!< Set MapFlag_ResourceBox values based on base locations
   public:
     Map( Bot* bot );
     ~Map();
     void rebuild();
     void draw();
     bool updateCreep();
-    bool updateZergBuildable(); // Be sure that creep is up to date first
+    bool hasCreep( size_t x, size_t y ) { return ( labeledCreeps_[x][y] > 0 ); }
+    bool hasCreep( const Vector2& position ) { return hasCreep( (size_t)position.x, (size_t)position.y ); }
+    Creep* creep( size_t x, size_t y );
+    Creep* creep( const Vector2& position ) { return creep( (size_t)position.x, (size_t)position.y ); }
+    bool updateZergBuildable(); // Make sure that creep is up to date first
     const size_t width() const { return width_; }
     const size_t height() const { return height_; }
     BaseLocation* closestLocation( const Vector2& position );

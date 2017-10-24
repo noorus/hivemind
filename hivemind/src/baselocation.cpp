@@ -37,7 +37,7 @@ namespace hivemind {
       if ( containsPosition( pos ) )
       {
         startLocation_ = true;
-        depotPosition_ = pos;
+        position_ = pos;
         break;
       }
 
@@ -45,7 +45,7 @@ namespace hivemind {
       if ( utils::isMine( unit ) && utils::isMainStructure( unit ) && containsPosition( unit->pos ) )
       {
         startLocation_ = true;
-        depotPosition_ = unit->pos;
+        position_ = unit->pos;
         break;
       }
   }
@@ -76,11 +76,6 @@ namespace hivemind {
   const vector<Vector2>& BaseLocation::getClosestTiles() const
   {
     return distanceMap_.sortedTiles();
-  }
-
-  const Vector2 & BaseLocation::getDepotPosition() const
-  {
-    return depotPosition_;
   }
 
 }

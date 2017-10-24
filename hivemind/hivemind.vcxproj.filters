@@ -248,5 +248,8 @@
     <ClCompile Include="src\builder.cpp">
       <Filter>Source Files\Systems</Filter>
     </ClCompile>
+    <ClCompile Include="src\brain_creep.cpp">
+      <Filter>Source Files\Brain</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

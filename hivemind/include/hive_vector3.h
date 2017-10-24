@@ -11,6 +11,7 @@ namespace hivemind {
   public:
     //! Constructors
     inline Vector3(): x( 0.0f ), y( 0.0f ), z( 0.0f ) {}
+    inline Vector3( const Vector3& other ) : x( other.x ), y( other.y ), z( other.z ) {}
     inline Vector3( const Real _x, const Real _y, const Real _z ) : x( _x ), y( _y ), z( _z ) {}
     inline explicit Vector3( const Real scalar ): x( scalar ), y( scalar ), z( scalar ) {}
     inline explicit Vector3( const Real coords[3] ): x( coords[0] ), y( coords[1] ), z( coords[2] ) {}
@@ -35,7 +36,13 @@ namespace hivemind {
     inline Real* ptr() { return &x; }
     inline const Real* ptr() const { return &x; }
     //! Assignment
-    inline Vector3& operator = ( const Vector3& rhs ) = default;
+    inline Vector3& operator = ( const Vector3& rhs )
+    {
+      x = rhs.x;
+      y = rhs.y;
+      z = rhs.z;
+      return *this;
+    }
     inline Vector3& operator = ( const Real scalar )
     {
       x = scalar;
@@ -174,7 +181,7 @@ namespace hivemind {
     {
       x = rhs.x;
       y = rhs.y;
-      z = rhs.y;
+      z = rhs.z;
       return *this;
     }
     inline operator Point3D() const

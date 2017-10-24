@@ -55,6 +55,7 @@ namespace hivemind {
     const UnitMap& buildings() const; //!< Return our buildings
     const UnitSet& larvae() const; //!< Return our larvae
     const UnitSet& depots() const; //!< Return our main buildings
+    UnitRef queen();
     bool hasWorker( UnitRef worker ) const; //!< Is a given worker mine?
     bool hasQueen( UnitRef queen ) const; //!< Is a given queen mine?
     void addWorker( UnitRef worker, bool refresh = true ); //!< Assign a worker to this base

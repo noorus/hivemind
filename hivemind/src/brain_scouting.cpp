@@ -116,7 +116,7 @@ namespace hivemind {
         {
           vector<Vector2> locations;
           for ( auto locId : unexploredStartLocations_ )
-            locations.emplace_back( bot_->map().baseLocations_[locId].getPosition() );
+            locations.emplace_back( bot_->map().baseLocations_[locId].position() );
 
           routeIndex_ = -1;
           route_ = bot_->map().shortestScoutPath( worker_->pos, locations );

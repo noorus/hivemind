@@ -11,6 +11,7 @@ namespace hivemind {
   public:
     //! Constructors
     inline Vector2(): x( 0.0f ), y( 0.0f ) {}
+    inline Vector2( const Vector2& other ) : x( other.x ), y( other.y ) {}
     inline Vector2( const Real _x, const Real _y ): x( _x ), y( _y ) {}
     inline explicit Vector2( const Real scalar ): x( scalar ), y( scalar ) {}
     inline explicit Vector2( const Real coords[2] ): x( coords[0] ), y( coords[1] ) {}
@@ -34,7 +35,12 @@ namespace hivemind {
     inline Real* ptr() { return &x; }
     inline const Real* ptr() const { return &x; }
     //! Assignment
-    inline Vector2& operator = ( const Vector2& rhs ) = default;
+    inline Vector2& operator = ( const Vector2& rhs )
+    {
+      x = rhs.x;
+      y = rhs.y;
+      return *this;
+    }
     inline Vector2& operator = ( const Real scalar )
     {
       x = scalar;

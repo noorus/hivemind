@@ -28,6 +28,9 @@ namespace hivemind {
     nextCreepUpdate = 0;
 
     observation_ = Observation();
+    debug_ = Debug();
+    query_ = Query();
+    action_ = Actions();
 
     console_.gameBegin();
 
@@ -45,6 +48,10 @@ namespace hivemind {
     intelligence_.gameBegin();
 
     strategy_.gameBegin();
+
+    console_.printf( "Enabling god mode and ignoring resource costs" );
+    debug_->DebugGodMode();
+    debug_->DebugIgnoreResourceCost();
   }
 
   static std::string GetAbilityText( sc2::AbilityID ability_id )
@@ -99,6 +106,9 @@ namespace hivemind {
         for ( auto& order : unit->orders )
           txt.append( GetAbilityText( order.ability_id ) + "\n" );
         debug_->DebugTextOut( txt, unit->pos, sc2::Colors::Green );
+        string nrg = std::to_string( unit->energy ) + " / " + std::to_string( unit->energy_max );
+        Vector3 nrgpos( unit->pos.x, unit->pos.y, unit->pos.z + 1.0f );
+        debug_->DebugTextOut( nrg, nrgpos, sc2::Colors::Teal );
       }
 
     debug_->SendDebug();

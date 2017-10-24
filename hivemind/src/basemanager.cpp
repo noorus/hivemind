@@ -6,9 +6,19 @@
 
 namespace hivemind {
 
+  void BaseManager::debugSpawnQueen( UnitRef depot )
+  {
+    bot_->console().printf( "...and here's your complimentary queen" );
+    Vector2 qpos = depot->pos;
+    qpos.y -= depot->radius + 0.75f;
+    bot_->debug().DebugCreateUnit( UNIT_TYPEID::ZERG_QUEEN, qpos, bot_->players().self().id(), 1 );
+  }
+
   BaseManager::BaseManager( Bot* bot ): Subsystem( bot )
   {
   }
+
+  static bool firstFrame = true;
 
   bool BaseManager::addBase( UnitRef depot )
   {
@@ -27,11 +37,16 @@ namespace hivemind {
 
     bases_.emplace_back( this, bases_.size(), location, depot );
 
+    if ( !firstFrame )
+      debugSpawnQueen( depot );
+
     return true;
   }
 
   void BaseManager::gameBegin()
   {
+    firstFrame = true;
+
     // add initial base here because we can't know the order of initial creation events for adding units to the base.
     for ( auto unit : bot_->observation().GetUnits( sc2::Unit::Alliance::Self ) )
     {
@@ -52,6 +67,12 @@ namespace hivemind {
   {
     for ( auto& base : bases_ )
       base.update( *bot_ );
+
+    if ( firstFrame )
+    {
+      debugSpawnQueen( *bases_[0].depots().cbegin() );
+      firstFrame = false;
+    }
   }
 
   void BaseManager::draw()
@@ -113,7 +134,7 @@ namespace hivemind {
     Real minDist = 32000.0f;
     for ( auto& base : bases_ )
     {
-      auto dist = base.location()->getPosition().squaredDistance( pos.to2() );
+      auto dist = base.location()->position().squaredDistance( pos.to2() );
       if ( dist < minDist )
       {
         minDist = dist;

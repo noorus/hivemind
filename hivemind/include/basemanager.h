@@ -15,6 +15,7 @@ namespace hivemind {
     UnitSet depots_;
     UnitSet assignedUnits_;
     void onMessage( const Message& msg ) final;
+    void debugSpawnQueen( UnitRef depot );
   public:
     BaseManager( Bot* bot );
     bool addBase( UnitRef depot );

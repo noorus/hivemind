@@ -46,10 +46,36 @@ namespace hivemind {
           if ( ( flags & MapFlag_Buildable ) || utils::pathable( info, x, y ) )
             flags |= MapFlag_Walkable;
 
+          // naive; work for now but maybe improve later
+          if ( ( flags & MapFlag_Walkable ) && !( flags & MapFlag_Buildable ) )
+            flags |= MapFlag_Ramp;
+
           flags_out[x][y] = flags;
 
           heightmap_out[x][y] = utils::terrainHeight( info, x, y );
         }
+
+      // second pass to mark inner walkables
+      for ( size_t x = 0; x < width_out; x++ )
+        for ( size_t y = 0; y < height_out; y++ )
+          if ( ( flags_out[x][y] & MapFlag_Walkable ) && x > 2 && y > 2 && x <= ( width_out - 1 ) && y <= ( height_out - 1 ) )
+          {
+            // up to 2 tiles around me
+            uint64_t aroundANDed = (
+              flags_out[x - 1][y] & flags_out[x + 1][y] & flags_out[x][y - 1] & flags_out[x][y + 1] &
+              flags_out[x - 2][y] & flags_out[x + 2][y] & flags_out[x][y - 2] & flags_out[x][y + 2] &
+              flags_out[x - 1][y - 1] & flags_out[x + 1][y - 1] & flags_out[x - 1][y + 1] & flags_out[x + 1][y + 1]
+            );
+            uint64_t aroundORed = (
+              flags_out[x - 1][y] | flags_out[x + 1][y] | flags_out[x][y - 1] | flags_out[x][y + 1] |
+              flags_out[x - 2][y] | flags_out[x + 2][y] | flags_out[x][y - 2] | flags_out[x][y + 2] |
+              flags_out[x - 1][y - 1] | flags_out[x + 1][y - 1] | flags_out[x - 1][y + 1] | flags_out[x + 1][y + 1]
+            );
+            if ( aroundANDed & MapFlag_Walkable )
+              flags_out[x][y] |= MapFlag_InnerWalkable;
+            if ( aroundORed & MapFlag_Ramp )
+              flags_out[x][y] |= MapFlag_NearRamp;
+          }
     }
 
     /*

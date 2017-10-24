@@ -126,6 +126,16 @@ namespace hivemind {
     return depots_;
   }
 
+  UnitRef Base::queen()
+  {
+    if ( queens_.empty() )
+      return nullptr;
+    // todo better
+    auto it = queens_.cbegin();
+    std::advance( it, utils::randomBetween( 0, (int)queens_.size() - 1 ) );
+    return ( *it );
+  }
+
   bool Base::hasWorker( UnitRef worker ) const
   {
     return ( workers_.find( worker ) != workers_.end() );

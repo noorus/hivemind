@@ -31,6 +31,13 @@ namespace hivemind {
       return ( value < low ? low : ( value > high ? high : value ) );
     }
 
+    //! Manhattan distance
+    template <typename T>
+    inline T manhattan( T x1, T y1, T x2, T y2 )
+    {
+      return ( abs( x2 - x1 ) + abs( y2 - y1 ) );
+    }
+
   }
 
 }
