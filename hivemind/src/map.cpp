@@ -7,6 +7,7 @@
 #include "baselocation.h"
 #include "database.h"
 #include "blob_algo.h"
+#include "regiongraph.h"
 
 #pragma warning(disable: 4996)
 #define STB_IMAGE_WRITE_IMPLEMENTATION
@@ -285,14 +286,25 @@ namespace hivemind {
     bot_->console().printf( "Map: Rebuild done" );
   }
 
-  void drawPoly( sc2::DebugInterface& debug, Polygon& poly, Real z, sc2::Color color )
+  Point3D util_tileToMarker( const Vector2& v, const Array2<Real>& heightmap, Real offset, Real maxZ )
+  {
+    MapPoint2 tile = MapPoint2( math::floor( v.x ), math::floor( v.y ) );
+    maxZ += offset;
+    Real z = heightmap[tile.x][tile.y] + offset;
+    if ( z > ( maxZ + offset ) )
+      z = ( maxZ + offset );
+    return Point3D( v.x + 0.5f, v.y + 0.5f, z );
+  }
+
+  void Map::drawPoly( sc2::DebugInterface& debug, Polygon& poly, sc2::Color color )
   {
     auto previous = poly.back();
     for ( auto& vec : poly )
     {
-      Point3D p0( previous.x + 0.5f, previous.y + 0.5f, z + 0.1f );
-      Point3D p1( vec.x + 0.5f, vec.y + 0.5f, z + 0.1f );
+      Point3D p0 = util_tileToMarker( previous, heightMap_, 0.5f, maxZ_ );
+      Point3D p1 = util_tileToMarker( vec, heightMap_, 0.5f, maxZ_ );
       debug.DebugLineOut( p0, p1, color );
+      // debug.DebugSphereOut( p0, 0.25f, sc2::Colors::Green );
       previous = vec;
     }
   }
@@ -316,27 +328,37 @@ namespace hivemind {
 
     for ( auto& poly_comp : polygons_ )
     {
-      drawPoly( bot_->debug(), poly_comp.contour, maxZ_, sc2::Colors::Purple );
+      drawPoly( bot_->debug(), poly_comp.contour, sc2::Colors::Purple );
       for ( auto& hole : poly_comp.holes )
-        drawPoly( bot_->debug(), hole, maxZ_, sc2::Colors::Red );
+        drawPoly( bot_->debug(), hole, sc2::Colors::Red );
     }
     for ( auto& asd : chokepointSides_ )
     {
-      Point3D p0( asd.second.side1.x, asd.second.side1.y, maxZ_ );
-      Point3D p1( asd.second.side2.x, asd.second.side2.y, maxZ_ );
+      Point3D p0 = util_tileToMarker( asd.second.side1, heightMap_, 0.75f, maxZ_ );
+      Point3D p1 = util_tileToMarker( asd.second.side2, heightMap_, 0.75f, maxZ_ );
       bot_->debug().DebugLineOut( p0, p1, sc2::Colors::Green );
     }
     for ( auto& node : graphSimplified_.nodes )
     {
-      bot_->debug().DebugSphereOut( sc2::Point3D( node.x, node.y, maxZ_ ), 0.25f, sc2::Colors::Teal );
+      auto pt = util_tileToMarker( node, heightMap_, 0.75f, maxZ_ );
+      bot_->debug().DebugSphereOut( pt, 0.25f, sc2::Colors::Teal );
     }
-    for ( auto& cluster : resourceClusters_ )
+    for ( size_t id = 0; id < graphSimplified_.adjacencyList.size(); id++ )
     {
-      auto pos = cluster.center();
-      // bot_->debug().DebugSphereOut( Point3D( pos.x, pos.y, maxZ_ ), 10.0f );
+      for ( auto adj : graphSimplified_.adjacencyList[id] )
+      {
+        auto v0 = graphSimplified_.nodes[id];
+        auto v1 = graphSimplified_.nodes[adj];
+        Point3D p0 = util_tileToMarker( v0, heightMap_, 0.75f, maxZ_ );
+        Point3D p1 = util_tileToMarker( v1, heightMap_, 0.75f, maxZ_ );
+        bot_->debug().DebugLineOut( p0, p1, sc2::Colors::Teal );
+      }
+    }
+    /*for ( auto& cluster : resourceClusters_ )
+    {
       for ( auto res : cluster )
         bot_->debug().DebugSphereOut( res->pos, 1.0f, sc2::Colors::Yellow );
-    }
+    }*/
     for ( auto& location : baseLocations_ )
     {
       char msg[64];

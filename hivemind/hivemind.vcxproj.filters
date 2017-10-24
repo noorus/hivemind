@@ -162,6 +162,9 @@
     <ClInclude Include="include\builder.h">
       <Filter>Header Files\Systems</Filter>
     </ClInclude>
+    <ClInclude Include="include\external\clipper.hpp">
+      <Filter>Header Files\Algorithm</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\stdafx.cpp">
@@ -250,6 +253,9 @@
     </ClCompile>
     <ClCompile Include="src\brain_creep.cpp">
       <Filter>Source Files\Brain</Filter>
+    </ClCompile>
+    <ClCompile Include="src\external\clipper.cpp">
+      <Filter>Source Files\Algorithm</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

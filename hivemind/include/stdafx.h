@@ -51,28 +51,14 @@
 #pragma warning(push)
 #pragma warning(disable: 4244)
 #include <boost/geometry.hpp>
+#include <boost/geometry/index/rtree.hpp>
 #include <boost/geometry/geometries/point_xy.hpp>
+#include <boost/geometry/geometries/linestring.hpp>
 #include <boost/polygon/voronoi.hpp>
 #include <boost/polygon/polygon.hpp>
-#include <boost/geometry/index/rtree.hpp>
 #pragma warning(pop)
 
-#include <CGAL/basic.h>
-#include <CGAL/Simple_cartesian.h>
-#include <CGAL/Filtered_kernel.h>
-#include <CGAL/Lazy_exact_nt.h>
-#include <CGAL/Segment_Delaunay_graph_traits_2.h>
-#include <CGAL/Segment_Delaunay_graph_2.h>
-#include <CGAL/Line_2.h>
-#include <CGAL/Direction_2.h>
-#include <CGAL/Polygon_2.h>
-#include <CGAL/Point_set_2.h>
-#include <CGAL/Cartesian.h>
-#include <CGAL/Arr_segment_traits_2.h>
-#include <CGAL/Arrangement_2.h>
-#include <CGAL/Arr_simple_point_location.h>
-#include <CGAL/Arr_extended_dcel.h>
-#include <CGAL/Gmpq.h>
+#include "external/clipper.hpp"
 
 #pragma warning(push)
 #pragma warning(disable: 4275 4996)

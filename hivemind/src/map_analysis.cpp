@@ -5,26 +5,9 @@
 #include "blob_algo.h"
 #include "exception.h"
 
-#include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
-#include <CGAL/Polygon_2.h>
-#include <CGAL/Polyline_simplification_2/simplify.h>
-#include <CGAL/Polyline_simplification_2/Hybrid_squared_distance_cost.h>
-#include <CGAL/Segment_Delaunay_graph_traits_2.h>
-#include <CGAL/Point_set_2.h>
-#include <CGAL/Cartesian.h>
-
 namespace hivemind {
 
   namespace Analysis {
-
-    typedef CGAL::Exact_predicates_inexact_constructions_kernel CGAL_Kernel;
-    typedef CGAL_Kernel::Point_2 CGAL_Point_2;
-    typedef CGAL::Polygon_2<CGAL_Kernel> CGAL_Polygon_2;
-
-    namespace CGAL_PS = CGAL::Polyline_simplification_2;
-    typedef CGAL_PS::Stop_below_count_ratio_threshold CGAL_PS_Stop_CountRatio;
-    typedef CGAL_PS::Stop_above_cost_threshold CGAL_PS_Stop_Cost;
-    typedef CGAL_PS::Squared_distance_cost CGAL_PS_Cost;
 
     /*
      * 1) Extract from gameinfo: dimensions, buildability, pathability, heightmap
@@ -138,57 +121,27 @@ namespace hivemind {
 
       blob_algo::destroy_blobs( blob_out, blob_count );
     }
-
-    /*
-    * Utility to convert CGAL polygon to our Polygon
-    **/
-    inline Polygon util_cgalPolyToPoly( CGAL_Polygon_2& in )
+    
+    Polygon util_contourToCleanPolygon( Contour& contour )
     {
-      Polygon out;
-      for ( auto vi = in.vertices_begin(); vi != in.vertices_end(); ++vi )
-        out.emplace_back( (float)vi->x(), (float)vi->y() );
-      return out;
-    }
+      auto contourPoly = util_contourToClipperPath( contour );
 
-    /*
-    * Utility to convert our Polygon to CGAL polygon
-    **/
-    inline CGAL_Polygon_2 util_polyToCgalPoly( Polygon& in )
-    {
-      CGAL_Polygon_2 out;
-      for ( auto& pt : in )
-        out.push_back( CGAL_Point_2( (double)pt.x, (double)pt.y ) );
-      return out;
-    }
+      ClipperLib::CleanPolygon( contourPoly );
 
-    /*
-     * Utility to try to naively clean up some self-loops in the edges
-     **/
-    void util_cleanupPolygon( CGAL_Polygon_2& poly )
-    {
-      auto fnEncodePoint = []( const Point2DI& pt ) -> uint64_t
-      { return ( ( (uint64_t)pt.x ) << 32 ) | ( (uint64_t)pt.y ); };
+      ClipperLib::Paths contourSimpleOut;
+      ClipperLib::SimplifyPolygon( contourPoly, contourSimpleOut );
 
-      using ptmap = std::map<uint64_t, size_t>;
-      ptmap existingPointsMap;
-      bool reloop = true;
-      while ( reloop )
-      {
-        existingPointsMap.clear();
-        reloop = false;
-        for ( size_t i = 0; i < poly.size(); i++ )
-        {
-          auto pt = Point2DI( (int)poly[i].x(), (int)poly[i].y() );
-          if ( existingPointsMap.count( fnEncodePoint( pt ) ) )
-          {
-            auto previousIndex = existingPointsMap[fnEncodePoint( pt )];
-            poly.erase( poly.vertices_begin() + previousIndex, poly.vertices_begin() + i );
-            reloop = true;
-            break;
-          } else
-            existingPointsMap[fnEncodePoint( pt )] = i;
-        }
-      }
+      // We discard any extra polygons here, should probably log a message about them
+
+      auto toSimplify = util_clipperPathToBoostPolygon( contourSimpleOut[0] );
+
+      BoostPolygon simplified;
+      boost::geometry::simplify( toSimplify, simplified, 1.0 );
+
+      if ( !boost::geometry::is_simple( simplified ) )
+        HIVE_EXCEPT( "Simplified contour polygon is not simple!" );
+
+      return util_boostPolygonToPolygon( simplified );
     }
 
     /*
@@ -201,37 +154,11 @@ namespace hivemind {
         PolygonComponent out_comp;
         out_comp.label = component.label;
 
-        vector<CGAL_Point_2> points;
-        for ( auto& pt : component.contour )
-          points.emplace_back(  (double)pt.x, (double)pt.y  );
-
-        CGAL_Polygon_2 contourPoly( points.begin(), points.end() );
-
-        if ( simplify )
-          contourPoly = CGAL_PS::simplify( contourPoly, CGAL_PS::Hybrid_squared_distance_cost<double>( simplify_distance_cost ), CGAL_PS_Stop_Cost( simplify_stop_cost ) );
-
-        util_cleanupPolygon( contourPoly );
-        if ( !contourPoly.is_simple() )
-          HIVE_EXCEPT( "Cleaned component contour polygon is not simple" );
-
-        out_comp.contour = util_cgalPolyToPoly( contourPoly );
+        out_comp.contour = util_contourToCleanPolygon( component.contour );
 
         for ( auto& hole : component.holes )
         {
-          points.clear();
-          for ( auto& pt : hole )
-            points.emplace_back( (double)pt.x, (double)pt.y );
-
-          CGAL_Polygon_2 holePoly( points.begin(), points.end() );
-
-          if ( simplify )
-            holePoly = CGAL_PS::simplify( holePoly, CGAL_PS::Hybrid_squared_distance_cost<double>( simplify_distance_cost ), CGAL_PS_Stop_Cost( simplify_stop_cost ) );
-
-          util_cleanupPolygon( holePoly );
-          if ( !holePoly.is_simple() )
-            HIVE_EXCEPT( "Cleaned hole contour polygon is not simple" );
-
-          out_comp.holes.push_back( util_cgalPolyToPoly( holePoly ) );
+          out_comp.holes.push_back( util_contourToCleanPolygon( hole ) );
         }
 
         polygons_out.push_back( out_comp );
@@ -342,21 +269,23 @@ namespace hivemind {
       }
       for ( it; it != border.end();)
       {
-        if ( *it == maxX ) break;
+        if ( *it == maxX )
+          break;
         VoronoiPoint point1( *it, y ); ++it;
         VoronoiPoint point2( maxX, y );
         if ( it != border.end() )
         {
-          point2.x( *it ); ++it;
+          point2.x( *it );
+          ++it;
         }
         segments.emplace_back( point1, point2 );
         rtreeSegments.push_back( std::make_pair( BoostSegment( BoostPoint( point1.x(), point1.y() ), BoostPoint( point2.x(), point2.y() ) ), idPoint++ ) );
       }
     }
 
-    static const Real DIFF_COEFICIENT = 0.31f; // relative difference to consider a change between region<->chokepoint
-    static const Real MIN_NODE_DIST = 0.25f; // 7; // minimum distance between nodes
-    static const Real MIN_REGION_OBST_DIST = 2.5f; // 1 = 9.7; // minimum distance to object to be considered as a region
+    static const Real DIFF_COEFICIENT = 0.21f; // 0.31f; // relative difference to consider a change between region<->chokepoint
+    static const Real MIN_NODE_DIST = 6.0f; //0.25f; // 7; // minimum distance between nodes
+    static const Real MIN_REGION_OBST_DIST = 2.5f; // 2.5f; // 1 = 9.7; // minimum distance to object to be considered as a region
 
     /*
      * 5) Turn walkable areas (by way of non-walkable area polygons) to a Voronoi diagram
@@ -438,9 +367,6 @@ namespace hivemind {
           // HIVE_EXCEPT( "Voronoi vertex found outside map. Probably wrong border segment generation" );
           continue;
         }
-        //... is outside map or near border
-        // 			if (p0.x < SKIP_NEAR_BORDER || p0.x > maxXborder || p0.y < SKIP_NEAR_BORDER || p0.y >maxYborder ||
-        //				p1.x < SKIP_NEAR_BORDER || p1.x >maxXborder || p1.y < SKIP_NEAR_BORDER || p1.y >maxYborder) continue;
 
         // ... any of its endpoints is inside an obstacle
         if ( labels_in[(int)p0.x][(int)p0.y] == 0 || labels_in[(int)p1.x][(int)p1.y] == 0 ) // 0 = unwalkable
@@ -510,17 +436,17 @@ namespace hivemind {
      **/
     void Map_DetectNodes( RegionGraph & graph, const PolygonComponentVector& polygons )
     {
-      struct parentNode_t {
+      struct ParentNode {
         RegionNodeID id;
         bool isMaximal;
-        parentNode_t(): id( 0 ), isMaximal( false ) {}
-        parentNode_t( RegionNodeID _id, bool _isMaximal ): id( _id ), isMaximal( _isMaximal ) {}
+        ParentNode(): id( 0 ), isMaximal( false ) {}
+        ParentNode( RegionNodeID _id, bool _isMaximal ): id( _id ), isMaximal( _isMaximal ) {}
       };
 
       // container to mark visited nodes, and parent list
-      std::vector<bool> visited( graph.nodes.size() );
-      std::vector<parentNode_t> parentNodes( graph.nodes.size() );
-      std::vector<RegionNodeID> lastValid( graph.nodes.size() );
+      vector<bool> visited( graph.nodes.size() );
+      vector<ParentNode> parentNodes( graph.nodes.size() );
+      vector<RegionNodeID> lastValid( graph.nodes.size() );
 
       auto fnEnoughDifference = []( const double& a, const double& b ) -> bool
       {
@@ -533,12 +459,11 @@ namespace hivemind {
       std::stack<RegionNodeID> nodeToVisit;
       for ( size_t id = 0; id < graph.adjacencyList.size(); ++id )
       {
-        // find a leaf
         if ( graph.adjacencyList[id].size() == 1 )
         {
           graph.markNodeAsRegion( id );
           visited[id] = true;
-          parentNode_t parentNode( id, true );
+          ParentNode parentNode( id, true );
           parentNodes[id] = parentNode;
           for ( const auto& v1 : graph.adjacencyList[id] )
           {
@@ -552,11 +477,10 @@ namespace hivemind {
 
       while ( !nodeToVisit.empty() )
       {
-        // pop first element
         RegionNodeID v0 = nodeToVisit.top();
         nodeToVisit.pop();
-        // get parent
-        parentNode_t parentNode = parentNodes[v0];
+
+        ParentNode parentNode = parentNodes[v0];
         if ( graph.adjacencyList[v0].size() != 2 )
         { // We found a leaf or intersection (region node)
           // if parent chokepoint and too close, delete parent
@@ -596,7 +520,6 @@ namespace hivemind {
                 graph.markNodeAsChoke( v0 );
                 parentNode.id = v0;
                 parentNode.isMaximal = false;
-
               }
             }
             else
@@ -664,32 +587,30 @@ namespace hivemind {
             nodeToVisit.push( v1 );
             visited[v1] = true;
             parentNodes[v1] = parentNode;
-          } else
+          }
+          else // we reached a connection between visited paths
           {
-            // we reached a connection between visited paths.
-
             RegionNodeID v0Parent, v1Parent;
+
             // get right parent of v0
             if ( graph.nodeType[v0] == RegionGraph::NodeType_Region || graph.nodeType[v0] == RegionGraph::NodeType_Chokepoint )
-            {
               v0Parent = v0;
-            } else v0Parent = parentNodes[v0].id;
+            else
+              v0Parent = parentNodes[v0].id;
+
             // get right parent of v1
             if ( graph.nodeType[v1] == RegionGraph::NodeType_Region || graph.nodeType[v1] == RegionGraph::NodeType_Chokepoint )
-            {
               v1Parent = v1;
-            } else v1Parent = parentNodes[v1].id;
+            else
+              v1Parent = parentNodes[v1].id;
+
             RegionNodeID isMaximal0 = false;
             if ( graph.nodeType[v0Parent] == RegionGraph::NodeType_Region ) isMaximal0 = true;
             RegionNodeID isMaximal1 = false;
             if ( graph.nodeType[v1Parent] == RegionGraph::NodeType_Region ) isMaximal1 = true;
 
-            // 					if (!isMaximal0 && isMaximal1) LOG("Choke-region " << v0Parent << "-" << v1Parent);
-            // 					if (isMaximal0 && !isMaximal1) LOG("Region-choke " << v0Parent << "-" << v1Parent);
-
             // if the connected path between choke-region nodes is too close, remove choke
-            if ( isMaximal0 != isMaximal1 &&
-              graph.nodes[v0Parent].distance( graph.nodes[v1Parent] ) < MIN_NODE_DIST )
+            if ( isMaximal0 != isMaximal1 && graph.nodes[v0Parent].distance( graph.nodes[v1Parent] ) < MIN_NODE_DIST )
             {
               RegionNodeID nodeToDelete = v0Parent;
               if ( isMaximal0 )  nodeToDelete = v1Parent;
