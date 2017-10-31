@@ -29,14 +29,17 @@ namespace hivemind {
     {
       scoutGoal_ = new Brain_ScoutEnemy( owner_ );
       economyGoal_ = new Brain_ManageEconomy( owner_ );
+      microGoal_ = new Brain_Micro( owner_ );
       goalList_.push_back( scoutGoal_ );
       goalList_.push_back( economyGoal_ );
+      goalList_.push_back( microGoal_ );
     }
 
     void Brain_Root::terminate()
     {
       delete scoutGoal_;
       delete economyGoal_;
+      delete microGoal_;
       goalList_.clear();
     }
 
@@ -44,6 +47,7 @@ namespace hivemind {
     {
       scoutGoal_->setImportance( 1.0f );
       economyGoal_->setImportance( 0.9f );
+      microGoal_->setImportance( 0.5f );
     }
 
   }

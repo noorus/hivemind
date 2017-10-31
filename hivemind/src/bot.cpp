@@ -38,7 +38,7 @@ namespace hivemind {
 
   Bot::Bot( Console& console ): time_( 0 ),
   console_( console ), players_( this ), brain_( this ), messaging_( this ),
-  map_( this ), workers_( this ), baseManager_( this ), intelligence_( this ),
+  map_( this ), influenceMap_(this), workers_( this ), baseManager_( this ), intelligence_( this ),
   strategy_( this ), builder_( this ), cheatCostIgnore_( false ), cheatGodmode_( false )
   {
     console_.setBot( this );
@@ -78,6 +78,7 @@ namespace hivemind {
     messaging_.gameBegin();
 
     map_.rebuild();
+    influenceMap_.gameBegin();
 
     workers_.gameBegin();
 
@@ -146,6 +147,8 @@ namespace hivemind {
       nextCreepUpdate = time_ + cCreepUpdateDelay;
     }
 
+    influenceMap_.update();
+
     builder_.update( time_, delta );
 
     baseManager_.update( time_, delta );
@@ -164,6 +167,7 @@ namespace hivemind {
 
     map_.draw();
     baseManager_.draw();
+    influenceMap_.draw();
 
     for ( auto unit : observation_->GetUnits() )
       if ( unit->is_selected && utils::isMine( unit ) )

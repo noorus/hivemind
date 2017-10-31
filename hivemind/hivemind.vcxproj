@@ -118,6 +118,7 @@
     <ClInclude Include="include\hive_types.h" />
     <ClInclude Include="include\hive_vector2.h" />
     <ClInclude Include="include\hive_vector3.h" />
+    <ClInclude Include="include\influence_map.h" />
     <ClInclude Include="include\intelligence.h" />
     <ClInclude Include="include\map.h" />
     <ClInclude Include="include\map_analysis.h" />
@@ -145,12 +146,14 @@
     <ClCompile Include="src\brain.cpp" />
     <ClCompile Include="src\brain_creep.cpp" />
     <ClCompile Include="src\brain_economy.cpp" />
+    <ClCompile Include="src\brain_micro.cpp" />
     <ClCompile Include="src\brain_scouting.cpp" />
     <ClCompile Include="src\builder.cpp" />
     <ClCompile Include="src\console.cpp" />
     <ClCompile Include="src\database.cpp" />
     <ClCompile Include="src\distancemap.cpp" />
     <ClCompile Include="src\exception.cpp" />
+    <ClCompile Include="src\influence_map.cpp" />
     <ClCompile Include="src\intelligence.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\map.cpp" />

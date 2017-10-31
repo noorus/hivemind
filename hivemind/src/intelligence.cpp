@@ -39,8 +39,10 @@ namespace hivemind {
       auto enemy = &enemies_[msg.unit()->owner];
       if ( enemy->lastSeen_ == 0 )
       {
-        // this should be safe, closestLocation could only return false if the map's base location vector is empty
-        if ( utils::isMainStructure( msg.unit() ) || bot_->map().closestLocation( msg.unit()->pos )->isStartLocation() )
+        auto closestBase = bot_->map().closestLocation(msg.unit()->pos);
+        bool closestBaseIsStartLocation = closestBase && closestBase->isStartLocation();
+
+        if ( closestBaseIsStartLocation || utils::isMainStructure( msg.unit() ) )
         {
           bot_->messaging().sendGlobal( M_Intel_FoundPlayer, 2, (size_t)msg.unit()->owner, msg.unit() );
           // TODO separate baseSeen value etc.

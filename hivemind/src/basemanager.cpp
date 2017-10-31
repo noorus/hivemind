@@ -70,7 +70,10 @@ namespace hivemind {
 
     if ( firstFrame )
     {
-      debugSpawnQueen( *bases_[0].depots().cbegin() );
+        if(!bases_.empty())
+        {
+            debugSpawnQueen( *bases_[0].depots().cbegin() );
+        }
       firstFrame = false;
     }
   }

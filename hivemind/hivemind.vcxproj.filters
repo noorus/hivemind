@@ -162,6 +162,9 @@
     <ClInclude Include="include\builder.h">
       <Filter>Header Files\Systems</Filter>
     </ClInclude>
+    <ClInclude Include="include\influence_map.h">
+      <Filter>Header Files\Map</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\stdafx.cpp">
@@ -250,6 +253,12 @@
     </ClCompile>
     <ClCompile Include="src\brain_creep.cpp">
       <Filter>Source Files\Brain</Filter>
+    </ClCompile>
+    <ClCompile Include="src\brain_micro.cpp">
+      <Filter>Source Files\Brain</Filter>
+    </ClCompile>
+    <ClCompile Include="src\influence_map.cpp">
+      <Filter>Source Files\Brain\Map</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -818,6 +818,11 @@ namespace hivemind {
         RegionNodeID parent = *mergeRegions.begin();
         mergeRegions.erase( mergeRegions.begin() );
 
+        if(parent >= graph.adjacencyList.size())
+        {
+            continue;
+        }
+
         for ( auto it = graph.adjacencyList[parent].begin(); it != graph.adjacencyList[parent].end();)
         {
           RegionNodeID child = *it;

@@ -5,6 +5,8 @@
 #include "hive_array2.h"
 #include "console.h"
 
+#include <codecvt>
+
 using sc2::Coordinator;
 
 HIVE_DECLARE_CONVAR( screen_width, "Width of the launched game window.", 1920 );
@@ -55,6 +57,42 @@ void testTechChain(hivemind::Console& console, sc2::UPGRADE_ID targetType)
       console.printf("    %s", sc2::UpgradeIDToName(upgradeType));
     }
   }
+}
+
+const unsigned int c_updateSleepTime = 10; // 10 milliseconds
+
+const char* c_dataPath = R"(..\data)";
+
+static std::string GetExePath()
+{
+    WCHAR windowsPath[MAX_PATH];
+
+    DWORD length = GetModuleFileNameW(0, windowsPath, MAX_PATH);
+    if (length > 0) {
+        std::wstring_convert<std::codecvt_utf8_utf16<WCHAR>, WCHAR> convertor;
+        return convertor.to_bytes(windowsPath);
+    }
+
+    return std::string();
+}
+
+static std::string getMapName()
+{
+#if 1
+    const char* c_mapName = "micro/HydraliskMicro.SC2Map";
+
+    // Coordinator searches relative paths starting from "../../maps" which would be outside the repo.
+    // Workaround by creating an absolute path.
+    std::string result = GetExePath();
+    result = result.substr(0, result.find_last_of("\\"));
+    result = result.substr(0, result.find_last_of("\\"));
+    result += "\\maps\\";
+
+    result += c_mapName;
+    return result;
+#else
+  return "Fractured Glacier"; // "Interloper LE";
+#endif
 }
 
 int main( int argc, char* argv[] )
@@ -115,7 +153,7 @@ int main( int argc, char* argv[] )
     coordinator.SetParticipants( {
       CreateParticipant( sc2::Zerg, &hivemindBot ),
       CreateComputer( sc2::Terran, sc2::Difficulty::Medium ),
-      CreateComputer( sc2::Terran, sc2::Difficulty::Medium )
+//      CreateComputer( sc2::Terran, sc2::Difficulty::Medium )
     } );
 
     coordinator.LaunchStarcraft();

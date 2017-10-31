@@ -50,6 +50,17 @@ namespace hivemind {
       virtual void terminate() final;
     };
 
+    class Brain_Micro: public AI::CompositeGoal {
+    protected:
+    public:
+      virtual const string& getName() const final { static string name = "Brain_Micro"; return name; }
+    public:
+      Brain_Micro( AI::Agent* agent );
+      virtual void activate() final;
+      virtual Status process() final;
+      virtual void terminate() final;
+    };
+
     class Brain_UpdateHarvesters: public AI::CompositeGoal {
     public:
       virtual const string& getName() const final { static string name = "Brain_UpdateHarvesters"; return name; }
@@ -90,6 +101,7 @@ namespace hivemind {
     protected:
       Brain_ScoutEnemy* scoutGoal_;
       Brain_ManageEconomy* economyGoal_;
+      Brain_Micro* microGoal_;
     public:
       virtual const string& getName() const final { static string name = "Brain_Root"; return name; }
     public:

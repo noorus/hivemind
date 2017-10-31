@@ -5,6 +5,7 @@
 #include "brain.h"
 #include "messaging.h"
 #include "map.h"
+#include "influence_map.h"
 #include "workers.h"
 #include "basemanager.h"
 #include "intelligence.h"
@@ -31,6 +32,7 @@ namespace hivemind {
     Messaging messaging_;
     Brain brain_;
     Map map_;
+    InfluenceMap influenceMap_;
     WorkerManager workers_;
     BaseManager baseManager_;
     Intelligence intelligence_;
