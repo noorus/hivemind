@@ -68,7 +68,15 @@ namespace hivemind {
 
       struct UnitBrain
       {
-        int commandCooldown;
+        int commandCooldown_;
+        bool hasMoveTarget_;
+        Vector2 moveTarget_;
+
+        UnitBrain():
+          commandCooldown_(0),
+          hasMoveTarget_(false)
+        {
+        }
       };
 
       struct Squad
@@ -77,7 +85,7 @@ namespace hivemind {
         UnitBrains units_;
 
         UnitRef focusTarget_;
-        Vector2 center;
+        Vector2 center_;
 
         Squad():
           focusTarget_()

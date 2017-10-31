@@ -80,7 +80,8 @@ static std::string getMapName()
 {
 #if 1
     //const char* c_mapName = "micro/HydraliskMicro.SC2Map";
-    const char* c_mapName = "micro/RoachMicro.SC2Map";
+    //const char* c_mapName = "micro/RoachMicro.SC2Map";
+    const char* c_mapName = "micro/AttackMove.SC2Map";
 
     // Coordinator searches relative paths starting from "../../maps" which would be outside the repo.
     // Workaround by creating an absolute path.

@@ -39,7 +39,7 @@ namespace hivemind {
 
       UnitRef target = nullptr;
       float distance = std::numeric_limits<float>::max();
-      for (const auto& unit : units)
+      for(const auto& unit : units)
       {
         float d = DistanceSquared2D(unit->pos, from);
 
@@ -49,10 +49,10 @@ namespace hivemind {
           d += buildingDistancePenalty;
         }
 
-        if (d < distance)
+        if(d < distance)
         {
-            distance = d;
-            target = unit;
+          distance = d;
+          target = unit;
         }
       }
 
@@ -74,7 +74,7 @@ namespace hivemind {
         sum.x += entry.first->pos.x;
         sum.y += entry.first->pos.y;
       }
-      center = sum / float(units_.size());
+      center_ = sum / float(units_.size());
     }
 
     AI::Goal::Status Brain_Micro::process()
@@ -90,7 +90,7 @@ namespace hivemind {
 
       if(!combatUnits_.focusTarget_)
       {
-        combatUnits_.focusTarget_ = selectClosestTarget(combatUnits_.center);
+        combatUnits_.focusTarget_ = selectClosestTarget(combatUnits_.center_);
 
         if(combatUnits_.focusTarget_)
         {
@@ -108,24 +108,51 @@ namespace hivemind {
 
       for(auto& entry : combatUnits_.units_)
       {
-        auto unit = entry.first;
+        const sc2::Unit* unit = entry.first;
         auto& brain = entry.second;
-        if(brain.commandCooldown > 0)
+
+        if(brain.commandCooldown_ > 0)
         {
           auto pos = unit->pos;
           pos.z += 0.3f;
 
-          string text = std::to_string(brain.commandCooldown);
+          string text = std::to_string(brain.commandCooldown_);
           bot_->debug().DebugTextOut(text, pos, sc2::Colors::Purple);
 
-          --brain.commandCooldown;
+          --brain.commandCooldown_;
           continue;
         }
 
-        if(combatUnits_.focusTarget_)
+        if(combatUnits_.focusTarget_ && unit->weapon_cooldown == 0)
         {
-          action->UnitCommand(unit, ABILITY_ID::ATTACK, combatUnits_.focusTarget_);
-          brain.commandCooldown = 0;
+          // Store move target, if any.
+          if(!unit->orders.empty())
+          {
+            const auto& order = unit->orders.front();
+            if(order.ability_id == ABILITY_ID::MOVE)
+            {
+              brain.moveTarget_ = order.target_pos;
+              brain.hasMoveTarget_ = true;
+            }
+          }
+
+          // Shoot whenever in range.
+          const float roachRange = 4.0f;
+          if(Distance3D(unit->pos, combatUnits_.focusTarget_->pos) <= roachRange)
+          {
+            action->UnitCommand(unit, ABILITY_ID::ATTACK, combatUnits_.focusTarget_);
+            brain.commandCooldown_ = 0;
+          }
+        }
+        else
+        {
+          // Continue walking to stored move target, if any.
+          if(brain.hasMoveTarget_)
+          {
+            action->UnitCommand(unit, ABILITY_ID::MOVE, brain.moveTarget_);
+            brain.hasMoveTarget_ = false;
+            brain.commandCooldown_ = 0;
+          }
         }
       }
 
