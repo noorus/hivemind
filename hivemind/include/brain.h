@@ -50,7 +50,7 @@ namespace hivemind {
       virtual void terminate() final;
     };
 
-    class Brain_Micro: public AI::CompositeGoal {
+    class Brain_Micro: public AI::CompositeGoal, public hivemind::Listener {
     protected:
     public:
       virtual const string& getName() const final { static string name = "Brain_Micro"; return name; }
@@ -59,6 +59,35 @@ namespace hivemind {
       virtual void activate() final;
       virtual Status process() final;
       virtual void terminate() final;
+      virtual void onMessage(const Message& msg) final;
+    private:
+
+      UnitRef selectClosestTarget(Vector2 center);
+
+      void log(const char* format, const std::string& message);
+
+      struct UnitBrain
+      {
+        int commandCooldown;
+      };
+
+      struct Squad
+      {
+        using UnitBrains = std::map<UnitRef, UnitBrain>;
+        UnitBrains units_;
+
+        UnitRef focusTarget_;
+        Vector2 center;
+
+        Squad():
+          focusTarget_()
+        {
+        }
+
+        void updateCenter();
+      };
+
+      Squad combatUnits_;
     };
 
     class Brain_UpdateHarvesters: public AI::CompositeGoal {

@@ -80,13 +80,6 @@ namespace hivemind {
 
   void InfluenceMap::draw()
   {
-    auto to_string = [](int x) -> string
-    {
-      char buf[40];
-      sprintf_s(buf, "%d", x);
-      return buf;
-    };
-
     for(size_t y = 0; y < height_; ++y)
     {
       for(size_t x = 0; x < width_; ++x)
@@ -102,7 +95,7 @@ namespace hivemind {
 
           bot_->debug().DebugBoxOut(pos, pos + sc2::Point3D(1.0f, 1.0f, 0.0f), color);
 
-          string text = to_string(int(influence));
+          string text = std::to_string(int(influence));
           bot_->debug().DebugTextOut(text, pos + sc2::Point3D(0.5f, 0.5f, 0.0f), color);
         }
       }
