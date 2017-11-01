@@ -10,6 +10,7 @@
 #include "intelligence.h"
 #include "utilities.h"
 #include "strategy.h"
+#include "builder.h"
 
 namespace hivemind {
 
@@ -30,6 +31,7 @@ namespace hivemind {
     BaseManager baseManager_;
     Intelligence intelligence_;
     Strategy strategy_;
+    Builder builder_;
   public:
     inline const GameTime time() const { return time_; } //!< Game time in ticks
     inline const RealTime timeSeconds() const { return utils::ticksToTime( time_ ); } //!< Game time in ingame seconds
@@ -46,6 +48,7 @@ namespace hivemind {
     inline BaseManager& bases() { return baseManager_; }
     inline Intelligence& intelligence() { return intelligence_; }
     inline Strategy& strategy() { return strategy_; }
+    inline Builder& builder() { return builder_; }
   public:
     //! Callbacks
     virtual void OnGameStart() final;

@@ -9,7 +9,7 @@ namespace hivemind {
   Bot::Bot(): time_( 0 ),
   console_( this ), players_( this ), brain_( this ), messaging_( this ),
   map_( this ), workers_( this ), baseManager_( this ), intelligence_( this ),
-  strategy_( this )
+  strategy_( this ), builder_( this )
   {
   }
 
@@ -48,6 +48,8 @@ namespace hivemind {
     intelligence_.gameBegin();
 
     strategy_.gameBegin();
+
+    builder_.gameBegin();
 
     console_.printf( "Enabling god mode and ignoring resource costs" );
     debug_->DebugGodMode();
@@ -118,6 +120,7 @@ namespace hivemind {
   {
     strategy_.gameEnd();
     brain_.gameEnd();
+    builder_.gameEnd();
     players_.gameEnd();
     workers_.gameEnd();
     baseManager_.gameEnd();

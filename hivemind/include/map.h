@@ -102,6 +102,8 @@ namespace hivemind {
     Creep* creep( size_t x, size_t y );
     Creep* creep( const Vector2& position ) { return creep( (size_t)position.x, (size_t)position.y ); }
     bool updateZergBuildable(); // Make sure that creep is up to date first
+    bool canZergBuild( UnitTypeID structure, size_t x, size_t y, int padding = 0 );
+    inline bool canZergBuild( UnitTypeID structure, const Vector2& pos, int padding = 0 ) { return canZergBuild( structure, (size_t)pos.x, (size_t)pos.y, padding ); }
     const size_t width() const { return width_; }
     const size_t height() const { return height_; }
     BaseLocation* closestLocation( const Vector2& position );

@@ -10,16 +10,19 @@ namespace hivemind {
   class Bot;
 
   enum BuildingPlacement {
-    Placement_Random
-    /*BuildPlacement_Front, //!< Weighted toward front of the base
+    BuildPlacement_Generic, //!< Growing outwards from main building
+    BuildPlacement_Front, //!< Weighted toward front of the base
     BuildPlacement_Back, //!< Weighted toward back of the base
     BuildPlacement_MineralLine, //!< In the mineral line
     BuildPlacement_Choke, //!< At the choke/ramp
-    BuildPlacement_Hidden //!< As stealthy as possible*/
+    BuildPlacement_Hidden //!< As stealthy as possible
   };
 
-  class Builder {
+  class Builder: public Subsystem {
   public:
+    Builder( Bot* bot );
+    void gameBegin() final;
+    void gameEnd() final;
     Point2D findPlacement( UnitTypeID structure, const Base& base, BuildingPlacement type );
   };
 

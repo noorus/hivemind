@@ -445,6 +445,44 @@ namespace hivemind {
     return true;
   }
 
+  bool Map::canZergBuild( UnitTypeID structure, size_t x, size_t y, int padding )
+  {
+    auto& dbUnit = Database::unit( structure );
+
+    Point2DI topleft(
+      x + dbUnit.footprintOffset.x - padding,
+      y + dbUnit.footprintOffset.y - padding
+    );
+
+    int fullwidth = ( (int)dbUnit.footprint.width() + ( padding * 2 ) );
+    int fullheight = ( (int)dbUnit.footprint.height() + ( padding * 2 ) );
+
+    if ( topleft.x < 0 || topleft.y < 0 || ( topleft.x + fullwidth >= width_ ) || ( topleft.y + fullheight >= height_ ) )
+      return false;
+
+    for ( size_t y = 0; y < fullheight; y++ )
+      for ( size_t x = 0; x < fullwidth; x++ )
+      {
+        auto mx = ( topleft.x + x );
+        auto my = ( topleft.y + y );
+
+        if ( x < padding || y < padding || x >= ( fullwidth - padding ) || y >= ( fullheight - padding ) )
+        {
+          if ( reservedMap_[mx][my] )
+            return false;
+          continue;
+        }
+
+        if ( dbUnit.footprint[y + padding][x + padding] )
+        {
+          if ( zergBuildable_[mx][my] != CreepTile_Buildable )
+            return false;
+        }
+      }
+
+    return true;
+  }
+
   bool Map::rampHasCreepTumor( int x, int y )
   {
     // this would be a lot less dumb and expensive if we ran contour/labeling on the ramps at startup
