@@ -7,12 +7,14 @@
 
 using sc2::Coordinator;
 
-const unsigned int c_updateSleepTime = 10; // 10 milliseconds
-const char* c_mapName = "Fractured Glacier"; // "Interloper LE";
-const char* c_dataPath = R"(..\data)";
-
 HIVE_DECLARE_CONVAR( screen_width, "Width of the launched game window.", 1920 );
 HIVE_DECLARE_CONVAR( screen_height, "Height of the launched game window.", 1080 );
+
+HIVE_DECLARE_CONVAR( data_path, "Path to the bot's data directory.", R"(..\data)" );
+
+HIVE_DECLARE_CONVAR( map, "Name or path of the map to launch.", "Fractured Glacier" );
+
+HIVE_DECLARE_CONVAR( update_delay, "Time delay between main loop updates in milliseconds.", 10 );
 
 int main( int argc, char* argv[] )
 {
@@ -40,9 +42,13 @@ int main( int argc, char* argv[] )
       i++;
     }
 
-    hivemind::Database::load( c_dataPath );
+    hivemind::Console console;
 
-    hivemind::Bot hivemindBot( options );
+    hivemind::Bot hivemindBot( console );
+
+    hivemindBot.initialize( options );
+
+    hivemind::Database::load( g_CVar_data_path.as_s() );
 
     coordinator.SetRealtime( true );
 
@@ -58,12 +64,12 @@ int main( int argc, char* argv[] )
     } );
 
     coordinator.LaunchStarcraft();
-    if ( !coordinator.StartGame( c_mapName ) )
+    if ( !coordinator.StartGame( g_CVar_map.as_s() ) )
       HIVE_EXCEPT( "Failed to start game" );
 
     while ( coordinator.Update() )
     {
-      sc2::SleepFor( c_updateSleepTime );
+      sc2::SleepFor( g_CVar_update_delay.as_i() );
     }
 #ifndef _DEBUG
   }

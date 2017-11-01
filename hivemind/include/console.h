@@ -104,9 +104,10 @@ namespace hivemind {
     ~TextFile();
   };
 
-  class Console: public Subsystem {
+  class Console {
     friend class ConBase;
   private:
+    Bot* bot_;
     TextFile* fileOut_;
     CVarList cvars_; //!< Registered commands & variables
     static CVarList precreated_; //!< Pre-created commands & variables
@@ -118,9 +119,10 @@ namespace hivemind {
     void registerVariable( ConBase* var );
     static StringVector tokenize( const string& commandLine );
   public:
-    Console( Bot* bot );
-    void gameBegin() final;
-    void gameEnd() final;
+    Console();
+    void setBot( Bot* bot );
+    void gameBegin();
+    void gameEnd();
     void printf( const char* str, ... );
     void execute( string commandLine, const bool echo = true );
   };

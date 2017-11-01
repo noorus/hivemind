@@ -175,12 +175,20 @@ namespace hivemind {
     SAFE_CLOSE_HANDLE( file_ );
   }
 
-  Console::Console( Bot* bot ): Subsystem( bot ), fileOut_( nullptr )
+  Console::Console(): bot_( nullptr ), fileOut_( nullptr )
   {
     for ( ConBase* var : precreated_ )
       registerVariable( var );
 
     precreated_.clear();
+  }
+
+  void Console::setBot( Bot* bot )
+  {
+    if ( bot_ || bot_ != bot )
+      HIVE_EXCEPT( "A bot is already assigned to Console" );
+
+    bot_ = bot;
   }
 
   void Console::registerVariable( ConBase* var )
@@ -197,6 +205,8 @@ namespace hivemind {
 
   void Console::gameBegin()
   {
+    assert( bot_ );
+
     DumbDate now;
     getDateTime( now );
 
@@ -257,10 +267,13 @@ namespace hivemind {
   StringVector Console::tokenize( const string& str )
   {
     // this implementation is naïve, but hardly critical
+
     bool quoted = false;
     bool escaped = false;
+
     string buffer;
     StringVector v;
+
     for ( char chr : str )
     {
       if ( chr == BACKSLASH )
@@ -367,8 +380,12 @@ namespace hivemind {
 
   void Console::gameEnd()
   {
+    assert( bot_ );
+
     writeStopBanner();
     SAFE_DELETE( fileOut_ );
+
+    bot_ = nullptr;
   }
 
 }

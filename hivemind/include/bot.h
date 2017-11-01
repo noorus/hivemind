@@ -26,7 +26,7 @@ namespace hivemind {
     sc2::QueryInterface* query_;
     sc2::ActionInterface* action_;
     sc2::DebugInterface* debug_;
-    Console console_;
+    Console& console_;
     PlayerManager players_;
     Messaging messaging_;
     Brain brain_;
@@ -36,6 +36,7 @@ namespace hivemind {
     Intelligence intelligence_;
     Strategy strategy_;
     Builder builder_;
+    Options options_;
   public:
     inline const GameTime time() const { return time_; } //!< Game time in ticks
     inline const RealTime timeSeconds() const { return utils::ticksToTime( time_ ); } //!< Game time in ingame seconds
@@ -53,6 +54,7 @@ namespace hivemind {
     inline Intelligence& intelligence() { return intelligence_; }
     inline Strategy& strategy() { return strategy_; }
     inline Builder& builder() { return builder_; }
+    void initialize( const Options& opts );
   public:
     //! Callbacks
     virtual void OnGameStart() final;
@@ -68,7 +70,7 @@ namespace hivemind {
     virtual void OnUnitEnterVision( const Unit* unit ) final;
     virtual void OnError( const std::vector<ClientError>& client_errors, const std::vector<std::string>& protocol_errors = {} ) final;
   public:
-    Bot( const Options& opts );
+    Bot( Console& console );
     ~Bot();
   };
 

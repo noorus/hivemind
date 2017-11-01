@@ -6,15 +6,12 @@ namespace hivemind {
 
   const GameTime cCreepUpdateDelay = 40;
 
-  Bot::Bot( const Options& opts ): time_( 0 ),
-  console_( this ), players_( this ), brain_( this ), messaging_( this ),
+  Bot::Bot( Console& console ): time_( 0 ),
+  console_( console ), players_( this ), brain_( this ), messaging_( this ),
   map_( this ), workers_( this ), baseManager_( this ), intelligence_( this ),
   strategy_( this ), builder_( this )
   {
-    for ( auto& exec : opts.executeCommands_ )
-    {
-      console_.execute( exec, true );
-    }
+    console_.setBot( this );
   }
 
   Bot::~Bot()
@@ -23,6 +20,16 @@ namespace hivemind {
 
   // TODO move somewhere smart
   static GameTime nextCreepUpdate = 0;
+
+  void Bot::initialize( const Options& opts )
+  {
+    options_ = opts;
+
+    for ( auto& exec : options_.executeCommands_ )
+    {
+      console_.execute( exec, true );
+    }
+  }
 
   void Bot::OnGameStart()
   {
