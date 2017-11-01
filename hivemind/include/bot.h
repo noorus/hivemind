@@ -15,6 +15,10 @@
 namespace hivemind {
 
   class Bot: public sc2::Agent {
+  public:
+    struct Options {
+      StringVector executeCommands_; //!< Extra commands to execute on startup
+    };
   protected:
     GameTime time_;
     GameTime lastStepTime_;
@@ -64,7 +68,7 @@ namespace hivemind {
     virtual void OnUnitEnterVision( const Unit* unit ) final;
     virtual void OnError( const std::vector<ClientError>& client_errors, const std::vector<std::string>& protocol_errors = {} ) final;
   public:
-    Bot();
+    Bot( const Options& opts );
     ~Bot();
   };
 

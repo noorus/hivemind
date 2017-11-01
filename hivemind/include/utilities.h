@@ -4,6 +4,52 @@
 
 namespace hivemind {
 
+  namespace platform {
+
+    //! \class RWLock
+    //! Reader-writer lock class for easy portability.
+    class RWLock: boost::noncopyable {
+    protected:
+      SRWLOCK mLock;
+    public:
+      RWLock() { InitializeSRWLock( &mLock ); }
+      void lock() { AcquireSRWLockExclusive( &mLock ); }
+      void unlock() { ReleaseSRWLockExclusive( &mLock ); }
+      void lockShared() { AcquireSRWLockShared( &mLock ); }
+      void unlockShared() { ReleaseSRWLockShared( &mLock ); }
+    };
+
+  }
+
+  //! \class ScopedRWLock
+  //! Automation for scoped acquisition and release of an RWLock.
+  class ScopedRWLock: boost::noncopyable {
+  protected:
+    platform::RWLock* lock_;
+    bool exclusive_;
+    bool locked_;
+  public:
+    //! Constructor.
+    //! \param  lock      The lock to acquire.
+    //! \param  exclusive (Optional) true to acquire in exclusive mode, false for shared.
+    ScopedRWLock( platform::RWLock* lock, bool exclusive = true ):
+    lock_( lock ), exclusive_( exclusive ), locked_( true )
+    {
+      exclusive_ ? lock_->lock() : lock_->lockShared();
+    }
+    //! Call directly if you want to unlock before object leaves scope.
+    void unlock()
+    {
+      if ( locked_ )
+        exclusive_ ? lock_->unlock() : lock_->unlockShared();
+      locked_ = false;
+    }
+    ~ScopedRWLock()
+    {
+      unlock();
+    }
+  };
+
   namespace utils {
 
     static std::random_device g_randomDevice;
@@ -266,8 +312,8 @@ namespace hivemind {
       }
     }
 
-    inline  const bool isBuilding( const Unit& unit ) { return isBuilding( unit.unit_type ); }
-    inline  const bool isBuilding( const Unit* unit ) { return isBuilding( unit->unit_type ); }
+    inline const bool isBuilding( const Unit& unit ) { return isBuilding( unit.unit_type ); }
+    inline const bool isBuilding( const Unit* unit ) { return isBuilding( unit->unit_type ); }
 
     inline void hsl2rgb( uint16_t hue, uint8_t sat, uint8_t lum, uint8_t rgb[3] )
     {
