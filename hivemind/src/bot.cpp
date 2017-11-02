@@ -6,10 +6,40 @@ namespace hivemind {
 
   const GameTime cCreepUpdateDelay = 40;
 
+  Bot* g_Bot = nullptr;
+
+  static bool callbackCVARGodmode( ConVar* variable, ConVar::Value oldValue );
+  static bool callbackCVARCostIgnore( ConVar* variable, ConVar::Value oldValue );
+
+  HIVE_DECLARE_CONVAR_WITH_CB( cheat_godmode, "Cheat: Invulnerability.", false, callbackCVARGodmode );
+  HIVE_DECLARE_CONVAR_WITH_CB( cheat_ignorecost, "Cheat: Ignore all resource cost checks.", false, callbackCVARCostIgnore );
+
+  bool callbackCVARGodmode( ConVar* variable, ConVar::Value oldValue )
+  {
+    if ( !g_Bot )
+      return true;
+
+    if ( variable->as_b() && !oldValue.i )
+      g_Bot->enableGodmodeCheat();
+
+    return true;
+  }
+
+  bool callbackCVARCostIgnore( ConVar* variable, ConVar::Value oldValue )
+  {
+    if ( !g_Bot )
+      return true;
+
+    if ( variable->as_b() && !oldValue.i )
+      g_Bot->enableCostIgnoreCheat();
+
+    return true;
+  }
+
   Bot::Bot( Console& console ): time_( 0 ),
   console_( console ), players_( this ), brain_( this ), messaging_( this ),
   map_( this ), workers_( this ), baseManager_( this ), intelligence_( this ),
-  strategy_( this ), builder_( this )
+  strategy_( this ), builder_( this ), cheatCostIgnore_( false ), cheatGodmode_( false )
   {
     console_.setBot( this );
   }
@@ -62,9 +92,30 @@ namespace hivemind {
 
     builder_.gameBegin();
 
-    console_.printf( "Enabling god mode and ignoring resource costs" );
+    if ( g_CVar_cheat_godmode.as_b() )
+      enableGodmodeCheat();
+    if ( g_CVar_cheat_ignorecost.as_b() )
+      enableCostIgnoreCheat();
+  }
+
+  void Bot::enableGodmodeCheat()
+  {
+    if ( cheatGodmode_ || !debug_ )
+      return;
+
+    console_.printf( "Cheat: Enabling god mode" );
     debug_->DebugGodMode();
+    cheatGodmode_ = true;
+  }
+
+  void Bot::enableCostIgnoreCheat()
+  {
+    if ( cheatCostIgnore_ || !debug_ )
+      return;
+
+    console_.printf( "Cheat: Ignoring all resource cost checks" );
     debug_->DebugIgnoreResourceCost();
+    cheatCostIgnore_ = true;
   }
 
   static std::string GetAbilityText( sc2::AbilityID ability_id )

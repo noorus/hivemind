@@ -48,6 +48,8 @@ int main( int argc, char* argv[] )
 
     hivemindBot.initialize( options );
 
+    hivemind::g_Bot = &hivemindBot;
+
     hivemind::Database::load( g_CVar_data_path.as_s() );
 
     coordinator.SetRealtime( true );
@@ -71,6 +73,8 @@ int main( int argc, char* argv[] )
     {
       sc2::SleepFor( g_CVar_update_delay.as_i() );
     }
+
+    hivemind::g_Bot = nullptr;
 #ifndef _DEBUG
   }
   catch ( hivemind::Exception& e )

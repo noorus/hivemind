@@ -37,6 +37,8 @@ namespace hivemind {
     Strategy strategy_;
     Builder builder_;
     Options options_;
+    bool cheatGodmode_;
+    bool cheatCostIgnore_;
   public:
     inline const GameTime time() const { return time_; } //!< Game time in ticks
     inline const RealTime timeSeconds() const { return utils::ticksToTime( time_ ); } //!< Game time in ingame seconds
@@ -55,6 +57,8 @@ namespace hivemind {
     inline Strategy& strategy() { return strategy_; }
     inline Builder& builder() { return builder_; }
     void initialize( const Options& opts );
+    void enableGodmodeCheat(); //!< This cannot be toggled back in the same game
+    void enableCostIgnoreCheat(); //!< This cannot be toggled back in the same game
   public:
     //! Callbacks
     virtual void OnGameStart() final;
@@ -73,5 +77,7 @@ namespace hivemind {
     Bot( Console& console );
     ~Bot();
   };
+
+  extern Bot* g_Bot;
 
 }
