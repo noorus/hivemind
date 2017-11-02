@@ -116,31 +116,114 @@ namespace hivemind {
 
     infile.close();
 
-    for ( auto& race : root )
+    for ( auto itRace = root.begin(); itRace != root.end(); ++itRace )
     {
-      for ( auto itUnit = race.begin(); itUnit != race.end(); itUnit++ )
-      {
-        auto& key = itUnit.key();
-        auto id = _atoi64( key.asCString() );
+      auto& raceKey = itRace.key();
+      auto raceName = raceKey.asCString();
+      auto& race = *itRace;
 
-        auto& builds = root["builds"];
-        for ( auto& build : builds )
+      for ( auto itUnit = race.begin(); itUnit != race.end(); ++itUnit )
+      {
+        auto& unitKey = itUnit.key();
+        auto unitName = unitKey.asCString();
+        auto& unit = *itUnit;
+        uint32_t id = (uint32_t)_atoi64( unitKey.asCString() );
+
+        auto f = [&](const char* skill, bool isMorph)
         {
-          TechTreeRelationship relationship;
-          relationship.source = (uint32_t)id;
-          relationship.ability = build["ability"].asUInt();
-          relationship.time = build["time"].asFloat();
-          relationship.target = build["unit"].asUInt();
-          relationship.isMorph = false;
-          relationships_.push_back( relationship );
-        }
+          auto& builds = unit[skill];
+          for ( auto& build : builds )
+          {
+            TechTreeRelationship relationship;
+            relationship.source = id;
+            relationship.ability = build["ability"].asUInt();
+            relationship.time = build["time"].asFloat();
+            relationship.isMorph = isMorph;
+            relationship.name = build["unitName"].asCString();
+
+            uint32_t target = build["unit"].asUInt();
+
+            for(auto& require : build["requires"])
+            {
+              auto type = require["type"].asString();
+              if(type == "unitCount")
+              {
+                TechTreeUnitRequirement r;
+                for(auto x : require["unit"])
+                {
+                  r.units.insert(x.asInt());
+                }
+                relationship.unitRequirements.push_back(r);
+              }
+            }
+
+            relationships_.insert({ target, relationship });
+          }
+        };
+
+        f("builds", false);
+        f("morphs", true);
       }
     }
   }
 
-  void TechTree::findTechChain( UnitTypeID target ) 
+  void TechTree::findTechChain( UnitTypeID target, vector<UnitTypeID>& chain) const
   {
-    // wat
+    
+    if(target == sc2::UNIT_TYPEID::TERRAN_SCV ||
+      target == sc2::UNIT_TYPEID::ZERG_DRONE ||
+      target == sc2::UNIT_TYPEID::PROTOSS_PROBE)
+    {
+      return;
+    }
+
+    auto iteratorPair = relationships_.equal_range(target);
+    for(auto it = make_reverse_iterator(iteratorPair.second), endIt = make_reverse_iterator(iteratorPair.first); it != endIt; ++it)
+    {
+      auto& relationship = it->second;
+
+      for(auto& r : relationship.unitRequirements)
+      {
+        if(r.units.empty())
+        {
+          continue;
+        }
+
+        bool found = false;
+        for(auto& u : r.units)
+        {
+          if(std::find(chain.begin(), chain.end(), u) != chain.end())
+          {
+            found = true;
+          }
+        }
+
+        if(!found)
+        {
+          // One of the requirements is needed, pick the first one.
+          auto& unit = *r.units.begin();
+          chain.push_back(unit);
+          findTechChain(unit, chain);
+        }
+      }
+
+      if(std::find(chain.begin(), chain.end(), relationship.source) != chain.end())
+      {
+        break; // Only one of the source buildings is needed, and its already in chain.
+      }
+
+      chain.push_back(relationship.source);
+      findTechChain(relationship.source, chain);
+
+      break; // Only one of the source buildings is needed, pick the first for now.
+    }
+  }
+
+  vector<UnitTypeID> TechTree::findTechChain( UnitTypeID target ) const
+  {
+    vector<UnitTypeID> chain;
+    findTechChain(target, chain);
+    return chain;
   }
 
   UnitDataMap Database::unitData_;

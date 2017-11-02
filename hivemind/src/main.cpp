@@ -16,6 +16,17 @@ HIVE_DECLARE_CONVAR( map, "Name or path of the map to launch.", "Fractured Glaci
 
 HIVE_DECLARE_CONVAR( update_delay, "Time delay between main loop updates in milliseconds.", 10 );
 
+void testTechChain(hivemind::Console& console, sc2::UNIT_TYPEID targetUnitType)
+{
+  auto techChain = hivemind::Database::techTree().findTechChain(targetUnitType);
+
+  console.printf("How to tech %s:", sc2::UnitTypeToName(targetUnitType));
+  for(auto unitType : techChain)
+  {
+    console.printf("    %s", sc2::UnitTypeToName(unitType));
+  }
+}
+
 int main( int argc, char* argv[] )
 {
 #ifndef _DEBUG
@@ -49,6 +60,21 @@ int main( int argc, char* argv[] )
     hivemindBot.initialize( options );
 
     hivemind::Database::load( g_CVar_data_path.as_s() );
+
+#if 0
+    testTechChain(console, sc2::UNIT_TYPEID::ZERG_ZERGLING);
+    testTechChain(console, sc2::UNIT_TYPEID::ZERG_ROACH);
+    testTechChain(console, sc2::UNIT_TYPEID::ZERG_HYDRALISK);
+    testTechChain(console, sc2::UNIT_TYPEID::ZERG_MUTALISK);
+    testTechChain(console, sc2::UNIT_TYPEID::ZERG_SPIRE);
+    testTechChain(console, sc2::UNIT_TYPEID::TERRAN_BANSHEE);
+    testTechChain(console, sc2::UNIT_TYPEID::ZERG_BROODLORD);
+    testTechChain(console, sc2::UNIT_TYPEID::ZERG_LURKERMP);
+    testTechChain(console, sc2::UNIT_TYPEID::TERRAN_FACTORY);
+    testTechChain(console, sc2::UNIT_TYPEID::TERRAN_STARPORT);
+    testTechChain(console, sc2::UNIT_TYPEID::PROTOSS_CARRIER);
+    return 0;
+#endif
 
     coordinator.SetRealtime( true );
 

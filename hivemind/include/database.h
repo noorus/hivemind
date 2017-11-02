@@ -65,23 +65,26 @@ namespace hivemind {
   using TechTreeUpgradeRequirements = vector<TechTreeUpgradeRequirement>;
 
   struct TechTreeRelationship {
-    UnitTypeID source; //!< Which unit
-    AbilityID ability; //!< Using which ability
-    Real time; //!< In how long a time
-    UnitTypeID target; //!< Builds/trains/morphs into which unit
-    bool isMorph; //!< Is this a morph, i.e. consumes source unit
+    string name; //!< Name of the described unit type.
+    UnitTypeID source; //!< Which unit can build the described unit.
+    AbilityID ability; //!< Using which ability.
+    Real time; //!< In how long a time.
+    bool isMorph; //!< Is this a morph, i.e. consumes source unit.
     TechTreeUnitRequirements unitRequirements; //!< Additional unit requirements TODO parse
     TechTreeUpgradeRequirements upgradeRequirements; //!< Additional upgrade requirements TODO parse
   };
 
-  using TechTreeRelationshipVector = vector<TechTreeRelationship>;
+  // Maps a unit type id to the description on how to build the unit type.
+  using TechTreeRelationshipContainer = std::unordered_multimap<uint32_t, TechTreeRelationship>;
 
   class TechTree {
   protected:
-    TechTreeRelationshipVector relationships_;
+    TechTreeRelationshipContainer relationships_;
+
   public:
     void load( const string& filename );
-    void findTechChain( UnitTypeID target );
+    vector<UnitTypeID> findTechChain( UnitTypeID target ) const;
+    void findTechChain( UnitTypeID target, vector<UnitTypeID>& chain) const;
   };
 
   class Database {
