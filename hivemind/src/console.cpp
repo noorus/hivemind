@@ -185,7 +185,7 @@ namespace hivemind {
 
   void Console::setBot( Bot* bot )
   {
-    if ( bot_ || bot_ != bot )
+    if ( bot_ && bot_ != bot )
       HIVE_EXCEPT( "A bot is already assigned to Console" );
 
     bot_ = bot;
