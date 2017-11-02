@@ -4,6 +4,10 @@
 #include "exception.h"
 #include "bot.h"
 
+// don't ask
+#pragma warning(disable: 4073)
+#pragma init_seg(lib)
+
 namespace hivemind {
 
   const char* c_fileLogFormat = "%06d [%02d:%02d] %s\r\n";
