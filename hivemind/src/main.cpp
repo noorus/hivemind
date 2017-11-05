@@ -16,14 +16,40 @@ HIVE_DECLARE_CONVAR( map, "Name or path of the map to launch.", "Fractured Glaci
 
 HIVE_DECLARE_CONVAR( update_delay, "Time delay between main loop updates in milliseconds.", 10 );
 
-void testTechChain(hivemind::Console& console, sc2::UNIT_TYPEID targetUnitType)
+void testTechChain(hivemind::Console& console, sc2::UNIT_TYPEID targetType)
 {
-  auto techChain = hivemind::Database::techTree().findTechChain(targetUnitType);
+  std::vector<sc2::UnitTypeID> techChain;
+  hivemind::Database::techTree().findTechChain(targetType, techChain);
 
-  console.printf("How to tech %s:", sc2::UnitTypeToName(targetUnitType));
+  console.printf("How to build unit %s:", sc2::UnitTypeToName(targetType));
+  for(auto unitType : techChain)
+  {
+    console.printf("  %s", sc2::UnitTypeToName(unitType));
+  }
+}
+
+void testTechChain(hivemind::Console& console, sc2::UPGRADE_ID targetType)
+{
+  std::vector<sc2::UnitTypeID> techChain;
+  auto upgrade = hivemind::Database::techTree().findTechChain(targetType, techChain);
+
+  console.printf("How to research upgrade %s:", sc2::UpgradeIDToName(targetType));
+  console.printf("  name: %s", upgrade.name.c_str());
+  console.printf("  from: %s", sc2::UnitTypeToName(upgrade.techBuilding) );
+  console.printf("  ability: %s", sc2::AbilityTypeToName(upgrade.ability) );
+  console.printf("  time: %f", upgrade.time );
+  console.printf("  requires:");
   for(auto unitType : techChain)
   {
     console.printf("    %s", sc2::UnitTypeToName(unitType));
+  }
+  if(!upgrade.upgradeRequirements.empty())
+  {
+    console.printf("  requires upgrades:");
+    for(auto upgradeType : upgrade.upgradeRequirements)
+    {
+      console.printf("    %s", sc2::UpgradeIDToName(upgradeType));
+    }
   }
 }
 
@@ -64,17 +90,16 @@ int main( int argc, char* argv[] )
     hivemind::Database::load( g_CVar_data_path.as_s() );
 
 #if 0
-    testTechChain(console, sc2::UNIT_TYPEID::ZERG_ZERGLING);
-    testTechChain(console, sc2::UNIT_TYPEID::ZERG_ROACH);
-    testTechChain(console, sc2::UNIT_TYPEID::ZERG_HYDRALISK);
-    testTechChain(console, sc2::UNIT_TYPEID::ZERG_MUTALISK);
-    testTechChain(console, sc2::UNIT_TYPEID::ZERG_SPIRE);
+    testTechChain(console, sc2::UNIT_TYPEID::ZERG_RAVAGER);
     testTechChain(console, sc2::UNIT_TYPEID::TERRAN_BANSHEE);
-    testTechChain(console, sc2::UNIT_TYPEID::ZERG_BROODLORD);
-    testTechChain(console, sc2::UNIT_TYPEID::ZERG_LURKERMP);
-    testTechChain(console, sc2::UNIT_TYPEID::TERRAN_FACTORY);
-    testTechChain(console, sc2::UNIT_TYPEID::TERRAN_STARPORT);
-    testTechChain(console, sc2::UNIT_TYPEID::PROTOSS_CARRIER);
+    testTechChain(console, sc2::UPGRADE_ID::BURROW);
+    testTechChain(console, sc2::UPGRADE_ID::ZERGLINGATTACKSPEED);
+    testTechChain(console, sc2::UPGRADE_ID::ZERGFLYERARMORSLEVEL1);
+    testTechChain(console, sc2::UPGRADE_ID::PROTOSSSHIELDSLEVEL2);
+    //testTechChain(console, sc2::UPGRADE_ID::TERRANVEHICLEWEAPONSLEVEL3); // Is missing.
+    testTechChain(console, sc2::UPGRADE_ID::PROTOSSSHIELDSLEVEL2);
+    //testTechChain(console, sc2::UPGRADE_ID::STIMPACK); // Is missing.
+    testTechChain(console, sc2::UPGRADE_ID::CARRIERLAUNCHSPEEDUPGRADE); // Has bad data.
     return 0;
 #endif
 
