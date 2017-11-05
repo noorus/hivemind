@@ -71,7 +71,7 @@ namespace hivemind {
 
     void Brain_WorkerScout::_sendWorker()
     {
-      bot_->console().printf( "WorkerScout: Sending worker 0xI64X", worker_ );
+      bot_->console().printf( "WorkerScout: Sending worker %x", worker_ );
 
       _routeAdvance();
     }

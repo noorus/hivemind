@@ -204,7 +204,7 @@ namespace hivemind {
     {
       if ( !( *it )->is_alive )
       {
-        manager_->bot_->console().printf( "Base %llu: Removing larva %I64x", index_, ( *it ) );
+        manager_->bot_->console().printf( "Base %llu: Removing larva %x", index_, ( *it ) );
         it = larvae_.erase( it );
       }
       else
