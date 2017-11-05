@@ -24,7 +24,48 @@ namespace hivemind {
   struct MapPoint2 {
     int x;
     int y;
-    MapPoint2( int x_, int y_ ): x( x_ ), y( y_ ) {}
+    MapPoint2( int x_, int y_ ): x( x_ ), y( y_ )
+    {
+    }
+    inline MapPoint2& operator = ( const Vector2& rhs )
+    {
+      x = math::floor( rhs.x );
+      y = math::floor( rhs.y );
+      return *this;
+    }
+    inline MapPoint2& operator = ( const sc2::Point2D& rhs )
+    {
+      x = math::floor( rhs.x );
+      y = math::floor( rhs.y );
+      return *this;
+    }
+    inline MapPoint2& operator = ( const sc2::Point3D& rhs )
+    {
+      x = math::floor( rhs.x );
+      y = math::floor( rhs.y );
+      return *this;
+    }
+    inline operator sc2::Point2DI() const
+    {
+      sc2::Point2DI ret;
+      ret.x = x;
+      ret.y = y;
+      return ret;
+    }
+    inline operator sc2::Point2D() const
+    {
+      sc2::Point2D ret;
+      ret.x = ( (Real)x + 0.5f );
+      ret.y = ( (Real)y + 0.5f );
+      return ret;
+    }
+    inline operator Vector2() const
+    {
+      return Vector2(
+        ( (Real)x + 0.5f ),
+        ( (Real)y + 0.5f )
+      );
+    }
   };
 
   using Contour = vector<MapPoint2>;
@@ -60,6 +101,14 @@ namespace hivemind {
     CreepTile_Buildable
   };
 
+  struct BuildingReservation {
+    Point2DI position_;
+    UnitTypeID type_;
+    BuildingReservation( const Point2DI& pos = Point2DI(), UnitTypeID t = 0 ): position_( pos ), type_( t ) {}
+  };
+
+  using BuildingReservationMap = std::map<uint64_t, BuildingReservation>; // using encodePoint()
+
   class Map {
   public:
     Bot* bot_;
@@ -72,6 +121,7 @@ namespace hivemind {
     Array2<CreepTile> zergBuildable_; //!< Space that is currently buildable to us
     Array2<int> labeledCreeps_; //!< Contour-traced buildable creeps by label (index)
     Array2<bool> reservedMap_; //!< Spots that are used up by building footprints
+    BuildingReservationMap buildingReservations_; //!< Our own to-build structure footprints
     vector<MapPoint2> creepTumors_;
     CreepVector creeps_;
     uint8_t* contourTraceImageBuffer_;
@@ -109,6 +159,8 @@ namespace hivemind {
     BaseLocation* closestLocation( const Vector2& position );
     Vector2 closestByGround( const Vector2& from, const list<Vector2>& to );
     Path shortestScoutPath( const Vector2& start, vector<Vector2>& locations );
+    void reserveFootprint( const Point2DI& position, UnitTypeID type );
+    void clearFootprint( const Point2DI& position );
     bool isValid( size_t x, size_t y ) const;
     bool isValid( const Vector2& position ) const { return isValid( (size_t)position.x, (size_t)position.y ); }
     bool isPowered( const Vector2& position ) const;

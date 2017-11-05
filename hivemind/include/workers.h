@@ -23,6 +23,7 @@ namespace hivemind {
     virtual void gameEnd() override;
     const UnitSet& all() const;
     bool add( UnitRef worker );
+    bool addBack( UnitRef worker ); //!< Return a previously released worker
     const bool exists( UnitRef worker ) const;
     const bool ignored( UnitRef worker ) const;
     const bool idle( UnitRef worker ) const;

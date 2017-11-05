@@ -146,6 +146,8 @@ namespace hivemind {
       nextCreepUpdate = time_ + cCreepUpdateDelay;
     }
 
+    builder_.update( time_, delta );
+
     baseManager_.update( time_, delta );
     messaging_.update( time_ );
     workers_.update( time_ );
@@ -158,6 +160,7 @@ namespace hivemind {
     brain_.draw();
     strategy_.draw();
     workers_.draw();
+    builder_.draw();
 
     map_.draw();
     baseManager_.draw();
@@ -165,7 +168,9 @@ namespace hivemind {
     for ( auto unit : observation_->GetUnits() )
       if ( unit->is_selected && utils::isMine( unit ) )
       {
-        string txt = std::to_string( unit->tag ) + " " + sc2::UnitTypeToName( unit->unit_type );
+        char hex[16];
+        sprintf_s( hex, 16, "%x", (unsigned int)unit );
+        string txt = string( hex ) + " " + sc2::UnitTypeToName( unit->unit_type );
         txt.append( " (" + std::to_string( unit->unit_type ) + ")\n" );
         for ( auto& order : unit->orders )
           txt.append( GetAbilityText( order.ability_id ) + "\n" );

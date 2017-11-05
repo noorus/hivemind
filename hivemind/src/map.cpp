@@ -218,7 +218,7 @@ namespace hivemind {
     //bot_->console().printf( "Map: Inverting walkable polygons to obstacles..." );
 
     //Analysis::Map_InvertPolygons( polygons_, obstacles_, Rect2( info.playable_min, info.playable_max ), Vector2( (Real)info.width, (Real)info.height ) );
-    
+
     obstacles_ = polygons_;
 
     bot_->console().printf( "Map: Generating Voronoi diagram..." );
@@ -283,6 +283,15 @@ namespace hivemind {
 
   void Map::draw()
   {
+    /*for ( size_t y = 0; y < height_; y++ )
+      for ( size_t x = 0; x < width_; x++ )
+      {
+        sc2::Point3D pos( (Real)x + 0.5f, (Real)y + 0.5f, heightMap_[x][y] + 0.5f );
+        auto tile = zergBuildable_[x][y];
+        auto color = ( tile == CreepTile_Buildable ? sc2::Colors::Green : tile == CreepTile_Walkable ? sc2::Colors::Yellow : sc2::Colors::Red );
+        bot_->debug().DebugSphereOut( pos, 0.1f, color );
+      }*/
+
     for ( auto& poly_comp : polygons_ )
     {
       drawPoly( bot_->debug(), poly_comp.contour, maxZ_, sc2::Colors::Purple );
@@ -352,6 +361,30 @@ namespace hivemind {
     reservedMap_.reset( false );
     creepTumors_.clear();
 
+    auto fnSetFootprint = [this]( const Point2DI& pt, UnitTypeID ut )
+    {
+      auto& dbUnit = Database::unit( ut );
+
+      Point2DI topleft(
+        pt.x + dbUnit.footprintOffset.x,
+        pt.y + dbUnit.footprintOffset.y
+      );
+
+      if ( topleft.x < 0 || topleft.y < 0
+        || topleft.x + dbUnit.footprint.width() >= width_
+        || topleft.y + dbUnit.footprint.height() >= height_ )
+        return;
+
+      for ( size_t y = 0; y < dbUnit.footprint.height(); y++ )
+        for ( size_t x = 0; x < dbUnit.footprint.width(); x++ )
+          if ( dbUnit.footprint[y][x] )
+          {
+            auto& pixel = zergBuildable_[topleft.x + x][topleft.y + y];
+            pixel = ( pixel > CreepTile_No ? CreepTile_Walkable : CreepTile_No );
+            reservedMap_[topleft.x + x][topleft.y + y] = true;
+          }
+    };
+
     // get blocking units (i.e. structures)
     auto blockingUnits = bot_->observation().GetUnits( []( const Unit& unit ) -> bool {
       if ( !unit.is_alive )
@@ -370,20 +403,18 @@ namespace hivemind {
       if ( unit->unit_type == UNIT_TYPEID::ZERG_CREEPTUMOR || unit->unit_type == UNIT_TYPEID::ZERG_CREEPTUMORBURROWED )
         creepTumors_.emplace_back( math::floor( unit->pos.x ), math::floor( unit->pos.y ) );
 
-      auto& dbUnit = Database::unit( unit->unit_type );
-      Point2DI topleft(
-        math::floor( unit->pos.x ) + dbUnit.footprintOffset.x,
-        math::floor( unit->pos.y ) + dbUnit.footprintOffset.y
+      Point2DI pos(
+        math::floor( unit->pos.x ),
+        math::floor( unit->pos.y )
       );
-      for ( size_t y = 0; y < dbUnit.footprint.height(); y++ )
-        for ( size_t x = 0; x < dbUnit.footprint.width(); x++ )
-          if ( dbUnit.footprint[y][x] )
-          {
-            auto& pixel = zergBuildable_[topleft.x + x][topleft.y + y];
-            pixel = ( pixel > CreepTile_No ? CreepTile_Walkable : CreepTile_No );
 
-            reservedMap_[topleft.x + x][topleft.y + y] = true;
-          }
+      fnSetFootprint( pos, unit->unit_type );
+    }
+
+    // loop through reservations (footprints of where we're going to build)
+    for ( auto& r : buildingReservations_ )
+    {
+      fnSetFootprint( r.second.position_, r.second.type_ );
     }
   }
 
@@ -450,8 +481,8 @@ namespace hivemind {
     auto& dbUnit = Database::unit( structure );
 
     Point2DI topleft(
-      x + dbUnit.footprintOffset.x - padding,
-      y + dbUnit.footprintOffset.y - padding
+      (int)x + dbUnit.footprintOffset.x - padding,
+      (int)y + dbUnit.footprintOffset.y - padding
     );
 
     int fullwidth = ( (int)dbUnit.footprint.width() + ( padding * 2 ) );
@@ -460,8 +491,8 @@ namespace hivemind {
     if ( topleft.x < 0 || topleft.y < 0 || ( topleft.x + fullwidth >= width_ ) || ( topleft.y + fullheight >= height_ ) )
       return false;
 
-    for ( size_t y = 0; y < fullheight; y++ )
-      for ( size_t x = 0; x < fullwidth; x++ )
+    for ( int y = 0; y < fullheight; y++ )
+      for ( int x = 0; x < fullwidth; x++ )
       {
         auto mx = ( topleft.x + x );
         auto my = ( topleft.y + y );
@@ -634,6 +665,21 @@ namespace hivemind {
     };
     recurse( start, retval, loclist );
     return retval;
+  }
+
+  inline uint64_t encodePoint( const Point2DI& pt )
+  {
+    return ( ( (uint64_t)pt.x ) << 32 ) | ( (uint64_t)pt.y );
+  };
+
+  void Map::reserveFootprint( const Point2DI& position, UnitTypeID type )
+  {
+    buildingReservations_[encodePoint( position )] = BuildingReservation( position, type );
+  }
+
+  void Map::clearFootprint( const Point2DI& position )
+  {
+    buildingReservations_.erase( encodePoint( position ) );
   }
 
   bool Map::isValid( size_t x, size_t y ) const

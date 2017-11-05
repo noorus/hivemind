@@ -20,6 +20,9 @@ namespace hivemind {
     M_Global_UnitEnterVision, //!< args: Unit
     M_Global_AddWorker, //!< args: Unit
     M_Global_RemoveWorker, //!< args: Unit
+    M_Build_Started, //!< args: BuildProjectID
+    M_Build_Finished, //!< args: BuildProjectID
+    M_Build_Canceled, //!< args: BuildProjectID
     M_Max_Global,
     M_Min_Intel,
     M_Intel_FoundPlayer, //!< args: PlayerID, Unit

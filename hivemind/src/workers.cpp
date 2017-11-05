@@ -43,6 +43,16 @@ namespace hivemind {
     for ( auto worker : workers )
       if ( !exists( worker ) )
         _created( worker );
+
+    UnitSet removals;
+    for ( auto worker : workers_ )
+    {
+      if ( !worker || !utils::isMine( worker ) || !worker->is_alive || !utils::isWorker( worker ) )
+        removals.insert( worker );
+    }
+
+    for ( auto worker : removals )
+      remove( worker );
   }
 
   WorkerManager::WorkerManager( Bot* bot ): Subsystem( bot )
@@ -91,18 +101,27 @@ namespace hivemind {
 
   bool WorkerManager::add( UnitRef worker )
   {
+    if ( ignored( worker ) )
+      return false;
+
     if ( exists( worker ) )
       return true;
 
-    if ( !worker || !utils::isWorker( worker ) || !utils::isMine( worker ) )
+    if ( !worker || !utils::isWorker( worker ) || !utils::isMine( worker ) || !worker->is_alive )
       return false;
 
     workers_.insert( worker );
-    ignored_.erase( worker );
 
+    bot_->console().printf( "GLOBAL: ADD WORKER %x", worker );
     bot_->messaging().sendGlobal( M_Global_AddWorker, worker );
 
     return true;
+  }
+
+  bool WorkerManager::addBack( UnitRef worker )
+  {
+    ignored_.erase( worker );
+    return add( worker );
   }
 
   const bool WorkerManager::exists( UnitRef worker ) const
@@ -128,7 +147,8 @@ namespace hivemind {
 
     for ( auto worker : workers_ )
     {
-      if ( worker ) {
+      if ( worker && worker->is_alive )
+      {
         bool iddle = ( worker->orders.empty() );
         if ( iddle && !idle( worker ) )
           _onIdle( worker );
@@ -148,6 +168,7 @@ namespace hivemind {
     ignored_.erase( worker );
     idle_.erase( worker );
 
+    bot_->console().printf( "GLOBAL: REMOVE WORKER %x", worker );
     bot_->messaging().sendGlobal( M_Global_RemoveWorker, worker );
   }
 
@@ -161,9 +182,10 @@ namespace hivemind {
 
     auto worker = ( *it );
 
+    bot_->console().printf( "GLOBAL: RELEASE WORKER %x", worker );
     bot_->messaging().sendGlobal( M_Global_RemoveWorker, worker );
 
-    workers_.erase( it );
+    workers_.erase( worker );
     idle_.erase( worker );
     ignored_.insert( worker );
 
@@ -186,7 +208,11 @@ namespace hivemind {
     bot_->debug().DebugTextOut( "WORKERS", pos, sc2::Colors::White );
     pos.y += increment;
 
-    sprintf_s( text, 32, "Active %zd", workers_.size() - idle_.size() - ignored_.size() );
+    sprintf_s( text, 32, "Total %zd", workers_.size() );
+    bot_->debug().DebugTextOut( text, pos, sc2::Colors::Blue );
+    pos.y += increment;
+
+    sprintf_s( text, 32, "Active %zd", workers_.size() - idle_.size() );
     bot_->debug().DebugTextOut( text, pos, sc2::Colors::Green );
     pos.y += increment;
 
