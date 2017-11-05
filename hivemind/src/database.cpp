@@ -100,6 +100,29 @@ namespace hivemind {
     }
   }
 
+  static void parseUpgradeRequirements(UpgradeInfo& upgrade, const Json::Value& value)
+  {
+    // Don't bother trying to parse the logic expressions. Just recurse all paths and take the one
+    // value we care about (i.e. the id of the previous level of the upgrade).
+
+    if(value["type"].asString() == "upgradeCount")
+    {
+      UpgradeID r = value["upgrade"].asInt();
+
+      if(upgrade.target != r)
+      {
+        upgrade.upgradeRequirements.push_back(r);
+      }
+    }
+    else
+    {
+      for(auto& operand : value["operands"])
+      {
+        parseUpgradeRequirements(upgrade, operand);
+      }
+    }
+  };
+
   void TechTree::load( const string& filename )
   {
     relationships_.clear();
@@ -125,11 +148,19 @@ namespace hivemind {
       for ( auto itUnit = race.begin(); itUnit != race.end(); ++itUnit )
       {
         auto& unitKey = itUnit.key();
-        auto unitName = unitKey.asCString();
+        auto unitName = (*itUnit)["name"].asString();
         auto& unit = *itUnit;
         uint32_t id = (uint32_t)_atoi64( unitKey.asCString() );
 
-        auto f = [&](const char* skill, bool isMorph)
+        if(unitName.find("Burrowed") != string::npos
+          || unitName.find("Lowered") != string::npos
+          || unitName.find("Flying") != string::npos)
+        {
+          // Ignore alternative versions of units.
+          continue;
+        }
+
+        auto parseBuild = [&](const char* skill, bool isMorph)
         {
           auto& builds = unit[skill];
           for ( auto& build : builds )
@@ -140,6 +171,12 @@ namespace hivemind {
             relationship.time = build["time"].asFloat();
             relationship.isMorph = isMorph;
             relationship.name = build["unitName"].asCString();
+
+            if(relationship.name.find("Burrowed") != string::npos || unitName.find("Lowered") != string::npos)
+            {
+              // Ignore burrowed versions of units.
+              continue;
+            }
 
             uint32_t target = build["unit"].asUInt();
 
@@ -161,15 +198,51 @@ namespace hivemind {
           }
         };
 
-        f("builds", false);
-        f("morphs", true);
+        auto parseResearch = [&](const char* skill)
+        {
+          auto& builds = unit[skill];
+          for ( auto& build : builds )
+          {
+            UpgradeInfo upgrade;
+            upgrade.name = build["upgradeName"].asCString();
+            upgrade.target = build["upgrade"].asUInt();
+            upgrade.time = build["time"].asFloat();
+            upgrade.ability = build["ability"].asUInt();
+            upgrade.techBuilding = id;
+
+            //printf("%s, %d\n", upgrade.name.c_str(), upgrade.target);
+
+            for(auto& require : build["requires"])
+            {
+              auto type = require["type"].asString();
+              if(type == "unitCount")
+              {
+                TechTreeUnitRequirement r;
+                for(auto x : require["unit"])
+                {
+                  r.units.insert(x.asInt());
+                }
+                upgrade.unitRequirements.push_back(r);
+              }
+              else
+              {
+                parseUpgradeRequirements(upgrade, require);
+              }
+            }
+
+            upgrades_.insert({ upgrade.target, upgrade });
+          }
+        };
+
+        parseBuild("builds", false);
+        parseBuild("morphs", true);
+        parseResearch("researches");
       }
     }
   }
 
   void TechTree::findTechChain( UnitTypeID target, vector<UnitTypeID>& chain) const
   {
-    
     if(target == sc2::UNIT_TYPEID::TERRAN_SCV ||
       target == sc2::UNIT_TYPEID::ZERG_DRONE ||
       target == sc2::UNIT_TYPEID::PROTOSS_PROBE)
@@ -219,12 +292,53 @@ namespace hivemind {
     }
   }
 
-  vector<UnitTypeID> TechTree::findTechChain( UnitTypeID target ) const
+  UpgradeInfo TechTree::findTechChain(UpgradeID target, vector<UnitTypeID>& chain) const
   {
-    vector<UnitTypeID> chain;
-    findTechChain(target, chain);
-    return chain;
+    auto iteratorPair = upgrades_.equal_range(target);
+    for(auto it = make_reverse_iterator(iteratorPair.second), endIt = make_reverse_iterator(iteratorPair.first); it != endIt; ++it)
+    {
+      auto& upgrade = it->second;
+
+      for(auto& r : upgrade.unitRequirements)
+      {
+        if(r.units.empty())
+        {
+          continue;
+        }
+
+        bool found = false;
+        for(auto& u : r.units)
+        {
+          if(std::find(chain.begin(), chain.end(), u) != chain.end())
+          {
+            found = true;
+          }
+        }
+
+        if(!found)
+        {
+          // One of the requirements is needed, pick the first one.
+          auto& unit = *r.units.begin();
+          chain.push_back(unit);
+          findTechChain(unit, chain);
+        }
+      }
+
+      if(std::find(chain.begin(), chain.end(), upgrade.techBuilding) == chain.end())
+      {
+        chain.push_back(upgrade.techBuilding);
+        findTechChain(upgrade.techBuilding, chain);
+      }
+
+      // Only one of the source buildings is needed, pick the first for now.
+      return upgrade;
+    }
+
+    assert(false && "Upgrade not found");
+
+    return UpgradeInfo();
   }
+
 
   UnitDataMap Database::unitData_;
   TechTree Database::techTree_;
