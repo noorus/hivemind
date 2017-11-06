@@ -21,7 +21,11 @@ void testTechChain(hivemind::Console& console, sc2::UNIT_TYPEID targetType)
   std::vector<sc2::UnitTypeID> techChain;
   hivemind::Database::techTree().findTechChain(targetType, techChain);
 
+  float range = hivemind::Database::weapon((hivemind::UnitType64)targetType).range;
+
   console.printf("How to build unit %s:", sc2::UnitTypeToName(targetType));
+  console.printf("  range: %f", range);
+
   for(auto unitType : techChain)
   {
     console.printf("  %s", sc2::UnitTypeToName(unitType));
@@ -90,16 +94,11 @@ int main( int argc, char* argv[] )
     hivemind::Database::load( g_CVar_data_path.as_s() );
 
 #if 0
-    testTechChain(console, sc2::UNIT_TYPEID::ZERG_RAVAGER);
-    testTechChain(console, sc2::UNIT_TYPEID::TERRAN_BANSHEE);
-    testTechChain(console, sc2::UPGRADE_ID::BURROW);
-    testTechChain(console, sc2::UPGRADE_ID::ZERGLINGATTACKSPEED);
-    testTechChain(console, sc2::UPGRADE_ID::ZERGFLYERARMORSLEVEL1);
+    testTechChain(console, sc2::UNIT_TYPEID::ZERG_ROACH);
+    testTechChain(console, sc2::UNIT_TYPEID::ZERG_BANELING);
+    testTechChain(console, sc2::UNIT_TYPEID::ZERG_HYDRALISK);
     testTechChain(console, sc2::UPGRADE_ID::PROTOSSSHIELDSLEVEL2);
-    //testTechChain(console, sc2::UPGRADE_ID::TERRANVEHICLEWEAPONSLEVEL3); // Is missing.
-    testTechChain(console, sc2::UPGRADE_ID::PROTOSSSHIELDSLEVEL2);
-    //testTechChain(console, sc2::UPGRADE_ID::STIMPACK); // Is missing.
-    testTechChain(console, sc2::UPGRADE_ID::CARRIERLAUNCHSPEEDUPGRADE); // Has bad data.
+    testTechChain(console, sc2::UPGRADE_ID::STIMPACK);
     return 0;
 #endif
 
