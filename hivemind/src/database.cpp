@@ -7,19 +7,61 @@
 
 namespace hivemind {
 
+  WeaponDataMap Database::weaponData_;
+  UnitDataMap Database::unitData_;
+  TechTree Database::techTree_;
+
+
+  static Json::Value readJsonFile(const string& filename)
+  {
+    std::ifstream infile(filename);
+
+    if(!infile)
+    {
+      HIVE_EXCEPT("Failed to open '" + filename + "'");
+    }
+
+    Json::Value root;
+    infile >> root;
+    return root;
+  }
+
+  void loadWeaponData(const string& filename, WeaponDataMap& weaponData)
+  {
+    weaponData.clear();
+
+    const Json::Value root = readJsonFile(filename);
+
+    for(auto& value : root)
+    {
+      auto name = value["name"].asCString();
+      auto& weapon = weaponData[name];
+      weapon.name = name;
+
+      weapon.arc = value["arc"].asFloat();
+      weapon.arcSlop = value["arcSlop"].asFloat();
+      weapon.backSwing = value["backSwing"].asFloat();
+      weapon.damagePoint = value["damagePoint"].asFloat();
+      weapon.melee = value["melee"].asBool();
+      weapon.minScanRange = value["minScanRange"].asFloat();
+      weapon.period = value["period"].asFloat();
+      weapon.randomDelayMax = value["randomDelayMax"].asFloat();
+      weapon.randomDelayMin = value["randomDelayMin"].asFloat();
+      weapon.range = value["range"].asFloat();
+      weapon.rangeSlop = value["rangeSlop"].asFloat();
+
+      for(auto& effect : value["effect"])
+      {
+        // TODO: read effect.
+      }
+    }
+  }
+
   void loadUnitData( const string& filename, UnitDataMap& unitMap )
   {
-    Json::Value root;
-    std::ifstream infile;
+    unitMap.clear();
 
-    infile.open( filename, std::ifstream::in );
-
-    if ( !infile.is_open() )
-      HIVE_EXCEPT( "Failed to open units.json" );
-
-    infile >> root;
-
-    infile.close();
+    Json::Value root = readJsonFile(filename);
 
     for ( auto it = root.begin(); it != root.end(); it++ )
     {
@@ -82,7 +124,7 @@ namespace hivemind {
           entry.footprint.reset( UnitData::Footprint_Empty );
           string data = unit["footprint"]["data"].asString();
           if ( data.length() != ( width * height ) )
-            HIVE_EXCEPT( "units.json footprint data length mismatches given dimensions" );
+            HIVE_EXCEPT( filename + " footprint data length mismatches given dimensions" );
 
           entry.footprintOffset.x = unit["footprint"]["offset"][0].asInt();
           entry.footprintOffset.y = unit["footprint"]["offset"][1].asInt();
@@ -98,6 +140,11 @@ namespace hivemind {
                 UnitData::Footprint_Empty );
             }
         }
+      }
+
+      for(auto& weapon : unit["weapons"])
+      {
+        entry.weapons.push_back(weapon.asCString());
       }
 
       unitMap[id] = entry;
@@ -129,19 +176,10 @@ namespace hivemind {
 
   void TechTree::load( const string& filename )
   {
+    upgrades_.clear();
     relationships_.clear();
 
-    Json::Value root;
-    std::ifstream infile;
-
-    infile.open( filename, std::ifstream::in );
-
-    if ( !infile.is_open() )
-      HIVE_EXCEPT( "Failed to open techtree.json" );
-
-    infile >> root;
-
-    infile.close();
+    Json::Value root = readJsonFile(filename);
 
     for ( auto itRace = root.begin(); itRace != root.end(); ++itRace )
     {
@@ -343,13 +381,9 @@ namespace hivemind {
     return UpgradeInfo();
   }
 
-
-  UnitDataMap Database::unitData_;
-  TechTree Database::techTree_;
-
   void Database::load( const string& dataPath )
   {
-    unitData_.clear();
+    loadWeaponData( dataPath + R"(\weapons.json)", weaponData_ );
     loadUnitData( dataPath + R"(\units.json)", unitData_ );
     techTree_.load( dataPath + R"(\techtree.json)" );
   }

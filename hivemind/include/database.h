@@ -4,6 +4,24 @@
 
 namespace hivemind {
 
+  struct WeaponData {
+    string name;
+
+    float arc;
+    float arcSlop;
+    float damagePoint; // Attack animation time point (in seconds) at which damage is applied to the target. Unit stands still while shooting.
+    float backSwing; // Attack animation duration (in seconds) after the shooting, that the unit stands reloading i.e. the initial value of weapon_cooldown. Unit is still movable during this.
+    bool melee;
+    float minScanRange;
+    float period;
+    float randomDelayMax;
+    float randomDelayMin;
+    float range; // Range at which the attack animation can start.
+    float rangeSlop; // Extra distance the target can move beyond range, without the attack animation getting canceled.
+  };
+
+  using WeaponDataMap = std::map<string, WeaponData>;
+
   using UnitType64 = size_t;
   using UnitTypeSet = set<UnitType64>;
 
@@ -47,6 +65,8 @@ namespace hivemind {
     int vespeneCost;
     Array2<Footprint> footprint; //!< Note: footprint has x & y flipped, otherwise there's a heap corruption on data load. (wtf?)
     Point2DI footprintOffset;
+    vector<string> weapons;
+
     inline operator UnitTypeID() const
     {
       UnitTypeID ret( (uint32_t)id );
@@ -98,6 +118,7 @@ namespace hivemind {
     UpgradeMap upgrades_;
 
   public:
+
     void load( const string& filename );
 
     void findTechChain( UnitTypeID target, vector<UnitTypeID>& chain) const;
@@ -107,12 +128,20 @@ namespace hivemind {
 
   class Database {
   protected:
+    static WeaponDataMap weaponData_;
     static UnitDataMap unitData_;
     static TechTree techTree_;
+
   public:
     static void load( const string& dataPath );
     inline static const UnitDataMap& units() { return unitData_; }
     inline static const UnitData& unit( UnitType64 id ) { return unitData_[id]; }
+
+    // Get the last weapon of unit.
+    inline static const WeaponData& weapon(UnitType64 id) {
+      return weaponData_.at(unit(id).weapons.back());
+    }
+
     inline static const TechTree& techTree() { return techTree_; }
   };
 
