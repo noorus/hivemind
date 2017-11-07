@@ -21,10 +21,10 @@ void testTechChain(hivemind::Console& console, sc2::UNIT_TYPEID targetType)
   std::vector<sc2::UnitTypeID> techChain;
   hivemind::Database::techTree().findTechChain(targetType, techChain);
 
-  float range = hivemind::Database::weapon((hivemind::UnitType64)targetType).range;
+  //float range = hivemind::Database::weapon((hivemind::UnitType64)targetType).range;
 
   console.printf("How to build unit %s:", sc2::UnitTypeToName(targetType));
-  console.printf("  range: %f", range);
+  //console.printf("  range: %f", range);
 
   for(auto unitType : techChain)
   {
@@ -93,12 +93,15 @@ int main( int argc, char* argv[] )
 
     hivemind::Database::load( g_CVar_data_path.as_s() );
 
-#if 0
-    testTechChain(console, sc2::UNIT_TYPEID::ZERG_ROACH);
-    testTechChain(console, sc2::UNIT_TYPEID::ZERG_BANELING);
+#if 1
+    testTechChain(console, sc2::UNIT_TYPEID::TERRAN_SIEGETANK);
+    testTechChain(console, sc2::UNIT_TYPEID::TERRAN_SIEGETANKSIEGED);
     testTechChain(console, sc2::UNIT_TYPEID::ZERG_HYDRALISK);
-    testTechChain(console, sc2::UPGRADE_ID::PROTOSSSHIELDSLEVEL2);
-    testTechChain(console, sc2::UPGRADE_ID::STIMPACK);
+    testTechChain(console, sc2::UNIT_TYPEID::ZERG_HYDRALISKBURROWED);
+    testTechChain(console, sc2::UNIT_TYPEID::TERRAN_SUPPLYDEPOTLOWERED);
+    testTechChain(console, sc2::UNIT_TYPEID::TERRAN_SUPPLYDEPOT);
+    testTechChain(console, sc2::UNIT_TYPEID::TERRAN_BARRACKS);
+    testTechChain(console, sc2::UNIT_TYPEID::TERRAN_BARRACKSFLYING);
     return 0;
 #endif
 

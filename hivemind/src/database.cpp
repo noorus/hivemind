@@ -11,6 +11,31 @@ namespace hivemind {
   UnitDataMap Database::unitData_;
   TechTree Database::techTree_;
 
+  static UnitTypeID getUnitTypeByName(const string& name)
+  {
+    for(const auto& x : Database::units())
+    {
+      if(x.second.name == name)
+      {
+        return (uint32_t)x.first;
+      }
+    }
+    assert(false && "no unit type found by name");
+    return sc2::UNIT_TYPEID::INVALID;
+  }
+
+  static UnitTypeID normalizeUnitType(UnitTypeID unitType)
+  {
+    const auto& name = Database::unit(unitType).name;
+    for(auto suffix : { "Burrowed", "Lowered", "Flying", "Sieged" })
+    {
+      if(name.find(suffix) != string::npos)
+      {
+        return getUnitTypeByName(name.substr(0, name.size() - strlen(suffix)));
+      }
+    }
+    return unitType;
+  }
 
   static Json::Value readJsonFile(const string& filename)
   {
@@ -194,14 +219,6 @@ namespace hivemind {
         auto& unit = *itUnit;
         uint32_t id = (uint32_t)_atoi64( unitKey.asCString() );
 
-        if(unitName.find("Burrowed") != string::npos
-          || unitName.find("Lowered") != string::npos
-          || unitName.find("Flying") != string::npos)
-        {
-          // Ignore alternative versions of units.
-          continue;
-        }
-
         auto parseBuild = [&](const char* skill, bool isMorph)
         {
           auto& builds = unit[skill];
@@ -213,12 +230,6 @@ namespace hivemind {
             relationship.time = build["time"].asFloat();
             relationship.isMorph = isMorph;
             relationship.name = build["unitName"].asCString();
-
-            if(relationship.name.find("Burrowed") != string::npos || unitName.find("Lowered") != string::npos)
-            {
-              // Ignore burrowed versions of units.
-              continue;
-            }
 
             uint32_t target = build["unit"].asUInt();
 
@@ -252,8 +263,6 @@ namespace hivemind {
             upgrade.ability = build["ability"].asUInt();
             upgrade.techBuilding = id;
 
-            //printf("%s, %d\n", upgrade.name.c_str(), upgrade.target);
-
             for(auto& require : build["requires"])
             {
               auto type = require["type"].asString();
@@ -283,8 +292,14 @@ namespace hivemind {
     }
   }
 
-  void TechTree::findTechChain( UnitTypeID target, vector<UnitTypeID>& chain) const
+  void TechTree::findTechChain( UnitTypeID nonNormalizedTarget, vector<UnitTypeID>& chain) const
   {
+    UnitTypeID target = normalizeUnitType(nonNormalizedTarget);
+    if(target != nonNormalizedTarget)
+    {
+      return findTechChain(target, chain);
+    }
+
     if(target == sc2::UNIT_TYPEID::TERRAN_SCV ||
       target == sc2::UNIT_TYPEID::ZERG_DRONE ||
       target == sc2::UNIT_TYPEID::PROTOSS_PROBE)
@@ -296,6 +311,12 @@ namespace hivemind {
     for(auto it = make_reverse_iterator(iteratorPair.second), endIt = make_reverse_iterator(iteratorPair.first); it != endIt; ++it)
     {
       auto& relationship = it->second;
+
+      if(target == normalizeUnitType(relationship.source))
+      {
+        // Skip relationships that convert unit's special form back to its normalized form, e.g. unburrow.
+        continue;
+      }
 
       for(auto& r : relationship.unitRequirements)
       {
