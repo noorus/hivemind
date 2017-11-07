@@ -46,9 +46,9 @@ namespace hivemind {
           if ( ( flags & MapFlag_Buildable ) || utils::pathable( info, x, y ) )
             flags |= MapFlag_Walkable;
 
-          // naive; work for now but maybe improve later
+          // naive; works for now but maybe improve later
           if ( ( flags & MapFlag_Walkable ) && !( flags & MapFlag_Buildable ) )
-            flags |= MapFlag_Ramp;
+            flags |= ( MapFlag_Ramp | MapFlag_NearRamp );
 
           flags_out[x][y] = flags;
 
@@ -81,7 +81,7 @@ namespace hivemind {
     /*
      * 2) Extract from pathability map: contours and connected components
      **/
-    void Map_ProcessContours( Array2<uint64_t> flags_in, Array2<int>& labels_out, ComponentVector & components_out )
+    void Map_ProcessContours( Array2<uint64_t>& flags_in, Array2<int>& labels_out, ComponentVector & components_out )
     {
       auto width = (int16_t)flags_in.width();
       auto height = (int16_t)flags_in.height();
@@ -439,7 +439,7 @@ namespace hivemind {
           continue;
         }
         //... is outside map or near border
-        // 			if (p0.x < SKIP_NEAR_BORDER || p0.x > maxXborder || p0.y < SKIP_NEAR_BORDER || p0.y >maxYborder || 
+        // 			if (p0.x < SKIP_NEAR_BORDER || p0.x > maxXborder || p0.y < SKIP_NEAR_BORDER || p0.y >maxYborder ||
         //				p1.x < SKIP_NEAR_BORDER || p1.x >maxXborder || p1.y < SKIP_NEAR_BORDER || p1.y >maxYborder) continue;
 
         // ... any of its endpoints is inside an obstacle
@@ -627,7 +627,7 @@ namespace hivemind {
             {
               if ( graph.minDistToObstacle[v0] < MIN_REGION_OBST_DIST )
               {
-			
+
               }
               else if ( parentNode.isMaximal )
               {
@@ -911,7 +911,7 @@ namespace hivemind {
     }
 
     /*
-    * 11) Finc resource clusters to make base locations
+    * 11) Find resource clusters to make base locations
     **/
     void Map_FindResourceClusters( const sc2::ObservationInterface& observation, vector<UnitVector>& clusters_out, size_t minClusterSize, Real maxResourceDistance )
     {
@@ -970,6 +970,42 @@ namespace hivemind {
         if ( cluster.size() >= minClusterSize )
           clusters_out.push_back( cluster );
       }
+    }
+
+    /*
+    * 11) Add tile flags based on processed base locations
+    **/
+    void Map_MarkBaseTiles( Array2<uint64_t>& flags_out, const BaseLocationVector & locations )
+    {
+      auto width = flags_out.width();
+      auto height = flags_out.height();
+
+      for ( size_t x = 0; x < width; x++ )
+        for ( size_t y = 0; y < height; y++ )
+        {
+          for ( auto& loc : locations )
+          {
+            if ( loc.isInResourceBox( x, y ) )
+              flags_out[x][y] |= MapFlag_ResourceBox;
+            if ( loc.overlapsMainFootprint( x, y ) )
+              flags_out[x][y] |= ( MapFlag_StartLocation | MapFlag_NearStartLocation );
+          }
+        }
+
+      // second pass to mark "near"-tiles
+      for ( size_t x = 0; x < width; x++ )
+        for ( size_t y = 0; y < height; y++ )
+          if ( ( flags_out[x][y] & MapFlag_Walkable ) && x > 2 && y > 2 && x <= ( width - 1 ) && y <= ( height - 1 ) )
+          {
+            // up to 2 tiles around me
+            uint64_t aroundORed = (
+              flags_out[x - 1][y] | flags_out[x + 1][y] | flags_out[x][y - 1] | flags_out[x][y + 1] |
+              flags_out[x - 2][y] | flags_out[x + 2][y] | flags_out[x][y - 2] | flags_out[x][y + 2] |
+              flags_out[x - 1][y - 1] | flags_out[x + 1][y - 1] | flags_out[x - 1][y + 1] | flags_out[x + 1][y + 1]
+              );
+            if ( aroundORed & MapFlag_StartLocation )
+              flags_out[x][y] |= MapFlag_NearStartLocation;
+          }
     }
 
   }

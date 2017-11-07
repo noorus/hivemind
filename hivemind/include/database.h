@@ -8,6 +8,12 @@ namespace hivemind {
   using UnitTypeSet = set<UnitType64>;
 
   struct UnitData {
+    enum Footprint: uint8_t {
+      Footprint_Empty = 0,
+      Footprint_Creep,
+      Footprint_NearResource,
+      Footprint_Reserved
+    };
     UnitType64 id;
     string name;
     Real acceleration;
@@ -39,7 +45,7 @@ namespace hivemind {
     bool structure;
     Real turningRate;
     int vespeneCost;
-    Array2<bool> footprint; //!< Note: footprint has x & y flipped, otherwise there's a heap corruption on data load. (wtf?)
+    Array2<Footprint> footprint; //!< Note: footprint has x & y flipped, otherwise there's a heap corruption on data load. (wtf?)
     Point2DI footprintOffset;
     inline operator UnitTypeID() const
     {

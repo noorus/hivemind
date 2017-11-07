@@ -2,6 +2,7 @@
 #include "bot.h"
 #include "baselocation.h"
 #include "utilities.h"
+#include "database.h"
 
 namespace hivemind {
 
@@ -48,6 +49,13 @@ namespace hivemind {
         position_ = unit->pos;
         break;
       }
+
+    if ( !startLocation_ )
+    {
+      MapPoint2 fixpos = position_;
+      bot_->map().findClosestBuildablePosition( fixpos, sc2::UNIT_TYPEID::ZERG_HATCHERY, false );
+      position_ = static_cast<Vector2>( fixpos );
+    }
   }
 
   int BaseLocation::getGroundDistance( const Vector2 & pos ) const
@@ -71,6 +79,34 @@ namespace hivemind {
   bool BaseLocation::isInResourceBox( int x, int y ) const
   {
     return ( x >= left_ && x < right_ && y < top_ && y >= bottom_ );
+  }
+
+  bool BaseLocation::overlapsMainFootprint( int x, int y ) const
+  {
+    // quick early out if distance is not even close to us
+    if ( math::manhattan( x, y, (int)position_.x, (int)position_.y ) > 10 )
+      return false;
+
+    if ( x < 0 || y < 0 || x >= bot_->map().width() || y >= bot_->map().height() )
+      return false;
+
+    auto& dbUnit = Database::unit( (UnitType64)sc2::UNIT_TYPEID::ZERG_HATCHERY );
+
+    MapPoint2 topleft(
+      math::floor( position_.x ) + dbUnit.footprintOffset.x,
+      math::floor( position_.y ) + dbUnit.footprintOffset.y
+    );
+
+    MapPoint2 pt( x - topleft.x, y - topleft.y );
+    if ( pt.x < 0 || pt.y < 0 || pt.x >= dbUnit.footprint.width() || pt.y >= dbUnit.footprint.height() )
+      return false;
+
+    if ( topleft.x < 0 || topleft.y < 0
+      || topleft.x + dbUnit.footprint.width() >= bot_->map().width()
+      || topleft.y + dbUnit.footprint.height() >= bot_->map().height() )
+      return false; // or?
+
+    return ( dbUnit.footprint[pt.y][pt.x] == UnitData::Footprint_Reserved );
   }
 
   const vector<Vector2>& BaseLocation::getClosestTiles() const

@@ -11,6 +11,7 @@ namespace hivemind {
 
   enum BuildingPlacement {
     BuildPlacement_Generic, //!< Growing outwards from main building
+    BuildPlacement_MainBuilding, //!< Special placement for main buildings
     BuildPlacement_Front, //!< Weighted toward front of the base
     BuildPlacement_Back, //!< Weighted toward back of the base
     BuildPlacement_MineralLine, //!< In the mineral line

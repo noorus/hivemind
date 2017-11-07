@@ -210,7 +210,7 @@ namespace hivemind {
 
       for ( auto& tile : closestTiles )
       {
-        if ( bot_->map().canZergBuild( structure, tile, 1 ) )
+        if ( bot_->map().canZergBuild( structure, tile, 1, true, true, true, true ) )
         {
           Vector2 tileRet = tile;
           if ( !bot_->query().Placement( ability, tileRet ) )

@@ -18,13 +18,18 @@ namespace hivemind {
     MapFlag_ResourceBox = 4, //!< Is this tile part of a base location's harvesting area
     MapFlag_InnerWalkable = 8, //!< A walkable tile at least 2 tiles away from any non-walkable tile
     MapFlag_Ramp = 16, //!< A tile that is part of a ramp
-    MapFlag_NearRamp = 32 //!< A tile that is at most 2 tiles away from a ramp tile
+    MapFlag_NearRamp = 32, //!< A tile that is at most 2 tiles away from a ramp tile
+    MapFlag_StartLocation = 64, //!< A tile that is part of a start location's footprint
+    MapFlag_NearStartLocation = 128 //!< A tile that is at most 2 tiles away from a base location footprint tile
   };
 
   struct MapPoint2 {
     int x;
     int y;
     MapPoint2( int x_, int y_ ): x( x_ ), y( y_ )
+    {
+    }
+    MapPoint2( const Vector2& other ): x( math::floor( other.x ) ), y( math::floor( other.y ) )
     {
     }
     inline MapPoint2& operator = ( const Vector2& rhs )
@@ -111,6 +116,11 @@ namespace hivemind {
 
   class Map {
   public:
+    enum ReservedTile: uint8_t {
+      Reserved_None = 0,
+      Reserved_NearResource,
+      Reserved_Reserved
+    };
     Bot* bot_;
     size_t width_; //!< Map width
     size_t height_; //!< Map height
@@ -120,7 +130,7 @@ namespace hivemind {
     Array2<bool> creepMap_; //!< Current creep spread visible to us
     Array2<CreepTile> zergBuildable_; //!< Space that is currently buildable to us
     Array2<int> labeledCreeps_; //!< Contour-traced buildable creeps by label (index)
-    Array2<bool> reservedMap_; //!< Spots that are used up by building footprints
+    Array2<ReservedTile> reservedMap_; //!< Spots that are used up by building footprints
     BuildingReservationMap buildingReservations_; //!< Our own to-build structure footprints
     vector<MapPoint2> creepTumors_;
     CreepVector creeps_;
@@ -140,7 +150,6 @@ namespace hivemind {
     void updateReservedMap();
     void splitCreepFronts();
     void labelBuildableCreeps();
-    void markResourceBoxes(); //!< Set MapFlag_ResourceBox values based on base locations
   public:
     Map( Bot* bot );
     ~Map();
@@ -152,8 +161,10 @@ namespace hivemind {
     Creep* creep( size_t x, size_t y );
     Creep* creep( const Vector2& position ) { return creep( (size_t)position.x, (size_t)position.y ); }
     bool updateZergBuildable(); // Make sure that creep is up to date first
-    bool canZergBuild( UnitTypeID structure, size_t x, size_t y, int padding = 0 );
-    inline bool canZergBuild( UnitTypeID structure, const Vector2& pos, int padding = 0 ) { return canZergBuild( structure, (size_t)pos.x, (size_t)pos.y, padding ); }
+    bool canZergBuild( UnitTypeID structure, size_t x, size_t y, int padding = 0, bool nearResources = true, bool noMainOverlap = true, bool notNearMain = true, bool notNearRamp = true );
+    bool isBuildable( const MapPoint2& position, UnitTypeID structure, bool nearResources = true );
+    bool findClosestBuildablePosition( MapPoint2& position, UnitTypeID structure, bool nearResources = true );
+    inline bool canZergBuild( UnitTypeID structure, const Vector2& pos, int padding = 0, bool nearResources = true, bool noMainOverlap = true, bool notNearMain = true, bool notNearRamp = true ) { return canZergBuild( structure, (size_t)pos.x, (size_t)pos.y, padding, nearResources, noMainOverlap, notNearMain, notNearRamp ); }
     const size_t width() const { return width_; }
     const size_t height() const { return height_; }
     BaseLocation* closestLocation( const Vector2& position );

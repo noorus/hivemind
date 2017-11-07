@@ -9,7 +9,7 @@ namespace hivemind {
 
     /* Brain: Spread creep goal */
 
-    const GameTime cCreepCheckDelay = 150;
+    const GameTime cCreepCheckDelay = 250;
 
     Brain_SpreadCreep::Brain_SpreadCreep( AI::Agent * agent ):
     AI::CompositeGoal( agent )

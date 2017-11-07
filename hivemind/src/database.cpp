@@ -79,7 +79,7 @@ namespace hivemind {
         if ( width > 0 && height > 0 )
         {
           entry.footprint.resize( width, height );
-          entry.footprint.reset( false );
+          entry.footprint.reset( UnitData::Footprint_Empty );
           string data = unit["footprint"]["data"].asString();
           if ( data.length() != ( width * height ) )
             HIVE_EXCEPT( "units.json footprint data length mismatches given dimensions" );
@@ -91,7 +91,11 @@ namespace hivemind {
             for ( size_t x = 0; x < width; x++ )
             {
               auto idx = y * width + x;
-              entry.footprint[y][x] = ( data[idx] == 'x' );
+              entry.footprint[y][x] = (
+                data[idx] == 'x' ? UnitData::Footprint_Reserved :
+                data[idx] == 'n' ? UnitData::Footprint_NearResource :
+                data[idx] == 'o' ? UnitData::Footprint_Creep :
+                UnitData::Footprint_Empty );
             }
         }
       }

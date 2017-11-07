@@ -107,12 +107,14 @@ namespace hivemind {
     stbi_write_png( "debug_map_creep_realtime.png", (int)labels.width(), (int)labels.height(), 3, rgb8.data(), (int)labels.width() * 3 );
   }
 
-  void debugDumpResources( vector<UnitVector>& clusters, const GameInfo& info )
+  void debugDumpBaseLocations( Array2<uint64_t>& flagmap, vector<UnitVector>& clusters, const GameInfo& info, BaseLocationVector& bases )
   {
     const rgb empty = { 0, 0, 0 };
     const rgb field = { 132, 47, 132 };
     const rgb mineral = { 4, 218, 255 };
     const rgb gas = { 129, 255, 15 };
+    const rgb startloc = { 228, 255, 0 };
+    const rgb startpoint = { 255, 0, 0 };
 
     Array2<rgb> rgb8( info.width, info.height );
     rgb8.reset( empty );
@@ -124,18 +126,30 @@ namespace hivemind {
         for ( auto& cluster : clusters )
         {
           bool gotit = false;
-          for ( auto unit : cluster )
-            if ( pos.distance( unit->pos ) <= unit->radius ) {
-              rgb8[y][x] = ( utils::isMineral( unit ) ? mineral : gas );
-              gotit = true;
-              break;
-            }
+          if ( flagmap[x][y] & MapFlag_StartLocation )
+          {
+            rgb8[y][x] = startloc;
+            gotit = true;
+          }
+          if ( !gotit )
+            for ( auto unit : cluster )
+              if ( pos.distance( unit->pos ) <= unit->radius )
+              {
+                rgb8[y][x] = ( utils::isMineral( unit ) ? mineral : gas );
+                gotit = true;
+                break;
+              }
           if ( !gotit && pos.distance( cluster.center() ) <= 14.0f ) // shouldn't be hardcoded
             rgb8[y][x] = field;
         }
       }
 
-    stbi_write_png( "debug_map_clusters.png", (int)info.width, (int)info.height, 3, rgb8.data(), (int)info.width * 3 );
+    for ( auto& base : bases )
+    {
+      rgb8[(int)base.position().y][(int)base.position().x] = startpoint;
+    }
+
+    stbi_write_png( "debug_map_bases.png", (int)info.width, (int)info.height, 3, rgb8.data(), (int)info.width * 3 );
   }
 
   void dumpPolygons( size_t width, size_t height, PolygonComponentVector& polys, std::map<Analysis::RegionNodeID, Analysis::Chokepoint>& chokes )
@@ -194,7 +208,7 @@ namespace hivemind {
     labeledCreeps_.resize( width_, height_ );
     labeledCreeps_.reset( 0 );
     reservedMap_.resize( width_, height_ );
-    reservedMap_.reset( false );
+    reservedMap_.reset( Reserved_None );
 
     if ( contourTraceImageBuffer_ )
       ::free( contourTraceImageBuffer_ );
@@ -254,7 +268,7 @@ namespace hivemind {
 
     Analysis::Map_FindResourceClusters( bot_->observation(), resourceClusters_, 4, 16.0f );
 
-    debugDumpResources( resourceClusters_, info );
+    updateReservedMap();
 
     bot_->console().printf( "Map: Creating base locations..." );
 
@@ -264,7 +278,9 @@ namespace hivemind {
     for ( auto& cluster : resourceClusters_ )
       baseLocations_.emplace_back( bot_, index++, cluster );
 
-    markResourceBoxes();
+    Analysis::Map_MarkBaseTiles( flagsMap_, baseLocations_ );
+
+    debugDumpBaseLocations( flagsMap_, resourceClusters_, info, baseLocations_ );
 
     bot_->console().printf( "Map: Rebuild done" );
   }
@@ -283,14 +299,20 @@ namespace hivemind {
 
   void Map::draw()
   {
-    /*for ( size_t y = 0; y < height_; y++ )
+    for ( size_t y = 0; y < height_; y++ )
       for ( size_t x = 0; x < width_; x++ )
       {
-        sc2::Point3D pos( (Real)x + 0.5f, (Real)y + 0.5f, heightMap_[x][y] + 0.5f );
-        auto tile = zergBuildable_[x][y];
-        auto color = ( tile == CreepTile_Buildable ? sc2::Colors::Green : tile == CreepTile_Walkable ? sc2::Colors::Yellow : sc2::Colors::Red );
-        bot_->debug().DebugSphereOut( pos, 0.1f, color );
-      }*/
+        sc2::Point3D pos( (Real)x + 0.5f, (Real)y + 0.5f, heightMap_[x][y] + 0.25f );
+        auto tile = flagsMap_[x][y];
+        if ( tile & MapFlag_StartLocation )
+          bot_->debug().DebugSphereOut( pos, 0.1f, sc2::Colors::Green );
+        else if ( tile & MapFlag_NearStartLocation )
+          bot_->debug().DebugSphereOut( pos, 0.1f, sc2::Colors::Teal );
+        else if ( tile & MapFlag_Ramp )
+          bot_->debug().DebugSphereOut( pos, 0.1f, sc2::Colors::Purple );
+        else if ( tile & MapFlag_NearRamp )
+          bot_->debug().DebugSphereOut( pos, 0.1f, sc2::Colors::Yellow );
+      }
 
     for ( auto& poly_comp : polygons_ )
     {
@@ -324,9 +346,11 @@ namespace hivemind {
       bot_->debug().DebugBoxOut(
         Point3D( location.left_, location.top_, height ),
         Point3D( location.right_, location.bottom_, height + 1.0f ), sc2::Colors::White );
-      bot_->debug().DebugSphereOut( Point3D( location.position_.x, location.position_.y, height ), 10.0f, sc2::Colors::White );
+      bot_->debug().DebugSphereOut( Point3D( location.position_.x, location.position_.y, height ), 1.0f, sc2::Colors::White );
+      bot_->debug().DebugSphereOut( Point3D( location.position_.x, location.position_.y, height ), 2.0f, sc2::Colors::White );
+      bot_->debug().DebugSphereOut( Point3D( location.position_.x, location.position_.y, height ), 3.0f, sc2::Colors::White );
     }
-    for ( auto& creep : creeps_ )
+    /*for ( auto& creep : creeps_ )
       for ( size_t i = 0; i < creep.fronts.size(); i++ )
       {
         rgb tmp;
@@ -337,7 +361,7 @@ namespace hivemind {
         colorContour.b = tmp.b;
         for ( auto& pt : creep.fronts[i] )
           bot_->debug().DebugSphereOut( sc2::Point3D( (Real)pt.x + 0.5f, (Real)pt.y + 0.5f, heightMap_[pt.x][pt.y] + 0.5f ), 0.1f, colorContour );
-      }
+      }*/
   }
 
   bool Map::updateCreep()
@@ -358,7 +382,7 @@ namespace hivemind {
 
   void Map::updateReservedMap()
   {
-    reservedMap_.reset( false );
+    reservedMap_.reset( Reserved_None );
     creepTumors_.clear();
 
     auto fnSetFootprint = [this]( const Point2DI& pt, UnitTypeID ut )
@@ -377,11 +401,15 @@ namespace hivemind {
 
       for ( size_t y = 0; y < dbUnit.footprint.height(); y++ )
         for ( size_t x = 0; x < dbUnit.footprint.width(); x++ )
-          if ( dbUnit.footprint[y][x] )
+          if ( dbUnit.footprint[y][x] == UnitData::Footprint_Reserved )
           {
             auto& pixel = zergBuildable_[topleft.x + x][topleft.y + y];
             pixel = ( pixel > CreepTile_No ? CreepTile_Walkable : CreepTile_No );
-            reservedMap_[topleft.x + x][topleft.y + y] = true;
+            reservedMap_[topleft.x + x][topleft.y + y] = Reserved_Reserved;
+          }
+          else if ( dbUnit.footprint[y][x] == UnitData::Footprint_NearResource && reservedMap_[topleft.x + x][topleft.y + y] != Reserved_Reserved )
+          {
+            reservedMap_[topleft.x + x][topleft.y + y] = Reserved_NearResource;
           }
     };
 
@@ -416,19 +444,6 @@ namespace hivemind {
     {
       fnSetFootprint( r.second.position_, r.second.type_ );
     }
-  }
-
-  void Map::markResourceBoxes()
-  {
-    // only done once on map start
-    // actually this should probably be in map_analysis.cpp instead
-    for ( int x = 0; x < width_; x++ )
-      for ( int y = 0; y < height_; y++ )
-      {
-        for ( auto& loc : baseLocations_ )
-          if ( loc.isInResourceBox( x, y ) )
-            flagsMap_[x][y] |= MapFlag_ResourceBox;
-      }
   }
 
   Creep* Map::creep( size_t x, size_t y )
@@ -476,17 +491,61 @@ namespace hivemind {
     return true;
   }
 
-  bool Map::canZergBuild( UnitTypeID structure, size_t x, size_t y, int padding )
+  bool Map::canZergBuild( UnitTypeID structure, size_t x, size_t y, int padding, bool nearResources, bool noMainOverlap, bool notNearMain, bool notNearRamp )
   {
     auto& dbUnit = Database::unit( structure );
 
     Point2DI topleft(
-      (int)x + dbUnit.footprintOffset.x - padding,
-      (int)y + dbUnit.footprintOffset.y - padding
+      ( (int)x + dbUnit.footprintOffset.x ) - padding,
+      ( (int)y + dbUnit.footprintOffset.y ) - padding
     );
 
     int fullwidth = ( (int)dbUnit.footprint.width() + ( padding * 2 ) );
     int fullheight = ( (int)dbUnit.footprint.height() + ( padding * 2 ) );
+
+    if ( topleft.x < 0 || topleft.y < 0 || ( topleft.x + fullwidth >= width_ ) || ( topleft.y + fullheight >= height_ ) )
+      return false;
+
+    for ( int j = 0; j < fullheight; j++ )
+      for ( int i = 0; i < fullwidth; i++ )
+      {
+        auto mx = ( topleft.x + i );
+        auto my = ( topleft.y + j );
+
+        if ( i < padding || j < padding || i >= ( fullwidth - padding ) || j >= ( fullheight - padding ) )
+        {
+          if ( reservedMap_[mx][my] == Reserved_Reserved || ( !nearResources && reservedMap_[mx][my] == Reserved_NearResource ) )
+            return false;
+          continue;
+        }
+
+        if ( dbUnit.footprint[j - padding][i - padding] == UnitData::Footprint_Reserved )
+        {
+          if ( zergBuildable_[mx][my] != CreepTile_Buildable )
+            return false;
+          if ( noMainOverlap && ( flagsMap_[mx][my] & MapFlag_StartLocation ) )
+            return false;
+          if ( notNearMain && ( flagsMap_[mx][my] & MapFlag_NearStartLocation ) )
+            return false;
+          if ( notNearRamp && ( flagsMap_[mx][my] & MapFlag_NearRamp ) )
+            return false;
+        }
+      }
+
+    return true;
+  }
+
+  bool Map::isBuildable( const MapPoint2& position, UnitTypeID structure, bool nearResources )
+  {
+    auto& dbUnit = Database::unit( structure );
+
+    Point2DI topleft(
+      position.x + dbUnit.footprintOffset.x,
+      position.y + dbUnit.footprintOffset.y
+    );
+
+    int fullwidth = (int)dbUnit.footprint.width();
+    int fullheight = (int)dbUnit.footprint.height();
 
     if ( topleft.x < 0 || topleft.y < 0 || ( topleft.x + fullwidth >= width_ ) || ( topleft.y + fullheight >= height_ ) )
       return false;
@@ -497,21 +556,34 @@ namespace hivemind {
         auto mx = ( topleft.x + x );
         auto my = ( topleft.y + y );
 
-        if ( x < padding || y < padding || x >= ( fullwidth - padding ) || y >= ( fullheight - padding ) )
+        if ( dbUnit.footprint[y][x] == UnitData::Footprint_Reserved )
         {
-          if ( reservedMap_[mx][my] )
-            return false;
-          continue;
-        }
-
-        if ( dbUnit.footprint[y + padding][x + padding] )
-        {
-          if ( zergBuildable_[mx][my] != CreepTile_Buildable )
+          if ( !( flagsMap_[mx][my] & MapFlag_Buildable ) || reservedMap_[mx][my] == Reserved_Reserved || ( !nearResources && reservedMap_[mx][my] == Reserved_NearResource ) )
             return false;
         }
       }
 
     return true;
+  }
+
+  bool Map::findClosestBuildablePosition( MapPoint2& position, UnitTypeID structure, bool nearResources )
+  {
+    if ( isBuildable( position, structure, nearResources ) )
+      return true;
+
+    auto& closestTiles = getDistanceMap( position ).sortedTiles();
+
+    for ( auto& tile : closestTiles )
+    {
+      MapPoint2 pt( tile );
+      if ( isBuildable( pt, structure, nearResources ) )
+      {
+        position = pt;
+        return true;
+      }
+    }
+
+    return false;
   }
 
   bool Map::rampHasCreepTumor( int x, int y )
@@ -537,7 +609,7 @@ namespace hivemind {
     {
       if ( x < 5 || y < 5 || x >= ( width_ - 5 ) || y >= ( height_ - 5 ) )
         return false;
-      if ( reservedMap_[x][y] )
+      if ( reservedMap_[x][y] == Reserved_Reserved )
         return false;
       if ( flagsMap_[x][y] & MapFlag_ResourceBox )
         return false;
