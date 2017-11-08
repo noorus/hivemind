@@ -5,9 +5,14 @@
 
 namespace hivemind {
 
+  //! \struct Vector3
+  //! \brief Three-dimensional geometric (Euclidean) floating point vector.
+  //! \sa Vector2
   struct Vector3 {
   public:
-    Real x, y, z;
+    Real x; //!< X-axis- or first component of this vector.
+    Real y; //!< Y-axis- or second component of this vector.
+    Real z; //!< Z-axis- or third component of this vector.
   public:
     //! Constructors
     inline Vector3(): x( 0.0f ), y( 0.0f ), z( 0.0f ) {}
@@ -192,42 +197,72 @@ namespace hivemind {
       ret.z = z;
       return ret;
     }
-    //! Operations
+    //! \fn inline Vector2 to2() const
+    //! \brief Returns a two-dimensional copy of this vector, discarding the Z component.
+    //! \return A Vector2 copy of this vector.
+    //! \sa Vector2
     inline Vector2 to2() const
     {
       return Vector2( x, y );
     }
+    //! \fn inline Real length() const
+    //! \brief Gets the length of the vector, seen as distance from zero origin.
+    //! \return Scalar length of the vector.
     inline Real length() const
     {
       return math::sqrt( x * x + y * y + z * z );
     }
+    //! \fn inline Real squaredLength() const
+    //! \brief Gets the squared length of the vector for comparative purposes,
+    //!   avoiding the costly square root calculation.
+    //! \return Scalar squared length of the vector.
     inline Real squaredLength() const
     {
       return ( x * x + y * y + z * z );
     }
+    //! \fn inline Real distance( const Vector3& rhs ) const
+    //! \brief Gets the distance to another vector.
+    //! \param rhs The other vector.
+    //! \return Scalar distance between the vectors.
     inline Real distance( const Vector3& rhs ) const
     {
       return ( *this - rhs ).length();
     }
+    //! \fn inline Real squaredDistance( const Vector3& rhs ) const
+    //! \brief Gets the squared distance to another vector for comparative purposes,
+    //!   avoiding the costly square root calculation.
+    //! \param rhs The other vector.
+    //! \return Scalar squared distance between the vectors.
     inline Real squaredDistance( const Vector3& rhs ) const
     {
       return ( *this - rhs ).squaredLength();
     }
+    //! \fn inline Real dotProduct( const Vector3& other ) const
+    //! \brief Computes the dot product between this and another vector.
+    //! \param other The other vector.
+    //! \return Scalar dot product between the vectors.
     inline Real dotProduct( const Vector3& other ) const
     {
       return ( x * other.x + y * other.y + z * other.z );
     }
-    inline Real normalise()
+    //! \fn inline void normalise()
+    //! \brief Normalises the vector in place, scaling it to unit length while retaining direction.
+    //!   Does nothing if vector is zero-length.
+    inline void normalise()
     {
       auto len = length();
-      if ( len > 0.0f ) {
+      if ( len > 0.0f )
+      {
         Real invLen = ( 1.0f / len );
         x *= invLen;
         y *= invLen;
         z *= invLen;
       }
-      return len;
     }
+    //! \fn inline Vector3 crossProduct( const Vector3& other ) const
+    //! \brief Computes the cross product between this and another vector.
+    //! \param other The other vector.
+    //! \return Scalar cross product between the vectors.
     inline Vector3 crossProduct( const Vector3& other ) const
     {
       return Vector3(
@@ -236,16 +271,28 @@ namespace hivemind {
         x * other.y - y * other.x
       );
     }
+    //! \fn inline Vector3 reflect( const Vector3& normal ) const
+    //! \brief Calculates a reflection vector from this pointing away from given plane normal.
+    //! \param normal The normal.
+    //! \return A reflected vector.
     inline Vector3 reflect( const Vector3& normal ) const
     {
       return Vector3( *this - ( 2 * this->dotProduct( normal ) * normal ) );
     }
+    //! \fn inline Vector3 normalisedCopy() const
+    //! \brief Returns a normalised copy of this vector.
+    //! \return Normalised copy of this vector.
+    //! \sa normalise()
     inline Vector3 normalisedCopy() const
     {
       Vector3 ret = *this;
       ret.normalise();
       return ret;
     }
+    //! \fn inline Vector3 midPoint( const Vector3& other ) const
+    //! \brief Returns the middle point between this and another vector.
+    //! \param other The other vector.
+    //! \return A middle point vector.
     inline Vector3 midPoint( const Vector3& other ) const
     {
       return Vector3(

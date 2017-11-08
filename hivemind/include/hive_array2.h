@@ -4,7 +4,9 @@
 
 namespace hivemind {
 
-  //< Use accessors: Array2[x][y]
+  //! \class Array2
+  //! \brief Two-dimensional "dynamic" array class with a templated element type.
+  //!   Preferred element access: \c Array2[x][y]
   template<typename T>
   class Array2 {
   private:

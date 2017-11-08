@@ -5,9 +5,13 @@
 
 namespace hivemind {
 
+  //! \struct Vector2
+  //! \brief Two-dimensional geometric (Euclidean) floating point vector.
+  //! \sa Vector3
   struct Vector2 {
   public:
-    Real x, y;
+    Real x; //!< X-axis- or first component of this vector.
+    Real y; //!< Y-axis- or second component of this vector.
   public:
     //! Constructors
     inline Vector2(): x( 0.0f ), y( 0.0f ) {}
@@ -209,49 +213,86 @@ namespace hivemind {
       ret.z = 0;
       return ret;
     }
-    //! Operations
+    //! \fn inline Real length() const
+    //! \brief Gets the length of the vector, seen as distance from zero origin.
+    //! \return Scalar length of the vector.
     inline Real length() const
     {
       return math::sqrt( x * x + y * y );
     }
+    //! \fn inline Real squaredLength() const
+    //! \brief Gets the squared length of the vector for comparative purposes,
+    //!   avoiding the costly square root calculation.
+    //! \return Scalar squared length of the vector.
     inline Real squaredLength() const
     {
       return ( x * x + y * y );
     }
+    //! \fn inline Real distance( const Vector2& rhs ) const
+    //! \brief Gets the distance to another vector.
+    //! \param rhs The other vector.
+    //! \return Scalar distance between the vectors.
     inline Real distance( const Vector2& rhs ) const
     {
       return ( *this - rhs ).length();
     }
+    //! \fn inline Real squaredDistance( const Vector2& rhs ) const
+    //! \brief Gets the squared distance to another vector for comparative purposes,
+    //!   avoiding the costly square root calculation.
+    //! \param rhs The other vector.
+    //! \return Scalar squared distance between the vectors.
     inline Real squaredDistance( const Vector2& rhs ) const
     {
       return ( *this - rhs ).squaredLength();
     }
+    //! \fn inline Real dotProduct( const Vector2& other ) const
+    //! \brief Computes the dot product between this and another vector.
+    //! \param other The other vector.
+    //! \return Scalar dot product between the vectors.
     inline Real dotProduct( const Vector2& other ) const
     {
       return ( x * other.x + y * other.y );
     }
-    inline Real normalise()
+    //! \fn inline void normalise()
+    //! \brief Normalises the vector in place, scaling it to unit length while retaining direction.
+    //!   Does nothing if vector is zero-length.
+    inline void normalise()
     {
       auto len = length();
-      if ( len > 0.0f ) {
+      if ( len > 0.0f )
+      {
         Real invLen = ( 1.0f / len );
         x *= invLen;
         y *= invLen;
       }
-      return len;
     }
+    //! \fn inline Vector2 perpendicular() const
+    //! \brief Returns a vector perpendicular to this one.
+    //! \return A new perpendicular vector.
     inline Vector2 perpendicular() const
     {
       return Vector2( -y, x );
     }
+    //! \fn inline Real crossProduct( const Vector2& other ) const
+    //! \brief Computes the cross product between this and another vector.
+    //! \param other The other vector.
+    //! \return Scalar cross product between the vectors.
     inline Real crossProduct( const Vector2& other ) const
     {
       return ( x * other.y - y * other.x );
     }
+    //! \fn inline Vector2 reflect( const Vector2& normal ) const
+    //! \brief Calculates a reflection vector from this pointing away from given plane normal.
+    //! \param normal The normal.
+    //! \return A reflected vector.
     inline Vector2 reflect( const Vector2& normal ) const
     {
       return Vector2( *this - ( 2 * this->dotProduct( normal ) * normal ) );
     }
+    //! \fn inline Vector2 normalisedCopy() const
+    //! \brief Returns a normalised copy of this vector.
+    //! \return Normalised copy of this vector.
+    //! \sa normalise()
     inline Vector2 normalisedCopy() const
     {
       Vector2 ret = *this;

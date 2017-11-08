@@ -15,11 +15,25 @@ namespace hivemind {
   using std::list;
   using std::set;
 
+  //! \typedef GameTime
+  //! \brief Local type definition for game time counted in engine logic ticks.
+  //!   (ticks = (seconds * speed_multiplier * ticks_per_second))
+  //!   speed_multiplier = 1.4 ("faster" game speed)
+  //!   ticks_per_second = 16
+  //! \sa RealTime
   using GameTime = uint32_t;
-  using RealTime = uint32_t;
-  using PlayerID = uint32_t;
 
-  using Real = float;
+  //! \typedef RealTime
+  //! \brief Local type definition for real time counted in seconds.
+  //!   (seconds = (ticks / speed_multiplier / ticks_per_second))
+  //!   speed_multiplier = 1.4 ("faster" game speed)
+  //!   ticks_per_second = 16
+  //! \sa GameTime
+  using RealTime = uint32_t;
+
+  using PlayerID = uint32_t; //!< A player index number.
+
+  using Real = float; //!< Local floating point type.
   using Radian = Real;
 
   using StringVector = vector<string>;

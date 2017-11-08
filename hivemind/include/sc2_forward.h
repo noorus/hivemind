@@ -33,7 +33,20 @@ namespace hivemind {
   using sc2::UPGRADE_ID;
   using sc2::UpgradeID;
 
+  //! \typedef UnitTag
+  //! \brief Local type for referring to the unique ID of a specific unit in current game.
+  //!   Tag is guaranteed to be unique for the lifetime of the current game.
+  //!   The tag ID of a unit is accessible through \c unit->tag .
+  //!   In most cases it makes more sense to use UnitRef directly instead.
+  //! \deprecated Tags were used to refer to units before the SC2 client API was
+  //!   redesigned to use direct, strongly guaranteed pointers to Units instead.
+  //! \sa UnitRef
   using UnitTag = uint64_t;
+
+  //! \typedef UnitRef
+  //! \brief Local type for referring to a specific unit in current game.
+  //!   Pointer is guaranteed unique and valid for the lifetime of the current game.
+  //!   To see whether a unit is still alive, use \c unit->is_alive .
   using UnitRef = const Unit*;
   using UnitMap = std::map<UnitRef, sc2::UNIT_TYPEID>;
 
@@ -42,12 +55,9 @@ namespace hivemind {
   using Point2Vector = vector<Point2D>;
   using Point3Vector = vector<Point3D>;
 
-  using BoolMap = vector<vector<bool>>;
-  using IntMap = vector<vector<int>>;
-  using FloatMap = vector<vector<float>>;
-  using UnitSet = set<UnitRef>;
+  using UnitSet = set<UnitRef>; //!< A set of specific units in current game.
 
-  struct UnitVector: public std::vector<UnitRef> {
+  struct UnitVector: public vector<UnitRef> {
   public:
     inline hivemind::Vector2 center() const
     {
