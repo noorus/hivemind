@@ -329,7 +329,8 @@ namespace hivemind {
           bot_->debug().DebugSphereOut( pos, 0.1f, sc2::Colors::Yellow );
       }
 
-    for ( auto& poly_comp : polygons_ )
+    size_t i = 0;
+    for ( auto& poly : tempRegionPolygons_ )
     {
       rgb tmp;
       sc2::Color color;

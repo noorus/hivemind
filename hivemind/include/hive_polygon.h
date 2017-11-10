@@ -6,10 +6,55 @@
 
 namespace hivemind {
 
+  // this really doesn't belong here
   struct MapPoint2 {
     int x;
     int y;
-    MapPoint2( int x_, int y_ ): x( x_ ), y( y_ ) {}
+    MapPoint2( int x_, int y_ ): x( x_ ), y( y_ )
+    {
+    }
+    MapPoint2( const Vector2& other ): x( math::floor( other.x ) ), y( math::floor( other.y ) )
+    {
+    }
+    inline MapPoint2& operator = ( const Vector2& rhs )
+    {
+      x = math::floor( rhs.x );
+      y = math::floor( rhs.y );
+      return *this;
+    }
+    inline MapPoint2& operator = ( const sc2::Point2D& rhs )
+    {
+      x = math::floor( rhs.x );
+      y = math::floor( rhs.y );
+      return *this;
+    }
+    inline MapPoint2& operator = ( const sc2::Point3D& rhs )
+    {
+      x = math::floor( rhs.x );
+      y = math::floor( rhs.y );
+      return *this;
+    }
+    inline operator sc2::Point2DI() const
+    {
+      sc2::Point2DI ret;
+      ret.x = x;
+      ret.y = y;
+      return ret;
+    }
+    inline operator sc2::Point2D() const
+    {
+      sc2::Point2D ret;
+      ret.x = ( (Real)x + 0.5f );
+      ret.y = ( (Real)y + 0.5f );
+      return ret;
+    }
+    inline operator Vector2() const
+    {
+      return Vector2(
+        ( (Real)x + 0.5f ),
+        ( (Real)y + 0.5f )
+      );
+    }
   };
 
   using Contour = vector<MapPoint2>;

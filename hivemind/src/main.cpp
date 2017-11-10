@@ -93,7 +93,7 @@ int main( int argc, char* argv[] )
 
     hivemind::Database::load( g_CVar_data_path.as_s() );
 
-#if 1
+#if 0
     testTechChain(console, sc2::UNIT_TYPEID::TERRAN_SIEGETANK);
     testTechChain(console, sc2::UNIT_TYPEID::TERRAN_SIEGETANKSIEGED);
     testTechChain(console, sc2::UNIT_TYPEID::ZERG_HYDRALISK);

@@ -131,8 +131,8 @@ namespace hivemind {
 
       // We discard any extra polygons here, should probably log a message about them
 
-      for ( size_t i = 0; i < contourSimpleOut.size(); i++ )
-        printf( "util_clipperPathToCleanPolygon: poly %d, size %d\r\n", i, contourSimpleOut[i].size() );
+      /*for ( size_t i = 0; i < contourSimpleOut.size(); i++ )
+        printf( "util_clipperPathToCleanPolygon: poly %d, size %d\r\n", i, contourSimpleOut[i].size() );*/
 
       auto toSimplify = util_clipperPathToBoostPolygon( contourSimpleOut[0] );
 
@@ -1017,8 +1017,8 @@ namespace hivemind {
       auto width = flags_out.width();
       auto height = flags_out.height();
 
-      for ( size_t x = 0; x < width; x++ )
-        for ( size_t y = 0; y < height; y++ )
+      for ( int x = 0; x < width; x++ )
+        for ( int y = 0; y < height; y++ )
         {
           for ( auto& loc : locations )
           {
@@ -1030,8 +1030,8 @@ namespace hivemind {
         }
 
       // second pass to mark "near"-tiles
-      for ( size_t x = 0; x < width; x++ )
-        for ( size_t y = 0; y < height; y++ )
+      for ( int x = 0; x < width; x++ )
+        for ( int y = 0; y < height; y++ )
           if ( ( flags_out[x][y] & MapFlag_Walkable ) && x > 2 && y > 2 && x <= ( width - 1 ) && y <= ( height - 1 ) )
           {
             // up to 2 tiles around me
