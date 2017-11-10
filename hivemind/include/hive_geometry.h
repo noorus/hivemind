@@ -14,4 +14,8 @@ namespace hivemind {
   typedef boost::polygon::point_data<double> VoronoiPoint;
   typedef boost::polygon::segment_data<double> VoronoiSegment;
 
+  typedef boost::geometry::model::linestring<BoostPoint> BoostLine;
+  typedef boost::geometry::model::multi_linestring<BoostLine> BoostMultiLine;
+  typedef boost::geometry::model::multi_polygon<BoostPolygon> BoostMultiPoly;
+
 }

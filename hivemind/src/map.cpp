@@ -163,7 +163,7 @@ namespace hivemind {
 
       for ( auto& pt : poly.contour )
         svgPoly << svg::Point( pt.x * 16.0, pt.y * 16.0 );
-      for ( auto& hole : poly.holes )
+      for ( auto& hole : poly.contour.holes )
       {
         svg::Polygon holePoly( svg::Stroke( 2.0, svg::Color::Red ) );
         for ( auto& pt : hole )
@@ -263,6 +263,8 @@ namespace hivemind {
 
     dumpPolygons( width_, height_, obstacles_, chokepointSides_ );
 
+    Analysis::Map_MakeRegions( polygons_, chokepointSides_, tempRegionPolygons_, width_, height_ );
+
     bot_->console().printf( "Map: Finding resource clusters..." );
 
     resourceClusters_.clear();
@@ -304,6 +306,7 @@ namespace hivemind {
       Point3D p0 = util_tileToMarker( previous, heightMap_, 0.5f, maxZ_ );
       Point3D p1 = util_tileToMarker( vec, heightMap_, 0.5f, maxZ_ );
       debug.DebugLineOut( p0, p1, color );
+      bot_->debug().DebugSphereOut( p1, 0.1f, color );
       // debug.DebugSphereOut( p0, 0.25f, sc2::Colors::Green );
       previous = vec;
     }
@@ -328,19 +331,24 @@ namespace hivemind {
 
     for ( auto& poly_comp : polygons_ )
     {
-      drawPoly( bot_->debug(), poly_comp.contour, sc2::Colors::Purple );
-      for ( auto& hole : poly_comp.holes )
-        drawPoly( bot_->debug(), hole, sc2::Colors::Red );
+      rgb tmp;
+      sc2::Color color;
+      utils::hsl2rgb( (uint16_t)i * 120, 255, 250, (uint8_t*)&tmp );
+      color.r = tmp.r;
+      color.g = tmp.g;
+      color.b = tmp.b;
+      drawPoly( bot_->debug(), poly, color );
+      i++;
     }
-    for ( auto& asd : chokepointSides_ )
+    /*for ( auto& asd : chokepointSides_ )
     {
-      Point3D p0 = util_tileToMarker( asd.second.side1, heightMap_, 0.75f, maxZ_ );
-      Point3D p1 = util_tileToMarker( asd.second.side2, heightMap_, 0.75f, maxZ_ );
+      Point3D p0 = util_tileToMarker( asd.second.side1, heightMap_, 0.5f, maxZ_ );
+      Point3D p1 = util_tileToMarker( asd.second.side2, heightMap_, 0.5f, maxZ_ );
       bot_->debug().DebugLineOut( p0, p1, sc2::Colors::Green );
-    }
+    }*/
     for ( auto& node : graphSimplified_.nodes )
     {
-      auto pt = util_tileToMarker( node, heightMap_, 0.75f, maxZ_ );
+      auto pt = util_tileToMarker( node, heightMap_, 1.0f, maxZ_ );
       bot_->debug().DebugSphereOut( pt, 0.25f, sc2::Colors::Teal );
     }
     for ( size_t id = 0; id < graphSimplified_.adjacencyList.size(); id++ )
@@ -349,8 +357,8 @@ namespace hivemind {
       {
         auto v0 = graphSimplified_.nodes[id];
         auto v1 = graphSimplified_.nodes[adj];
-        Point3D p0 = util_tileToMarker( v0, heightMap_, 0.75f, maxZ_ );
-        Point3D p1 = util_tileToMarker( v1, heightMap_, 0.75f, maxZ_ );
+        Point3D p0 = util_tileToMarker( v0, heightMap_, 1.0f, maxZ_ );
+        Point3D p1 = util_tileToMarker( v1, heightMap_, 1.0f, maxZ_ );
         bot_->debug().DebugLineOut( p0, p1, sc2::Colors::Teal );
       }
     }

@@ -87,7 +87,6 @@ namespace hivemind {
   struct PolygonComponent {
     int label;
     Polygon contour;
-    PolygonVector holes;
   };
 
   using PolygonComponentVector = vector<PolygonComponent>;
@@ -137,6 +136,7 @@ namespace hivemind {
     uint8_t* contourTraceImageBuffer_;
     ComponentVector components_; //!< Map components
     PolygonComponentVector polygons_;
+    PolygonVector tempRegionPolygons_;
     Real maxZ_; //!< Highest terrain Z coordinate in the map
     mutable std::map<std::pair<size_t, size_t>, DistanceMap> distanceMapCache_;
     vector<UnitVector> resourceClusters_;

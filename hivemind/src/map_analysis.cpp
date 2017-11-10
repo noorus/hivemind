@@ -12,7 +12,7 @@ namespace hivemind {
     /*
      * 1) Extract from gameinfo: dimensions, buildability, pathability, heightmap
      **/
-    void Map_BuildBasics( const GameInfo & info, size_t & width_out, size_t & height_out, Array2<uint64_t>& flags_out, Array2<Real>& heightmap_out )
+    void Map_BuildBasics( const GameInfo& info, size_t& width_out, size_t& height_out, Array2<uint64_t>& flags_out, Array2<Real>& heightmap_out )
     {
       width_out = info.width;
       height_out = info.height;
@@ -121,19 +121,23 @@ namespace hivemind {
 
       blob_algo::destroy_blobs( blob_out, blob_count );
     }
-    
-    Polygon util_contourToCleanPolygon( Contour& contour )
-    {
-      auto contourPoly = util_contourToClipperPath( contour );
 
-      ClipperLib::CleanPolygon( contourPoly );
+    Polygon util_clipperPathToCleanPolygon( ClipperLib::Path& path, const bool simplify = false )
+    {
+      ClipperLib::CleanPolygon( path );
 
       ClipperLib::Paths contourSimpleOut;
-      ClipperLib::SimplifyPolygon( contourPoly, contourSimpleOut );
+      ClipperLib::SimplifyPolygon( path, contourSimpleOut );
 
       // We discard any extra polygons here, should probably log a message about them
 
+      for ( size_t i = 0; i < contourSimpleOut.size(); i++ )
+        printf( "util_clipperPathToCleanPolygon: poly %d, size %d\r\n", i, contourSimpleOut[i].size() );
+
       auto toSimplify = util_clipperPathToBoostPolygon( contourSimpleOut[0] );
+
+      if ( !simplify )
+        return util_boostPolygonToPolygon( toSimplify );
 
       BoostPolygon simplified;
       boost::geometry::simplify( toSimplify, simplified, 1.0 );
@@ -154,11 +158,13 @@ namespace hivemind {
         PolygonComponent out_comp;
         out_comp.label = component.label;
 
-        out_comp.contour = util_contourToCleanPolygon( component.contour );
+        auto clipperContour = util_contourToClipperPath( component.contour );
+        out_comp.contour = util_clipperPathToCleanPolygon( clipperContour );
 
         for ( auto& hole : component.holes )
         {
-          out_comp.holes.push_back( util_contourToCleanPolygon( hole ) );
+          auto clipperHole = util_contourToClipperPath( hole );
+          out_comp.contour.holes.push_back( util_clipperPathToCleanPolygon( clipperHole ) );
         }
 
         polygons_out.push_back( out_comp );
@@ -207,9 +213,9 @@ namespace hivemind {
       overall.contour.push_back( Vector2( 0.0f, dimensions.y ) );
       overall.label = 0; // unwalkable
       Polygon largestCopy = ( *largestPoly );
-      overall.holes.push_back( largestCopy );
+      overall.contour.holes.push_back( largestCopy );
       obstacles_out.push_back( overall );
-      for ( auto& hole : largestComponent->holes )
+      for ( auto& hole : largestComponent->contour.holes )
       {
         PolygonComponent innerComp;
         innerComp.contour = hole;
@@ -325,7 +331,7 @@ namespace hivemind {
           rtreeSegments.push_back( std::make_pair( BoostSegment( BoostPoint( poly.contour[j].x, poly.contour[j].y ),
             BoostPoint( poly.contour[i].x, poly.contour[i].y ) ), idPoint++ ) );
         }
-        for ( auto& hole : poly.holes )
+        for ( auto& hole : poly.contour.holes )
         {
           size_t lastPoint = hole.size() - 1;
           for ( size_t i = 0, j = 1; i < lastPoint; ++i, ++j )
@@ -829,6 +835,116 @@ namespace hivemind {
         }
         chokepointSides.emplace( id, Chokepoint( side1, side2 ) );
       }
+    }
+
+    inline BoostPoint getMidpoint( BoostPoint a, BoostPoint b )
+    {
+      boost::geometry::subtract_point( a, b );
+      boost::geometry::divide_value( a, 2 );
+      boost::geometry::add_point( a, b );
+      return a;
+    }
+
+    void extendLine( BoostPoint& a, BoostPoint& b )
+    {
+      BoostPoint extendCenter = getMidpoint( a, b );
+      // translate to extend
+      boost::geometry::subtract_point( a, extendCenter );
+      boost::geometry::subtract_point( b, extendCenter );
+      // extend
+      boost::geometry::multiply_value( a, 1.1 );
+      boost::geometry::multiply_value( b, 1.1 );
+      // translate back
+      boost::geometry::add_point( a, extendCenter );
+      boost::geometry::add_point( b, extendCenter );
+    }
+
+    void convertPoly( const Polygon& in, BoostPolygon::ring_type& out )
+    {
+      for ( auto& pt : in )
+        out.emplace_back(pt.x,pt.y);
+    }
+
+    void util_clipAreasToRegions( ClipperLib::Paths& areas, ClipperLib::Paths& holes, ClipperLib::Paths& cutters, PolygonVector& out )
+    {
+      // combine holes & cutters (union), then cut areas with the result (difference)
+      ClipperLib::Clipper clipper;
+
+      clipper.AddPaths( holes, ClipperLib::ptSubject, true );
+      clipper.AddPaths( cutters, ClipperLib::ptClip, true );
+
+      ClipperLib::Paths cutUnion;
+      clipper.Execute( ClipperLib::ctUnion, cutUnion, ClipperLib::pftEvenOdd, ClipperLib::pftEvenOdd );
+
+      clipper.Clear();
+
+      clipper.AddPaths( areas, ClipperLib::ptSubject, true );
+      clipper.AddPaths( cutUnion, ClipperLib::ptClip, true );
+
+      ClipperLib::Paths solution;
+      clipper.Execute( ClipperLib::ctDifference, solution, ClipperLib::pftEvenOdd, ClipperLib::pftEvenOdd );
+
+      for ( auto& path : solution )
+      {
+        auto poly = util_clipperPathToCleanPolygon( path, true );
+        out.push_back( poly );
+      }
+    }
+
+    void Map_MakeRegions( const PolygonComponentVector& polygons, const ChokepointMap& chokepointSides, PolygonVector& regionPolygons, size_t width, size_t height )
+    {
+      BoostMultiPoly input;
+      for ( auto& poly : polygons )
+      {
+        BoostPolygon output;
+        convertPoly( poly.contour, output.outer() );
+        input.push_back( output );
+      }
+
+      BoostMultiLine chokeLines;
+
+      for ( auto& choke : chokepointSides )
+      {
+        BoostPoint a( choke.second.side1.x, choke.second.side1.y );
+        BoostPoint b( choke.second.side2.x, choke.second.side2.y );
+        extendLine( a, b );
+        std::vector<BoostPoint> line = { a, b };
+        BoostLine chokeLine;
+        boost::geometry::assign_points( chokeLine, line );
+        chokeLines.push_back( chokeLine );
+      }
+
+      const double buffer_distance = 0.25;
+      boost::geometry::strategy::buffer::distance_symmetric<double> distance_strategy( buffer_distance );
+      boost::geometry::strategy::buffer::join_miter join_strategy;
+      boost::geometry::strategy::buffer::end_flat end_strategy;
+      boost::geometry::strategy::buffer::point_square circle_strategy;
+      boost::geometry::strategy::buffer::side_straight side_strategy;
+
+      BoostMultiPoly cutPolygons;
+
+      boost::geometry::buffer( chokeLines, cutPolygons,
+        distance_strategy, side_strategy,
+        join_strategy, end_strategy, circle_strategy );
+
+      BoostMultiPoly holePolygons;
+
+      for ( auto& poly : polygons )
+      {
+        for ( auto& hole : poly.contour.holes )
+        {
+          BoostPolygon holepoly;
+          for ( auto& pt : hole )
+            boost::geometry::append( holepoly, BoostPoint( pt.x, pt.y ) );
+          holePolygons.push_back( holepoly );
+        }
+      }
+
+      ClipperLib::Paths clipperAreas = util_boostMultiPolyToClipperPaths( input );
+      ClipperLib::Paths clipperCutPolygons = util_boostMultiPolyToClipperPaths( cutPolygons );
+      ClipperLib::Paths clipperHolePolygons = util_boostMultiPolyToClipperPaths( holePolygons );
+
+      util_clipAreasToRegions( clipperAreas, clipperHolePolygons, clipperCutPolygons, regionPolygons );
     }
 
     /*
