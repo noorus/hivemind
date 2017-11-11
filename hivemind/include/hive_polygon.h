@@ -3,6 +3,7 @@
 #include "hive_vector2.h"
 #include "hive_math.h"
 #include "hive_geometry.h"
+#include "utilities.h"
 
 namespace hivemind {
 
@@ -68,6 +69,9 @@ namespace hivemind {
   public:
     PolygonVector holes;
   public:
+    //! \fn const Real Polygon::area() const
+    //! \brief Gets the area of this polygon, not counting holes.
+    //! \return Area of the polygon.
     const Real area() const
     {
       if ( this->size() < 3 )
@@ -80,6 +84,18 @@ namespace hivemind {
         a += this->at( i ).x * this->at( j ).y - this->at( j ).x * this->at( i ).y;
       }
       return math::abs( a / 2.0f );
+    }
+    //! \fn inline bool Polygon::contains( const Vector2& pt )
+    //! \brief Check if a given point is inside this polygon.
+    //!    Points on boundary are treated as being inside.
+    //! \param  pt Point to check.
+    //! \return True if the point is inside the polygon, false if not.
+    inline bool contains( const Vector2& pt )
+    {
+      for ( auto& hole : holes )
+        if ( utils::internal::pointInsidePolyOuter( pt, hole ) > 0 )
+          return false;
+      return ( utils::internal::pointInsidePolyOuter( pt, *this ) > 0 );
     }
   };
 

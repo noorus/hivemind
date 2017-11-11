@@ -4,6 +4,8 @@
 
 namespace hivemind {
 
+  struct Vector2;
+
   namespace platform {
 
     //! \class RWLock
@@ -51,6 +53,13 @@ namespace hivemind {
   };
 
   namespace utils {
+
+    namespace internal {
+
+      // Don't call this; use Polygon::contains() instead.
+      int pointInsidePolyOuter( const Vector2& pt, const vector<Vector2>& poly );
+
+    }
 
     static std::random_device g_randomDevice;
     static std::mt19937 g_random( g_randomDevice() );

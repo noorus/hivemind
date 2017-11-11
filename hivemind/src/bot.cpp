@@ -172,10 +172,17 @@ namespace hivemind {
         sprintf_s( hex, 16, "%x", (unsigned int)unit );
         string txt = string( hex ) + " " + sc2::UnitTypeToName( unit->unit_type );
         txt.append( " (" + std::to_string( unit->unit_type ) + ")\n" );
-        for ( auto& order : unit->orders )
-          txt.append( GetAbilityText( order.ability_id ) + "\n" );
+        /*for ( auto& order : unit->orders )
+          txt.append( GetAbilityText( order.ability_id ) + "\n" );*/
         debug_->DebugTextOut( txt, unit->pos, sc2::Colors::Green );
-        string nrg = std::to_string( unit->energy ) + " / " + std::to_string( unit->energy_max );
+        string nrg = "";
+        for ( size_t i = 0; i < map_.tempRegionPolygons_.size(); i++ )
+        {
+          if ( map_.tempRegionPolygons_[i].contains( unit->pos ) )
+          {
+            nrg.append( "inside polygon " + std::to_string( i ) + "\n" );
+          }
+        }
         Vector3 nrgpos( unit->pos.x, unit->pos.y, unit->pos.z + 1.0f );
         debug_->DebugTextOut( nrg, nrgpos, sc2::Colors::Teal );
       }
