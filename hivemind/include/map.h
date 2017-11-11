@@ -60,6 +60,19 @@ namespace hivemind {
 
   using BuildingReservationMap = std::map<uint64_t, BuildingReservation>; // using encodePoint()
 
+  class Region;
+
+  using RegionSet = set<Region*>;
+  using RegionVector = vector<Region*>;
+
+  class Region {
+  public:
+    Polygon polygon_;
+    Vector2 center_;
+    Analysis::ChokepointSet chokepoints_;
+    RegionSet reachableRegions_;
+  };
+
   class Map {
   public:
     enum ReservedTile: uint8_t {
@@ -83,7 +96,6 @@ namespace hivemind {
     uint8_t* contourTraceImageBuffer_;
     ComponentVector components_; //!< Map components
     PolygonComponentVector polygons_;
-    PolygonVector tempRegionPolygons_;
     Real maxZ_; //!< Highest terrain Z coordinate in the map
     mutable std::map<std::pair<size_t, size_t>, DistanceMap> distanceMapCache_;
     vector<UnitVector> resourceClusters_;
@@ -92,6 +104,8 @@ namespace hivemind {
     PolygonComponentVector obstacles_;
     std::map<Analysis::RegionNodeID, Analysis::Chokepoint> chokepointSides_;
     BaseLocationVector baseLocations_;
+    RegionVector regions_;
+    Array2<int> regionMap_;
   private:
     bool rampHasCreepTumor( int x, int y );
     void updateReservedMap();

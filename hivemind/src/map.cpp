@@ -27,6 +27,9 @@ namespace hivemind {
 
   Map::~Map()
   {
+    for ( auto regptr : regions_ )
+      delete regptr;
+    regions_.clear();
     if ( contourTraceImageBuffer_ )
       ::free( contourTraceImageBuffer_ );
   }
@@ -210,6 +213,8 @@ namespace hivemind {
     labeledCreeps_.reset( 0 );
     reservedMap_.resize( width_, height_ );
     reservedMap_.reset( Reserved_None );
+    regionMap_.resize( width_, height_ );
+    regionMap_.reset( -1 );
 
     if ( contourTraceImageBuffer_ )
       ::free( contourTraceImageBuffer_ );
@@ -221,6 +226,10 @@ namespace hivemind {
     components_.clear();
     polygons_.clear();
     obstacles_.clear();
+
+    for ( auto regptr : regions_ )
+      delete regptr;
+    regions_.clear();
 
     Analysis::Map_ProcessContours( flagsMap_, labelsMap_, components_ );
 
@@ -263,7 +272,7 @@ namespace hivemind {
 
     dumpPolygons( width_, height_, obstacles_, chokepointSides_ );
 
-    Analysis::Map_MakeRegions( polygons_, chokepointSides_, tempRegionPolygons_, width_, height_ );
+    Analysis::Map_MakeRegions( polygons_, chokepointSides_, flagsMap_, width_, height_, regions_, regionMap_ );
 
     bot_->console().printf( "Map: Finding resource clusters..." );
 
@@ -330,7 +339,7 @@ namespace hivemind {
       }
 
     size_t i = 0;
-    for ( auto& poly : tempRegionPolygons_ )
+    for ( auto& regptr : regions_ )
     {
       rgb tmp;
       sc2::Color color;
@@ -338,7 +347,7 @@ namespace hivemind {
       color.r = tmp.r;
       color.g = tmp.g;
       color.b = tmp.b;
-      drawPoly( bot_->debug(), poly, color );
+      drawPoly( bot_->debug(), regptr->polygon_, color );
       i++;
     }
     /*for ( auto& asd : chokepointSides_ )

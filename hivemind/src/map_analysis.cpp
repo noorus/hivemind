@@ -891,8 +891,10 @@ namespace hivemind {
       }
     }
 
-    void Map_MakeRegions( const PolygonComponentVector& polygons, const ChokepointMap& chokepointSides, PolygonVector& regionPolygons, size_t width, size_t height )
+    void Map_MakeRegions( const PolygonComponentVector& polygons, const ChokepointMap& chokepointSides, Array2<uint64_t>& flagsmap, size_t width, size_t height, RegionVector& regions, Array2<int>& regionLabelMap )
     {
+      PolygonVector regionPolygons;
+
       BoostMultiPoly input;
       for ( auto& poly : polygons )
       {
@@ -945,6 +947,27 @@ namespace hivemind {
       ClipperLib::Paths clipperHolePolygons = util_boostMultiPolyToClipperPaths( holePolygons );
 
       util_clipAreasToRegions( clipperAreas, clipperHolePolygons, clipperCutPolygons, regionPolygons );
+
+      for ( auto& regionPoly : regionPolygons )
+      {
+        auto region = new Region();
+        region->polygon_ = regionPoly;
+        regions.push_back( region );
+      }
+
+      for ( size_t y = 0; y < height; y++ )
+        for ( size_t x = 0; x < width; x++ )
+        {
+          if ( !flagsmap[x][y] & MapFlag_Walkable )
+            continue;
+          Vector2 pt( x, y );
+          for ( size_t i = 0; i < regions.size(); i++ )
+            if ( regions[i]->polygon_.contains( pt ) )
+            {
+              regionLabelMap[x][y] = i;
+              break;
+            }
+        }
     }
 
     /*

@@ -21,19 +21,6 @@ namespace hivemind {
 
     using ChokepointSet = set<Chokepoint*>;
 
-    class Region;
-
-    using RegionSet = set<Region*>;
-    using RegionVector = vector<Region*>;
-
-    class Region {
-    protected:
-      Polygon polygon_;
-      Vector2 center_;
-      ChokepointSet chokepoints_;
-      RegionSet reachableRegions_;
-    };
-
     class RegionGraph {
     public:
       enum NodeType {

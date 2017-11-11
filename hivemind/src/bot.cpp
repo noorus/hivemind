@@ -175,14 +175,16 @@ namespace hivemind {
         /*for ( auto& order : unit->orders )
           txt.append( GetAbilityText( order.ability_id ) + "\n" );*/
         debug_->DebugTextOut( txt, unit->pos, sc2::Colors::Green );
-        string nrg = "";
-        for ( size_t i = 0; i < map_.tempRegionPolygons_.size(); i++ )
+        MapPoint2 coord( unit->pos );
+        auto regIndex = map_.regionMap_[coord.x][coord.y];
+        string nrg = "region: " + std::to_string( regIndex );
+        /*for ( size_t i = 0; i < map_.tempRegionPolygons_.size(); i++ )
         {
           if ( map_.tempRegionPolygons_[i].contains( unit->pos ) )
           {
             nrg.append( "inside polygon " + std::to_string( i ) + "\n" );
           }
-        }
+        }*/
         Vector3 nrgpos( unit->pos.x, unit->pos.y, unit->pos.z + 1.0f );
         debug_->DebugTextOut( nrg, nrgpos, sc2::Colors::Teal );
       }
