@@ -2,6 +2,7 @@
 #include "brain.h"
 #include "ai_goals.h"
 #include "bot.h"
+#include "database.h"
 
 namespace hivemind {
 
@@ -22,9 +23,169 @@ namespace hivemind {
       activate();
     }
 
+    static Vector2 getNextSquadMoveTarget()
+    {
+      static int x = 0;
+      ++x;
+
+      if(x == 1)
+      {
+        return Vector2(15.0f, 25.0f); // Left side of the map.
+      }
+      else if(x == 2)
+      {
+        return Vector2(33.0f, 25.0f); // Center of the map.
+      }
+      else
+      {
+        float x = utils::randomBetween(15, 45) * 1.0f;
+        float y = utils::randomBetween(15, 45) * 1.0f;
+        return Vector2(x, y);
+      }
+    }
+
     void Brain_Micro::activate()
     {
       status_ = AI::Goal::Status_Active;
+
+      combatUnits_.moveTarget_ = getNextSquadMoveTarget();
+    }
+
+    void Brain_Micro::drawSquad(Squad& squad)
+    {
+      float z = 8.1f;
+      Vector3 center(squad.center_.x, squad.center_.y, z);
+      Vector3 moveTarget(squad.moveTarget_.x, squad.moveTarget_.y, z);
+
+      if(squad.focusTarget_)
+      {
+        auto focusTarget = squad.focusTarget_->pos;
+        focusTarget.z += 0.1f;
+
+        bot_->debug().DebugLineOut(center, focusTarget, sc2::Colors::Red);
+      }
+
+      bot_->debug().DebugSphereOut(center, squad.radius_);
+      bot_->debug().DebugLineOut(center, moveTarget);
+    }
+
+    void Brain_Micro::drawSquadUnits(Squad& squad)
+    {
+      for(auto& entry : squad.units_)
+      {
+        UnitRef unit = entry.first;
+        const auto& brain = entry.second;
+
+        auto pos = unit->pos;
+
+        if(brain.hasMoveTarget_)
+        {
+          float z = 8.1f;
+          Vector3 center(pos.x, pos.y, z);
+          Vector3 moveTarget(brain.moveTarget_.x, brain.moveTarget_.y, z);
+
+          bot_->debug().DebugLineOut(center, moveTarget, sc2::Colors::Green);
+        }
+
+        pos.z += 0.3f;
+        string text = std::to_string(brain.commandCooldown_);
+        bot_->debug().DebugTextOut(text, pos, sc2::Colors::Purple);
+
+        pos.y += 0.1f;
+        pos.z += 0.1f;
+        string text2 = std::to_string(unit->weapon_cooldown);
+        bot_->debug().DebugTextOut(text2, pos, sc2::Colors::Yellow);
+      }
+    }
+
+    void Brain_Micro::updateSquad(Squad& squad)
+    {
+      squad.updateCenter();
+
+      if(squad.center_.distance(squad.moveTarget_) <= 5.0f)
+      {
+        Vector2 newTarget = getNextSquadMoveTarget();
+        log("squad at move target (%f, %f), moving to (%f, %f)", squad.moveTarget_.x, squad.moveTarget_.y, newTarget.x, newTarget.y);
+
+        squad.moveTarget_ = newTarget;
+      }
+
+      if(!squad.focusTarget_)
+      {
+        squad.focusTarget_ = selectClosestTarget(squad.center_);
+
+        if(squad.focusTarget_)
+        {
+          log("new squad focus target: %s", unitPrint(squad.focusTarget_));
+        }
+      }
+    }
+
+    void Brain_Micro::updateSquadUnits(Squad& squad)
+    {
+      for(auto& entry : squad.units_)
+      {
+        updateSquadUnit(squad, entry.first, entry.second);
+      }
+    }
+
+    void Brain_Micro::updateSquadUnit(Squad& squad, UnitRef unit, UnitBrain& brain)
+    {
+      sc2::ActionInterface* action = bot_->Actions();
+
+      if(brain.commandCooldown_ > 0)
+      {
+        // Don't interrupt previous attack command.
+        --brain.commandCooldown_;
+        return;
+      }
+
+      brain.hasMoveTarget_ = false;
+
+      if(squad.focusTarget_ && unit->weapon_cooldown <= 0)
+      {
+        // Ready to attack.
+
+        auto target = selectTarget(squad, unit);
+        if(target)
+        {
+          // Shoot if something is in range.
+
+          action->UnitCommand(unit, ABILITY_ID::ATTACK, target);
+          float damagePoint = getUnitDamagePoint(unit);
+          brain.commandCooldown_ = static_cast<int>(damagePoint * 1000 / 10);
+        }
+        else
+        {
+          // Move closer to shoot if nothing is in range.
+
+          action->UnitCommand(unit, ABILITY_ID::ATTACK, squad.focusTarget_);
+          brain.commandCooldown_ = 0;
+        }
+      }
+      else
+      {
+        bool safe = bot_->influenceMap().isSafePlace(unit->pos);
+
+        if(safe)
+        {
+          auto target = squad.moveTarget_;
+          action->UnitCommand(unit, ABILITY_ID::MOVE, target);
+        }
+        else
+        {
+          auto target = getKitingPosition(unit);
+          action->UnitCommand(unit, ABILITY_ID::MOVE, target);
+          brain.moveTarget_ = target;
+          brain.hasMoveTarget_ = true;
+          //brain.commandCooldown_ = 100;
+        }
+      }
+    }
+
+    Vector2 Brain_Micro::getKitingPosition(UnitRef unit)
+    {
+      return bot_->influenceMap().getClosestSafePlace(unit->pos);
     }
 
     UnitRef Brain_Micro::selectClosestTarget(Vector2 from)
@@ -59,11 +220,47 @@ namespace hivemind {
       return target;
     }
 
+    UnitRef Brain_Micro::selectWeakestTarget(Vector2 from, float range)
+    {
+      const sc2::ObservationInterface* observation = bot_->Observation();
+      sc2::Units units = observation->GetUnits(Unit::Alliance::Enemy);
+
+      if (units.empty())
+      {
+        return false;
+      }
+
+      UnitRef target = nullptr;
+      float distance = range;
+      float health = std::numeric_limits<float>::max();
+      for(const auto& unit : units)
+      {
+        float d = DistanceSquared2D(unit->pos, from);
+
+        if(d <= distance * distance && unit->health <= health)
+        {
+          distance = d;
+          target = unit;
+          health = unit->health;
+        }
+      }
+
+      return target;
+    }
+
     void Brain_Micro::log(const char* format, const std::string& message)
     {
       string s("Micro: ");
       s += format;
       bot_->console().printf(s.c_str(), message.c_str());
+    }
+
+    template<typename ...Args>
+    void Brain_Micro::log(const char* format, Args... args)
+    {
+      string s("Micro: ");
+      s += format;
+      bot_->console().printf(s.c_str(), args...);
     }
 
     void Brain_Micro::Squad::updateCenter()
@@ -75,6 +272,43 @@ namespace hivemind {
         sum.y += entry.first->pos.y;
       }
       center_ = sum / float(units_.size());
+
+      float maxDistance = 0.0f;
+      for(const auto& entry : units_)
+      {
+        float x = entry.first->pos.x;
+        float y = entry.first->pos.y;
+        Vector2 pos(x, y);
+
+        float r = center_.distance(pos);
+        maxDistance = max(r, maxDistance);
+      }
+      radius_ = maxDistance;
+    }
+
+    UnitRef Brain_Micro::selectTarget(const Squad& squad, UnitRef unit)
+    {
+      const float range = getUnitRange(unit);
+
+      UnitRef weakest = selectWeakestTarget(unit->pos, range);
+
+      if(weakest)
+      {
+        float hp = weakest->health * 1.0f / weakest->health_max;
+        if(hp < 0.3f)
+        {
+          return weakest;
+        }
+      }
+
+      // Prefer squad focus target if in range.
+      if(Distance3D(unit->pos, squad.focusTarget_->pos) <= range)
+      {
+        return squad.focusTarget_;
+      }
+
+      // Otherwise attack the weakest in range.
+      return weakest;
     }
 
     AI::Goal::Status Brain_Micro::process()
@@ -84,77 +318,10 @@ namespace hivemind {
         return status_;
       }
 
-      sc2::ActionInterface* action = bot_->Actions();
-
-      combatUnits_.updateCenter();
-
-      if(!combatUnits_.focusTarget_)
-      {
-        combatUnits_.focusTarget_ = selectClosestTarget(combatUnits_.center_);
-
-        if(combatUnits_.focusTarget_)
-        {
-          log("new target: %s\n", unitPrint(combatUnits_.focusTarget_));
-        }
-      }
-
-      if(combatUnits_.focusTarget_)
-      {
-        auto pos = combatUnits_.focusTarget_->pos;
-        pos.z += 0.5f;
-
-        bot_->debug().DebugSphereOut(pos, 0.3f, sc2::Colors::White);
-      }
-
-      for(auto& entry : combatUnits_.units_)
-      {
-        const sc2::Unit* unit = entry.first;
-        auto& brain = entry.second;
-
-        if(brain.commandCooldown_ > 0)
-        {
-          auto pos = unit->pos;
-          pos.z += 0.3f;
-
-          string text = std::to_string(brain.commandCooldown_);
-          bot_->debug().DebugTextOut(text, pos, sc2::Colors::Purple);
-
-          --brain.commandCooldown_;
-          continue;
-        }
-
-        if(combatUnits_.focusTarget_ && unit->weapon_cooldown == 0)
-        {
-          // Store move target, if any.
-          if(!unit->orders.empty())
-          {
-            const auto& order = unit->orders.front();
-            if(order.ability_id == ABILITY_ID::MOVE)
-            {
-              brain.moveTarget_ = order.target_pos;
-              brain.hasMoveTarget_ = true;
-            }
-          }
-
-          // Shoot whenever in range.
-          const float roachRange = 4.0f;
-          if(Distance3D(unit->pos, combatUnits_.focusTarget_->pos) <= roachRange)
-          {
-            action->UnitCommand(unit, ABILITY_ID::ATTACK, combatUnits_.focusTarget_);
-            brain.commandCooldown_ = 0;
-          }
-        }
-        else
-        {
-          // Continue walking to stored move target, if any.
-          if(brain.hasMoveTarget_)
-          {
-            action->UnitCommand(unit, ABILITY_ID::MOVE, brain.moveTarget_);
-            brain.hasMoveTarget_ = false;
-            brain.commandCooldown_ = 0;
-          }
-        }
-      }
+      updateSquad(combatUnits_);
+      updateSquadUnits(combatUnits_);
+      drawSquad(combatUnits_);
+      drawSquadUnits(combatUnits_);
 
       return status_;
     }
@@ -181,7 +348,7 @@ namespace hivemind {
           {
             combatUnits_.units_[unit] = UnitBrain();
 
-            log("got combat unit: %s\n", unitPrint(unit));
+            log("got combat unit: %s", unitPrint(unit));
           }
         }
       }
@@ -191,12 +358,12 @@ namespace hivemind {
 
         if(combatUnits_.units_.erase(unit) > 0)
         {
-          log("lost combat unit: %s\n", unitPrint(unit));
+          log("lost combat unit: %s", unitPrint(unit));
         }
         if(unit == combatUnits_.focusTarget_)
         {
           combatUnits_.focusTarget_ = nullptr;
-          log("target destroyed: %s\n", unitPrint(unit));
+          log("target destroyed: %s", unitPrint(unit));
         }
       }
     }

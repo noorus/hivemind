@@ -409,4 +409,29 @@ namespace hivemind {
     techTree_.load( dataPath + R"(\techtree.json)" );
   }
 
+  float getUnitRange(UnitRef unit)
+  {
+    float range = -1000.0f;
+
+    const auto& unitType = Database::unit(unit->unit_type);
+    for(const auto& weaponName : unitType.weapons)
+    {
+      const auto& weapon = Database::weapon(weaponName);
+      range = max(range, weapon.range);
+    }
+    return range;
+  }
+
+  float getUnitDamagePoint(UnitRef unit)
+  {
+    float damagePoint = 0.0f;
+
+    const auto& unitType = Database::unit(unit->unit_type);
+    for(const auto& weaponName : unitType.weapons)
+    {
+      const auto& weapon = Database::weapon(weaponName);
+      damagePoint = max(damagePoint, weapon.damagePoint);
+    }
+    return damagePoint;
+  }
 }

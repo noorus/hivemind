@@ -59,8 +59,6 @@ void testTechChain(hivemind::Console& console, sc2::UPGRADE_ID targetType)
   }
 }
 
-const unsigned int c_updateSleepTime = 10; // 10 milliseconds
-
 const char* c_dataPath = R"(..\data)";
 
 static std::string GetExePath()
@@ -79,9 +77,10 @@ static std::string GetExePath()
 static std::string getMapName()
 {
 #if 1
-    //const char* c_mapName = "micro/HydraliskMicro.SC2Map";
+    const char* c_mapName = "micro/HydraliskMicro.SC2Map";
     //const char* c_mapName = "micro/RoachMicro.SC2Map";
-    const char* c_mapName = "micro/AttackMove.SC2Map";
+    //const char* c_mapName = "micro/AttackMove.SC2Map";
+    //const char* c_mapName = "micro/RoachZealotMicro.SC2Map";
 
     // Coordinator searches relative paths starting from "../../maps" which would be outside the repo.
     // Workaround by creating an absolute path.
@@ -93,7 +92,7 @@ static std::string getMapName()
     result += c_mapName;
     return result;
 #else
-  return "Fractured Glacier"; // "Interloper LE";
+  return g_CVar_map.as_s();
 #endif
 }
 
@@ -133,7 +132,7 @@ int main( int argc, char* argv[] )
 
     hivemind::Database::load( g_CVar_data_path.as_s() );
 
-#if 1
+#if 0
     testTechChain(console, sc2::UNIT_TYPEID::TERRAN_SIEGETANK);
     testTechChain(console, sc2::UNIT_TYPEID::TERRAN_SIEGETANKSIEGED);
     testTechChain(console, sc2::UNIT_TYPEID::ZERG_HYDRALISK);
@@ -159,7 +158,7 @@ int main( int argc, char* argv[] )
     } );
 
     coordinator.LaunchStarcraft();
-    if ( !coordinator.StartGame( g_CVar_map.as_s() ) )
+    if ( !coordinator.StartGame( getMapName() ) )
       HIVE_EXCEPT( "Failed to start game" );
 
     while ( coordinator.Update() )

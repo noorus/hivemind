@@ -17,7 +17,13 @@ namespace hivemind {
     void update();
     void gameBegin();
 
+    bool isSafePlace(Vector2 position) const;
+    Vector2 getClosestSafePlace(Vector2 position) const;
+
   private:
+
+    bool insideMap(int x, int y) const;
+
     vector<vector<float>> influence_;
     size_t width_;
     size_t height_;

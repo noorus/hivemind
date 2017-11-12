@@ -53,18 +53,6 @@ namespace hivemind {
     class Brain_Micro: public AI::CompositeGoal, public hivemind::Listener {
     protected:
     public:
-      virtual const string& getName() const final { static string name = "Brain_Micro"; return name; }
-    public:
-      Brain_Micro( AI::Agent* agent );
-      virtual void activate() final;
-      virtual Status process() final;
-      virtual void terminate() final;
-      virtual void onMessage(const Message& msg) final;
-    private:
-
-      UnitRef selectClosestTarget(Vector2 center);
-
-      void log(const char* format, const std::string& message);
 
       struct UnitBrain
       {
@@ -72,7 +60,7 @@ namespace hivemind {
         bool hasMoveTarget_;
         Vector2 moveTarget_;
 
-        UnitBrain():
+        explicit UnitBrain():
           commandCooldown_(0),
           hasMoveTarget_(false)
         {
@@ -86,14 +74,44 @@ namespace hivemind {
 
         UnitRef focusTarget_;
         Vector2 center_;
+        float radius_;
+        Vector2 moveTarget_;
 
-        Squad():
-          focusTarget_()
+        explicit Squad() :
+          focusTarget_(),
+          radius_()
         {
         }
 
         void updateCenter();
       };
+
+      virtual const string& getName() const final { static string name = "Brain_Micro"; return name; }
+    public:
+      Brain_Micro( AI::Agent* agent );
+      virtual void activate() final;
+      virtual Status process() final;
+      virtual void terminate() final;
+      virtual void onMessage(const Message& msg) final;
+    private:
+
+      void drawSquad(Squad& squad);
+      void drawSquadUnits(Squad& squad);
+
+      void updateSquad(Squad& squad);
+      void updateSquadUnits(Squad& squad);
+      void updateSquadUnit(Squad& squad, UnitRef unit, UnitBrain& brain);
+
+      UnitRef selectClosestTarget(Vector2 from);
+      UnitRef selectWeakestTarget(Vector2 from, float range);
+
+      UnitRef selectTarget(const Squad& squad, UnitRef unit);
+      Vector2 getKitingPosition(UnitRef unit);
+
+      void log(const char* format, const std::string& message);
+
+      template<typename ...Args>
+      void log(const char* format, Args... args);
 
       Squad combatUnits_;
     };

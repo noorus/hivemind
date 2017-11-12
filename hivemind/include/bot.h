@@ -53,6 +53,7 @@ namespace hivemind {
     inline Messaging& messaging() { return messaging_; }
     inline Brain& brain() { return brain_; }
     inline Map& map() { return map_; }
+    inline InfluenceMap& influenceMap() { return influenceMap_; }
     inline WorkerManager& workers() { return workers_; }
     inline BaseManager& bases() { return baseManager_; }
     inline Intelligence& intelligence() { return intelligence_; }

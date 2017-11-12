@@ -137,12 +137,11 @@ namespace hivemind {
     inline static const UnitDataMap& units() { return unitData_; }
     inline static const UnitData& unit( UnitType64 id ) { return unitData_[id]; }
 
-    // Get the last weapon of unit.
-    inline static const WeaponData& weapon(UnitType64 id) {
-      return weaponData_.at(unit(id).weapons.back());
-    }
+    inline static const WeaponData& weapon( const string& id ) { return weaponData_.at(id); }
 
     inline static const TechTree& techTree() { return techTree_; }
   };
 
+  float getUnitRange(UnitRef unit);
+  float getUnitDamagePoint(UnitRef unit);
 }
