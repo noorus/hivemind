@@ -144,7 +144,10 @@ namespace hivemind {
       {
         worker_ = bot_->workers().release();
         if ( worker_ )
+        {
+          bot_->unitDebugMsgs_[worker_] = "Scouter";
           _replanRoute();
+        }
       }
       else if ( !route_.empty() && routeIndex_ < route_.size() )
       {

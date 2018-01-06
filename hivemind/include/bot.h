@@ -19,6 +19,7 @@ namespace hivemind {
     struct Options {
       StringVector executeCommands_; //!< Extra commands to execute on startup
     };
+    std::map<UnitRef, std::string> unitDebugMsgs_;
   protected:
     GameTime time_;
     GameTime lastStepTime_;

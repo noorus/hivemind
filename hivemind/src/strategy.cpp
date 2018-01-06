@@ -58,7 +58,7 @@ namespace hivemind {
   void Strategy::draw()
   {
     if ( fzGameTime_ )
-      debugDrawFuzzyVariable( *fzGameTime_, Point2D( 0.03f, 0.3f ), bot_->debug() );
+      debugDrawFuzzyVariable( *fzGameTime_, Point2D( 0.03f, 0.4f ), bot_->debug() );
   }
 
   void Strategy::gameEnd()

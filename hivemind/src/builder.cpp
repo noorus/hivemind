@@ -164,6 +164,7 @@ namespace hivemind {
             bot_->console().printf( "BuildOp %d: No worker released from pool", build.id );
             continue;
           }
+          bot_->unitDebugMsgs_[build.builder] = "Builder, Op " + std::to_string( build.id );
           bot_->console().printf( "BuildOp %d: Got worker %x", build.id, build.builder );
           bot_->action().UnitCommand( build.builder, sc2::ABILITY_ID::MOVE, build.position, false );
           build.tries++;
