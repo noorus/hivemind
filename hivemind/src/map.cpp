@@ -156,7 +156,7 @@ namespace hivemind {
     stbi_write_png( "debug_map_bases.png", (int)info.width, (int)info.height, 3, rgb8.data(), (int)info.width * 3 );
   }
 
-  void dumpPolygons( size_t width, size_t height, PolygonComponentVector& polys, std::map<Analysis::RegionNodeID, Analysis::Chokepoint>& chokes )
+  void dumpPolygons( size_t width, size_t height, PolygonComponentVector& polys, std::map<Analysis::RegionNodeID, Analysis::ChokeSides>& chokes )
   {
     svg::Dimensions dim( (double)width * 16.0, (double)height * 16.0 );
     svg::Document doc( "debug_map_polygons_invert.svg", svg::Layout( dim, svg::Layout::TopLeft ) );
@@ -272,7 +272,7 @@ namespace hivemind {
 
     dumpPolygons( width_, height_, obstacles_, chokepointSides_ );
 
-    Analysis::Map_MakeRegions( polygons_, chokepointSides_, flagsMap_, width_, height_, regions_, regionMap_ );
+    Analysis::Map_MakeRegions( polygons_, chokepointSides_, flagsMap_, width_, height_, regions_, regionMap_, graphSimplified_ );
 
     bot_->console().printf( "Map: Finding resource clusters..." );
 

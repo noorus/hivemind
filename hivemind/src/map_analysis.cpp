@@ -813,7 +813,7 @@ namespace hivemind {
     /*
     * 10) Project the chokepoints from the graph
     **/
-    void Map_GetChokepointSides( const RegionGraph & graph, const bgi::rtree<BoostSegmentI, bgi::quadratic<16>>& rtree, std::map<RegionNodeID, Chokepoint>& chokepointSides )
+    void Map_GetChokepointSides( const RegionGraph& graph, const bgi::rtree<BoostSegmentI, bgi::quadratic<16>>& rtree, std::map<RegionNodeID, ChokeSides>& chokepointSides )
     {
       for ( const auto& id : graph.chokeNodes )
       {
@@ -833,7 +833,7 @@ namespace hivemind {
             break;
           }
         }
-        chokepointSides.emplace( id, Chokepoint( side1, side2 ) );
+        chokepointSides.emplace( id, ChokeSides( side1, side2 ) );
       }
     }
 
@@ -891,7 +891,7 @@ namespace hivemind {
       }
     }
 
-    void Map_MakeRegions( const PolygonComponentVector& polygons, const ChokepointMap& chokepointSides, Array2<uint64_t>& flagsmap, size_t width, size_t height, RegionVector& regions, Array2<int>& regionLabelMap )
+    void Map_MakeRegions( const PolygonComponentVector& polygons, const ChokeSidesMap& chokepointSides, Array2<uint64_t>& flagsmap, size_t width, size_t height, RegionVector& regions, Array2<int>& regionLabelMap, const RegionGraph& graph )
     {
       PolygonVector regionPolygons;
 
@@ -968,6 +968,29 @@ namespace hivemind {
               break;
             }
         }
+
+      /*std::map<RegionNodeID, Region*> nodeToRegion;
+      for ( const auto& id : graph.regionNodes )
+      {
+        auto label = regionLabelMap[(int)graph.nodes[id].x][(int)graph.nodes[id].y];
+        if ( label < 0 || label > regions.size() )
+          HIVE_EXCEPT( "Label for region node out of bounds" );
+        auto region = regions[label];
+        region->opennessDistance_ = graph.minDistToObstacle[id];
+        region->opennessPoint_ = graph.nodes[id];
+        nodeToRegion.emplace( id, region );
+      }
+
+      std::map<RegionNodeID, ChokeSides*> nodeToChoke;
+      for ( const auto& id : graph.chokeNodes )
+      {
+        auto it = graph.adjacencyList[id].begin();
+        auto region1 = nodeToRegion[*it];
+        it++;
+        auto region2 = nodeToRegion[*it];
+        // auto side1 = chokepointSides[id].side1;
+        // auto side2 = chokepointSides[id].side2;
+      }*/
     }
 
     /*

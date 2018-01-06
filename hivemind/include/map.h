@@ -67,10 +67,12 @@ namespace hivemind {
 
   class Region {
   public:
+    int label_;
     Polygon polygon_;
-    Vector2 center_;
-    Analysis::ChokepointSet chokepoints_;
+    Analysis::ChokeSidesSet chokepoints_;
     RegionSet reachableRegions_;
+    Real opennessDistance_;
+    Vector2 opennessPoint_;
   };
 
   class Map {
@@ -102,7 +104,7 @@ namespace hivemind {
     Analysis::RegionGraph graph_;
     Analysis::RegionGraph graphSimplified_;
     PolygonComponentVector obstacles_;
-    std::map<Analysis::RegionNodeID, Analysis::Chokepoint> chokepointSides_;
+    std::map<Analysis::RegionNodeID, Analysis::ChokeSides> chokepointSides_;
     BaseLocationVector baseLocations_;
     RegionVector regions_;
     Array2<int> regionMap_;
