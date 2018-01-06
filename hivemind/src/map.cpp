@@ -323,11 +323,16 @@ namespace hivemind {
 
   void Map::draw()
   {
-    for ( size_t y = 0; y < height_; y++ )
-      for ( size_t x = 0; x < width_; x++ )
+    Point2D camera = bot_->observation().GetCameraPos();
+    for ( float x = camera.x - 16.0f; x < camera.x + 16.0f; ++x )
+    {
+      for ( float y = camera.y - 16.0f; y < camera.y + 16.0f; ++y )
       {
-        sc2::Point3D pos( (Real)x + 0.5f, (Real)y + 0.5f, heightMap_[x][y] + 0.25f );
-        auto tile = flagsMap_[x][y];
+        auto ix = (int)x;
+        auto iy = (int)y;
+
+        sc2::Point3D pos( (Real)ix + 0.5f, (Real)iy + 0.5f, heightMap_[ix][iy] + 0.25f );
+        auto tile = flagsMap_[ix][iy];
         if ( tile & MapFlag_StartLocation )
           bot_->debug().DebugSphereOut( pos, 0.1f, sc2::Colors::Green );
         else if ( tile & MapFlag_NearStartLocation )
@@ -337,6 +342,7 @@ namespace hivemind {
         else if ( tile & MapFlag_NearRamp )
           bot_->debug().DebugSphereOut( pos, 0.1f, sc2::Colors::Yellow );
       }
+    }
 
     size_t i = 0;
     for ( auto& regptr : regions_ )
