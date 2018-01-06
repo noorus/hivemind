@@ -37,6 +37,8 @@ DarkShrine
     DarkTemplarBlinkUpgrade
 
 DarkTemplar
+  merges
+    Archon
 
 DevourerMPWeaponMissile
 
@@ -75,8 +77,12 @@ Gateway
     WarpGate
 
 HighTemplar
+  merges
+    Archon
 
 HighTemplarSkinPreview
+
+HighTemplarWeaponMissile
 
 IceProtossCrates
 
@@ -90,17 +96,20 @@ LightningBombWeapon
 
 Mothership
 
-MothershipCore
-  morphs
-    Mothership
-
 MothershipCoreWeaponWeapon
 
 Nexus
   builds
-    MothershipCore
+    Probe
+    Mothership
 
 Observer
+  morphs
+    ObserverSiegeMode
+
+ObserverSiegeMode
+  morphs
+    Observer
 
 Oracle
   builds
@@ -125,6 +134,7 @@ Probe
     Forge
     CyberneticsCore
     PhotonCannon
+    ShieldBattery
     Stargate
     TemplarArchive
     RoboticsFacility
@@ -168,6 +178,8 @@ ScoutMPAirWeaponLeft
 ScoutMPAirWeaponRight
 
 Sentry
+
+ShieldBattery
 
 Stalker
 

@@ -119,13 +119,48 @@
       ],
       "name" : "WarpPrismPhasing"
     },
-    "488" : 
+    "1911" : 
     {
       "morphs" : 
       [
         {
-          "ability" : 1847,
-          "abilityName" : "MorphToMothership,Execute",
+          "ability" : 3739,
+          "abilityName" : "ObserverSiegeMorphtoObserver,Execute",
+          "time" : 0.0,
+          "unit" : 82,
+          "unitName" : "Observer"
+        }
+      ],
+      "name" : "ObserverSiegeMode"
+    },
+    "495" : 
+    {
+      "builds" : 
+      [
+        {
+          "ability" : 2505,
+          "abilityName" : "OracleStasisTrapBuild,Build1",
+          "time" : 5.0,
+          "unit" : 732,
+          "unitName" : "OracleStasisTrap"
+        }
+      ],
+      "name" : "Oracle"
+    },
+    "59" : 
+    {
+      "builds" : 
+      [
+        {
+          "ability" : 1006,
+          "abilityName" : "NexusTrain,Train1",
+          "time" : 17.0,
+          "unit" : 84,
+          "unitName" : "Probe"
+        },
+        {
+          "ability" : 110,
+          "abilityName" : "NexusTrainMothership,Train1",
           "requires" : 
           [
             {
@@ -157,84 +192,9 @@
               "type" : "and"
             }
           ],
-          "time" : 100.0,
+          "time" : 160.0,
           "unit" : 10,
           "unitName" : "Mothership"
-        }
-      ],
-      "name" : "MothershipCore"
-    },
-    "495" : 
-    {
-      "builds" : 
-      [
-        {
-          "ability" : 2505,
-          "abilityName" : "OracleStasisTrapBuild,Build1",
-          "time" : 5.0,
-          "unit" : 732,
-          "unitName" : "OracleStasisTrap"
-        }
-      ],
-      "name" : "Oracle"
-    },
-    "59" : 
-    {
-      "builds" : 
-      [
-        {
-          "ability" : 1853,
-          "abilityName" : "NexusTrainMothershipCore,Train1",
-          "requires" : 
-          [
-            {
-              "operands" : 
-              [
-                {
-                  "operands" : 
-                  [
-                    {
-                      "state" : "QueuedOrBetter",
-                      "type" : "unitCount",
-                      "unit" : [ 488 ],
-                      "unitName" : [ "MothershipCore" ]
-                    },
-                    {
-                      "type" : "value",
-                      "value" : 0
-                    }
-                  ],
-                  "type" : "eq"
-                },
-                {
-                  "operands" : 
-                  [
-                    {
-                      "state" : "QueuedOrBetter",
-                      "type" : "unitCount",
-                      "unit" : [ 10 ],
-                      "unitName" : [ "Mothership" ]
-                    },
-                    {
-                      "type" : "value",
-                      "value" : 0
-                    }
-                  ],
-                  "type" : "eq"
-                },
-                {
-                  "state" : "CompleteOnly",
-                  "type" : "unitCount",
-                  "unit" : [ 72 ],
-                  "unitName" : [ "CyberneticsCore" ]
-                }
-              ],
-              "type" : "and"
-            }
-          ],
-          "time" : 30.0,
-          "unit" : 488,
-          "unitName" : "MothershipCore"
         }
       ],
       "name" : "Nexus"
@@ -936,7 +896,7 @@
         {
           "ability" : 954,
           "abilityName" : "StargateTrain,Train9",
-          "time" : 50.0,
+          "time" : 52.0,
           "unit" : 495,
           "unitName" : "Oracle"
         },
@@ -1547,6 +1507,20 @@
       ],
       "name" : "WarpPrism"
     },
+    "82" : 
+    {
+      "morphs" : 
+      [
+        {
+          "ability" : 3741,
+          "abilityName" : "ObserverMorphtoObserverSiege,Execute",
+          "time" : 0.0,
+          "unit" : 1911,
+          "unitName" : "ObserverSiegeMode"
+        }
+      ],
+      "name" : "Observer"
+    },
     "84" : 
     {
       "builds" : 
@@ -1635,6 +1609,22 @@
           "time" : 40.0,
           "unit" : 66,
           "unitName" : "PhotonCannon"
+        },
+        {
+          "ability" : 895,
+          "abilityName" : "ProtossBuild,Build16",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "unitCount",
+              "unit" : [ 72 ],
+              "unitName" : [ "CyberneticsCore" ]
+            }
+          ],
+          "time" : 40.0,
+          "unit" : 1910,
+          "unitName" : "ShieldBattery"
         },
         {
           "ability" : 889,
@@ -1781,6 +1771,20 @@
         }
       ],
       "name" : "OrbitalCommand"
+    },
+    "134" : 
+    {
+      "morphs" : 
+      [
+        {
+          "ability" : 1524,
+          "abilityName" : "OrbitalCommandLand,Execute",
+          "time" : 0.0,
+          "unit" : 132,
+          "unitName" : "OrbitalCommand"
+        }
+      ],
+      "name" : "OrbitalCommandFlying"
     },
     "18" : 
     {
@@ -2297,30 +2301,6 @@
       "researches" : 
       [
         {
-          "ability" : 820,
-          "abilityName" : "GhostAcademyResearch,Research1",
-          "minerals" : 150,
-          "requires" : 
-          [
-            {
-              "operands" : 
-              [
-                {
-                  "state" : "QueuedOrBetter",
-                  "type" : "upgradeCount",
-                  "upgrade" : 25,
-                  "upgradeName" : "PersonalCloaking"
-                }
-              ],
-              "type" : "not"
-            }
-          ],
-          "time" : 120.0,
-          "upgrade" : 25,
-          "upgradeName" : "PersonalCloaking",
-          "vespene" : 150
-        },
-        {
           "ability" : 821,
           "abilityName" : "GhostAcademyResearch,Research2",
           "minerals" : 100,
@@ -2390,7 +2370,7 @@
         {
           "ability" : 614,
           "abilityName" : "FactoryTrain,Train25",
-          "time" : 40.0,
+          "time" : 30.0,
           "unit" : 498,
           "unitName" : "WidowMine"
         },
@@ -2527,13 +2507,6 @@
           "unitName" : "Battlecruiser"
         },
         {
-          "ability" : 626,
-          "abilityName" : "StarportTrain,Train7",
-          "time" : 60.0,
-          "unit" : 689,
-          "unitName" : "Liberator"
-        },
-        {
           "ability" : 487,
           "abilityName" : "StarportAddOns,Build1",
           "time" : 25.0,
@@ -2546,6 +2519,13 @@
           "time" : 50.0,
           "unit" : 42,
           "unitName" : "StarportReactor"
+        },
+        {
+          "ability" : 626,
+          "abilityName" : "StarportTrain,Train7",
+          "time" : 60.0,
+          "unit" : 689,
+          "unitName" : "Liberator"
         }
       ],
       "name" : "Starport"
@@ -3029,6 +3009,20 @@
       ],
       "name" : "VikingFighter"
     },
+    "36" : 
+    {
+      "morphs" : 
+      [
+        {
+          "ability" : 419,
+          "abilityName" : "CommandCenterLand,Execute",
+          "time" : 0.0,
+          "unit" : 18,
+          "unitName" : "CommandCenter"
+        }
+      ],
+      "name" : "CommandCenterFlying"
+    },
     "37" : 
     {
       "name" : "BarracksTechLab",
@@ -3111,36 +3105,6 @@
           "upgrade" : 17,
           "upgradeName" : "PunisherGrenades",
           "vespene" : 100
-        },
-        {
-          "ability" : 683,
-          "abilityName" : "MercCompoundResearch,Research4",
-          "minerals" : 100,
-          "requires" : 
-          [
-            {
-              "state" : "CompleteOnly",
-              "type" : "unitCount",
-              "unit" : [ 27, 43 ],
-              "unitName" : [ "Factory", "FactoryFlying" ]
-            },
-            {
-              "operands" : 
-              [
-                {
-                  "state" : "QueuedOrBetter",
-                  "type" : "upgradeCount",
-                  "upgrade" : 14,
-                  "upgradeName" : "ReaperSpeed"
-                }
-              ],
-              "type" : "not"
-            }
-          ],
-          "time" : 100.0,
-          "upgrade" : 14,
-          "upgradeName" : "ReaperSpeed",
-          "vespene" : 100
         }
       ]
     },
@@ -3202,18 +3166,41 @@
           "upgrade" : 122,
           "upgradeName" : "DrillClaws",
           "vespene" : 150
-        }
-      ]
-    },
-    "41" : 
-    {
-      "name" : "StarportTechLab",
-      "researches" : 
-      [
+        },
         {
-          "ability" : 792,
-          "abilityName" : "StarportTechLabResearch,Research3",
+          "ability" : 766,
+          "abilityName" : "FactoryTechLabResearch,Research7",
           "minerals" : 100,
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "unitCount",
+              "unit" : [ 29 ],
+              "unitName" : [ "Armory" ]
+            },
+            {
+              "operands" : 
+              [
+                {
+                  "state" : "QueuedOrBetter",
+                  "type" : "upgradeCount",
+                  "upgrade" : 289,
+                  "upgradeName" : "SmartServos"
+                }
+              ],
+              "type" : "not"
+            }
+          ],
+          "time" : 110.0,
+          "upgrade" : 289,
+          "upgradeName" : "SmartServos",
+          "vespene" : 100
+        },
+        {
+          "ability" : 768,
+          "abilityName" : "FactoryTechLabResearch,Research9",
+          "minerals" : 75,
           "requires" : 
           [
             {
@@ -3222,18 +3209,25 @@
                 {
                   "state" : "QueuedOrBetter",
                   "type" : "upgradeCount",
-                  "upgrade" : 21,
-                  "upgradeName" : "MedivacCaduceusReactor"
+                  "upgrade" : 291,
+                  "upgradeName" : "CycloneRapidFireLaunchers"
                 }
               ],
               "type" : "not"
             }
           ],
-          "time" : 80.0,
-          "upgrade" : 21,
-          "upgradeName" : "MedivacCaduceusReactor",
-          "vespene" : 100
-        },
+          "time" : 110.0,
+          "upgrade" : 291,
+          "upgradeName" : "CycloneRapidFireLaunchers",
+          "vespene" : 75
+        }
+      ]
+    },
+    "41" : 
+    {
+      "name" : "StarportTechLab",
+      "researches" : 
+      [
         {
           "ability" : 790,
           "abilityName" : "StarportTechLabResearch,Research1",
@@ -3283,62 +3277,76 @@
           "vespene" : 150
         },
         {
-          "ability" : 797,
-          "abilityName" : "StarportTechLabResearch,Research8",
-          "minerals" : 150,
-          "requires" : 
-          [
-            {
-              "operands" : 
-              [
-                {
-                  "state" : "QueuedOrBetter",
-                  "type" : "upgradeCount",
-                  "upgrade" : 24,
-                  "upgradeName" : "DurableMaterials"
-                }
-              ],
-              "type" : "not"
-            }
-          ],
-          "time" : 110.0,
-          "upgrade" : 24,
-          "upgradeName" : "DurableMaterials",
-          "vespene" : 150
-        },
-        {
-          "ability" : 796,
-          "abilityName" : "StarportTechLabResearch,Research7",
-          "minerals" : 150,
-          "requires" : 
-          [
-            {
-              "operands" : 
-              [
-                {
-                  "state" : "QueuedOrBetter",
-                  "type" : "upgradeCount",
-                  "upgrade" : 23,
-                  "upgradeName" : "HunterSeeker"
-                }
-              ],
-              "type" : "not"
-            }
-          ],
-          "time" : 110.0,
-          "upgrade" : 23,
-          "upgradeName" : "HunterSeeker",
-          "vespene" : 150
-        },
-        {
-          "ability" : 800,
-          "abilityName" : "StarportTechLabResearch,Research11",
+          "ability" : 799,
+          "abilityName" : "StarportTechLabResearch,Research10",
           "minerals" : 200,
-          "requires" : [],
-          "time" : 120.0,
-          "upgrade" : 125,
-          "upgradeName" : "LiberatorMorph",
+          "requires" : 
+          [
+            {
+              "operands" : 
+              [
+                {
+                  "state" : "QueuedOrBetter",
+                  "type" : "upgradeCount",
+                  "upgrade" : 136,
+                  "upgradeName" : "BansheeSpeed"
+                }
+              ],
+              "type" : "not"
+            }
+          ],
+          "time" : 170.0,
+          "upgrade" : 136,
+          "upgradeName" : "BansheeSpeed",
           "vespene" : 200
+        },
+        {
+          "ability" : 806,
+          "abilityName" : "StarportTechLabResearch,Research17",
+          "minerals" : 150,
+          "requires" : 
+          [
+            {
+              "operands" : 
+              [
+                {
+                  "state" : "QueuedOrBetter",
+                  "type" : "upgradeCount",
+                  "upgrade" : 292,
+                  "upgradeName" : "RavenEnhancedMunitions"
+                }
+              ],
+              "type" : "not"
+            }
+          ],
+          "time" : 110.0,
+          "upgrade" : 292,
+          "upgradeName" : "RavenEnhancedMunitions",
+          "vespene" : 150
+        },
+        {
+          "ability" : 804,
+          "abilityName" : "StarportTechLabResearch,Research15",
+          "minerals" : 100,
+          "requires" : 
+          [
+            {
+              "operands" : 
+              [
+                {
+                  "state" : "QueuedOrBetter",
+                  "type" : "upgradeCount",
+                  "upgrade" : 139,
+                  "upgradeName" : "MedivacIncreaseSpeedBoost"
+                }
+              ],
+              "type" : "not"
+            }
+          ],
+          "time" : 80.0,
+          "upgrade" : 139,
+          "upgradeName" : "MedivacIncreaseSpeedBoost",
+          "vespene" : 100
         },
         {
           "ability" : 805,
@@ -3391,6 +3399,16 @@
           "unitName" : "FactoryTechLab"
         }
       ],
+      "morphs" : 
+      [
+        {
+          "ability" : 520,
+          "abilityName" : "FactoryLand,Execute",
+          "time" : 0.0,
+          "unit" : 27,
+          "unitName" : "Factory"
+        }
+      ],
       "name" : "FactoryFlying"
     },
     "44" : 
@@ -3410,6 +3428,16 @@
           "time" : 25.0,
           "unit" : 41,
           "unitName" : "StarportTechLab"
+        }
+      ],
+      "morphs" : 
+      [
+        {
+          "ability" : 522,
+          "abilityName" : "StarportLand,Execute",
+          "time" : 0.0,
+          "unit" : 28,
+          "unitName" : "Starport"
         }
       ],
       "name" : "StarportFlying"
@@ -3626,6 +3654,16 @@
           "time" : 25.0,
           "unit" : 37,
           "unitName" : "BarracksTechLab"
+        }
+      ],
+      "morphs" : 
+      [
+        {
+          "ability" : 554,
+          "abilityName" : "BarracksLand,Execute",
+          "time" : 0.0,
+          "unit" : 21,
+          "unitName" : "Barracks"
         }
       ],
       "name" : "BarracksFlying"
@@ -4396,6 +4434,41 @@
           "time" : 40.0,
           "unit" : 91,
           "unitName" : "HydraliskDen"
+        },
+        {
+          "ability" : 1163,
+          "abilityName" : "ZergBuild,Build12",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "unitCount",
+              "unit" : [ 91, 504 ],
+              "unitName" : [ "HydraliskDen", "LurkerDenMP" ]
+            }
+          ],
+          "time" : 120.0,
+          "unit" : 504,
+          "unitName" : "LurkerDenMP"
+        }
+      ],
+      "morphs" : 
+      [
+        {
+          "ability" : 1378,
+          "abilityName" : "BurrowDroneDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 116,
+          "unitName" : "DroneBurrowed"
         }
       ],
       "name" : "Drone"
@@ -4461,6 +4534,22 @@
           "time" : 16.666499999999999,
           "unit" : 129,
           "unitName" : "Overseer"
+        },
+        {
+          "ability" : 2708,
+          "abilityName" : "MorphToTransportOverlord,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "unitCount",
+              "unit" : [ 90 ],
+              "unitName" : [ "EvolutionChamber" ]
+            }
+          ],
+          "time" : 16.666499999999999,
+          "unit" : 893,
+          "unitName" : "OverlordTransport"
         }
       ],
       "name" : "Overlord"
@@ -4531,6 +4620,22 @@
     {
       "morphs" : 
       [
+        {
+          "ability" : 1386,
+          "abilityName" : "BurrowRoachDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 118,
+          "unitName" : "RoachBurrowed"
+        },
         {
           "ability" : 2330,
           "abilityName" : "MorphToRavager,Execute",
@@ -4741,6 +4846,20 @@
       ],
       "name" : "InfestorBurrowed"
     },
+    "129" : 
+    {
+      "morphs" : 
+      [
+        {
+          "ability" : 3743,
+          "abilityName" : "OverseerMorphtoOverseerSiegeMode,Execute",
+          "time" : 0.0,
+          "unit" : 1912,
+          "unitName" : "OverseerSiegeMode"
+        }
+      ],
+      "name" : "Overseer"
+    },
     "131" : 
     {
       "morphs" : 
@@ -4768,6 +4887,34 @@
         }
       ],
       "name" : "CreepTumorBurrowed"
+    },
+    "139" : 
+    {
+      "morphs" : 
+      [
+        {
+          "ability" : 1729,
+          "abilityName" : "SpineCrawlerRoot,Execute",
+          "time" : 0.0,
+          "unit" : 98,
+          "unitName" : "SpineCrawler"
+        }
+      ],
+      "name" : "SpineCrawlerUprooted"
+    },
+    "140" : 
+    {
+      "morphs" : 
+      [
+        {
+          "ability" : 1731,
+          "abilityName" : "SporeCrawlerRoot,Execute",
+          "time" : 0.0,
+          "unit" : 99,
+          "unitName" : "SporeCrawler"
+        }
+      ],
+      "name" : "SporeCrawlerUprooted"
     },
     "151" : 
     {
@@ -4868,22 +5015,6 @@
           "unitName" : "Ultralisk"
         },
         {
-          "ability" : 1354,
-          "abilityName" : "LarvaTrain,Train13",
-          "requires" : 
-          [
-            {
-              "state" : "CompleteOnly",
-              "type" : "unitCount",
-              "unit" : [ 101 ],
-              "unitName" : [ "Hive" ]
-            }
-          ],
-          "time" : 40.0,
-          "unit" : 499,
-          "unitName" : "Viper"
-        },
-        {
           "ability" : 1345,
           "abilityName" : "LarvaTrain,Train4",
           "requires" : 
@@ -4900,20 +5031,20 @@
           "unitName" : "Hydralisk"
         },
         {
-          "ability" : 1356,
-          "abilityName" : "LarvaTrain,Train15",
+          "ability" : 1354,
+          "abilityName" : "LarvaTrain,Train13",
           "requires" : 
           [
             {
               "state" : "CompleteOnly",
               "type" : "unitCount",
-              "unit" : [ 94 ],
-              "unitName" : [ "InfestationPit" ]
+              "unit" : [ 101 ],
+              "unitName" : [ "Hive" ]
             }
           ],
           "time" : 40.0,
-          "unit" : 494,
-          "unitName" : "SwarmHostMP"
+          "unit" : 499,
+          "unitName" : "Viper"
         },
         {
           "ability" : 1353,
@@ -4930,9 +5061,39 @@
           "time" : 40.0,
           "unit" : 112,
           "unitName" : "Corruptor"
+        },
+        {
+          "ability" : 1356,
+          "abilityName" : "LarvaTrain,Train15",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "unitCount",
+              "unit" : [ 94 ],
+              "unitName" : [ "InfestationPit" ]
+            }
+          ],
+          "time" : 40.0,
+          "unit" : 494,
+          "unitName" : "SwarmHostMP"
         }
       ],
       "name" : "Larva"
+    },
+    "1912" : 
+    {
+      "morphs" : 
+      [
+        {
+          "ability" : 3745,
+          "abilityName" : "OverseerSiegeModeMorphtoOverseer,Execute",
+          "time" : 0.0,
+          "unit" : 129,
+          "unitName" : "Overseer"
+        }
+      ],
+      "name" : "OverseerSiegeMode"
     },
     "493" : 
     {
@@ -5005,27 +5166,33 @@
       "researches" : 
       [
         {
-          "ability" : 1283,
-          "abilityName" : "HydraliskDenResearch,Research2",
+          "ability" : 3709,
+          "abilityName" : "LurkerDenResearch,Research1",
           "minerals" : 150,
           "requires" : 
           [
+            {
+              "state" : "CompleteOnly",
+              "type" : "unitCount",
+              "unit" : [ 101 ],
+              "unitName" : [ "Hive" ]
+            },
             {
               "operands" : 
               [
                 {
                   "state" : "QueuedOrBetter",
                   "type" : "upgradeCount",
-                  "upgrade" : 135,
-                  "upgradeName" : "EvolveMuscularAugments"
+                  "upgrade" : 293,
+                  "upgradeName" : "DiggingClaws"
                 }
               ],
               "type" : "not"
             }
           ],
-          "time" : 100.0,
-          "upgrade" : 135,
-          "upgradeName" : "EvolveMuscularAugments",
+          "time" : 75.0,
+          "upgrade" : 293,
+          "upgradeName" : "DiggingClaws",
           "vespene" : 150
         }
       ]
@@ -5303,6 +5470,29 @@
         }
       ],
       "name" : "OverlordTransport"
+    },
+    "9" : 
+    {
+      "morphs" : 
+      [
+        {
+          "ability" : 1374,
+          "abilityName" : "BurrowBanelingDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 115,
+          "unitName" : "BanelingBurrowed"
+        }
+      ],
+      "name" : "Baneling"
     },
     "90" : 
     {
@@ -5733,25 +5923,6 @@
     },
     "91" : 
     {
-      "morphs" : 
-      [
-        {
-          "ability" : 2112,
-          "abilityName" : "UpgradeToLurkerDenMP,Execute",
-          "requires" : 
-          [
-            {
-              "state" : "CompleteOnly",
-              "type" : "unitCount",
-              "unit" : [ 101, 100 ],
-              "unitName" : [ "Hive", "Lair" ]
-            }
-          ],
-          "time" : 0.0,
-          "unit" : 504,
-          "unitName" : "LurkerDenMP"
-        }
-      ],
       "name" : "HydraliskDen",
       "researches" : 
       [
@@ -6192,13 +6363,6 @@
           "time" : 20.0,
           "unit" : 142,
           "unitName" : "NydusCanal"
-        },
-        {
-          "ability" : 1769,
-          "abilityName" : "BuildNydusCanal,Build2",
-          "time" : 20.0,
-          "unit" : 491,
-          "unitName" : "NydusCanalAttacker"
         },
         {
           "ability" : 1770,

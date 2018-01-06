@@ -313,7 +313,16 @@
   },
   "ArchonWarp" : 
   {
-    "commands" : {},
+    "commands" : 
+    {
+      "SelectedUnits" : 
+      {
+        "index" : 1766,
+        "time" : 12.0,
+        "units" : [ "Archon" ]
+      }
+    },
+    "morphUnit" : "Archon",
     "name" : "ArchonWarp",
     "type" : ""
   },
@@ -1207,6 +1216,20 @@
     "name" : "BarracksAddOns",
     "type" : "build"
   },
+  "BarracksLand" : 
+  {
+    "commands" : 
+    {
+      "Execute" : 
+      {
+        "index" : 554,
+        "time" : 0.0,
+        "units" : [ "Barracks" ]
+      }
+    },
+    "name" : "BarracksLand",
+    "type" : "morph"
+  },
   "BarracksLiftOff" : 
   {
     "commands" : {},
@@ -1868,6 +1891,20 @@
       }
     },
     "name" : "BurrowZerglingUp",
+    "type" : "morph"
+  },
+  "CommandCenterLand" : 
+  {
+    "commands" : 
+    {
+      "Execute" : 
+      {
+        "index" : 419,
+        "time" : 0.0,
+        "units" : [ "CommandCenter" ]
+      }
+    },
+    "name" : "CommandCenterLand",
     "type" : "morph"
   },
   "CommandCenterLiftOff" : 
@@ -2857,6 +2894,20 @@
     "name" : "FactoryAddOns",
     "type" : "build"
   },
+  "FactoryLand" : 
+  {
+    "commands" : 
+    {
+      "Execute" : 
+      {
+        "index" : 520,
+        "time" : 0.0,
+        "units" : [ "Factory" ]
+      }
+    },
+    "name" : "FactoryLand",
+    "type" : "morph"
+  },
   "FactoryLiftOff" : 
   {
     "commands" : {},
@@ -3014,6 +3065,72 @@
           }
         ],
         "time" : 110.0
+      },
+      "Research7" : 
+      {
+        "index" : 766,
+        "requires" : 
+        [
+          {
+            "state" : "CompleteOnly",
+            "type" : "unitCount",
+            "unit" : [ 29 ],
+            "unitName" : [ "Armory" ]
+          },
+          {
+            "operands" : 
+            [
+              {
+                "state" : "QueuedOrBetter",
+                "type" : "upgradeCount",
+                "upgrade" : 289,
+                "upgradeName" : "SmartServos"
+              }
+            ],
+            "type" : "not"
+          }
+        ],
+        "time" : 110.0
+      },
+      "Research8" : 
+      {
+        "index" : 767,
+        "requires" : 
+        [
+          {
+            "operands" : 
+            [
+              {
+                "state" : "QueuedOrBetter",
+                "type" : "upgradeCount",
+                "upgrade" : 290,
+                "upgradeName" : "ArmorPiercingRockets"
+              }
+            ],
+            "type" : "not"
+          }
+        ],
+        "time" : 110.0
+      },
+      "Research9" : 
+      {
+        "index" : 768,
+        "requires" : 
+        [
+          {
+            "operands" : 
+            [
+              {
+                "state" : "QueuedOrBetter",
+                "type" : "upgradeCount",
+                "upgrade" : 291,
+                "upgradeName" : "CycloneRapidFireLaunchers"
+              }
+            ],
+            "type" : "not"
+          }
+        ],
+        "time" : 110.0
       }
     },
     "name" : "FactoryTechLabResearch",
@@ -3041,7 +3158,7 @@
       "Train25" : 
       {
         "index" : 614,
-        "time" : 40.0,
+        "time" : 30.0,
         "units" : [ "WidowMine" ]
       },
       "Train5" : 
@@ -4223,6 +4340,40 @@
     "name" : "LurkerAspectMPFromHydraliskBurrowed",
     "type" : "morph"
   },
+  "LurkerDenResearch" : 
+  {
+    "commands" : 
+    {
+      "Research1" : 
+      {
+        "index" : 3709,
+        "requires" : 
+        [
+          {
+            "state" : "CompleteOnly",
+            "type" : "unitCount",
+            "unit" : [ 101 ],
+            "unitName" : [ "Hive" ]
+          },
+          {
+            "operands" : 
+            [
+              {
+                "state" : "QueuedOrBetter",
+                "type" : "upgradeCount",
+                "upgrade" : 293,
+                "upgradeName" : "DiggingClaws"
+              }
+            ],
+            "type" : "not"
+          }
+        ],
+        "time" : 75.0
+      }
+    },
+    "name" : "LurkerDenResearch",
+    "type" : "research"
+  },
   "MercCompoundResearch" : 
   {
     "commands" : 
@@ -4872,6 +5023,34 @@
     "name" : "NexusTrainMothershipCore",
     "type" : "train"
   },
+  "ObserverMorphtoObserverSiege" : 
+  {
+    "commands" : 
+    {
+      "Execute" : 
+      {
+        "index" : 3741,
+        "time" : 0.0,
+        "units" : [ "ObserverSiegeMode" ]
+      }
+    },
+    "name" : "ObserverMorphtoObserverSiege",
+    "type" : "morph"
+  },
+  "ObserverSiegeMorphtoObserver" : 
+  {
+    "commands" : 
+    {
+      "Execute" : 
+      {
+        "index" : 3739,
+        "time" : 0.0,
+        "units" : [ "Observer" ]
+      }
+    },
+    "name" : "ObserverSiegeMorphtoObserver",
+    "type" : "morph"
+  },
   "OracleNormalMode" : 
   {
     "commands" : 
@@ -4914,10 +5093,52 @@
     "name" : "OracleStasisTrapBuild",
     "type" : "build"
   },
+  "OrbitalCommandLand" : 
+  {
+    "commands" : 
+    {
+      "Execute" : 
+      {
+        "index" : 1524,
+        "time" : 0.0,
+        "units" : [ "OrbitalCommand" ]
+      }
+    },
+    "name" : "OrbitalCommandLand",
+    "type" : "morph"
+  },
   "OrbitalLiftOff" : 
   {
     "commands" : {},
     "name" : "OrbitalLiftOff",
+    "type" : "morph"
+  },
+  "OverseerMorphtoOverseerSiegeMode" : 
+  {
+    "commands" : 
+    {
+      "Execute" : 
+      {
+        "index" : 3743,
+        "time" : 0.0,
+        "units" : [ "OverseerSiegeMode" ]
+      }
+    },
+    "name" : "OverseerMorphtoOverseerSiegeMode",
+    "type" : "morph"
+  },
+  "OverseerSiegeModeMorphtoOverseer" : 
+  {
+    "commands" : 
+    {
+      "Execute" : 
+      {
+        "index" : 3745,
+        "time" : 0.0,
+        "units" : [ "Overseer" ]
+      }
+    },
+    "name" : "OverseerSiegeModeMorphtoOverseer",
     "type" : "morph"
   },
   "PhasingMode" : 
@@ -5321,6 +5542,21 @@
         ],
         "time" : 50.0,
         "units" : [ "CyberneticsCore" ]
+      },
+      "Build16" : 
+      {
+        "index" : 895,
+        "requires" : 
+        [
+          {
+            "state" : "CompleteOnly",
+            "type" : "unitCount",
+            "unit" : [ 72 ],
+            "unitName" : [ "CyberneticsCore" ]
+          }
+        ],
+        "time" : 40.0,
+        "units" : [ "ShieldBattery" ]
       },
       "Build2" : 
       {
@@ -6130,6 +6366,20 @@
     "name" : "SpawningPoolResearch",
     "type" : "research"
   },
+  "SpineCrawlerRoot" : 
+  {
+    "commands" : 
+    {
+      "Execute" : 
+      {
+        "index" : 1729,
+        "time" : 0.0,
+        "units" : [ "SpineCrawler", "SpineCrawler" ]
+      }
+    },
+    "name" : "SpineCrawlerRoot",
+    "type" : "morph"
+  },
   "SpineCrawlerUproot" : 
   {
     "commands" : 
@@ -6408,6 +6658,20 @@
     "name" : "SpireResearch",
     "type" : "research"
   },
+  "SporeCrawlerRoot" : 
+  {
+    "commands" : 
+    {
+      "Execute" : 
+      {
+        "index" : 1731,
+        "time" : 0.0,
+        "units" : [ "SporeCrawler", "SporeCrawler" ]
+      }
+    },
+    "name" : "SporeCrawlerRoot",
+    "type" : "morph"
+  },
   "SporeCrawlerUproot" : 
   {
     "commands" : 
@@ -6471,7 +6735,7 @@
       "Train9" : 
       {
         "index" : 954,
-        "time" : 50.0,
+        "time" : 52.0,
         "units" : [ "Oracle" ]
       }
     },
@@ -6497,6 +6761,20 @@
     },
     "name" : "StarportAddOns",
     "type" : "build"
+  },
+  "StarportLand" : 
+  {
+    "commands" : 
+    {
+      "Execute" : 
+      {
+        "index" : 522,
+        "time" : 0.0,
+        "units" : [ "Starport" ]
+      }
+    },
+    "name" : "StarportLand",
+    "type" : "morph"
   },
   "StarportLiftOff" : 
   {
@@ -6679,6 +6957,26 @@
                 "type" : "upgradeCount",
                 "upgrade" : 140,
                 "upgradeName" : "LiberatorAGRangeUpgrade"
+              }
+            ],
+            "type" : "not"
+          }
+        ],
+        "time" : 110.0
+      },
+      "Research17" : 
+      {
+        "index" : 806,
+        "requires" : 
+        [
+          {
+            "operands" : 
+            [
+              {
+                "state" : "QueuedOrBetter",
+                "type" : "upgradeCount",
+                "upgrade" : 292,
+                "upgradeName" : "RavenEnhancedMunitions"
               }
             ],
             "type" : "not"
@@ -7269,6 +7567,20 @@
     },
     "name" : "TerranBuild",
     "type" : "build"
+  },
+  "TerranBuildingLand" : 
+  {
+    "commands" : 
+    {
+      "Execute" : 
+      {
+        "index" : 0,
+        "time" : 0.5,
+        "units" : [ "##unit##" ]
+      }
+    },
+    "name" : "TerranBuildingLand",
+    "type" : "morph"
   },
   "TerranBuildingLiftOff" : 
   {
@@ -8067,6 +8379,21 @@
         ],
         "time" : 60.0,
         "units" : [ "BanelingNest" ]
+      },
+      "Build12" : 
+      {
+        "index" : 1163,
+        "requires" : 
+        [
+          {
+            "state" : "CompleteOnly",
+            "type" : "unitCount",
+            "unit" : [ 91, 504 ],
+            "unitName" : [ "HydraliskDen", "LurkerDenMP" ]
+          }
+        ],
+        "time" : 120.0,
+        "units" : [ "LurkerDenMP" ]
       },
       "Build13" : 
       {

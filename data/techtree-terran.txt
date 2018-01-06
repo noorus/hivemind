@@ -41,6 +41,8 @@ BarracksFlying
   builds
     BarracksReactor
     BarracksTechLab
+  morphs
+    Barracks
 
 BarracksReactor
 
@@ -49,7 +51,6 @@ BarracksTechLab
     ShieldWall
     Stimpack
     PunisherGrenades
-    ReaperSpeed
 
 Battlecruiser
 
@@ -65,6 +66,8 @@ CommandCenter
     PlanetaryFortress
 
 CommandCenterFlying
+  morphs
+    CommandCenter
 
 Cyclone
 
@@ -73,6 +76,8 @@ CycloneMissile
 CycloneMissileLarge
 
 CycloneMissileLargeAir
+
+CycloneMissileLargeAirAlternative
 
 D8ChargeWeapon
 
@@ -107,6 +112,8 @@ FactoryFlying
   builds
     FactoryReactor
     FactoryTechLab
+  morphs
+    Factory
 
 FactoryReactor
 
@@ -114,6 +121,8 @@ FactoryTechLab
   upgrades
     HighCapacityBarrels
     DrillClaws
+    SmartServos
+    CycloneRapidFireLaunchers
 
 FusionCore
   upgrades
@@ -123,7 +132,6 @@ Ghost
 
 GhostAcademy
   upgrades
-    PersonalCloaking
     GhostMoebiusReactor
 
 GhostAlternate
@@ -181,6 +189,8 @@ OrbitalCommand
     SCV
 
 OrbitalCommandFlying
+  morphs
+    OrbitalCommand
 
 PlanetaryFortress
   builds
@@ -193,6 +203,14 @@ PointDefenseDroneReleaseWeapon
 PunisherGrenadesLMWeapon
 
 Raven
+
+RavenRepairDrone
+
+RavenRepairDroneReleaseWeapon
+
+RavenScramblerMissile
+
+RavenShredderMissileWeapon
 
 Reactor
 
@@ -243,25 +261,26 @@ Starport
     Raven
     Banshee
     Battlecruiser
-    Liberator
     StarportTechLab
     StarportReactor
+    Liberator
 
 StarportFlying
   builds
     StarportReactor
     StarportTechLab
+  morphs
+    Starport
 
 StarportReactor
 
 StarportTechLab
   upgrades
-    MedivacCaduceusReactor
     BansheeCloak
     RavenCorvidReactor
-    DurableMaterials
-    HunterSeeker
-    LiberatorMorph
+    BansheeSpeed
+    RavenEnhancedMunitions
+    MedivacIncreaseSpeedBoost
     LiberatorAGRangeUpgrade
 
 SupplyDepot

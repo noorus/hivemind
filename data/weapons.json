@@ -848,6 +848,28 @@
     "range" : 2.0,
     "rangeSlop" : 1.0
   },
+  "HighTemplarWeapon" : 
+  {
+    "arc" : 0.0,
+    "arcSlop" : 11.25,
+    "backSwing" : 0.5,
+    "damagePoint" : 0.16700000000000001,
+    "disabled" : false,
+    "effect" : 
+    {
+      "name" : "HighTemplarWeaponLM",
+      "type" : "missile"
+    },
+    "hidden" : false,
+    "melee" : false,
+    "minScanRange" : 6.5,
+    "name" : "HighTemplarWeapon",
+    "period" : 1.754,
+    "randomDelayMax" : 0.125,
+    "randomDelayMin" : -0.0625,
+    "range" : 6.0,
+    "rangeSlop" : 1.0
+  },
   "HydraliskMelee" : 
   {
     "arc" : 0.0,
@@ -927,6 +949,33 @@
     "range" : 5.0,
     "rangeSlop" : 1.0
   },
+  "InfestedAcidSpines" : 
+  {
+    "arc" : 0.0,
+    "arcSlop" : 11.25,
+    "backSwing" : 0.75,
+    "damagePoint" : 0.25,
+    "disabled" : false,
+    "effect" : 
+    {
+      "dmgAmount" : 14.0,
+      "dmgArmorReduction" : 0.0,
+      "dmgAttributeBonuses" : {},
+      "dmgKind" : "Ranged",
+      "dmgSplash" : [],
+      "name" : "InfestedAcidSpinesLM",
+      "type" : "missile"
+    },
+    "hidden" : false,
+    "melee" : false,
+    "minScanRange" : 6.5,
+    "name" : "InfestedAcidSpines",
+    "period" : 1.3300000000000001,
+    "randomDelayMax" : 0.125,
+    "randomDelayMin" : -0.0625,
+    "range" : 6.0,
+    "rangeSlop" : 1.0
+  },
   "InfestedGuassRifle" : 
   {
     "arc" : 0.0,
@@ -936,7 +985,7 @@
     "disabled" : false,
     "effect" : 
     {
-      "dmgAmount" : 8.0,
+      "dmgAmount" : 6.0,
       "dmgArmorReduction" : 1.0,
       "dmgAttributeBonuses" : {},
       "dmgKind" : "Ranged",
@@ -1685,11 +1734,11 @@
     "disabled" : false,
     "effect" : 
     {
-      "dmgAmount" : 10.0,
+      "dmgAmount" : 15.0,
       "dmgArmorReduction" : 1.0,
       "dmgAttributeBonuses" : 
       {
-        "Armored" : 4.0
+        "Armored" : 6.0
       },
       "dmgKind" : "Ranged",
       "dmgSplash" : [],
@@ -1700,7 +1749,7 @@
     "melee" : false,
     "minScanRange" : 6.5,
     "name" : "ParticleDisruptors",
-    "period" : 1.4399999999999999,
+    "period" : 2.1600000000000001,
     "randomDelayMax" : 0.125,
     "randomDelayMin" : -0.0625,
     "range" : 6.0,
@@ -2464,12 +2513,12 @@
     },
     "hidden" : false,
     "melee" : false,
-    "minScanRange" : 6.5,
+    "minScanRange" : 7.5,
     "name" : "ThermalLances",
     "period" : 1.5,
     "randomDelayMax" : 0.125,
     "randomDelayMin" : -0.0625,
-    "range" : 6.0,
+    "range" : 7.0,
     "rangeSlop" : 0.0
   },
   "ThorsHammer" : 

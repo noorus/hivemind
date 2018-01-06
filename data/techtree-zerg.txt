@@ -3,6 +3,8 @@ AcidSalivaWeapon
 AcidSpinesWeapon
 
 Baneling
+  morphs
+    BanelingBurrowed
 
 BanelingBurrowed
   morphs
@@ -95,6 +97,9 @@ Drone
     NydusNetwork
     InfestationPit
     HydraliskDen
+    LurkerDenMP
+  morphs
+    DroneBurrowed
 
 DroneBurrowed
   morphs
@@ -171,8 +176,6 @@ HydraliskBurrowed
     Hydralisk
 
 HydraliskDen
-  morphs
-    LurkerDenMP
   upgrades
     EvolveMuscularAugments
 
@@ -182,6 +185,8 @@ InfestationPit
   upgrades
     InfestorEnergyUpgrade
     NeuralParasite
+
+InfestedAcidSpinesWeapon
 
 InfestedTerransEgg
 
@@ -225,10 +230,10 @@ Larva
     Mutalisk
     Infestor
     Ultralisk
-    Viper
     Hydralisk
-    SwarmHostMP
+    Viper
     Corruptor
+    SwarmHostMP
 
 LarvaReleaseMissile
 
@@ -244,7 +249,7 @@ LocustMPWeapon
 
 LurkerDenMP
   upgrades
-    EvolveMuscularAugments
+    DiggingClaws
 
 LurkerMP
   morphs
@@ -273,12 +278,12 @@ NydusCanalCreeper
 NydusNetwork
   builds
     NydusCanal
-    NydusCanalAttacker
     NydusCanalCreeper
 
 Overlord
   morphs
     Overseer
+    OverlordTransport
 
 OverlordCocoon
 
@@ -287,6 +292,12 @@ OverlordTransport
     Overseer
 
 Overseer
+  morphs
+    OverseerSiegeMode
+
+OverseerSiegeMode
+  morphs
+    Overseer
 
 ParasiteSporeWeapon
 
@@ -326,6 +337,7 @@ RavagerWeaponMissile
 
 Roach
   morphs
+    RoachBurrowed
     Ravager
 
 RoachBurrowed
@@ -349,6 +361,8 @@ SpineCrawler
     SpineCrawlerUprooted
 
 SpineCrawlerUprooted
+  morphs
+    SpineCrawler
 
 SpineCrawlerWeapon
 
@@ -368,6 +382,8 @@ SporeCrawler
     SporeCrawlerUprooted
 
 SporeCrawlerUprooted
+  morphs
+    SporeCrawler
 
 SporeCrawlerWeapon
 
