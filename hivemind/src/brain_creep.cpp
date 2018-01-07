@@ -27,12 +27,9 @@ namespace hivemind {
       if ( nextCreepTime_ <= bot_->time() )
       {
         nextCreepTime_ = bot_->time() + cCreepCheckDelay;
-        for ( auto& base : bot_->bases().bases() )
+        /*for ( auto& base : bot_->bases().bases() )
         {
-          auto type = sc2::UNIT_TYPEID::ZERG_SPAWNINGPOOL;
-          BuildProjectID buildId;
-          bot_->builder().add( type, base, sc2::ABILITY_ID::BUILD_SPAWNINGPOOL, buildId );
-          /*auto creep = bot_->map().creep( base.location()->position() );
+          auto creep = bot_->map().creep( base.location()->position() );
           if ( !creep )
             continue;
 
@@ -57,8 +54,8 @@ namespace hivemind {
               break;
           }
 
-          bot_->action().UnitCommand( queen, sc2::ABILITY_ID::BUILD_CREEPTUMOR_QUEEN, destPt );*/
-        }
+          bot_->action().UnitCommand( queen, sc2::ABILITY_ID::BUILD_CREEPTUMOR_QUEEN, destPt );
+        }*/
       }
       return status_;
     }
