@@ -69,7 +69,7 @@ namespace hivemind {
     nextCreepUpdate = 0;
 
     observation_ = Observation();
-    debug_ = Debug();
+    debug_.setForward( Debug() );
     query_ = Query();
     action_ = Actions();
 
@@ -100,21 +100,21 @@ namespace hivemind {
 
   void Bot::enableGodmodeCheat()
   {
-    if ( cheatGodmode_ || !debug_ )
+    if ( cheatGodmode_ || !debug_.get() )
       return;
 
     console_.printf( "Cheat: Enabling god mode" );
-    debug_->DebugGodMode();
+    debug_.cheatGodMode();
     cheatGodmode_ = true;
   }
 
   void Bot::enableCostIgnoreCheat()
   {
-    if ( cheatCostIgnore_ || !debug_ )
+    if ( cheatCostIgnore_ || !debug_.get() )
       return;
 
     console_.printf( "Cheat: Ignoring all resource cost checks" );
-    debug_->DebugIgnoreResourceCost();
+    debug_.cheatIgnoreResourceCost();
     cheatCostIgnore_ = true;
   }
 
@@ -131,7 +131,7 @@ namespace hivemind {
   void Bot::OnStep()
   {
     observation_ = Observation();
-    debug_ = Debug();
+    debug_.setForward( Debug() );
     query_ = Query();
     action_ = Actions();
 
@@ -174,7 +174,7 @@ namespace hivemind {
         txt.append( " (" + std::to_string( unit->unit_type ) + ")\n" );
         /*for ( auto& order : unit->orders )
           txt.append( GetAbilityText( order.ability_id ) + "\n" );*/
-        debug_->DebugTextOut( txt, unit->pos, sc2::Colors::Green );
+        debug_.drawText( txt, Vector3( unit->pos ), sc2::Colors::Green );
         MapPoint2 coord( unit->pos );
         auto regIndex = map_.regionMap_[coord.x][coord.y];
         string nrg = "region: " + std::to_string( regIndex );
@@ -186,10 +186,10 @@ namespace hivemind {
           }
         }*/
         Vector3 nrgpos( unit->pos.x, unit->pos.y, unit->pos.z + 1.0f );
-        debug_->DebugTextOut( nrg, nrgpos, sc2::Colors::Teal );
+        debug_.drawText( nrg, nrgpos, sc2::Colors::Teal );
       }
 
-    debug_->SendDebug();
+    debug_.send();
   }
 
   void Bot::OnGameEnd()

@@ -5,6 +5,8 @@
 
 namespace hivemind {
 
+  struct Vector3;
+
   //! \struct Vector2
   //! \brief Two-dimensional geometric (Euclidean) floating point vector.
   //! \sa Vector3
@@ -199,14 +201,32 @@ namespace hivemind {
       ret.y = y;
       return ret;
     }
-    inline operator sc2::Point3D() const
+    /*inline operator sc2::Point3D() const
     {
       sc2::Point3D ret;
       ret.x = x;
       ret.y = y;
       ret.z = 0.0f;
       return ret;
+    }*/
+    //! \fn static Vector2 fromAngle( Real rad, Real length = 1.0f )
+    //! \brief Make a 2D direction vector from given angle in radians.
+    //! \param angle Angle in radians.
+    //! \param length Length of vector, defaults to unit length.
+    //! \return The direction vector.
+    static Vector2 fromAngle( Radian angle, Real length = 1.0f )
+    {
+      return Vector2(
+        length * math::cos( angle ),
+        length * math::sin( angle )
+      );
     }
+    //! \fn Vector3 to3() const
+    //! \brief Returns a three-dimensional copy of this vector, with a zero Z component.
+    //! \param z Z component value to set, defaults to zero.
+    //! \return A Vector3 copy of this vector.
+    //! \sa Vector3
+    Vector3 to3( const Real z = 0.0f ) const;
     //! \fn inline Real length() const
     //! \brief Gets the length of the vector, seen as distance from zero origin.
     //! \return Scalar length of the vector.

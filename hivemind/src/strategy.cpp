@@ -8,17 +8,17 @@
 
 namespace hivemind {
 
-  void debugDrawFuzzyVariable( AI::FuzzyVariable& var, Point2D screenPosition, sc2::DebugInterface& dbg )
+  void debugDrawFuzzyVariable( AI::FuzzyVariable& var, Point2D screenPosition, DebugExtended& dbg )
   {
     const Point2D increment( 0.005f, 0.01f );
-    dbg.DebugTextOut( string( "FuzzyVariable " ) + var.name(), screenPosition, sc2::Colors::White );
+    dbg.drawText( string( "FuzzyVariable " ) + var.name(), screenPosition, sc2::Colors::White );
     screenPosition.y += increment.y;
 
     for ( auto& set : var.members() )
     {
       char text[128];
       sprintf_s( text, 128, "%s: %.3f", set.first.c_str(), set.second->dom() );
-      dbg.DebugTextOut( text, screenPosition, sc2::Colors::Teal );
+      dbg.drawText( text, screenPosition, sc2::Colors::Teal );
       screenPosition.y += increment.y;
     }
   }

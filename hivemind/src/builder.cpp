@@ -50,13 +50,13 @@ namespace hivemind {
   {
     for ( auto& b : buildings_ )
     {
-      Point3D pt( (Real)b.position.x + 0.5f, (Real)b.position.y + 0.5f, bot_->map().maxZ_ );
-      bot_->debug().DebugSphereOut( pt, 1.5f, sc2::Colors::Red );
-      bot_->debug().DebugTextOut( std::to_string( b.id ), pt, sc2::Colors::Yellow );
+      Vector3 pt( (Real)b.position.x + 0.5f, (Real)b.position.y + 0.5f, bot_->map().maxZ_ );
+      bot_->debug().drawSphere( pt, 1.5f, sc2::Colors::Red );
+      bot_->debug().drawText( std::to_string( b.id ), pt, sc2::Colors::Yellow );
       if ( b.builder && ( !b.building || !b.building->is_alive ) )
       {
-        bot_->debug().DebugSphereOut( b.builder->pos, 0.85f, sc2::Colors::Red );
-        bot_->debug().DebugTextOut( std::to_string( b.id ), b.builder->pos, sc2::Colors::Yellow );
+        bot_->debug().drawSphere( b.builder->pos, 0.85f, sc2::Colors::Red );
+        bot_->debug().drawText( std::to_string( b.id ), Vector3( b.builder->pos ), sc2::Colors::Yellow );
       }
     }
   }

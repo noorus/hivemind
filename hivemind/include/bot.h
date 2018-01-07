@@ -11,6 +11,7 @@
 #include "utilities.h"
 #include "strategy.h"
 #include "builder.h"
+#include "debug.h"
 
 namespace hivemind {
 
@@ -26,7 +27,7 @@ namespace hivemind {
     const sc2::ObservationInterface* observation_;
     sc2::QueryInterface* query_;
     sc2::ActionInterface* action_;
-    sc2::DebugInterface* debug_;
+    DebugExtended debug_;
     Console& console_;
     PlayerManager players_;
     Messaging messaging_;
@@ -46,7 +47,7 @@ namespace hivemind {
     inline const sc2::ObservationInterface& observation() { return *observation_; }
     inline sc2::QueryInterface& query() { return *query_; }
     inline sc2::ActionInterface& action() { return *action_; }
-    inline sc2::DebugInterface& debug() { return *debug_; }
+    inline DebugExtended& debug() { return debug_; }
     inline Console& console() { return console_; }
     inline PlayerManager& players() { return players_; }
     inline Messaging& messaging() { return messaging_; }

@@ -1,8 +1,16 @@
 #include "stdafx.h"
 #include "utilities.h"
 #include "hive_vector2.h"
+#include "hive_vector3.h"
 
 namespace hivemind {
+
+  // sorry
+  Vector3 Vector2::to3( const Real z ) const
+  {
+    return Vector3( x, y, z );
+  }
+
   namespace utils {
     namespace internal {
 

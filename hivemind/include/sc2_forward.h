@@ -33,6 +33,12 @@ namespace hivemind {
   using sc2::UPGRADE_ID;
   using sc2::UpgradeID;
 
+  using sc2::Color;
+
+  namespace Colors {
+    using namespace sc2::Colors;
+  }
+
   //! \typedef UnitTag
   //! \brief Local type for referring to the unique ID of a specific unit in current game.
   //!   Tag is guaranteed to be unique for the lifetime of the current game.

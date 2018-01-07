@@ -54,7 +54,7 @@ namespace hivemind {
     Point2D pos( 0.03f, 0.05f );
     Real increment = 0.01f;
 
-    bot_->debug().DebugTextOut( "PLAYERS", pos, sc2::Colors::White );
+    bot_->debug().drawText( "PLAYERS", pos, sc2::Colors::White );
     pos.y += increment;
 
     for ( auto& player : players_ )
@@ -69,7 +69,7 @@ namespace hivemind {
         player.id(), player.isMe() ? "Hivemind" : "Computer",
         c_raceNames[player.race()],
         player.isMe() ? "Self" : player.isAlly() ? "Ally" : "Enemy" );
-      bot_->debug().DebugTextOut( text, pos, color );
+      bot_->debug().drawText( text, pos, color );
 
       pos.y += increment;
     }

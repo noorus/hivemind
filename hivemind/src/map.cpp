@@ -307,15 +307,15 @@ namespace hivemind {
     return Point3D( v.x + 0.5f, v.y + 0.5f, z );
   }
 
-  void Map::drawPoly( sc2::DebugInterface& debug, Polygon& poly, sc2::Color color )
+  void Map::drawPoly( DebugExtended& debug, Polygon& poly, sc2::Color color )
   {
     auto previous = poly.back();
     for ( auto& vec : poly )
     {
       Point3D p0 = util_tileToMarker( previous, heightMap_, 0.5f, maxZ_ );
       Point3D p1 = util_tileToMarker( vec, heightMap_, 0.5f, maxZ_ );
-      debug.DebugLineOut( p0, p1, color );
-      bot_->debug().DebugSphereOut( p1, 0.1f, color );
+      debug.drawLine( p0, p1, color );
+      bot_->debug().drawSphere( p1, 0.1f, color );
       // debug.DebugSphereOut( p0, 0.25f, sc2::Colors::Green );
       previous = vec;
     }
@@ -334,13 +334,13 @@ namespace hivemind {
         sc2::Point3D pos( (Real)ix + 0.5f, (Real)iy + 0.5f, heightMap_[ix][iy] + 0.25f );
         auto tile = flagsMap_[ix][iy];
         if ( tile & MapFlag_StartLocation )
-          bot_->debug().DebugSphereOut( pos, 0.1f, sc2::Colors::Green );
+          bot_->debug().drawSphere( pos, 0.1f, sc2::Colors::Green );
         else if ( tile & MapFlag_NearStartLocation )
-          bot_->debug().DebugSphereOut( pos, 0.1f, sc2::Colors::Teal );
+          bot_->debug().drawSphere( pos, 0.1f, sc2::Colors::Teal );
         else if ( tile & MapFlag_Ramp )
-          bot_->debug().DebugSphereOut( pos, 0.1f, sc2::Colors::Purple );
+          bot_->debug().drawSphere( pos, 0.1f, sc2::Colors::Purple );
         else if ( tile & MapFlag_NearRamp )
-          bot_->debug().DebugSphereOut( pos, 0.1f, sc2::Colors::Yellow );
+          bot_->debug().drawSphere( pos, 0.1f, sc2::Colors::Yellow );
       }
     }
 
@@ -365,7 +365,7 @@ namespace hivemind {
     for ( auto& node : graphSimplified_.nodes )
     {
       auto pt = util_tileToMarker( node, heightMap_, 1.0f, maxZ_ );
-      bot_->debug().DebugSphereOut( pt, 0.25f, sc2::Colors::Teal );
+      bot_->debug().drawSphere( pt, 0.25f, sc2::Colors::Teal );
     }
     for ( size_t id = 0; id < graphSimplified_.adjacencyList.size(); id++ )
     {
@@ -373,9 +373,9 @@ namespace hivemind {
       {
         auto v0 = graphSimplified_.nodes[id];
         auto v1 = graphSimplified_.nodes[adj];
-        Point3D p0 = util_tileToMarker( v0, heightMap_, 1.0f, maxZ_ );
-        Point3D p1 = util_tileToMarker( v1, heightMap_, 1.0f, maxZ_ );
-        bot_->debug().DebugLineOut( p0, p1, sc2::Colors::Teal );
+        Vector3 p0 = util_tileToMarker( v0, heightMap_, 1.0f, maxZ_ );
+        Vector3 p1 = util_tileToMarker( v1, heightMap_, 1.0f, maxZ_ );
+        bot_->debug().drawLine( p0, p1, sc2::Colors::Teal );
       }
     }
     /*for ( auto& cluster : resourceClusters_ )
@@ -387,14 +387,14 @@ namespace hivemind {
     {
       char msg[64];
       sprintf_s( msg, 64, "Base location %zd", location.baseID_ );
-      bot_->debug().DebugTextOut( msg, Point3D( location.position_.x, location.position_.y, maxZ_ ), sc2::Colors::White );
+      bot_->debug().drawText( msg, Vector3( location.position_.x, location.position_.y, maxZ_ ), sc2::Colors::White );
       Real height = heightMap_[math::floor( location.position_.x )][math::floor( location.position_.y )];
-      bot_->debug().DebugBoxOut(
-        Point3D( location.left_, location.top_, height ),
-        Point3D( location.right_, location.bottom_, height + 1.0f ), sc2::Colors::White );
-      bot_->debug().DebugSphereOut( Point3D( location.position_.x, location.position_.y, height ), 1.0f, sc2::Colors::White );
-      bot_->debug().DebugSphereOut( Point3D( location.position_.x, location.position_.y, height ), 2.0f, sc2::Colors::White );
-      bot_->debug().DebugSphereOut( Point3D( location.position_.x, location.position_.y, height ), 3.0f, sc2::Colors::White );
+      bot_->debug().drawBox(
+        Vector3( location.left_, location.top_, height ),
+        Vector3( location.right_, location.bottom_, height + 1.0f ), sc2::Colors::White );
+      bot_->debug().drawSphere( Point3D( location.position_.x, location.position_.y, height ), 1.0f, sc2::Colors::White );
+      bot_->debug().drawSphere( Point3D( location.position_.x, location.position_.y, height ), 2.0f, sc2::Colors::White );
+      bot_->debug().drawSphere( Point3D( location.position_.x, location.position_.y, height ), 3.0f, sc2::Colors::White );
     }
     /*for ( auto& creep : creeps_ )
       for ( size_t i = 0; i < creep.fronts.size(); i++ )

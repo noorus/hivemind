@@ -49,12 +49,12 @@ namespace hivemind {
     char asd[128];
     sprintf_s( asd, 128, "Base %llu\nWorkers %llu\nQueens %llu\nLarvae %llu\nBuildings %llu",
       index_, workers_.size(), queens_.size(), larvae_.size(), buildings_.size() );
-    bot->debug().DebugTextOut( asd, Point3D( location_->position_.x, location_ ->position_.y, bot->map().maxZ_ + 0.1f ), color );
+    bot->debug().drawText( asd, Vector3( location_->position_.x, location_ ->position_.y, bot->map().maxZ_ + 0.1f ), color );
 
     for ( auto building : depots_ )
-      bot->debug().DebugSphereOut( building->pos, building->radius, color );
+      bot->debug().drawSphere( building->pos, building->radius, color );
     for ( auto building : buildings_ )
-      bot->debug().DebugSphereOut( building.first->pos, building.first->radius, color );
+      bot->debug().drawSphere( building.first->pos, building.first->radius, color );
   }
 
   BaseLocation* Base::location() const

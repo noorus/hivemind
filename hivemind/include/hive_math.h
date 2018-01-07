@@ -33,6 +33,24 @@ namespace hivemind {
       return (int)::floorf( value );
     }
 
+    //! \fn inline Real sin( Real value )
+    //! \brief Sine.
+    //! \param value Value.
+    //! \return Sine of value.
+    inline Real sin( Real value )
+    {
+      return ::sinf( value );
+    }
+
+    //! \fn inline Real cos( Real value )
+    //! \brief Cosine.
+    //! \param value Value.
+    //! \return Cosine of value.
+    inline Real cos( Real value )
+    {
+      return ::cosf( value );
+    }
+
     //! \fn abs
     //! \brief Absolute value of float, double, long etc.
     //! \param value A value.

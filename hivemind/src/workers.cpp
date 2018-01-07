@@ -229,28 +229,28 @@ namespace hivemind {
     Real increment = 0.01f;
     char text[32];
 
-    bot_->debug().DebugTextOut( "WORKERS", pos, sc2::Colors::White );
+    bot_->debug().drawText( "WORKERS", pos, sc2::Colors::White );
     pos.y += increment;
 
     sprintf_s( text, 32, "Total %zd", workers_.size() );
-    bot_->debug().DebugTextOut( text, pos, sc2::Colors::Teal );
+    bot_->debug().drawText( text, pos, sc2::Colors::Teal );
     pos.y += increment;
 
     sprintf_s( text, 32, "Active %zd", workers_.size() - idle_.size() );
-    bot_->debug().DebugTextOut( text, pos, sc2::Colors::Green );
+    bot_->debug().drawText( text, pos, sc2::Colors::Green );
     pos.y += increment;
 
     sprintf_s( text, 32, "Idle %zd", idle_.size() );
-    bot_->debug().DebugTextOut( text, pos, sc2::Colors::Yellow );
+    bot_->debug().drawText( text, pos, sc2::Colors::Yellow );
     pos.y += increment;
 
     sprintf_s( text, 32, "Released %zd", ignored_.size() );
-    bot_->debug().DebugTextOut( text, pos, sc2::Colors::Purple );
+    bot_->debug().drawText( text, pos, sc2::Colors::Purple );
     pos.y += increment;
     for ( auto& it : ignored_ )
     {
       sprintf_s( text, 32, "  %x: %s", it, bot_->unitDebugMsgs_[it].c_str() );
-      bot_->debug().DebugTextOut( text, pos, sc2::Colors::Gray );
+      bot_->debug().drawText( text, pos, sc2::Colors::Gray );
       pos.y += increment;
     }
   }

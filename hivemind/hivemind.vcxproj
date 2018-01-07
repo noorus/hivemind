@@ -110,6 +110,7 @@
     <ClInclude Include="include\builder.h" />
     <ClInclude Include="include\console.h" />
     <ClInclude Include="include\database.h" />
+    <ClInclude Include="include\debug.h" />
     <ClInclude Include="include\distancemap.h" />
     <ClInclude Include="include\exception.h" />
     <ClInclude Include="include\external\clipper.hpp" />

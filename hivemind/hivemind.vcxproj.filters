@@ -165,6 +165,9 @@
     <ClInclude Include="include\external\clipper.hpp">
       <Filter>Header Files\Algorithm</Filter>
     </ClInclude>
+    <ClInclude Include="include\debug.h">
+      <Filter>Header Files\Utilities</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\stdafx.cpp">

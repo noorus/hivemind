@@ -68,10 +68,10 @@ namespace hivemind {
     goals_.process();
   }
 
-  void debugDrawGoalTree( const string& title, AI::Goal* goal, Point2D screenPosition, sc2::DebugInterface& dbg )
+  void debugDrawGoalTree( const string& title, AI::Goal* goal, Point2D screenPosition, DebugExtended& dbg )
   {
     const Point2D increment( 0.005f, 0.01f );
-    dbg.DebugTextOut( title, screenPosition, sc2::Colors::White );
+    dbg.drawText( title, screenPosition, sc2::Colors::White );
     screenPosition.y += increment.y;
 
     std::function<void( Point2D&, AI::Goal* )> recurse = [&]( Point2D& pos, AI::Goal* goal )
@@ -80,7 +80,7 @@ namespace hivemind {
 
       char text[128];
       sprintf_s( text, 128, "%s (%s)", goal->getName().c_str(), c_goalStatusTexts[goal->getStatus()] );
-      dbg.DebugTextOut( text, pos, color );
+      dbg.drawText( text, pos, color );
 
       pos.y += increment.y;
       if ( goal->isComposite() )

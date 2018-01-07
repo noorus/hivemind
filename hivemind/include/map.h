@@ -6,6 +6,7 @@
 #include "distancemap.h"
 #include "regiongraph.h"
 #include "baselocation.h"
+#include "debug.h"
 
 namespace hivemind {
 
@@ -113,7 +114,7 @@ namespace hivemind {
     void updateReservedMap();
     void splitCreepFronts();
     void labelBuildableCreeps();
-    void drawPoly( sc2::DebugInterface& debug, Polygon& poly, sc2::Color color );
+    void drawPoly( DebugExtended& debug, Polygon& poly, sc2::Color color );
   public:
     Map( Bot* bot );
     ~Map();
