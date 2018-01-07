@@ -24,7 +24,6 @@ namespace hivemind {
       x = (Real)coords[0];
       y = (Real)coords[1];
     }
-    inline explicit Vector2( Real* const coords ): x( coords[0] ), y( coords[1] ) {}
     inline Vector2( const sc2::Point2D& pt ): x( pt.x ), y( pt.y ) {}
     inline Vector2( const sc2::Point3D& pt ): x( pt.x ), y( pt.y ) {}
     //! Swap
@@ -33,11 +32,6 @@ namespace hivemind {
       std::swap( x, other.x );
       std::swap( y, other.y );
     }
-    //! Accessors
-    inline Real operator [] ( const size_t i ) const { return *( &x + i ); }
-    inline Real& operator [] ( const size_t i ) { return *( &x + i ); }
-    inline Real* ptr() { return &x; }
-    inline const Real* ptr() const { return &x; }
     //! Assignment
     inline Vector2& operator = ( const Vector2& rhs )
     {
@@ -58,7 +52,7 @@ namespace hivemind {
     }
     inline bool operator != ( const Vector2& rhs ) const
     {
-      return ( x != rhs.x && y != rhs.y );
+      return !(*this == rhs);
     }
     inline bool operator < ( const Vector2& rhs ) const
     {
@@ -102,11 +96,11 @@ namespace hivemind {
       Real invert = ( 1.0f / scalar );
       return Vector2( x * invert, y * invert );
     }
-    inline const Vector2& operator + () const
+    inline Vector2 operator + () const
     {
       return *this;
     }
-    inline Vector2& operator - () const
+    inline Vector2 operator - () const
     {
       return Vector2( -x, -y );
     }
@@ -210,7 +204,7 @@ namespace hivemind {
       sc2::Point3D ret;
       ret.x = x;
       ret.y = y;
-      ret.z = 0;
+      ret.z = 0.0f;
       return ret;
     }
     //! \fn inline Real length() const

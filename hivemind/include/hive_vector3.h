@@ -26,7 +26,6 @@ namespace hivemind {
       y = (Real)coords[1];
       z = (Real)coords[2];
     }
-    inline explicit Vector3( Real* const coords ): x( coords[0] ), y( coords[1] ), z( coords[2] ) {}
     inline Vector3( const Point3D& pt ) : x( pt.x ), y( pt.y ), z( pt.z ) {}
     //! Swap
     inline void swap( Vector3& other )
@@ -35,11 +34,6 @@ namespace hivemind {
       std::swap( y, other.y );
       std::swap( z, other.z );
     }
-    //! Accessors
-    inline Real operator [] ( const size_t i ) const { return *( &x + i ); }
-    inline Real& operator [] ( const size_t i ) { return *( &x + i ); }
-    inline Real* ptr() { return &x; }
-    inline const Real* ptr() const { return &x; }
     //! Assignment
     inline Vector3& operator = ( const Vector3& rhs )
     {
@@ -62,7 +56,7 @@ namespace hivemind {
     }
     inline bool operator != ( const Vector3& rhs ) const
     {
-      return ( x != rhs.x && y != rhs.y && z != rhs.z );
+      return !(*this == rhs);
     }
     //! Arithmetic
     inline Vector3 operator + ( const Vector3& rhs ) const
@@ -90,11 +84,11 @@ namespace hivemind {
       Real invert = ( 1.0f / scalar );
       return Vector3( x * invert, y * invert, z * invert );
     }
-    inline const Vector3& operator + () const
+    inline Vector3 operator + () const
     {
       return *this;
     }
-    inline Vector3& operator - () const
+    inline Vector3 operator - () const
     {
       return Vector3( -x, -y, -z );
     }
