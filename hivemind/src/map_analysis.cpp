@@ -1,3 +1,4 @@
+#pragma warning(disable: 4267)
 #include "stdafx.h"
 #include "map.h"
 #include "map_analysis.h"
@@ -960,11 +961,11 @@ namespace hivemind {
         {
           if ( !flagsmap[x][y] & MapFlag_Walkable )
             continue;
-          Vector2 pt( x, y );
+          Vector2 pt( (Real)x, (Real)y );
           for ( size_t i = 0; i < regions.size(); i++ )
             if ( regions[i]->polygon_.contains( pt ) )
             {
-              regionLabelMap[x][y] = i;
+              regionLabelMap[x][y] = (int)i;
               break;
             }
         }

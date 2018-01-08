@@ -169,7 +169,7 @@ namespace hivemind {
       if ( unit->is_selected && utils::isMine( unit ) )
       {
         char hex[16];
-        sprintf_s( hex, 16, "%x", (unsigned int)unit );
+        sprintf_s( hex, 16, "%x", id( unit ) );
         string txt = string( hex ) + " " + sc2::UnitTypeToName( unit->unit_type );
         txt.append( " (" + std::to_string( unit->unit_type ) + ")\n" );
         /*for ( auto& order : unit->orders )

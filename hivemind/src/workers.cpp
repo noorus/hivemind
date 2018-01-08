@@ -247,9 +247,9 @@ namespace hivemind {
     sprintf_s( text, 32, "Released %zd", ignored_.size() );
     bot_->debug().drawText( text, pos, sc2::Colors::Purple );
     pos.y += increment;
-    for ( auto& it : ignored_ )
+    for ( auto it : ignored_ )
     {
-      sprintf_s( text, 32, "  %x: %s", it, bot_->unitDebugMsgs_[it].c_str() );
+      sprintf_s( text, 32, "  %x: %s", id( it ), bot_->unitDebugMsgs_[it].c_str() );
       bot_->debug().drawText( text, pos, sc2::Colors::Gray );
       pos.y += increment;
     }
