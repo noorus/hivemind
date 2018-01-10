@@ -4,6 +4,52 @@
 
 namespace hivemind {
 
+  enum Attribute {
+    Light = 0,
+    Armored,
+    Biological,
+    Mechanical,
+    Robotic,
+    Psionic,
+    Massive,
+    Structure,
+    Hover,
+    Heroic,
+    Summoned,
+    Max_Attribute
+  };
+
+  struct WeaponEffectSplashData {
+    Real fraction_;
+    Real radius_;
+    WeaponEffectSplashData( Real fraction, Real radius ): fraction_( fraction ), radius_( radius ) {}
+  };
+
+  struct WeaponEffectData {
+    vector<WeaponEffectData> sub_;
+    bool hitsGround_;
+    bool hitsAir_;
+    bool hitsStructures_;
+    bool hitsUnits_;
+    enum Kind {
+      Unknown = 0,
+      Melee,
+      Splash,
+      Ranged
+    } kind_;
+    Real damage_; //!< Base damage value.
+    Real armorReduction_; //!< Amount of damage removed by 1 point of armor.
+    vector<Real> attributeBonuses_; //!< Extra damage added to base value by enemy attributes.
+    vector<WeaponEffectSplashData> splash_;
+    bool dummy_;
+    WeaponEffectData(): kind_( Unknown ),
+      hitsGround_( true ), hitsAir_( true ), hitsStructures_( true ), hitsUnits_( true ),
+      damage_( 0.0f ), armorReduction_( 1.0f ), dummy_( true )
+    {
+      attributeBonuses_.resize( Max_Attribute, 0.0f );
+    }
+  };
+
   struct WeaponData {
     string name;
 
@@ -18,6 +64,9 @@ namespace hivemind {
     float randomDelayMin;
     float range; // Range at which the attack animation can start.
     float rangeSlop; // Extra distance the target can move beyond range, without the attack animation getting canceled.
+    bool suicide; // If this weapon kills the casting unit.
+    WeaponEffectData fx;
+    WeaponData(): suicide( false ) {}
   };
 
   using WeaponDataMap = std::map<string, WeaponData>;
@@ -143,6 +192,8 @@ namespace hivemind {
     }
 
     inline static const TechTree& techTree() { return techTree_; }
+
+    static void dumpWeapons();
   };
 
 }

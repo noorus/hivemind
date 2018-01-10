@@ -51,6 +51,91 @@ namespace hivemind {
     return root;
   }
 
+  WeaponEffectData parseEffectData( const Json::Value& effect, WeaponData& weapon )
+  {
+    WeaponEffectData fx;
+    if ( !effect.isMember( "type" ) )
+      return fx;
+    auto type = effect["type"].asString();
+    if ( boost::iequals( type, "set" ) || boost::iequals( type, "persistent" ) )
+    {
+      fx.dummy_ = false;
+      for ( auto& sub : effect["setEffects"] )
+      {
+        auto tmp = parseEffectData( sub, weapon );
+        if ( !tmp.dummy_ ) // Don't bother adding effects we were unable to identify
+          fx.sub_.push_back( tmp );
+      }
+    }
+    else if ( boost::iequals( type, "suicide" ) )
+    {
+      weapon.suicide = true;
+    }
+    else if ( boost::iequals( type, "damage" ) || boost::iequals( type, "missile" ) )
+    {
+      fx.dummy_ = false;
+      fx.damage_ = effect["dmgAmount"].asFloat();
+      fx.armorReduction_ = effect["dmgArmorReduction"].asFloat();
+      for ( auto& splash : effect["dmgSplash"] )
+        fx.splash_.emplace_back( splash["fraction"].asFloat(), splash["radius"].asFloat() );
+      if ( effect.isMember( "dmgAttributeBonuses" ) )
+      {
+        const auto& bonuses = effect["dmgAttributeBonuses"];
+        for ( auto it = bonuses.begin(); it != bonuses.end(); it++ )
+        {
+          if ( boost::iequals( it.key().asString(), "Light" ) )
+            fx.attributeBonuses_[Light] = ( *it ).asFloat();
+          else if ( boost::iequals( it.key().asString(), "Armored" ) )
+            fx.attributeBonuses_[Armored] = ( *it ).asFloat();
+          else if ( boost::iequals( it.key().asString(), "Biological" ) )
+            fx.attributeBonuses_[Biological] = ( *it ).asFloat();
+          else if ( boost::iequals( it.key().asString(), "Mechanical" ) )
+            fx.attributeBonuses_[Mechanical] = ( *it ).asFloat();
+          else if ( boost::iequals( it.key().asString(), "Robotic" ) )
+            fx.attributeBonuses_[Robotic] = ( *it ).asFloat();
+          else if ( boost::iequals( it.key().asString(), "Psionic" ) )
+            fx.attributeBonuses_[Psionic] = ( *it ).asFloat();
+          else if ( boost::iequals( it.key().asString(), "Massive" ) )
+            fx.attributeBonuses_[Massive] = ( *it ).asFloat();
+          else if ( boost::iequals( it.key().asString(), "Structure" ) )
+            fx.attributeBonuses_[Structure] = ( *it ).asFloat();
+          else if ( boost::iequals( it.key().asString(), "Hover" ) )
+            fx.attributeBonuses_[Hover] = ( *it ).asFloat();
+          else if ( boost::iequals( it.key().asString(), "Heroic" ) )
+            fx.attributeBonuses_[Heroic] = ( *it ).asFloat();
+          else if ( boost::iequals( it.key().asString(), "Summoned" ) )
+            fx.attributeBonuses_[Summoned] = ( *it ).asFloat();
+        }
+      }
+      if ( effect.isMember( "searchRequires" ) )
+        for ( auto& sub : effect["searchRequires"] )
+          if ( boost::iequals( sub.asString(), "ground" ) )
+          {
+            fx.hitsGround_ = true;
+            fx.hitsAir_ = false;
+          }
+          else if ( boost::iequals( sub.asString(), "air" ) )
+          {
+            fx.hitsGround_ = false;
+            fx.hitsAir_ = true;
+          }
+          else if ( boost::iequals( sub.asString(), "structure" ) )
+          {
+            fx.hitsStructures_ = true;
+            fx.hitsUnits_ = false;
+          }
+      if ( effect.isMember( "searchExcludes" ) )
+        for ( auto& sub : effect["searchExcludes"] )
+          if ( boost::iequals( sub.asString(), "ground" ) )
+            fx.hitsGround_ = false;
+          else if ( boost::iequals( sub.asString(), "air" ) )
+            fx.hitsAir_ = false;
+          else if ( boost::iequals( sub.asString(), "structure" ) )
+            fx.hitsStructures_ = false;
+    }
+    return fx;
+  }
+
   void loadWeaponData(const string& filename, WeaponDataMap& weaponData)
   {
     weaponData.clear();
@@ -75,10 +160,8 @@ namespace hivemind {
       weapon.range = value["range"].asFloat();
       weapon.rangeSlop = value["rangeSlop"].asFloat();
 
-      for(auto& effect : value["effect"])
-      {
-        // TODO: read effect.
-      }
+      if ( value.isMember( "effect" ) )
+        weapon.fx = parseEffectData( value["effect"], weapon );
     }
   }
 
@@ -407,6 +490,57 @@ namespace hivemind {
     loadWeaponData( dataPath + R"(\weapons.json)", weaponData_ );
     loadUnitData( dataPath + R"(\units.json)", unitData_ );
     techTree_.load( dataPath + R"(\techtree.json)" );
+  }
+
+  static const char* attribNames[Max_Attribute] = {
+    "Light",
+    "Armored",
+    "Biological",
+    "Mechanical",
+    "Robotic",
+    "Psionic",
+    "Massive",
+    "Structure",
+    "Hover",
+    "Heroic",
+    "Summoned"
+  };
+
+  void dumpEffect( size_t indent, const WeaponEffectData& fx )
+  {
+    string indstr;
+    for ( size_t i = 0; i < indent; i++ )
+      indstr.append( "  " );
+
+    if ( fx.damage_ > 0.0f ) {
+      printf( "%s%s%s%s%s\r\n", indstr.c_str(), fx.hitsGround_ ? "ground " : "", fx.hitsAir_ ? "air " : "", fx.hitsStructures_ ? "structures " : "", fx.hitsUnits_ ? "units" : "" );
+      printf( "%sdamage: %.2f\r\n", indstr.c_str(), fx.damage_ );
+      printf( "%sarmor reduction: %.2f\r\n", indstr.c_str(), fx.armorReduction_ );
+    }
+    else
+      indent--;
+    for ( size_t i = 0; i < Max_Attribute; i++ )
+      if ( fx.attributeBonuses_[i] > 0.0f )
+        printf( "%s+ %.2f against %s\r\n", indstr.c_str(), fx.attributeBonuses_[i], attribNames[i] );
+    if ( !fx.splash_.empty() )
+    {
+      printf( "%ssplash:\r\n", indstr.c_str() );
+      for ( auto& splash : fx.splash_ )
+        printf( "%s  %i%% at %f radius\r\n", indstr.c_str(), (int)(splash.fraction_ * 100.0f), splash.radius_ );
+    }
+    for ( auto& sub : fx.sub_ )
+      dumpEffect( indent + 1, sub );
+  }
+
+  void Database::dumpWeapons()
+  {
+    printf( "Weapons:\r\n" );
+    for ( auto& weapon : weaponData_ )
+    {
+      printf( "  %s\r\n", weapon.second.name.c_str() );
+      dumpEffect( 2, weapon.second.fx );
+    }
+    system( "pause" );
   }
 
 }

@@ -93,7 +93,12 @@ int main( int argc, char* argv[] )
 
     hivemind::Database::load( g_CVar_data_path.as_s() );
 
-#if 0
+  #if 0
+    hivemind::Database::dumpWeapons();
+    return 0;
+  #endif
+
+  #if 0
     testTechChain(console, sc2::UNIT_TYPEID::TERRAN_SIEGETANK);
     testTechChain(console, sc2::UNIT_TYPEID::TERRAN_SIEGETANKSIEGED);
     testTechChain(console, sc2::UNIT_TYPEID::ZERG_HYDRALISK);
@@ -103,7 +108,7 @@ int main( int argc, char* argv[] )
     testTechChain(console, sc2::UNIT_TYPEID::TERRAN_BARRACKS);
     testTechChain(console, sc2::UNIT_TYPEID::TERRAN_BARRACKSFLYING);
     return 0;
-#endif
+  #endif
 
     coordinator.SetRealtime( true );
 
