@@ -257,6 +257,10 @@ namespace hivemind {
 
       unitMap[id] = entry;
     }
+
+    // Fix bad values.
+    unitMap[(UnitType64)sc2::UNIT_TYPEID::ZERG_ZERGLING].mineralCost = 50;
+    unitMap[(UnitType64)sc2::UNIT_TYPEID::ZERG_SPAWNINGPOOL].mineralCost = 200;
   }
 
   static void parseUpgradeRequirements(UpgradeInfo& upgrade, const Json::Value& value)

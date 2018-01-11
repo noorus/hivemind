@@ -27,6 +27,7 @@ namespace hivemind {
     void addBuilding( UnitRef unit );
     void addWorker( UnitRef unit );
     void removeWorker( UnitRef unit );
+    void removeLarva( UnitRef unit );
     BaseVector& bases();
   };
 

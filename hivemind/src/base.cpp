@@ -177,6 +177,11 @@ namespace hivemind {
     larvae_.insert( larva );
   }
 
+  void Base::removeLarva( UnitRef unit )
+  {
+    larvae_.erase( unit );
+  }
+
   void Base::remove( UnitRef unit )
   {
     // Note: This gets called a lot for units that we don't own in the first place

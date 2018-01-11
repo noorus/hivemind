@@ -36,10 +36,21 @@ namespace hivemind {
     return true;
   }
 
-  Bot::Bot( Console& console ): time_( 0 ),
-  console_( console ), players_( this ), brain_( this ), messaging_( this ),
-  map_( this ), workers_( this ), baseManager_( this ), intelligence_( this ),
-  strategy_( this ), builder_( this ), cheatCostIgnore_( false ), cheatGodmode_( false )
+  Bot::Bot( Console& console ):
+    time_( 0 ),
+    console_( console ),
+    players_( this ),
+    brain_( this ),
+    messaging_( this ),
+    map_( this ),
+    workers_( this ),
+    baseManager_( this ),
+    intelligence_( this ),
+    strategy_( this ),
+    builder_( this ),
+    trainer_( this ),
+    cheatCostIgnore_( false ),
+    cheatGodmode_( false )
   {
     console_.setBot( this );
   }
@@ -91,6 +102,7 @@ namespace hivemind {
     strategy_.gameBegin();
 
     builder_.gameBegin();
+    trainer_.gameBegin();
 
     if ( g_CVar_cheat_godmode.as_b() )
       enableGodmodeCheat();
@@ -147,6 +159,7 @@ namespace hivemind {
     }
 
     builder_.update( time_, delta );
+    trainer_.update( time_, delta );
 
     baseManager_.update( time_, delta );
     messaging_.update( time_ );
@@ -197,6 +210,7 @@ namespace hivemind {
     strategy_.gameEnd();
     brain_.gameEnd();
     builder_.gameEnd();
+    trainer_.gameEnd();
     players_.gameEnd();
     workers_.gameEnd();
     baseManager_.gameEnd();
@@ -207,13 +221,13 @@ namespace hivemind {
 
   void Bot::OnUnitCreated( const Unit* unit )
   {
-    console_.printf( "Bot::UnitCreated %s", sc2::UnitTypeToName( unit->unit_type ) );
+    console_.printf( "Bot::UnitCreated %s %p", sc2::UnitTypeToName( unit->unit_type ), unit );
     messaging_.sendGlobal( M_Global_UnitCreated, unit );
   }
 
   void Bot::OnUnitDestroyed( const Unit* unit )
   {
-    console_.printf( "Bot::UnitDestroyed %s", sc2::UnitTypeToName( unit->unit_type ) );
+    console_.printf( "Bot::UnitDestroyed %s %p", sc2::UnitTypeToName( unit->unit_type ), unit );
     messaging_.sendGlobal( M_Global_UnitDestroyed, unit );
   }
 

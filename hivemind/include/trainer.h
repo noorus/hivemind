@@ -9,23 +9,14 @@ namespace hivemind {
 
   class Bot;
 
-  enum BuildingPlacement {
-    BuildPlacement_Generic, //!< Growing outwards from main building
-    BuildPlacement_MainBuilding, //!< Special placement for main buildings
-    BuildPlacement_Front, //!< Weighted toward front of the base
-    BuildPlacement_Back, //!< Weighted toward back of the base
-    BuildPlacement_MineralLine, //!< In the mineral line
-    BuildPlacement_Choke, //!< At the choke/ramp
-    BuildPlacement_Hidden //!< As stealthy as possible
-  };
+  using TrainingProjectID = uint64_t;
 
-  using BuildProjectID = uint64_t;
-
-  struct Building {
-    BuildProjectID id;
+  struct Training {
+    TrainingProjectID id;
     UnitTypeID type;
+    UnitTypeID trainerType;
     UnitRef building;
-    UnitRef builder;
+    UnitRef trainer;
     MapPoint2 position;
     bool cancel;
     GameTime nextUpdateTime;
@@ -38,11 +29,12 @@ namespace hivemind {
     size_t orderTries;
     AbilityID buildAbility;
 
-    Building(BuildProjectID id_, UnitTypeID type_, AbilityID abil_) :
+    Training(TrainingProjectID id_, UnitTypeID type_, UnitTypeID trainerType_, AbilityID abil_) :
         id(id_),
         type(type_),
+        trainerType(trainerType_),
         building(nullptr),
-        builder(nullptr),
+        trainer(nullptr),
         cancel(false),
         position(0, 0),
         nextUpdateTime(0),
@@ -58,22 +50,20 @@ namespace hivemind {
     }
   };
 
-  using BuildingVector = vector<Building>;
+  using TrainingVector = vector<Training>;
 
-  class Builder: public Subsystem, public hivemind::Listener {
+  class Trainer: public Subsystem, public hivemind::Listener {
   protected:
-    BuildingVector buildings_;
-    BuildProjectID idPool_;
+    TrainingVector trainings_;
+    TrainingProjectID idPool_;
     virtual void onMessage( const Message& msg ) final;
   public:
-    Builder( Bot* bot );
+    Trainer( Bot* bot );
     void gameBegin() final;
-    bool add( UnitTypeID structure, const Base& base, AbilityID ability, BuildProjectID& idOut );
-    void remove( BuildProjectID id );
+    bool add( UnitTypeID unit, const Base& base, UnitTypeID trainer, AbilityID ability, TrainingProjectID& idOut );
+    void remove( TrainingProjectID id );
     void update( const GameTime time, const GameTime delta );
-    void draw() override;
     void gameEnd() final;
-    bool findPlacement( UnitTypeID structure, const Base& base, BuildingPlacement type, AbilityID ability, Vector2& placementOut );
 
     // Returns the amount of {minerals,vespene} that the not-yet-paid-trainings will cost.
     std::pair<int,int> getAllocatedResources() const;

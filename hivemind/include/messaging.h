@@ -23,6 +23,9 @@ namespace hivemind {
     M_Build_Started, //!< args: BuildProjectID
     M_Build_Finished, //!< args: BuildProjectID
     M_Build_Canceled, //!< args: BuildProjectID
+    M_Training_Started, //!< args: TrainingProjectID
+    M_Training_Finished, //!< args: TrainingProjectID
+    M_Training_Canceled, //!< args: TrainingProjectID
     M_Max_Global,
     M_Min_Intel,
     M_Intel_FoundPlayer, //!< args: PlayerID, Unit

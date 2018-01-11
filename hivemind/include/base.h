@@ -63,6 +63,7 @@ namespace hivemind {
     void addQueen( UnitRef queen, bool refresh = true ); //!< Assign a queen to this base
     void addQueens( const UnitSet& queens ); //!< Assign queens to this base
     void addLarva( UnitRef larva );
+    void removeLarva( UnitRef larva );
     void remove( UnitRef unit );
     void addDepot( UnitRef depot );
     void addBuilding( UnitRef building );
