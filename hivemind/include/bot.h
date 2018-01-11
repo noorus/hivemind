@@ -41,6 +41,7 @@ namespace hivemind {
     Options options_;
     bool cheatGodmode_;
     bool cheatCostIgnore_;
+    void verifyData();
   public:
     inline const GameTime time() const { return time_; } //!< Game time in ticks
     inline const RealTime timeSeconds() const { return utils::ticksToTime( time_ ); } //!< Game time in ingame seconds

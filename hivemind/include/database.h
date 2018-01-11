@@ -45,7 +45,7 @@ namespace hivemind {
     int persistentHitCount_;
     WeaponEffectData(): kind_( Unknown ),
       hitsGround_( true ), hitsAir_( true ), hitsStructures_( true ), hitsUnits_( true ),
-      damage_( 0.0f ), armorReduction_( 1.0f ), dummy_( true ), persistentHitCount_( 0 )
+      damage_( 0.0f ), armorReduction_( 1.0f ), dummy_( true ), persistentHitCount_( 1 )
     {
       attributeBonuses_.resize( Max_Attribute, 0.0f );
     }
@@ -53,18 +53,17 @@ namespace hivemind {
 
   struct WeaponData {
     string name;
-
-    float arc;
-    float arcSlop;
-    float damagePoint; // Attack animation time point (in seconds) at which damage is applied to the target. Unit stands still while shooting.
-    float backSwing; // Attack animation duration (in seconds) after the shooting, that the unit stands reloading i.e. the initial value of weapon_cooldown. Unit is still movable during this.
+    Real arc;
+    Real arcSlop;
+    Real damagePoint; // Attack animation time point (in seconds) at which damage is applied to the target. Unit stands still while shooting.
+    Real backSwing; // Attack animation duration (in seconds) after the shooting, that the unit stands reloading i.e. the initial value of weapon_cooldown. Unit is still movable during this.
     bool melee;
-    float minScanRange;
-    float period;
-    float randomDelayMax;
-    float randomDelayMin;
-    float range; // Range at which the attack animation can start.
-    float rangeSlop; // Extra distance the target can move beyond range, without the attack animation getting canceled.
+    Real minScanRange;
+    Real period;
+    Real randomDelayMax;
+    Real randomDelayMin;
+    Real range; // Range at which the attack animation can start.
+    Real rangeSlop; // Extra distance the target can move beyond range, without the attack animation getting canceled.
     bool suicide; // If this weapon kills the casting unit.
     bool hitsGround;
     bool hitsAir;
@@ -72,6 +71,7 @@ namespace hivemind {
     bool hitsUnits;
     WeaponEffectData fx;
     WeaponData(): suicide( false ), hitsGround( false ), hitsAir( false ), hitsStructures( false ), hitsUnits( false ) {}
+    Real calculateBasicDamage();
   };
 
   using WeaponDataMap = std::map<string, WeaponData>;

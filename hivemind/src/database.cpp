@@ -73,7 +73,17 @@ namespace hivemind {
     {
       weapon.suicide = true;
     }
-    else if ( boost::iequals( type, "damage" ) || boost::iequals( type, "missile" ) )
+    else if ( boost::iequals( type, "missile" ) )
+    {
+      fx.dummy_ = false;
+      if ( effect.isMember( "impact" ) )
+      {
+        auto tmp = parseEffectData( effect["impact"], weapon );
+        if ( !tmp.dummy_ ) // Don't bother adding effects we were unable to identify
+          fx.sub_.push_back( tmp );
+      }
+    }
+    else if ( boost::iequals( type, "damage" ) )
     {
       fx.dummy_ = false;
       fx.damage_ = effect["dmgAmount"].asFloat();
@@ -573,6 +583,24 @@ namespace hivemind {
       dumpEffect( 2, weapon.second.fx, weapon.second.fx.persistentHitCount_ );
     }
     system( "pause" );
+  }
+
+  Real weaponFxSimpleDamage( WeaponEffectData& fx )
+  {
+    Real damage = fx.damage_;
+    Real subs = 0.0f;
+    for ( auto& sub : fx.sub_ )
+      subs += weaponFxSimpleDamage( sub );
+    // This is a shitty simplification because the subs might have different damages, but I dunno how SC2 does it for display.
+    if ( fx.sub_.size() > 1 )
+      subs /= (Real)fx.sub_.size();
+    damage += subs;
+    return damage;
+  }
+
+  Real WeaponData::calculateBasicDamage()
+  {
+    return weaponFxSimpleDamage( fx );
   }
 
 }
