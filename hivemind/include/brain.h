@@ -72,10 +72,13 @@ namespace hivemind {
       virtual void terminate() final;
     };
 
+    class Brain_Macro;
+
     class Brain_ManageEconomy: public AI::GoalCollection {
     protected:
       Brain_UpdateHarvesters* harvestersGoal_;
       Brain_SpreadCreep* creepGoal_; // TODO somewhere else
+      Brain_Macro* buildGoal_;
     public:
       virtual const string& getName() const final { static string name = "Brain_ManageEconomy"; return name; }
     public:

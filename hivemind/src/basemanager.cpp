@@ -174,6 +174,12 @@ namespace hivemind {
       base.remove( unit );
   }
 
+  void BaseManager::removeLarva( UnitRef unit )
+  {
+    for ( auto& base : bases_ )
+      base.removeLarva( unit );
+  }
+
   BaseVector& BaseManager::bases()
   {
     return bases_;

@@ -171,6 +171,12 @@
     <ClInclude Include="include\debug.h">
       <Filter>Header Files\Utilities</Filter>
     </ClInclude>
+    <ClInclude Include="include\trainer.h">
+      <Filter>Header Files\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="include\brain_macro.h">
+      <Filter>Header Files\Systems</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\SDK\s2client-api\include\sc2api\sc2_action.h">
       <Filter>SC2API</Filter>
     </ClInclude>
@@ -331,6 +337,12 @@
     </ClCompile>
     <ClCompile Include="src\utilities_internal.cpp">
       <Filter>Source Files\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="src\trainer.cpp">
+      <Filter>Source Files\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="src\brain_macro.cpp">
+      <Filter>Source Files\Systems</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -131,6 +131,7 @@
     <ClInclude Include="include\blob_algo.h" />
     <ClInclude Include="include\bot.h" />
     <ClInclude Include="include\brain.h" />
+    <ClInclude Include="include\brain_macro.h" />
     <ClInclude Include="include\builder.h" />
     <ClInclude Include="include\console.h" />
     <ClInclude Include="include\database.h" />
@@ -157,6 +158,7 @@
     <ClInclude Include="include\strategy.h" />
     <ClInclude Include="include\subsystem.h" />
     <ClInclude Include="include\targetver.h" />
+    <ClInclude Include="include\trainer.h" />
     <ClInclude Include="include\utilities.h" />
     <ClInclude Include="include\workers.h" />
   </ItemGroup>
@@ -173,6 +175,7 @@
     <ClCompile Include="src\brain.cpp" />
     <ClCompile Include="src\brain_creep.cpp" />
     <ClCompile Include="src\brain_economy.cpp" />
+    <ClCompile Include="src\brain_macro.cpp" />
     <ClCompile Include="src\brain_scouting.cpp" />
     <ClCompile Include="src\builder.cpp" />
     <ClCompile Include="src\console.cpp" />
@@ -193,6 +196,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="src\strategy.cpp" />
+    <ClCompile Include="src\trainer.cpp" />
     <ClCompile Include="src\utilities_internal.cpp" />
     <ClCompile Include="src\workers.cpp" />
   </ItemGroup>

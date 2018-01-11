@@ -147,6 +147,22 @@ namespace hivemind {
         continue;
       }
       it++;
+
+      bool workerHasBuildOrder = false;
+      bool buildingStarted = build.building && build.building->is_alive;
+      if(!buildingStarted && build.builder && build.builder->is_alive)
+      {
+        for(auto& order : build.builder->orders)
+        {
+          if(order.ability_id == build.buildAbility)
+          {
+            workerHasBuildOrder = true;
+            break;
+          }
+        }
+      }
+      build.moneyAllocated = buildingStarted || workerHasBuildOrder;
+
       if ( build.nextUpdateTime <= time )
       {
         build.nextUpdateTime = time + cBuildRecheckDelta;
@@ -169,15 +185,19 @@ namespace hivemind {
           bot_->action().UnitCommand( build.builder, sc2::ABILITY_ID::MOVE, build.position, false );
           build.tries++;
         }
+
         if ( !build.building || !build.building->is_alive )
         {
           bool hasOrder = false;
-          for ( auto& order : build.builder->orders )
-            if ( order.ability_id == build.buildAbility )
+          for(auto& order : build.builder->orders)
+          {
+            if(order.ability_id == build.buildAbility)
             {
               hasOrder = true;
               break;
             }
+          }
+
           if ( !hasOrder || ( build.lastOrderTime + cBuildReorderDelta < time ) )
           {
             if ( build.orderTries >= cBuildMaxOrders )
@@ -225,4 +245,21 @@ namespace hivemind {
     return false;
   }
 
+  std::pair<int,int> Builder::getAllocatedResources() const
+  {
+    int mineralSum = 0;
+    int vespeneSum = 0;
+    for(auto& building : buildings_)
+    {
+      if(building.moneyAllocated)
+      {
+        continue;
+      }
+
+      const auto& data = Database::units().at(building.type);
+      mineralSum += data.mineralCost;
+      vespeneSum += data.vespeneCost;
+    }
+    return { mineralSum, vespeneSum };
+  }
 }
