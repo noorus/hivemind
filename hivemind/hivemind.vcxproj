@@ -99,6 +99,28 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\SDK\s2client-api\include\sc2api\sc2_action.h" />
+    <ClInclude Include="..\..\SDK\s2client-api\include\sc2api\sc2_agent.h" />
+    <ClInclude Include="..\..\SDK\s2client-api\include\sc2api\sc2_api.h" />
+    <ClInclude Include="..\..\SDK\s2client-api\include\sc2api\sc2_args.h" />
+    <ClInclude Include="..\..\SDK\s2client-api\include\sc2api\sc2_client.h" />
+    <ClInclude Include="..\..\SDK\s2client-api\include\sc2api\sc2_common.h" />
+    <ClInclude Include="..\..\SDK\s2client-api\include\sc2api\sc2_connection.h" />
+    <ClInclude Include="..\..\SDK\s2client-api\include\sc2api\sc2_control_interfaces.h" />
+    <ClInclude Include="..\..\SDK\s2client-api\include\sc2api\sc2_coordinator.h" />
+    <ClInclude Include="..\..\SDK\s2client-api\include\sc2api\sc2_data.h" />
+    <ClInclude Include="..\..\SDK\s2client-api\include\sc2api\sc2_gametypes.h" />
+    <ClInclude Include="..\..\SDK\s2client-api\include\sc2api\sc2_game_settings.h" />
+    <ClInclude Include="..\..\SDK\s2client-api\include\sc2api\sc2_interfaces.h" />
+    <ClInclude Include="..\..\SDK\s2client-api\include\sc2api\sc2_map_info.h" />
+    <ClInclude Include="..\..\SDK\s2client-api\include\sc2api\sc2_proto_interface.h" />
+    <ClInclude Include="..\..\SDK\s2client-api\include\sc2api\sc2_proto_to_pods.h" />
+    <ClInclude Include="..\..\SDK\s2client-api\include\sc2api\sc2_replay_observer.h" />
+    <ClInclude Include="..\..\SDK\s2client-api\include\sc2api\sc2_score.h" />
+    <ClInclude Include="..\..\SDK\s2client-api\include\sc2api\sc2_server.h" />
+    <ClInclude Include="..\..\SDK\s2client-api\include\sc2api\sc2_typeenums.h" />
+    <ClInclude Include="..\..\SDK\s2client-api\include\sc2api\sc2_types.h" />
+    <ClInclude Include="..\..\SDK\s2client-api\include\sc2api\sc2_unit.h" />
     <ClInclude Include="include\ai_agent.h" />
     <ClInclude Include="include\ai_fuzzy.h" />
     <ClInclude Include="include\ai_goals.h" />

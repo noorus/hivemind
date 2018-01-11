@@ -66,6 +66,8 @@ namespace hivemind {
         if ( !tmp.dummy_ ) // Don't bother adding effects we were unable to identify
           fx.sub_.push_back( tmp );
       }
+      if ( effect.isMember( "persistentCount" ) )
+        fx.persistentHitCount_ = effect["persistentCount"].asInt();
     }
     else if ( boost::iequals( type, "suicide" ) )
     {
@@ -159,6 +161,32 @@ namespace hivemind {
       weapon.randomDelayMin = value["randomDelayMin"].asFloat();
       weapon.range = value["range"].asFloat();
       weapon.rangeSlop = value["rangeSlop"].asFloat();
+
+      if ( value.isMember( "filterRequires" ) )
+        for ( auto& sub : value["filterRequires"] )
+          if ( boost::iequals( sub.asString(), "ground" ) )
+          {
+            weapon.hitsGround = true;
+            weapon.hitsAir = false;
+          }
+          else if ( boost::iequals( sub.asString(), "air" ) )
+          {
+            weapon.hitsGround = false;
+            weapon.hitsAir = true;
+          }
+          else if ( boost::iequals( sub.asString(), "structure" ) )
+          {
+            weapon.hitsStructures = true;
+            weapon.hitsUnits = false;
+          }
+      if ( value.isMember( "filterExcludes" ) )
+        for ( auto& sub : value["filterExcludes"] )
+          if ( boost::iequals( sub.asString(), "ground" ) )
+            weapon.hitsGround = false;
+          else if ( boost::iequals( sub.asString(), "air" ) )
+            weapon.hitsAir = false;
+          else if ( boost::iequals( sub.asString(), "structure" ) )
+            weapon.hitsStructures = false;
 
       if ( value.isMember( "effect" ) )
         weapon.fx = parseEffectData( value["effect"], weapon );
@@ -506,15 +534,18 @@ namespace hivemind {
     "Summoned"
   };
 
-  void dumpEffect( size_t indent, const WeaponEffectData& fx )
+  void dumpEffect( size_t indent, const WeaponEffectData& fx, int times )
   {
     string indstr;
     for ( size_t i = 0; i < indent; i++ )
       indstr.append( "  " );
 
     if ( fx.damage_ > 0.0f ) {
-      printf( "%s%s%s%s%s\r\n", indstr.c_str(), fx.hitsGround_ ? "ground " : "", fx.hitsAir_ ? "air " : "", fx.hitsStructures_ ? "structures " : "", fx.hitsUnits_ ? "units" : "" );
-      printf( "%sdamage: %.2f\r\n", indstr.c_str(), fx.damage_ );
+      printf( "%ssearches: %s%s%s%s\r\n", indstr.c_str(), fx.hitsGround_ ? "ground " : "", fx.hitsAir_ ? "air " : "", fx.hitsStructures_ ? "structures " : "", fx.hitsUnits_ ? "units" : "" );
+      if ( times > 1 )
+        printf( "%sdamage: %.2f * %i\r\n", indstr.c_str(), fx.damage_, times );
+      else
+        printf( "%sdamage: %.2f\r\n", indstr.c_str(), fx.damage_ );
       printf( "%sarmor reduction: %.2f\r\n", indstr.c_str(), fx.armorReduction_ );
     }
     else
@@ -529,7 +560,7 @@ namespace hivemind {
         printf( "%s  %i%% at %f radius\r\n", indstr.c_str(), (int)(splash.fraction_ * 100.0f), splash.radius_ );
     }
     for ( auto& sub : fx.sub_ )
-      dumpEffect( indent + 1, sub );
+      dumpEffect( indent + 1, sub, fx.persistentHitCount_ );
   }
 
   void Database::dumpWeapons()
@@ -538,7 +569,8 @@ namespace hivemind {
     for ( auto& weapon : weaponData_ )
     {
       printf( "  %s\r\n", weapon.second.name.c_str() );
-      dumpEffect( 2, weapon.second.fx );
+      printf( "  hits: %s%s%s%s\r\n", weapon.second.hitsGround ? "ground " : "", weapon.second.hitsAir ? "air " : "", weapon.second.hitsStructures ? "structures " : "", weapon.second.hitsUnits ? "units" : "" );
+      dumpEffect( 2, weapon.second.fx, weapon.second.fx.persistentHitCount_ );
     }
     system( "pause" );
   }

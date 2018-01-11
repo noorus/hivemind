@@ -42,9 +42,10 @@ namespace hivemind {
     vector<Real> attributeBonuses_; //!< Extra damage added to base value by enemy attributes.
     vector<WeaponEffectSplashData> splash_;
     bool dummy_;
+    int persistentHitCount_;
     WeaponEffectData(): kind_( Unknown ),
       hitsGround_( true ), hitsAir_( true ), hitsStructures_( true ), hitsUnits_( true ),
-      damage_( 0.0f ), armorReduction_( 1.0f ), dummy_( true )
+      damage_( 0.0f ), armorReduction_( 1.0f ), dummy_( true ), persistentHitCount_( 0 )
     {
       attributeBonuses_.resize( Max_Attribute, 0.0f );
     }
@@ -65,8 +66,12 @@ namespace hivemind {
     float range; // Range at which the attack animation can start.
     float rangeSlop; // Extra distance the target can move beyond range, without the attack animation getting canceled.
     bool suicide; // If this weapon kills the casting unit.
+    bool hitsGround;
+    bool hitsAir;
+    bool hitsStructures;
+    bool hitsUnits;
     WeaponEffectData fx;
-    WeaponData(): suicide( false ) {}
+    WeaponData(): suicide( false ), hitsGround( false ), hitsAir( false ), hitsStructures( false ), hitsUnits( false ) {}
   };
 
   using WeaponDataMap = std::map<string, WeaponData>;

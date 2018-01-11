@@ -52,6 +52,9 @@
     <Filter Include="Source Files\Brain\Map">
       <UniqueIdentifier>{f4e1f4b9-b533-4735-bbdf-84c6c9243e83}</UniqueIdentifier>
     </Filter>
+    <Filter Include="SC2API">
+      <UniqueIdentifier>{c86f3781-d01d-4388-b13c-e41d4a98decb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\bot.h">
@@ -167,6 +170,72 @@
     </ClInclude>
     <ClInclude Include="include\debug.h">
       <Filter>Header Files\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\SDK\s2client-api\include\sc2api\sc2_action.h">
+      <Filter>SC2API</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\SDK\s2client-api\include\sc2api\sc2_agent.h">
+      <Filter>SC2API</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\SDK\s2client-api\include\sc2api\sc2_api.h">
+      <Filter>SC2API</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\SDK\s2client-api\include\sc2api\sc2_args.h">
+      <Filter>SC2API</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\SDK\s2client-api\include\sc2api\sc2_client.h">
+      <Filter>SC2API</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\SDK\s2client-api\include\sc2api\sc2_common.h">
+      <Filter>SC2API</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\SDK\s2client-api\include\sc2api\sc2_connection.h">
+      <Filter>SC2API</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\SDK\s2client-api\include\sc2api\sc2_control_interfaces.h">
+      <Filter>SC2API</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\SDK\s2client-api\include\sc2api\sc2_coordinator.h">
+      <Filter>SC2API</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\SDK\s2client-api\include\sc2api\sc2_data.h">
+      <Filter>SC2API</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\SDK\s2client-api\include\sc2api\sc2_game_settings.h">
+      <Filter>SC2API</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\SDK\s2client-api\include\sc2api\sc2_gametypes.h">
+      <Filter>SC2API</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\SDK\s2client-api\include\sc2api\sc2_interfaces.h">
+      <Filter>SC2API</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\SDK\s2client-api\include\sc2api\sc2_map_info.h">
+      <Filter>SC2API</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\SDK\s2client-api\include\sc2api\sc2_proto_interface.h">
+      <Filter>SC2API</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\SDK\s2client-api\include\sc2api\sc2_proto_to_pods.h">
+      <Filter>SC2API</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\SDK\s2client-api\include\sc2api\sc2_replay_observer.h">
+      <Filter>SC2API</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\SDK\s2client-api\include\sc2api\sc2_score.h">
+      <Filter>SC2API</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\SDK\s2client-api\include\sc2api\sc2_server.h">
+      <Filter>SC2API</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\SDK\s2client-api\include\sc2api\sc2_typeenums.h">
+      <Filter>SC2API</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\SDK\s2client-api\include\sc2api\sc2_types.h">
+      <Filter>SC2API</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\SDK\s2client-api\include\sc2api\sc2_unit.h">
+      <Filter>SC2API</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -19,6 +19,8 @@
       "name" : "90mmCannons",
       "type" : "damage"
     },
+    "filterExcludes" : [ "stasis" ],
+    "filterRequires" : [ "ground" ],
     "hidden" : false,
     "melee" : false,
     "minScanRange" : 7.5,
@@ -46,6 +48,8 @@
       "name" : "90mmCannonsDummy",
       "type" : "damage"
     },
+    "filterExcludes" : [ "stasis" ],
+    "filterRequires" : [ "ground" ],
     "hidden" : true,
     "melee" : false,
     "minScanRange" : 7.5,
@@ -73,6 +77,8 @@
       "name" : "ATALaserBatteryLM",
       "type" : "missile"
     },
+    "filterExcludes" : [ "stasis" ],
+    "filterRequires" : [ "air" ],
     "hidden" : false,
     "melee" : false,
     "minScanRange" : 5.0,
@@ -100,6 +106,8 @@
       "name" : "ATSLaserBatteryLM",
       "type" : "missile"
     },
+    "filterExcludes" : [ "stasis" ],
+    "filterRequires" : [ "ground" ],
     "hidden" : false,
     "melee" : false,
     "minScanRange" : 5.0,
@@ -127,6 +135,8 @@
       "name" : "AcidSalivaLM",
       "type" : "missile"
     },
+    "filterExcludes" : [ "stasis" ],
+    "filterRequires" : [ "ground" ],
     "hidden" : false,
     "melee" : false,
     "minScanRange" : 5.0,
@@ -157,6 +167,8 @@
       "name" : "SporeCrawler",
       "type" : "missile"
     },
+    "filterExcludes" : [ "stasis" ],
+    "filterRequires" : [ "air" ],
     "hidden" : false,
     "melee" : false,
     "minScanRange" : 5.0,
@@ -184,6 +196,8 @@
       "name" : "AcidSpinesLM",
       "type" : "missile"
     },
+    "filterExcludes" : [ "stasis" ],
+    "filterRequires" : [ "air" ],
     "hidden" : false,
     "melee" : false,
     "minScanRange" : 8.5,
@@ -214,6 +228,8 @@
       "name" : "AdeptLM",
       "type" : "missile"
     },
+    "filterExcludes" : [ "stasis" ],
+    "filterRequires" : [ "ground" ],
     "hidden" : false,
     "melee" : false,
     "minScanRange" : 5.0,
@@ -241,6 +257,8 @@
       "name" : "ArbiterMPWeaponLaunch",
       "type" : "missile"
     },
+    "filterExcludes" : [ "stasis" ],
+    "filterRequires" : [],
     "hidden" : false,
     "melee" : false,
     "minScanRange" : 5.0,
@@ -259,6 +277,8 @@
     "damagePoint" : 0.16700000000000001,
     "disabled" : false,
     "effect" : {},
+    "filterExcludes" : [ "stasis" ],
+    "filterRequires" : [],
     "hidden" : false,
     "melee" : false,
     "minScanRange" : 5.0,
@@ -286,6 +306,8 @@
       "name" : "AutoTurret",
       "type" : "damage"
     },
+    "filterExcludes" : [ "stasis" ],
+    "filterRequires" : [],
     "hidden" : false,
     "melee" : false,
     "minScanRange" : 5.0,
@@ -306,6 +328,7 @@
     "effect" : 
     {
       "name" : "BacklashRockets",
+      "persistentCount" : 2,
       "setEffects" : 
       [
         {
@@ -320,6 +343,8 @@
       ],
       "type" : "persistent"
     },
+    "filterExcludes" : [ "stasis" ],
+    "filterRequires" : [ "ground" ],
     "hidden" : false,
     "melee" : false,
     "minScanRange" : 6.0,
@@ -342,6 +367,8 @@
       "name" : "BroodlingEscort",
       "type" : "unknown"
     },
+    "filterExcludes" : [ "stasis" ],
+    "filterRequires" : [ "ground" ],
     "hidden" : true,
     "melee" : false,
     "minScanRange" : 5.0,
@@ -360,6 +387,8 @@
     "damagePoint" : 0.16700000000000001,
     "disabled" : false,
     "effect" : {},
+    "filterExcludes" : [ "stasis" ],
+    "filterRequires" : [ "ground" ],
     "hidden" : false,
     "melee" : false,
     "minScanRange" : 10.5,
@@ -390,6 +419,8 @@
       "name" : "BuildingShield",
       "type" : "damage"
     },
+    "filterExcludes" : [ "self", "stasis" ],
+    "filterRequires" : [],
     "hidden" : false,
     "melee" : false,
     "minScanRange" : 5.0,
@@ -446,6 +477,8 @@
       ],
       "type" : "persistent"
     },
+    "filterExcludes" : [ "player", "ally", "stasis" ],
+    "filterRequires" : [],
     "hidden" : true,
     "melee" : false,
     "minScanRange" : 6.0,
@@ -476,6 +509,8 @@
       "name" : "C10CanisterRifle",
       "type" : "damage"
     },
+    "filterExcludes" : [ "stasis" ],
+    "filterRequires" : [],
     "hidden" : false,
     "melee" : false,
     "minScanRange" : 6.5,
@@ -503,6 +538,8 @@
       "name" : "Claws",
       "type" : "damage"
     },
+    "filterExcludes" : [ "stasis" ],
+    "filterRequires" : [ "ground" ],
     "hidden" : false,
     "melee" : true,
     "minScanRange" : 5.0,
@@ -525,6 +562,8 @@
       "name" : "CrucioShockCannonSwitch",
       "type" : "unknown"
     },
+    "filterExcludes" : [ "stasis" ],
+    "filterRequires" : [ "ground" ],
     "hidden" : false,
     "melee" : false,
     "minScanRange" : 5.0,
@@ -552,6 +591,8 @@
       "name" : "CycloneFakeWeaponDummyDamage",
       "type" : "damage"
     },
+    "filterExcludes" : [ "stasis" ],
+    "filterRequires" : [],
     "hidden" : true,
     "melee" : false,
     "minScanRange" : 6.0,
@@ -579,6 +620,8 @@
       "name" : "CycloneFakeWeaponDummyDamage",
       "type" : "damage"
     },
+    "filterExcludes" : [ "stasis" ],
+    "filterRequires" : [],
     "hidden" : true,
     "melee" : false,
     "minScanRange" : 7.5,
@@ -597,6 +640,8 @@
     "damagePoint" : 0.16700000000000001,
     "disabled" : false,
     "effect" : {},
+    "filterExcludes" : [ "ground", "stasis" ],
+    "filterRequires" : [ "air" ],
     "hidden" : false,
     "melee" : false,
     "minScanRange" : 5.0,
@@ -624,6 +669,8 @@
       "name" : "D8ChargeLaunchMissile",
       "type" : "missile"
     },
+    "filterExcludes" : [ "stasis" ],
+    "filterRequires" : [ "ground", "structure" ],
     "hidden" : false,
     "melee" : false,
     "minScanRange" : 5.0,
@@ -646,6 +693,8 @@
       "name" : "DevourerMPWeaponLaunch",
       "type" : "missile"
     },
+    "filterExcludes" : [ "stasis" ],
+    "filterRequires" : [ "air" ],
     "hidden" : false,
     "melee" : false,
     "minScanRange" : 5.0,
@@ -683,6 +732,7 @@
           [
             {
               "name" : "DigesterCreepSpraySecondaryCreatePersistent",
+              "persistentCount" : 9,
               "setEffects" : 
               [
                 {
@@ -698,6 +748,8 @@
       ],
       "type" : "set"
     },
+    "filterExcludes" : [ "stasis" ],
+    "filterRequires" : [ "structure" ],
     "hidden" : true,
     "melee" : false,
     "minScanRange" : 0.0,
@@ -732,6 +784,8 @@
       ],
       "type" : "persistent"
     },
+    "filterExcludes" : [ "stasis" ],
+    "filterRequires" : [],
     "hidden" : false,
     "melee" : false,
     "minScanRange" : 5.5,
@@ -759,6 +813,8 @@
       "name" : "FusionCutter",
       "type" : "damage"
     },
+    "filterExcludes" : [ "stasis" ],
+    "filterRequires" : [ "ground" ],
     "hidden" : false,
     "melee" : true,
     "minScanRange" : 5.0,
@@ -781,6 +837,8 @@
       "name" : "GlaiveWurm",
       "type" : "missile"
     },
+    "filterExcludes" : [ "stasis" ],
+    "filterRequires" : [],
     "hidden" : false,
     "melee" : false,
     "minScanRange" : 5.0,
@@ -808,6 +866,8 @@
       "name" : "GuardianMPWeaponLM",
       "type" : "missile"
     },
+    "filterExcludes" : [ "stasis" ],
+    "filterRequires" : [ "ground" ],
     "hidden" : false,
     "melee" : false,
     "minScanRange" : 5.0,
@@ -835,6 +895,8 @@
       "name" : "GuassRifle",
       "type" : "damage"
     },
+    "filterExcludes" : [ "stasis" ],
+    "filterRequires" : [],
     "hidden" : false,
     "melee" : false,
     "minScanRange" : 5.5,
@@ -870,6 +932,8 @@
       "searchRequires" : [ "ground" ],
       "type" : "damage"
     },
+    "filterExcludes" : [ "stasis" ],
+    "filterRequires" : [ "ground" ],
     "hidden" : false,
     "melee" : false,
     "minScanRange" : 5.0,
@@ -913,6 +977,8 @@
       ],
       "type" : "set"
     },
+    "filterExcludes" : [ "stasis" ],
+    "filterRequires" : [ "ground" ],
     "hidden" : false,
     "melee" : false,
     "minScanRange" : 5.0,
@@ -935,6 +1001,8 @@
       "name" : "HighTemplarWeaponLM",
       "type" : "missile"
     },
+    "filterExcludes" : [ "stasis" ],
+    "filterRequires" : [ "ground" ],
     "hidden" : false,
     "melee" : false,
     "minScanRange" : 6.5,
@@ -962,6 +1030,8 @@
       "name" : "HydraliskMelee",
       "type" : "damage"
     },
+    "filterExcludes" : [ "stasis" ],
+    "filterRequires" : [ "ground" ],
     "hidden" : true,
     "melee" : true,
     "minScanRange" : 5.0,
@@ -992,6 +1062,8 @@
       "name" : "ImpalerTentacleLM",
       "type" : "missile"
     },
+    "filterExcludes" : [ "stasis" ],
+    "filterRequires" : [ "ground" ],
     "hidden" : false,
     "melee" : false,
     "minScanRange" : 5.0,
@@ -1012,6 +1084,7 @@
     "effect" : 
     {
       "name" : "InfernalFlameThrowerCP",
+      "persistentCount" : 25,
       "setEffects" : 
       [
         {
@@ -1022,6 +1095,8 @@
       ],
       "type" : "persistent"
     },
+    "filterExcludes" : [ "stasis" ],
+    "filterRequires" : [ "ground" ],
     "hidden" : false,
     "melee" : false,
     "minScanRange" : 5.5,
@@ -1049,6 +1124,8 @@
       "name" : "InfestedAcidSpinesLM",
       "type" : "missile"
     },
+    "filterExcludes" : [ "stasis" ],
+    "filterRequires" : [ "air" ],
     "hidden" : false,
     "melee" : false,
     "minScanRange" : 6.5,
@@ -1076,6 +1153,8 @@
       "name" : "InfestedGuassRifle",
       "type" : "damage"
     },
+    "filterExcludes" : [ "stasis" ],
+    "filterRequires" : [ "ground" ],
     "hidden" : false,
     "melee" : false,
     "minScanRange" : 5.5,
@@ -1094,6 +1173,8 @@
     "damagePoint" : 0.2666,
     "disabled" : false,
     "effect" : {},
+    "filterExcludes" : [ "stasis" ],
+    "filterRequires" : [ "ground" ],
     "hidden" : false,
     "melee" : true,
     "minScanRange" : 6.0,
@@ -1114,6 +1195,7 @@
     "effect" : 
     {
       "name" : "InterceptorBeamPersistent",
+      "persistentCount" : 1,
       "setEffects" : 
       [
         {
@@ -1128,6 +1210,8 @@
       ],
       "type" : "persistent"
     },
+    "filterExcludes" : [ "stasis" ],
+    "filterRequires" : [],
     "hidden" : false,
     "melee" : false,
     "minScanRange" : 5.0,
@@ -1148,6 +1232,7 @@
     "effect" : 
     {
       "name" : "InterceptorLaunchPersistent",
+      "persistentCount" : 8,
       "setEffects" : 
       [
         {
@@ -1157,6 +1242,8 @@
       ],
       "type" : "persistent"
     },
+    "filterExcludes" : [ "stasis" ],
+    "filterRequires" : [],
     "hidden" : true,
     "melee" : false,
     "minScanRange" : 5.0,
@@ -1179,6 +1266,8 @@
       "name" : "CarrierInterceptor",
       "type" : "unknown"
     },
+    "filterExcludes" : [ "player", "ally" ],
+    "filterRequires" : [],
     "hidden" : false,
     "melee" : false,
     "minScanRange" : 5.0,
@@ -1199,6 +1288,7 @@
     "effect" : 
     {
       "name" : "IonCannons",
+      "persistentCount" : 2,
       "setEffects" : 
       [
         {
@@ -1232,6 +1322,8 @@
       ],
       "type" : "persistent"
     },
+    "filterExcludes" : [ "stasis" ],
+    "filterRequires" : [ "air" ],
     "hidden" : false,
     "melee" : false,
     "minScanRange" : 4.0,
@@ -1252,6 +1344,7 @@
     "effect" : 
     {
       "name" : "JavelinMissileLaunchersPersistent",
+      "persistentCount" : 4,
       "setEffects" : 
       [
         {
@@ -1277,6 +1370,8 @@
       ],
       "type" : "persistent"
     },
+    "filterExcludes" : [ "ground", "stasis" ],
+    "filterRequires" : [ "air" ],
     "hidden" : false,
     "melee" : false,
     "minScanRange" : 10.5,
@@ -1316,6 +1411,8 @@
       "searchRequires" : [ "ground" ],
       "type" : "damage"
     },
+    "filterExcludes" : [ "structure", "stasis" ],
+    "filterRequires" : [ "ground" ],
     "hidden" : false,
     "melee" : true,
     "minScanRange" : 5.0,
@@ -1348,6 +1445,8 @@
       "searchRequires" : [ "air" ],
       "type" : "damage"
     },
+    "filterExcludes" : [ "stasis" ],
+    "filterRequires" : [ "air" ],
     "hidden" : false,
     "melee" : false,
     "minScanRange" : 5.0,
@@ -1368,6 +1467,7 @@
     "effect" : 
     {
       "name" : "LanzerTorpedoes",
+      "persistentCount" : 2,
       "setEffects" : 
       [
         {
@@ -1385,6 +1485,8 @@
       ],
       "type" : "persistent"
     },
+    "filterExcludes" : [ "stasis" ],
+    "filterRequires" : [ "air" ],
     "hidden" : false,
     "melee" : false,
     "minScanRange" : 5.0,
@@ -1419,6 +1521,8 @@
       ],
       "type" : "set"
     },
+    "filterExcludes" : [ "structure", "stasis" ],
+    "filterRequires" : [ "ground" ],
     "hidden" : false,
     "melee" : false,
     "minScanRange" : 5.0,
@@ -1439,6 +1543,7 @@
     "effect" : 
     {
       "name" : "LiberatorMissileBurstPersistent",
+      "persistentCount" : 2,
       "setEffects" : 
       [
         {
@@ -1461,6 +1566,8 @@
       ],
       "type" : "persistent"
     },
+    "filterExcludes" : [ "stasis" ],
+    "filterRequires" : [ "air" ],
     "hidden" : false,
     "melee" : false,
     "minScanRange" : 5.0,
@@ -1488,6 +1595,8 @@
       "name" : "LocustMPLM",
       "type" : "missile"
     },
+    "filterExcludes" : [ "stasis" ],
+    "filterRequires" : [ "ground" ],
     "hidden" : false,
     "melee" : false,
     "minScanRange" : 6.0,
@@ -1510,6 +1619,8 @@
       "name" : "LocustMPFlyingSwoopAttackIssueOrder",
       "type" : "unknown"
     },
+    "filterExcludes" : [ "stasis" ],
+    "filterRequires" : [ "ground" ],
     "hidden" : true,
     "melee" : false,
     "minScanRange" : 10.0,
@@ -1537,6 +1648,8 @@
       "name" : "LocustMPMeleeDamage",
       "type" : "damage"
     },
+    "filterExcludes" : [ "stasis" ],
+    "filterRequires" : [ "ground" ],
     "hidden" : true,
     "melee" : true,
     "minScanRange" : 6.0,
@@ -1557,6 +1670,7 @@
     "effect" : 
     {
       "name" : "LongboltMissile",
+      "persistentCount" : 2,
       "setEffects" : 
       [
         {
@@ -1571,6 +1685,8 @@
       ],
       "type" : "persistent"
     },
+    "filterExcludes" : [ "stasis" ],
+    "filterRequires" : [ "air" ],
     "hidden" : false,
     "melee" : false,
     "minScanRange" : 5.0,
@@ -1591,6 +1707,7 @@
     "effect" : 
     {
       "name" : "LurkerMP",
+      "persistentCount" : 10,
       "setEffects" : 
       [
         {
@@ -1601,6 +1718,8 @@
       ],
       "type" : "persistent"
     },
+    "filterExcludes" : [ "stasis" ],
+    "filterRequires" : [ "ground" ],
     "hidden" : false,
     "melee" : false,
     "minScanRange" : 5.0,
@@ -1628,6 +1747,8 @@
       "name" : "MoopyStickDamage",
       "type" : "damage"
     },
+    "filterExcludes" : [],
+    "filterRequires" : [],
     "hidden" : false,
     "melee" : false,
     "minScanRange" : 5.0,
@@ -1652,6 +1773,7 @@
       [
         {
           "name" : "MothershipBeamPersistent",
+          "persistentCount" : 3,
           "setEffects" : 
           [
             {
@@ -1668,6 +1790,7 @@
         },
         {
           "name" : "MothershipSecondaryBeamPersistent",
+          "persistentCount" : 3,
           "setEffects" : 
           [
             {
@@ -1685,6 +1808,8 @@
       ],
       "type" : "set"
     },
+    "filterExcludes" : [ "stasis" ],
+    "filterRequires" : [],
     "hidden" : false,
     "melee" : false,
     "minScanRange" : 5.0,
@@ -1712,6 +1837,8 @@
       "name" : "MothershipCoreWeaponLM",
       "type" : "missile"
     },
+    "filterExcludes" : [ "stasis" ],
+    "filterRequires" : [],
     "hidden" : false,
     "melee" : false,
     "minScanRange" : 7.0,
@@ -1739,6 +1866,8 @@
       "name" : "MothershipCoreWeaponDamage",
       "type" : "damage"
     },
+    "filterExcludes" : [ "stasis" ],
+    "filterRequires" : [],
     "hidden" : false,
     "melee" : false,
     "minScanRange" : 5.0,
@@ -1766,6 +1895,8 @@
       "name" : "NeedleClaws",
       "type" : "damage"
     },
+    "filterExcludes" : [ "stasis" ],
+    "filterRequires" : [ "ground" ],
     "hidden" : false,
     "melee" : true,
     "minScanRange" : 15.0,
@@ -1793,6 +1924,8 @@
       "name" : "NeedleSpinesLaunchMissile",
       "type" : "missile"
     },
+    "filterExcludes" : [ "stasis" ],
+    "filterRequires" : [],
     "hidden" : false,
     "melee" : false,
     "minScanRange" : 5.5,
@@ -1828,6 +1961,8 @@
       "searchRequires" : [ "air" ],
       "type" : "damage"
     },
+    "filterExcludes" : [ "stasis" ],
+    "filterRequires" : [ "air" ],
     "hidden" : false,
     "melee" : false,
     "minScanRange" : 5.0,
@@ -1855,6 +1990,8 @@
       "name" : "NydusCanalAttackerLaunchMissile",
       "type" : "missile"
     },
+    "filterExcludes" : [ "stasis" ],
+    "filterRequires" : [ "structure" ],
     "hidden" : false,
     "melee" : false,
     "minScanRange" : 5.0,
@@ -1892,6 +2029,8 @@
       ],
       "type" : "persistent"
     },
+    "filterExcludes" : [ "stasis" ],
+    "filterRequires" : [ "ground" ],
     "hidden" : false,
     "melee" : false,
     "minScanRange" : 5.0,
@@ -1912,6 +2051,7 @@
     "effect" : 
     {
       "name" : "P38ScytheGuassPistolBurst",
+      "persistentCount" : 2,
       "setEffects" : 
       [
         {
@@ -1926,6 +2066,8 @@
       ],
       "type" : "persistent"
     },
+    "filterExcludes" : [ "structure", "stasis" ],
+    "filterRequires" : [ "ground" ],
     "hidden" : false,
     "melee" : false,
     "minScanRange" : 5.5,
@@ -1956,6 +2098,8 @@
       "name" : "ParasiteSporeLaunchMissile",
       "type" : "missile"
     },
+    "filterExcludes" : [ "stasis" ],
+    "filterRequires" : [ "air" ],
     "hidden" : false,
     "melee" : false,
     "minScanRange" : 5.0,
@@ -1983,6 +2127,8 @@
       "name" : "ParticleBeam",
       "type" : "damage"
     },
+    "filterExcludes" : [ "stasis" ],
+    "filterRequires" : [ "ground" ],
     "hidden" : false,
     "melee" : true,
     "minScanRange" : 5.0,
@@ -2013,6 +2159,8 @@
       "name" : "ParticleDisruptors",
       "type" : "missile"
     },
+    "filterExcludes" : [ "stasis" ],
+    "filterRequires" : [],
     "hidden" : false,
     "melee" : false,
     "minScanRange" : 6.5,
@@ -2043,6 +2191,8 @@
       "name" : "PhaseDisruptors",
       "type" : "damage"
     },
+    "filterExcludes" : [ "stasis" ],
+    "filterRequires" : [ "air" ],
     "hidden" : false,
     "melee" : false,
     "minScanRange" : 5.0,
@@ -2073,6 +2223,8 @@
       "name" : "PhaseDisruptors",
       "type" : "damage"
     },
+    "filterExcludes" : [ "stasis" ],
+    "filterRequires" : [ "ground" ],
     "hidden" : false,
     "melee" : false,
     "minScanRange" : 6.5,
@@ -2100,6 +2252,8 @@
       "name" : "PhotonCannonLM",
       "type" : "missile"
     },
+    "filterExcludes" : [ "stasis" ],
+    "filterRequires" : [],
     "hidden" : false,
     "melee" : false,
     "minScanRange" : 5.0,
@@ -2133,6 +2287,8 @@
       ],
       "type" : "set"
     },
+    "filterExcludes" : [ "self", "player", "ally", "stasis" ],
+    "filterRequires" : [],
     "hidden" : true,
     "melee" : false,
     "minScanRange" : 5.0,
@@ -2163,6 +2319,8 @@
       ],
       "type" : "set"
     },
+    "filterExcludes" : [ "stasis" ],
+    "filterRequires" : [],
     "hidden" : false,
     "melee" : false,
     "minScanRange" : 5.0,
@@ -2183,6 +2341,7 @@
     "effect" : 
     {
       "name" : "PsiBladesBurst",
+      "persistentCount" : 2,
       "setEffects" : 
       [
         {
@@ -2197,6 +2356,8 @@
       ],
       "type" : "persistent"
     },
+    "filterExcludes" : [ "stasis" ],
+    "filterRequires" : [ "ground" ],
     "hidden" : false,
     "melee" : true,
     "minScanRange" : 5.0,
@@ -2242,6 +2403,8 @@
       "searchExcludes" : [ "player", "ally", "stasis" ],
       "type" : "damage"
     },
+    "filterExcludes" : [ "stasis" ],
+    "filterRequires" : [],
     "hidden" : false,
     "melee" : false,
     "minScanRange" : 5.0,
@@ -2275,6 +2438,8 @@
       ],
       "type" : "set"
     },
+    "filterExcludes" : [ "stasis" ],
+    "filterRequires" : [ "ground" ],
     "hidden" : false,
     "melee" : false,
     "minScanRange" : 6.5,
@@ -2302,6 +2467,8 @@
       "name" : "Ram",
       "type" : "damage"
     },
+    "filterExcludes" : [ "stasis" ],
+    "filterRequires" : [ "ground", "structure" ],
     "hidden" : false,
     "melee" : true,
     "minScanRange" : 5.0,
@@ -2329,6 +2496,8 @@
       "name" : "RavagerWeaponLM",
       "type" : "missile"
     },
+    "filterExcludes" : [ "stasis" ],
+    "filterRequires" : [ "ground" ],
     "hidden" : false,
     "melee" : false,
     "minScanRange" : 6.5,
@@ -2356,6 +2525,8 @@
       "name" : "MothershipCorePlasmaDisruptorLaunchMissile",
       "type" : "missile"
     },
+    "filterExcludes" : [ "stasis" ],
+    "filterRequires" : [ "ground" ],
     "hidden" : false,
     "melee" : false,
     "minScanRange" : 5.0,
@@ -2401,6 +2572,8 @@
       ],
       "type" : "persistent"
     },
+    "filterExcludes" : [ "stasis" ],
+    "filterRequires" : [ "structure" ],
     "hidden" : true,
     "melee" : false,
     "minScanRange" : 5.0,
@@ -2428,6 +2601,8 @@
       "name" : "RoachUMelee",
       "type" : "damage"
     },
+    "filterExcludes" : [ "stasis" ],
+    "filterRequires" : [ "ground" ],
     "hidden" : true,
     "melee" : true,
     "minScanRange" : 5.0,
@@ -2466,6 +2641,8 @@
       ],
       "type" : "set"
     },
+    "filterExcludes" : [ "stasis" ],
+    "filterRequires" : [ "air" ],
     "hidden" : false,
     "melee" : false,
     "minScanRange" : 5.0,
@@ -2486,6 +2663,7 @@
     "effect" : 
     {
       "name" : "ScoutMPAir",
+      "persistentCount" : 2,
       "setEffects" : 
       [
         {
@@ -2515,6 +2693,8 @@
       ],
       "type" : "persistent"
     },
+    "filterExcludes" : [ "stasis" ],
+    "filterRequires" : [ "air" ],
     "hidden" : false,
     "melee" : false,
     "minScanRange" : 5.0,
@@ -2542,6 +2722,8 @@
       "name" : "ScoutMPGround",
       "type" : "damage"
     },
+    "filterExcludes" : [ "stasis" ],
+    "filterRequires" : [ "ground" ],
     "hidden" : false,
     "melee" : false,
     "minScanRange" : 5.0,
@@ -2569,6 +2751,8 @@
       "name" : "Sheep",
       "type" : "damage"
     },
+    "filterExcludes" : [ "stasis" ],
+    "filterRequires" : [ "ground" ],
     "hidden" : true,
     "melee" : true,
     "minScanRange" : 5.0,
@@ -2597,6 +2781,8 @@
       "searchExcludes" : [ "structure", "player", "ally", "stasis" ],
       "type" : "damage"
     },
+    "filterExcludes" : [ "stasis" ],
+    "filterRequires" : [],
     "hidden" : true,
     "melee" : false,
     "minScanRange" : 5.0,
@@ -2624,6 +2810,8 @@
       "name" : "Spines",
       "type" : "damage"
     },
+    "filterExcludes" : [ "stasis" ],
+    "filterRequires" : [ "ground" ],
     "hidden" : false,
     "melee" : true,
     "minScanRange" : 5.0,
@@ -2644,6 +2832,7 @@
     "effect" : 
     {
       "name" : "TalonsBurst",
+      "persistentCount" : 2,
       "setEffects" : 
       [
         {
@@ -2658,6 +2847,8 @@
       ],
       "type" : "persistent"
     },
+    "filterExcludes" : [ "stasis" ],
+    "filterRequires" : [ "ground" ],
     "hidden" : true,
     "melee" : false,
     "minScanRange" : 5.5,
@@ -2678,6 +2869,7 @@
     "effect" : 
     {
       "name" : "TalonsBurst",
+      "persistentCount" : 2,
       "setEffects" : 
       [
         {
@@ -2692,6 +2884,8 @@
       ],
       "type" : "persistent"
     },
+    "filterExcludes" : [ "stasis" ],
+    "filterRequires" : [ "ground" ],
     "hidden" : false,
     "melee" : false,
     "minScanRange" : 5.0,
@@ -2712,6 +2906,7 @@
     "effect" : 
     {
       "name" : "TalonsMissileBurst",
+      "persistentCount" : 2,
       "setEffects" : 
       [
         {
@@ -2726,6 +2921,8 @@
       ],
       "type" : "persistent"
     },
+    "filterExcludes" : [ "stasis" ],
+    "filterRequires" : [ "ground" ],
     "hidden" : false,
     "melee" : false,
     "minScanRange" : 5.0,
@@ -2756,6 +2953,8 @@
       "name" : "TempestLaunchMissile",
       "type" : "missile"
     },
+    "filterExcludes" : [ "stasis" ],
+    "filterRequires" : [ "air" ],
     "hidden" : false,
     "melee" : false,
     "minScanRange" : 5.0,
@@ -2783,6 +2982,8 @@
       "name" : "TempestLaunchMissileGround",
       "type" : "missile"
     },
+    "filterExcludes" : [ "stasis" ],
+    "filterRequires" : [ "ground" ],
     "hidden" : false,
     "melee" : false,
     "minScanRange" : 10.5,
@@ -2833,6 +3034,8 @@
       ],
       "type" : "persistent"
     },
+    "filterExcludes" : [ "air", "stasis" ],
+    "filterRequires" : [ "ground" ],
     "hidden" : false,
     "melee" : false,
     "minScanRange" : 5.0,
@@ -2857,6 +3060,7 @@
       [
         {
           "name" : "ThermalLancesForwardAir",
+          "persistentCount" : 11,
           "setEffects" : 
           [
             {
@@ -2869,6 +3073,7 @@
         },
         {
           "name" : "ThermalLancesReverseAir",
+          "persistentCount" : 11,
           "setEffects" : 
           [
             {
@@ -2881,6 +3086,7 @@
         },
         {
           "name" : "ThermalLancesFriendlyCPAir",
+          "persistentCount" : 2,
           "setEffects" : 
           [
             {
@@ -2898,6 +3104,8 @@
       ],
       "type" : "set"
     },
+    "filterExcludes" : [ "stasis" ],
+    "filterRequires" : [ "air" ],
     "hidden" : false,
     "melee" : false,
     "minScanRange" : 5.0,
@@ -2922,6 +3130,7 @@
       [
         {
           "name" : "ThermalLancesFriendlyCP",
+          "persistentCount" : 2,
           "setEffects" : 
           [
             {
@@ -2941,6 +3150,7 @@
         },
         {
           "name" : "ThermalLancesReverse",
+          "persistentCount" : 11,
           "setEffects" : 
           [
             {
@@ -2954,6 +3164,8 @@
       ],
       "type" : "set"
     },
+    "filterExcludes" : [ "stasis" ],
+    "filterRequires" : [ "ground" ],
     "hidden" : false,
     "melee" : false,
     "minScanRange" : 7.5,
@@ -2974,6 +3186,7 @@
     "effect" : 
     {
       "name" : "ThorsHammer",
+      "persistentCount" : 2,
       "setEffects" : 
       [
         {
@@ -2988,6 +3201,8 @@
       ],
       "type" : "persistent"
     },
+    "filterExcludes" : [ "stasis" ],
+    "filterRequires" : [ "ground" ],
     "hidden" : false,
     "melee" : false,
     "minScanRange" : 7.5,
@@ -3018,6 +3233,8 @@
       "name" : "TwinGatlingCannons",
       "type" : "damage"
     },
+    "filterExcludes" : [ "stasis" ],
+    "filterRequires" : [ "ground" ],
     "hidden" : false,
     "melee" : false,
     "minScanRange" : 6.5,
@@ -3061,6 +3278,8 @@
       "searchRequires" : [ "ground" ],
       "type" : "damage"
     },
+    "filterExcludes" : [ "self", "stasis" ],
+    "filterRequires" : [ "ground" ],
     "hidden" : false,
     "melee" : false,
     "minScanRange" : 5.0,
@@ -3083,6 +3302,8 @@
       "name" : "CycloneAttackWeaponLaunchMissileSwitch",
       "type" : "unknown"
     },
+    "filterExcludes" : [ "stasis" ],
+    "filterRequires" : [ "ground" ],
     "hidden" : false,
     "melee" : false,
     "minScanRange" : 6.5,
@@ -3120,6 +3341,8 @@
       ],
       "type" : "persistent"
     },
+    "filterExcludes" : [ "stasis" ],
+    "filterRequires" : [],
     "hidden" : false,
     "melee" : false,
     "minScanRange" : 5.0,
@@ -3138,6 +3361,8 @@
     "damagePoint" : 0.16700000000000001,
     "disabled" : false,
     "effect" : {},
+    "filterExcludes" : [ "stasis" ],
+    "filterRequires" : [],
     "hidden" : false,
     "melee" : false,
     "minScanRange" : 5.0,
@@ -3175,6 +3400,8 @@
       ],
       "type" : "persistent"
     },
+    "filterExcludes" : [ "stasis" ],
+    "filterRequires" : [],
     "hidden" : true,
     "melee" : false,
     "minScanRange" : 5.0,
@@ -3249,6 +3476,8 @@
       ],
       "type" : "set"
     },
+    "filterExcludes" : [ "stasis" ],
+    "filterRequires" : [ "ground" ],
     "hidden" : true,
     "melee" : true,
     "minScanRange" : 5.0,
@@ -3323,6 +3552,8 @@
       ],
       "type" : "set"
     },
+    "filterExcludes" : [ "stasis" ],
+    "filterRequires" : [ "ground" ],
     "hidden" : true,
     "melee" : true,
     "minScanRange" : 5.0,
@@ -3341,6 +3572,8 @@
     "damagePoint" : 0.0,
     "disabled" : false,
     "effect" : {},
+    "filterExcludes" : [ "structure", "stasis" ],
+    "filterRequires" : [ "ground" ],
     "hidden" : false,
     "melee" : true,
     "minScanRange" : 5.0,
@@ -3368,6 +3601,8 @@
       "name" : "WarHoundLM",
       "type" : "missile"
     },
+    "filterExcludes" : [ "stasis" ],
+    "filterRequires" : [ "ground" ],
     "hidden" : false,
     "melee" : false,
     "minScanRange" : 10.0,
@@ -3395,6 +3630,8 @@
       "name" : "WarHoundMelee",
       "type" : "damage"
     },
+    "filterExcludes" : [ "stasis" ],
+    "filterRequires" : [ "ground" ],
     "hidden" : true,
     "melee" : true,
     "minScanRange" : 5.0,
@@ -3422,6 +3659,8 @@
       "name" : "WarpBlades",
       "type" : "damage"
     },
+    "filterExcludes" : [ "stasis" ],
+    "filterRequires" : [ "ground" ],
     "hidden" : false,
     "melee" : true,
     "minScanRange" : 5.0,
@@ -3455,6 +3694,8 @@
       ],
       "type" : "set"
     },
+    "filterExcludes" : [ "structure", "ally", "stasis" ],
+    "filterRequires" : [],
     "hidden" : true,
     "melee" : false,
     "minScanRange" : 5.0,
@@ -3473,6 +3714,8 @@
     "damagePoint" : 0.16700000000000001,
     "disabled" : false,
     "effect" : {},
+    "filterExcludes" : [ "stasis" ],
+    "filterRequires" : [],
     "hidden" : false,
     "melee" : false,
     "minScanRange" : 5.0,
