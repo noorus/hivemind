@@ -33,6 +33,8 @@ namespace hivemind {
   using sc2::UPGRADE_ID;
   using sc2::UpgradeID;
 
+  using sc2::Attribute;
+
   using sc2::Color;
 
   namespace Colors {

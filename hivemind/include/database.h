@@ -4,21 +4,6 @@
 
 namespace hivemind {
 
-  enum Attribute {
-    Light = 0,
-    Armored,
-    Biological,
-    Mechanical,
-    Robotic,
-    Psionic,
-    Massive,
-    Structure,
-    Hover,
-    Heroic,
-    Summoned,
-    Max_Attribute
-  };
-
   struct WeaponEffectSplashData {
     Real fraction_;
     Real radius_;
@@ -47,7 +32,7 @@ namespace hivemind {
       hitsGround_( true ), hitsAir_( true ), hitsStructures_( true ), hitsUnits_( true ),
       damage_( 0.0f ), armorReduction_( 1.0f ), dummy_( true ), persistentHitCount_( 1 )
     {
-      attributeBonuses_.resize( Max_Attribute, 0.0f );
+      attributeBonuses_.resize( (size_t)Attribute::Invalid, 0.0f );
     }
   };
 
@@ -72,6 +57,7 @@ namespace hivemind {
     WeaponEffectData fx;
     WeaponData(): suicide( false ), hitsGround( false ), hitsAir( false ), hitsStructures( false ), hitsUnits( false ) {}
     Real calculateBasicDamage();
+    Real calculateAttributeBonuses( Attribute attrib );
   };
 
   using WeaponDataMap = std::map<string, WeaponData>;

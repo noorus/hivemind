@@ -86,7 +86,10 @@ namespace hivemind {
       sc2::UNIT_TYPEID::ZERG_BANELING,
       sc2::UNIT_TYPEID::TERRAN_REAPER,
       sc2::UNIT_TYPEID::PROTOSS_ADEPT,
-      sc2::UNIT_TYPEID::ZERG_ROACH
+      sc2::UNIT_TYPEID::ZERG_ROACH,
+      sc2::UNIT_TYPEID::PROTOSS_ARCHON,
+      sc2::UNIT_TYPEID::ZERG_QUEEN,
+      sc2::UNIT_TYPEID::PROTOSS_IMMORTAL
     };
 
     auto checki = []( int a, int b ) -> string
@@ -122,6 +125,7 @@ namespace hivemind {
       console_.printf( "- vespene: %s", checki( dbData.vespeneCost, sc2Data.vespene_cost ).c_str() );
       console_.printf( "- speed: %s", checkf( dbData.speed, sc2Data.movement_speed ).c_str() );
       console_.printf( "- sight: %s", checkf( dbData.sight, sc2Data.sight_range ).c_str() );
+      console_.printf( "- armor: %s", checkf( dbData.lifeArmor, sc2Data.armor ).c_str() );
       console_.printf( "- weapon count: %s", checki( dbData.weapons.size(), sc2Data.weapons.size() ).c_str() );
       // TODO: Try to figure out the same weapon(s) for comparison, by melee flags or range or so
       if ( !dbData.weapons.empty() && !sc2Data.weapons.empty() )
@@ -131,6 +135,15 @@ namespace hivemind {
         console_.printf( "--- damage: %s", checkf( dbWpn.calculateBasicDamage(), sc2Wpn.damage_ ).c_str() );
         console_.printf( "--- range: %s", checkf( dbWpn.range, sc2Wpn.range ).c_str() );
         console_.printf( "--- period: %s", checkf( dbWpn.period, sc2Wpn.speed ).c_str() );
+        for ( size_t i = 0; i < (size_t)Attribute::Invalid; i++ )
+        {
+          auto dbVal = dbWpn.calculateAttributeBonuses( (Attribute)i );
+          auto sc2Val = 0.0f;
+          for ( auto& v : sc2Wpn.damage_bonus )
+            if ( v.attribute == (Attribute)i )
+              sc2Val = v.bonus;
+          console_.printf( "--- attribute bonus %d: %s", i, checkf( dbVal, sc2Val ).c_str() );
+        }
       }
     }
   }

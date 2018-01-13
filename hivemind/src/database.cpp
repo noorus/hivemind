@@ -96,27 +96,27 @@ namespace hivemind {
         for ( auto it = bonuses.begin(); it != bonuses.end(); it++ )
         {
           if ( boost::iequals( it.key().asString(), "Light" ) )
-            fx.attributeBonuses_[Light] = ( *it ).asFloat();
+            fx.attributeBonuses_[(size_t)Attribute::Light] = ( *it ).asFloat();
           else if ( boost::iequals( it.key().asString(), "Armored" ) )
-            fx.attributeBonuses_[Armored] = ( *it ).asFloat();
+            fx.attributeBonuses_[(size_t)Attribute::Armored] = ( *it ).asFloat();
           else if ( boost::iequals( it.key().asString(), "Biological" ) )
-            fx.attributeBonuses_[Biological] = ( *it ).asFloat();
+            fx.attributeBonuses_[(size_t)Attribute::Biological] = ( *it ).asFloat();
           else if ( boost::iequals( it.key().asString(), "Mechanical" ) )
-            fx.attributeBonuses_[Mechanical] = ( *it ).asFloat();
+            fx.attributeBonuses_[(size_t)Attribute::Mechanical] = ( *it ).asFloat();
           else if ( boost::iequals( it.key().asString(), "Robotic" ) )
-            fx.attributeBonuses_[Robotic] = ( *it ).asFloat();
+            fx.attributeBonuses_[(size_t)Attribute::Robotic] = ( *it ).asFloat();
           else if ( boost::iequals( it.key().asString(), "Psionic" ) )
-            fx.attributeBonuses_[Psionic] = ( *it ).asFloat();
+            fx.attributeBonuses_[(size_t)Attribute::Psionic] = ( *it ).asFloat();
           else if ( boost::iequals( it.key().asString(), "Massive" ) )
-            fx.attributeBonuses_[Massive] = ( *it ).asFloat();
+            fx.attributeBonuses_[(size_t)Attribute::Massive] = ( *it ).asFloat();
           else if ( boost::iequals( it.key().asString(), "Structure" ) )
-            fx.attributeBonuses_[Structure] = ( *it ).asFloat();
+            fx.attributeBonuses_[(size_t)Attribute::Structure] = ( *it ).asFloat();
           else if ( boost::iequals( it.key().asString(), "Hover" ) )
-            fx.attributeBonuses_[Hover] = ( *it ).asFloat();
+            fx.attributeBonuses_[(size_t)Attribute::Hover] = ( *it ).asFloat();
           else if ( boost::iequals( it.key().asString(), "Heroic" ) )
-            fx.attributeBonuses_[Heroic] = ( *it ).asFloat();
+            fx.attributeBonuses_[(size_t)Attribute::Heroic] = ( *it ).asFloat();
           else if ( boost::iequals( it.key().asString(), "Summoned" ) )
-            fx.attributeBonuses_[Summoned] = ( *it ).asFloat();
+            fx.attributeBonuses_[(size_t)Attribute::Summoned] = ( *it ).asFloat();
         }
       }
       if ( effect.isMember( "searchRequires" ) )
@@ -534,7 +534,8 @@ namespace hivemind {
     techTree_.load( dataPath + R"(\techtree.json)" );
   }
 
-  static const char* attribNames[Max_Attribute] = {
+  static const char* attribNames[(size_t)Attribute::Invalid] = {
+    "None",
     "Light",
     "Armored",
     "Biological",
@@ -564,7 +565,7 @@ namespace hivemind {
     }
     else
       indent--;
-    for ( size_t i = 0; i < Max_Attribute; i++ )
+    for ( size_t i = 0; i < (size_t)Attribute::Invalid; i++ )
       if ( fx.attributeBonuses_[i] > 0.0f )
         printf( "%s+ %.2f against %s\r\n", indstr.c_str(), fx.attributeBonuses_[i], attribNames[i] );
     if ( !fx.splash_.empty() )
@@ -605,6 +606,19 @@ namespace hivemind {
   Real WeaponData::calculateBasicDamage()
   {
     return weaponFxSimpleDamage( fx );
+  }
+
+  Real weaponFxSimpleBonuses( WeaponEffectData& fx, Attribute attrib )
+  {
+    Real bonus = fx.attributeBonuses_[(size_t)attrib];
+    for ( auto& sub : fx.sub_ )
+      bonus += weaponFxSimpleBonuses( sub, attrib );
+    return bonus;
+  }
+
+  Real WeaponData::calculateAttributeBonuses( Attribute attrib )
+  {
+    return weaponFxSimpleBonuses( fx, attrib );
   }
 
 }
