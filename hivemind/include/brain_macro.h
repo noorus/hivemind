@@ -27,6 +27,11 @@ namespace hivemind {
           inProgressCount(0)
         {
         }
+
+        int futureCount() const
+        {
+          return unitCount + inProgressCount;
+        }
       };
 
     protected:

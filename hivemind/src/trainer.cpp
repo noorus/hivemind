@@ -13,7 +13,7 @@ namespace hivemind {
 
   void Trainer::gameBegin()
   {
-    trainings_.clear();
+    trainingProjects_.clear();
     idPool_ = 0;
     bot_->messaging().listen( Listen_Global, this );
   }
@@ -31,7 +31,7 @@ namespace hivemind {
 
     bot_->bases().removeLarva(build.trainer);
 
-    trainings_.push_back( build );
+    trainingProjects_.push_back( build );
     bot_->console().printf( "Trainer: New TrainOp %d for %s", build.id, sc2::UnitTypeToName( unit ) );
 
     idOut = build.id;
@@ -40,7 +40,7 @@ namespace hivemind {
 
   void Trainer::remove( TrainingProjectID id )
   {
-    for(auto& training : trainings_)
+    for(auto& training : trainingProjects_)
     {
       if(training.id == id)
       {
@@ -60,7 +60,7 @@ namespace hivemind {
     {
       if ( !utils::isMine( msg.unit() ) )
         return;
-      for ( auto& training : trainings_ )
+      for ( auto& training : trainingProjects_ )
       {
       }
     }
@@ -72,7 +72,7 @@ namespace hivemind {
         return;
       }
 
-      for ( auto& build : trainings_ )
+      for ( auto& build : trainingProjects_ )
       {
         if(build.trainer == unit)
         {
@@ -95,8 +95,8 @@ namespace hivemind {
   {
     const GameTime cTrainRecheckInterval = 50;
 
-    auto it = trainings_.begin();
-    while ( it != trainings_.end() )
+    auto it = trainingProjects_.begin();
+    while ( it != trainingProjects_.end() )
     {
       auto& training = ( *it );
 
@@ -109,7 +109,7 @@ namespace hivemind {
 
         bot_->console().printf( "Trainer: Removing TrainOp %d (%s)", training.id, training.completed ? "completed" : "canceled" );
 
-        it = trainings_.erase( it );
+        it = trainingProjects_.erase( it );
         continue;
       }
 
@@ -147,7 +147,7 @@ namespace hivemind {
   {
     int mineralSum = 0;
     int vespeneSum = 0;
-    for(auto& training : trainings_)
+    for(auto& training : trainingProjects_)
     {
       if(training.moneyAllocated)
       {

@@ -46247,9 +46247,9 @@
     "food" : 0.0,
     "footprint" : 
     {
-      "data" : ".nnnnnnn.nnnnnnnnnnnnnnnnnnnnnxxxnnnnnnxxxnnnnnnxxxnnnnnnnnnnnnnnnnnnnnn.nnnnnnn.",
-      "dimensions" : [ 9, 9 ],
-      "offset" : [ -4, -4 ]
+      "data" : "xxxxxxxxx",
+      "dimensions" : [ 3, 3 ],
+      "offset" : [ -1, -1 ]
     },
     "invulnerable" : false,
     "lateralAcceleration" : 0.0,

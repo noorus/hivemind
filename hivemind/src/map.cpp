@@ -194,7 +194,7 @@ namespace hivemind {
 
     const GameInfo& info = bot_->observation().GetGameInfo();
 
-    Analysis::Map_BuildBasics( info, width_, height_, flagsMap_, heightMap_ );
+    Analysis::Map_BuildBasics( bot_->observation(), width_, height_, flagsMap_, heightMap_ );
 
     for ( auto unit : bot_->observation().GetUnits( Unit::Alliance::Neutral ) )
       maxZ_ = std::max( unit->pos.z, maxZ_ );
@@ -341,6 +341,8 @@ namespace hivemind {
           bot_->debug().drawSphere( pos, 0.1f, sc2::Colors::Purple );
         else if ( tile & MapFlag_NearRamp )
           bot_->debug().drawSphere( pos, 0.1f, sc2::Colors::Yellow );
+        else if ( tile & MapFlag_VespeneGeyser)
+          bot_->debug().drawSphere( pos, 0.1f, sc2::Colors::Green );
       }
     }
 
@@ -565,16 +567,31 @@ namespace hivemind {
           continue;
         }
 
-        if ( dbUnit.footprint[j - padding][i - padding] == UnitData::Footprint_Reserved )
+        if(dbUnit.footprint[j - padding][i - padding] == UnitData::Footprint_Reserved)
         {
-          if ( zergBuildable_[mx][my] != CreepTile_Buildable )
+          if(utils::isRefinery(structure))
+          {
+            if(!(flagsMap_[mx][my] & MapFlag_VespeneGeyser))
+            {
+              return false;
+            }
+          }
+          else if(zergBuildable_[mx][my] != CreepTile_Buildable)
+          {
             return false;
+          }
+
           if ( noMainOverlap && ( flagsMap_[mx][my] & MapFlag_StartLocation ) )
             return false;
           if ( notNearMain && ( flagsMap_[mx][my] & MapFlag_NearStartLocation ) )
             return false;
           if ( notNearRamp && ( flagsMap_[mx][my] & MapFlag_NearRamp ) )
             return false;
+
+          if(utils::isRefinery(structure) && !(flagsMap_[mx][my] & MapFlag_VespeneGeyser))
+          {
+            return false;
+          }
         }
       }
 

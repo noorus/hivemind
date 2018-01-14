@@ -13,8 +13,10 @@ namespace hivemind {
     /*
      * 1) Extract from gameinfo: dimensions, buildability, pathability, heightmap
      **/
-    void Map_BuildBasics( const GameInfo& info, size_t& width_out, size_t& height_out, Array2<uint64_t>& flags_out, Array2<Real>& heightmap_out )
+    void Map_BuildBasics( const sc2::ObservationInterface& observation, size_t& width_out, size_t& height_out, Array2<uint64_t>& flags_out, Array2<Real>& heightmap_out )
     {
+      const GameInfo& info = observation.GetGameInfo();
+
       width_out = info.width;
       height_out = info.height;
 
@@ -60,6 +62,23 @@ namespace hivemind {
             if ( aroundORed & MapFlag_Ramp )
               flags_out[x][y] |= MapFlag_NearRamp;
           }
+
+      // Mark vespene geysers.
+      for ( auto geyser : observation.GetUnits( Unit::Alliance::Neutral ) )
+      {
+        if ( !utils::isGeyser( geyser ) )
+          continue;
+
+        int x = static_cast<int>(geyser->pos.x);
+        int y = static_cast<int>(geyser->pos.y);
+        for(int i = -1; i <= 1; ++i)
+        {
+          for(int j = -1; j <= 1; ++j)
+          {
+            flags_out[x + i][y + j] |= MapFlag_VespeneGeyser;
+          }
+        }
+      }
     }
 
     /*

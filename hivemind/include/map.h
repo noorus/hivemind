@@ -21,7 +21,8 @@ namespace hivemind {
     MapFlag_Ramp = 16, //!< A tile that is part of a ramp
     MapFlag_NearRamp = 32, //!< A tile that is at most 2 tiles away from a ramp tile
     MapFlag_StartLocation = 64, //!< A tile that is part of a start location's footprint
-    MapFlag_NearStartLocation = 128 //!< A tile that is at most 2 tiles away from a base location footprint tile
+    MapFlag_NearStartLocation = 128, //!< A tile that is at most 2 tiles away from a base location footprint tile
+    MapFlag_VespeneGeyser = 256 //!< A tile that is part of a vespene geyser
   };
 
   struct MapComponent {
