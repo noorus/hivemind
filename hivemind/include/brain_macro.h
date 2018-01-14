@@ -16,17 +16,23 @@ namespace hivemind {
 
     class Brain_Macro: public AI::CompositeGoal, public hivemind::Listener {
     public:
-      enum TechState
+
+      struct UnitStats
       {
-        Missing,
-        InProgress,
-        Ready
+        int unitCount;
+        int inProgressCount;
+
+        explicit UnitStats():
+          unitCount(0),
+          inProgressCount(0)
+        {
+        }
       };
 
     protected:
       GameTime nextCreepTime_;
 
-      std::unordered_map<sc2::UNIT_TYPEID, TechState> techState_;
+      std::unordered_map<sc2::UNIT_TYPEID, UnitStats> unitStats_;
 
     public:
       virtual const string& getName() const final { static string name = "Brain_Macro"; return name; }
