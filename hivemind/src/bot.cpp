@@ -130,19 +130,45 @@ namespace hivemind {
       // TODO: Try to figure out the same weapon(s) for comparison, by melee flags or range or so
       if ( !dbData.weapons.empty() && !sc2Data.weapons.empty() )
       {
-        auto dbWpn = Database::weapon( uid );
-        auto sc2Wpn = sc2Data.weapons.back();
-        console_.printf( "--- damage: %s", checkf( dbWpn.calculateBasicDamage(), sc2Wpn.damage_ ).c_str() );
-        console_.printf( "--- range: %s", checkf( dbWpn.range, sc2Wpn.range ).c_str() );
-        console_.printf( "--- period: %s", checkf( dbWpn.period, sc2Wpn.speed ).c_str() );
-        for ( size_t i = 0; i < (size_t)Attribute::Invalid; i++ )
+        if ( dbData.weapons.size() < sc2Data.weapons.size() )
+          console_.printf( "- wtf?! db has less weapons than sc2 (%d vs %d) - not parsing", dbData.weapons.size(), sc2Data.weapons.size() );
+        else
         {
-          auto dbVal = dbWpn.calculateAttributeBonuses( (Attribute)i );
-          auto sc2Val = 0.0f;
-          for ( auto& v : sc2Wpn.damage_bonus )
-            if ( v.attribute == (Attribute)i )
-              sc2Val = v.bonus;
-          console_.printf( "--- attribute bonus %d: %s", i, checkf( dbVal, sc2Val ).c_str() );
+          // auto dbWpn = Database::weapon( uid );
+          // auto sc2Wpn = sc2Data.weapons.back();
+          for ( auto& sc2Wpn : sc2Data.weapons )
+          {
+            const WeaponData* dbWpn = nullptr;
+            for ( auto& dbWpnName : dbData.weapons )
+            {
+              if ( !dbWpnName.empty() )
+              {
+                auto& wpn = Database::weapons().at( dbWpnName );
+                if ( !dbWpn || math::abs( sc2Wpn.range - wpn.range ) < math::abs( sc2Wpn.range - dbWpn->range ) )
+                  dbWpn = &wpn;
+              }
+            }
+            if ( !dbWpn )
+            {
+              console_.printf( "--- wtf?! no db counterpart for weapon entry" );
+            }
+            else
+            {
+              console_.printf( "--- damage: %s", checkf( dbWpn->calculateBasicDamage(), sc2Wpn.damage_ ).c_str() );
+              console_.printf( "--- range: %s", checkf( dbWpn->range, sc2Wpn.range ).c_str() );
+              console_.printf( "--- period: %s", checkf( dbWpn->period, sc2Wpn.speed ).c_str() );
+              // Don't bother checking attribute bonuses, since the API has all zeroes for now
+              /*for ( size_t i = 0; i < (size_t)Attribute::Invalid; i++ )
+              {
+                auto dbVal = dbWpn->calculateAttributeBonuses( (Attribute)i );
+                auto sc2Val = 0.0f;
+                for ( auto& v : sc2Wpn.damage_bonus )
+                  if ( v.attribute == (Attribute)i )
+                    sc2Val = v.bonus;
+                console_.printf( "--- attribute bonus %d: %s", i, checkf( dbVal, sc2Val ).c_str() );
+              }*/
+            }
+          }
         }
       }
     }

@@ -37,6 +37,7 @@ namespace hivemind {
   };
 
   struct WeaponData {
+  public:
     string name;
     Real arc;
     Real arcSlop;
@@ -56,8 +57,8 @@ namespace hivemind {
     bool hitsUnits;
     WeaponEffectData fx;
     WeaponData(): suicide( false ), hitsGround( false ), hitsAir( false ), hitsStructures( false ), hitsUnits( false ) {}
-    Real calculateBasicDamage();
-    Real calculateAttributeBonuses( Attribute attrib );
+    Real calculateBasicDamage() const;
+    Real calculateAttributeBonuses( Attribute attrib ) const;
   };
 
   using WeaponDataMap = std::map<string, WeaponData>;
@@ -176,6 +177,7 @@ namespace hivemind {
     static void load( const string& dataPath );
     inline static const UnitDataMap& units() { return unitData_; }
     inline static const UnitData& unit( UnitType64 id ) { return unitData_[id]; }
+    inline static const WeaponDataMap& weapons() { return weaponData_; }
 
     // Get the last weapon of unit.
     inline static const WeaponData& weapon(UnitType64 id) {

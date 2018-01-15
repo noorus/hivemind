@@ -590,7 +590,7 @@ namespace hivemind {
     system( "pause" );
   }
 
-  Real weaponFxSimpleDamage( WeaponEffectData& fx )
+  Real weaponFxSimpleDamage( const WeaponEffectData& fx )
   {
     Real damage = fx.damage_;
     Real subs = 0.0f;
@@ -603,12 +603,12 @@ namespace hivemind {
     return damage;
   }
 
-  Real WeaponData::calculateBasicDamage()
+  Real WeaponData::calculateBasicDamage() const
   {
     return weaponFxSimpleDamage( fx );
   }
 
-  Real weaponFxSimpleBonuses( WeaponEffectData& fx, Attribute attrib )
+  Real weaponFxSimpleBonuses( const WeaponEffectData& fx, Attribute attrib )
   {
     Real bonus = fx.attributeBonuses_[(size_t)attrib];
     for ( auto& sub : fx.sub_ )
@@ -616,7 +616,7 @@ namespace hivemind {
     return bonus;
   }
 
-  Real WeaponData::calculateAttributeBonuses( Attribute attrib )
+  Real WeaponData::calculateAttributeBonuses( Attribute attrib ) const
   {
     return weaponFxSimpleBonuses( fx, attrib );
   }
