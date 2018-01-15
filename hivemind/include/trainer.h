@@ -54,7 +54,7 @@ namespace hivemind {
 
   class Trainer: public Subsystem, public hivemind::Listener {
   protected:
-    TrainingVector trainings_;
+    TrainingVector trainingProjects_;
     TrainingProjectID idPool_;
     virtual void onMessage( const Message& msg ) final;
   public:

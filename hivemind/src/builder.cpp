@@ -7,13 +7,32 @@
 
 namespace hivemind {
 
+  static UnitRef getGeysir(Bot* bot, MapPoint2 point)
+  {
+    auto observation = bot->Observation();
+    for ( auto geyser : observation->GetUnits( Unit::Alliance::Neutral ) )
+    {
+      if ( !utils::isGeyser( geyser ) )
+        continue;
+
+      int x = static_cast<int>(geyser->pos.x);
+      int y = static_cast<int>(geyser->pos.y);
+
+      if(point.x == x && point.y == y)
+      {
+        return geyser;
+      }
+    }
+    return nullptr;
+  }
+
   Builder::Builder( Bot* bot ): Subsystem( bot ), idPool_( 0 )
   {
   }
 
   void Builder::gameBegin()
   {
-    buildings_.clear();
+    buildProjects_.clear();
     idPool_ = 0;
     bot_->messaging().listen( Listen_Global, this );
   }
@@ -27,7 +46,7 @@ namespace hivemind {
     Building build( idPool_++, structure, ability );
     build.position = pos;
     bot_->map().reserveFootprint( build.position, structure );
-    buildings_.push_back( build );
+    buildProjects_.push_back( build );
     bot_->console().printf( "Builder: New BuildOp %d for %s, position %d,%d", build.id, sc2::UnitTypeToName( structure ), build.position.x, build.position.y );
 
     idOut = build.id;
@@ -36,7 +55,7 @@ namespace hivemind {
 
   void Builder::remove( BuildProjectID id )
   {
-    for ( auto& building : buildings_ )
+    for ( auto& building : buildProjects_ )
       if ( building.id == id )
         building.cancel = true;
   }
@@ -48,7 +67,7 @@ namespace hivemind {
 
   void Builder::draw()
   {
-    for ( auto& b : buildings_ )
+    for ( auto& b : buildProjects_ )
     {
       Vector3 pt( (Real)b.position.x + 0.5f, (Real)b.position.y + 0.5f, bot_->map().maxZ_ );
       bot_->debug().drawSphere( pt, 1.5f, sc2::Colors::Red );
@@ -71,7 +90,7 @@ namespace hivemind {
         return;
       if ( !Database::unit( msg.unit()->unit_type ).structure )
         return;
-      for ( auto& build : buildings_ )
+      for ( auto& build : buildProjects_ )
       {
         if ( !build.building && build.type == msg.unit()->unit_type )
         {
@@ -94,7 +113,7 @@ namespace hivemind {
         return;
       if ( !Database::unit( msg.unit()->unit_type ).structure )
         return;
-      for ( auto& build : buildings_ )
+      for ( auto& build : buildProjects_ )
       {
         if ( build.building == msg.unit() )
         {
@@ -108,7 +127,7 @@ namespace hivemind {
     {
       if ( !utils::isMine( msg.unit() ) || !utils::isWorker( msg.unit() ) )
         return;
-      for ( auto& build : buildings_ )
+      for ( auto& build : buildProjects_ )
       {
         if ( build.builder == msg.unit() )
           build.builder = nullptr;
@@ -123,8 +142,8 @@ namespace hivemind {
 
   void Builder::update( const GameTime time, const GameTime delta )
   {
-    auto it = buildings_.begin();
-    while ( it != buildings_.end() )
+    auto it = buildProjects_.begin();
+    while ( it != buildProjects_.end() )
     {
       auto& build = ( *it );
       if ( build.completed || build.cancel )
@@ -143,7 +162,7 @@ namespace hivemind {
           bot_->workers().addBack( build.builder );
         }
         bot_->map().clearFootprint( build.position );
-        it = buildings_.erase( it );
+        it = buildProjects_.erase( it );
         continue;
       }
       it++;
@@ -198,15 +217,24 @@ namespace hivemind {
             }
           }
 
-          if ( !hasOrder || ( build.lastOrderTime + cBuildReorderDelta < time ) )
+          if(!hasOrder || (build.lastOrderTime + cBuildReorderDelta < time))
           {
-            if ( build.orderTries >= cBuildMaxOrders )
+            if(build.orderTries >= cBuildMaxOrders)
             {
-              bot_->console().printf( "BuildOp %d: Canceling after %d failed tries (order failed)", build.id, build.orderTries );
+              bot_->console().printf("BuildOp %d: Canceling after %d failed tries (order failed)", build.id, build.orderTries);
               build.cancel = true;
               continue;
             }
-            bot_->action().UnitCommand( build.builder, build.buildAbility, build.position, false );
+            if(utils::isRefinery(build.type))
+            {
+              UnitRef geysir = getGeysir(bot_, build.position);
+              assert(geysir);
+              bot_->action().UnitCommand(build.builder, build.buildAbility, geysir, false);
+            }
+            else
+            {
+              bot_->action().UnitCommand(build.builder, build.buildAbility, build.position, false);
+            }
             build.lastOrderTime = time;
             build.orderTries++;
           }
@@ -249,7 +277,7 @@ namespace hivemind {
   {
     int mineralSum = 0;
     int vespeneSum = 0;
-    for(auto& building : buildings_)
+    for(auto& building : buildProjects_)
     {
       if(building.moneyAllocated)
       {

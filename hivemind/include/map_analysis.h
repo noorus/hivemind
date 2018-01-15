@@ -11,7 +11,7 @@ namespace hivemind {
 
   namespace Analysis {
 
-    void Map_BuildBasics( const GameInfo& info, size_t& width_out, size_t& height_out, Array2<uint64_t>& flags_out, Array2<Real>& heightmap_out );
+    void Map_BuildBasics( const sc2::ObservationInterface& observation, size_t& width_out, size_t& height_out, Array2<uint64_t>& flags_out, Array2<Real>& heightmap_out );
 
     // Label values: 0 = unwalkable, -1 = contour, > 0 = object number
     void Map_ProcessContours( Array2<uint64_t>& flags_in, Array2<int>& labels_out, ComponentVector& components_out );

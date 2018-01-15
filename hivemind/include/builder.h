@@ -62,7 +62,7 @@ namespace hivemind {
 
   class Builder: public Subsystem, public hivemind::Listener {
   protected:
-    BuildingVector buildings_;
+    BuildingVector buildProjects_;
     BuildProjectID idPool_;
     virtual void onMessage( const Message& msg ) final;
   public:
