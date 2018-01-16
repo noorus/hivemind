@@ -29,8 +29,8 @@ namespace hivemind {
     const Vector2& position() const { return position_; }
     const bool hasMinerals() const { return !minerals_.empty(); }
     const bool hasGeysers() const { return !geysers_.empty(); }
-    const UnitVector& getGeysers() const { return minerals_; }
-    const UnitVector& getMinerals() const { return geysers_; }
+    const UnitVector& getMinerals() const { return minerals_; }
+    const UnitVector& getGeysers() const { return geysers_; }
     bool isInResourceBox( int x, int y ) const;
     bool overlapsMainFootprint( int x, int y ) const;
     const vector<Vector2>& getClosestTiles() const;
