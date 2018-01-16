@@ -7,25 +7,6 @@
 
 namespace hivemind {
 
-  static UnitRef getGeysir(Bot* bot, MapPoint2 point)
-  {
-    auto observation = bot->Observation();
-    for ( auto geyser : observation->GetUnits( Unit::Alliance::Neutral ) )
-    {
-      if ( !utils::isGeyser( geyser ) )
-        continue;
-
-      int x = static_cast<int>(geyser->pos.x);
-      int y = static_cast<int>(geyser->pos.y);
-
-      if(point.x == x && point.y == y)
-      {
-        return geyser;
-      }
-    }
-    return nullptr;
-  }
-
   Builder::Builder( Bot* bot ): Subsystem( bot ), idPool_( 0 )
   {
   }
@@ -37,14 +18,18 @@ namespace hivemind {
     bot_->messaging().listen( Listen_Global, this );
   }
 
-  bool Builder::add( UnitTypeID structure, const Base& base, AbilityID ability, BuildProjectID& idOut )
+  bool Builder::add( UnitTypeID structure, const Base& base, BuildingPlacement placement, BuildProjectID& idOut )
   {
+    auto ability = Database::techTree().getBuildAbility( structure, sc2::UNIT_TYPEID::ZERG_DRONE );
+
     Vector2 pos;
-    if ( !findPlacement( structure, base, BuildPlacement_Generic, ability, pos ) )
+    UnitRef target = nullptr;
+    if ( !findPlacement( structure, base, placement, ability, pos, target ) )
       return false;
 
     Building build( idPool_++, structure, ability );
     build.position = pos;
+    build.target = target;
     bot_->map().reserveFootprint( build.position, structure );
     buildProjects_.push_back( build );
     bot_->console().printf( "Builder: New BuildOp %d for %s, position %d,%d", build.id, sc2::UnitTypeToName( structure ), build.position.x, build.position.y );
@@ -225,11 +210,9 @@ namespace hivemind {
               build.cancel = true;
               continue;
             }
-            if(utils::isRefinery(build.type))
+            if ( build.target )
             {
-              UnitRef geysir = getGeysir(bot_, build.position);
-              assert(geysir);
-              bot_->action().UnitCommand(build.builder, build.buildAbility, geysir, false);
+              bot_->action().UnitCommand( build.builder, build.buildAbility, build.target, false );
             }
             else
             {
@@ -243,9 +226,9 @@ namespace hivemind {
     }
   }
 
-  bool Builder::findPlacement( UnitTypeID structure, const Base& base, BuildingPlacement type, AbilityID ability, Vector2& placementOut )
+  bool Builder::findPlacement( UnitTypeID structure, const Base& base, BuildingPlacement type, AbilityID ability, Vector2& placementOut, UnitRef& targetOut )
   {
-    assert( type == BuildPlacement_Generic );
+    assert( type == BuildPlacement_Generic || type == BuildPlacement_Extractor );
 
     if ( type == BuildPlacement_Generic )
     {
@@ -261,12 +244,23 @@ namespace hivemind {
       {
         if ( bot_->map().canZergBuild( structure, tile, 1, true, true, true, true ) )
         {
-          Vector2 tileRet = tile;
+          const Vector2& tileRet = tile;
           if ( !bot_->query().Placement( ability, tileRet ) )
             continue;
           placementOut = tile;
           return true;
         }
+      }
+    }
+    else if ( type == BuildPlacement_Extractor )
+    {
+      for ( auto& geyser : base.location()->getGeysers() )
+      {
+        if ( !bot_->query().Placement( ability, geyser->pos ) )
+          continue;
+        placementOut = geyser->pos;
+        targetOut = geyser;
+        return true;
       }
     }
 

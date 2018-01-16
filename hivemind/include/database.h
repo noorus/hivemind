@@ -153,11 +153,13 @@ namespace hivemind {
   // Maps a upgrade type id to the description on how to research the upgrade type.
   using UpgradeMap = std::unordered_multimap<uint32_t, UpgradeInfo>;
 
+  using BuildAbilityMap = std::map<std::pair<UnitTypeID, UnitTypeID>, AbilityID>;
+
   class TechTree {
   protected:
     TechTreeRelationshipContainer relationships_;
     UpgradeMap upgrades_;
-
+    BuildAbilityMap buildAbilities_;
   public:
 
     void load( const string& filename );
@@ -165,6 +167,7 @@ namespace hivemind {
     void findTechChain( UnitTypeID target, vector<UnitTypeID>& chain) const;
 
     UpgradeInfo findTechChain( UpgradeID target, vector<UnitTypeID>& chain ) const;
+    AbilityID getBuildAbility( UnitTypeID building, UnitTypeID from ) const;
   };
 
   class Database {

@@ -567,31 +567,16 @@ namespace hivemind {
           continue;
         }
 
-        if(dbUnit.footprint[j - padding][i - padding] == UnitData::Footprint_Reserved)
+        if ( dbUnit.footprint[j - padding][i - padding] == UnitData::Footprint_Reserved )
         {
-          if(utils::isRefinery(structure))
-          {
-            if(!(flagsMap_[mx][my] & MapFlag_VespeneGeyser))
-            {
-              return false;
-            }
-          }
-          else if(zergBuildable_[mx][my] != CreepTile_Buildable)
-          {
+          if ( zergBuildable_[mx][my] != CreepTile_Buildable )
             return false;
-          }
-
           if ( noMainOverlap && ( flagsMap_[mx][my] & MapFlag_StartLocation ) )
             return false;
           if ( notNearMain && ( flagsMap_[mx][my] & MapFlag_NearStartLocation ) )
             return false;
           if ( notNearRamp && ( flagsMap_[mx][my] & MapFlag_NearRamp ) )
             return false;
-
-          if(utils::isRefinery(structure) && !(flagsMap_[mx][my] & MapFlag_VespeneGeyser))
-          {
-            return false;
-          }
         }
       }
 

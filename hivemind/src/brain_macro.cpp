@@ -3,6 +3,7 @@
 #include "brain_macro.h"
 #include "ai_goals.h"
 #include "bot.h"
+#include "database.h"
 
 namespace hivemind {
 
@@ -119,7 +120,9 @@ namespace hivemind {
         if(minerals > 200)
         {
           BuildProjectID id;
-          bool started = builder.add(sc2::UNIT_TYPEID::ZERG_SPAWNINGPOOL, base, sc2::ABILITY_ID::BUILD_SPAWNINGPOOL, id);
+
+          auto buildingType = sc2::UNIT_TYPEID::ZERG_SPAWNINGPOOL;
+          bool started = builder.add( buildingType, base, BuildPlacement_Generic, id);
 
           if(started)
           {
@@ -147,9 +150,11 @@ namespace hivemind {
         if(minerals > 50)
         {
           BuildProjectID id;
-          bool started = builder.add(sc2::UNIT_TYPEID::ZERG_EXTRACTOR, base, sc2::ABILITY_ID::BUILD_EXTRACTOR, id);
 
-          auto& unitState = unitStats_[sc2::UNIT_TYPEID::ZERG_EXTRACTOR];
+          auto buildingType = sc2::UNIT_TYPEID::ZERG_EXTRACTOR;
+          bool started = builder.add( buildingType, base, BuildPlacement_Extractor, id);
+
+          auto& unitState = unitStats_[buildingType];
           if(started)
           {
             unitState.inProgressCount += 1;
@@ -183,7 +188,7 @@ namespace hivemind {
           unitState.inProgressCount += 2;
         }
       }
-      
+
 
       return status_;
     }

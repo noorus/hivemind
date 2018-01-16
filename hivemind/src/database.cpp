@@ -328,6 +328,7 @@ namespace hivemind {
   {
     upgrades_.clear();
     relationships_.clear();
+    buildAbilities_.clear();
 
     Json::Value root = readJsonFile(filename);
 
@@ -357,6 +358,8 @@ namespace hivemind {
             relationship.name = build["unitName"].asCString();
 
             uint32_t target = build["unit"].asUInt();
+
+            buildAbilities_[std::make_pair(target,id)] = relationship.ability;
 
             for(auto& require : build["requires"])
             {
@@ -525,6 +528,11 @@ namespace hivemind {
     assert(false && "Upgrade not found");
 
     return UpgradeInfo();
+  }
+
+  AbilityID TechTree::getBuildAbility( UnitTypeID building, UnitTypeID from ) const
+  {
+    return buildAbilities_.at( std::make_pair( building, from ) );
   }
 
   void Database::load( const string& dataPath )

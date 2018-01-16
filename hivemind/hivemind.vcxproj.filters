@@ -342,7 +342,7 @@
       <Filter>Source Files\Systems</Filter>
     </ClCompile>
     <ClCompile Include="src\brain_macro.cpp">
-      <Filter>Source Files\Systems</Filter>
+      <Filter>Source Files\Brain</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

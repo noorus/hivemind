@@ -12,6 +12,7 @@ namespace hivemind {
   enum BuildingPlacement {
     BuildPlacement_Generic, //!< Growing outwards from main building
     BuildPlacement_MainBuilding, //!< Special placement for main buildings
+    BuildPlacement_Extractor, //!< Special placement for gas extractors
     BuildPlacement_Front, //!< Weighted toward front of the base
     BuildPlacement_Back, //!< Weighted toward back of the base
     BuildPlacement_MineralLine, //!< In the mineral line
@@ -26,6 +27,7 @@ namespace hivemind {
     UnitTypeID type;
     UnitRef building;
     UnitRef builder;
+    UnitRef target; //!< Targets unit instead of position; overrides position if not null
     MapPoint2 position;
     bool cancel;
     GameTime nextUpdateTime;
@@ -53,7 +55,8 @@ namespace hivemind {
         buildCompleteTime(0),
         completed(false),
         moneyAllocated(false),
-        lastOrderTime(0)
+        lastOrderTime(0),
+      target( nullptr )
     {
     }
   };
@@ -68,12 +71,12 @@ namespace hivemind {
   public:
     Builder( Bot* bot );
     void gameBegin() final;
-    bool add( UnitTypeID structure, const Base& base, AbilityID ability, BuildProjectID& idOut );
+    bool add( UnitTypeID structure, const Base& base, BuildingPlacement placement, BuildProjectID& idOut );
     void remove( BuildProjectID id );
     void update( const GameTime time, const GameTime delta );
     void draw() override;
     void gameEnd() final;
-    bool findPlacement( UnitTypeID structure, const Base& base, BuildingPlacement type, AbilityID ability, Vector2& placementOut );
+    bool findPlacement( UnitTypeID structure, const Base& base, BuildingPlacement type, AbilityID ability, Vector2& placementOut, UnitRef& targetOut );
 
     // Returns the amount of {minerals,vespene} that the not-yet-paid-trainings will cost.
     std::pair<int,int> getAllocatedResources() const;
