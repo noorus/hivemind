@@ -736,7 +736,7 @@ namespace hivemind {
 
   BaseLocation* Map::closestLocation( const Vector2 & position )
   {
-    Real bestDist = 30000.0f;
+    Real bestDist = std::numeric_limits<Real>::max();
     BaseLocation* best = nullptr;
     for ( auto& loc : baseLocations_ )
     {
@@ -757,7 +757,7 @@ namespace hivemind {
     if ( to.empty() )
       return from;
 
-    Real bestDistance = 30000.0f;
+    Real bestDistance = std::numeric_limits<Real>::max();
     Vector2 retval;
     for ( auto& loc : to )
     {

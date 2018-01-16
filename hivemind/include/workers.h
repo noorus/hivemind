@@ -29,6 +29,7 @@ namespace hivemind {
     const bool idle( UnitRef worker ) const;
     void remove( UnitRef worker );
     UnitRef release(); //! Release a worker for other use
+    UnitRef releaseClosest( const Vector2& to );
     virtual void draw() override;
     void update( GameTime time );
     void initialise();

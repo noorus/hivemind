@@ -359,6 +359,35 @@ namespace hivemind {
       rgb[2] = (uint8_t)b_temp;
     }
 
+    template <class M, M member, class Container, typename T, typename Comparison, typename Needle>
+    const T* findClosestPtr( const Container& haystack, Needle needle, Comparison distfunc )
+    {
+      const T* closest = nullptr;
+      Real bestDist = std::numeric_limits<Real>::max();
+      for ( auto it : haystack )
+      {
+        auto dist = distfunc( it->*member, needle );
+        if ( dist < bestDist || !closest )
+        {
+          closest = it;
+          bestDist = dist;
+        }
+      }
+      return closest;
+    }
+
+    //! Return the unit in set closest to given world position.
+    inline const UnitRef findClosestUnit( const UnitSet& haystack, const Vector2& pos )
+    {
+      return findClosestPtr<decltype( &Unit::pos ), &Unit::pos, UnitSet, Unit>( haystack, pos, []( const sc2::Point3D& a, const Vector2& b ) { return b.distance( a ); } );
+    }
+
+    //! Return the unit in vector closest to given world position.
+    inline const UnitRef findClosestUnit( const UnitVector& haystack, const Vector2& pos )
+    {
+      return findClosestPtr<decltype( &Unit::pos ), &Unit::pos, UnitVector, Unit>( haystack, pos, []( const sc2::Point3D& a, const Vector2& b ) { return b.distance( a ); } );
+    }
+
   }
 
 }

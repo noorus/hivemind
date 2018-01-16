@@ -178,7 +178,7 @@ namespace hivemind {
             build.cancel = true;
             continue;
           }
-          build.builder = bot_->workers().release();
+          build.builder = bot_->workers().releaseClosest( build.position );
           if ( !build.builder )
           {
             bot_->console().printf( "BuildOp %d: No worker released from pool", build.id );

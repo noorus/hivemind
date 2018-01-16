@@ -216,6 +216,25 @@ namespace hivemind {
     return worker;
   }
 
+  UnitRef WorkerManager::releaseClosest( const Vector2 & to )
+  {
+    if ( workers_.empty() )
+      return nullptr;
+
+    auto worker = utils::findClosestUnit( workers_, to );
+
+    if ( worker )
+    {
+      bot_->messaging().sendGlobal( M_Global_RemoveWorker, worker );
+
+      workers_.erase( worker );
+      idle_.erase( worker );
+      ignored_.insert( worker );
+    }
+
+    return worker;
+  }
+
   void WorkerManager::shutdown()
   {
     workers_.clear();
