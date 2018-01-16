@@ -136,7 +136,7 @@ namespace hivemind {
         {
           BuildProjectID id;
 
-          bool started = trainer.add(sc2::UNIT_TYPEID::ZERG_OVERLORD, base, sc2::UNIT_TYPEID::ZERG_LARVA, sc2::ABILITY_ID::TRAIN_OVERLORD, id);
+          bool started = trainer.add(sc2::UNIT_TYPEID::ZERG_OVERLORD, base, sc2::UNIT_TYPEID::ZERG_LARVA, id);
 
           auto& unitState = unitStats_[sc2::UNIT_TYPEID::ZERG_OVERLORD];
           if(started)
@@ -167,7 +167,7 @@ namespace hivemind {
         {
           BuildProjectID id;
 
-          bool started = trainer.add(sc2::UNIT_TYPEID::ZERG_DRONE, base, sc2::UNIT_TYPEID::ZERG_LARVA, sc2::ABILITY_ID::TRAIN_DRONE, id);
+          bool started = trainer.add(sc2::UNIT_TYPEID::ZERG_DRONE, base, sc2::UNIT_TYPEID::ZERG_LARVA, id);
 
           auto& unitState = unitStats_[sc2::UNIT_TYPEID::ZERG_DRONE];
           if(started)
@@ -180,7 +180,7 @@ namespace hivemind {
       {
         BuildProjectID id;
 
-        bool started = trainer.add(sc2::UNIT_TYPEID::ZERG_ZERGLING, base, sc2::UNIT_TYPEID::ZERG_LARVA, sc2::ABILITY_ID::TRAIN_ZERGLING, id);
+        bool started = trainer.add(sc2::UNIT_TYPEID::ZERG_ZERGLING, base, sc2::UNIT_TYPEID::ZERG_LARVA, id);
 
         auto& unitState = unitStats_[sc2::UNIT_TYPEID::ZERG_ZERGLING];
         if(started)

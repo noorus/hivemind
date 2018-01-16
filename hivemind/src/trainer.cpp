@@ -2,7 +2,7 @@
 #include "base.h"
 #include "utilities.h"
 #include "bot.h"
-#include "Trainer.h"
+#include "trainer.h"
 #include "database.h"
 
 namespace hivemind {
@@ -18,13 +18,15 @@ namespace hivemind {
     bot_->messaging().listen( Listen_Global, this );
   }
 
-  bool Trainer::add( UnitTypeID unit, const Base& base, UnitTypeID trainer, AbilityID ability, TrainingProjectID& idOut )
+  bool Trainer::add( UnitTypeID unit, const Base& base, UnitTypeID trainer, TrainingProjectID& idOut )
   {
     auto& larvae = base.larvae();
     if(larvae.empty())
     {
       return false;
     }
+
+    auto ability = Database::techTree().getBuildAbility( unit, trainer );
 
     Training build( idPool_++, unit, trainer, ability );
     build.trainer = *larvae.begin();

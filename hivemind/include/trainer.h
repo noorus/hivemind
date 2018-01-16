@@ -60,7 +60,7 @@ namespace hivemind {
   public:
     Trainer( Bot* bot );
     void gameBegin() final;
-    bool add( UnitTypeID unit, const Base& base, UnitTypeID trainer, AbilityID ability, TrainingProjectID& idOut );
+    bool add( UnitTypeID unit, const Base& base, UnitTypeID trainer, TrainingProjectID& idOut );
     void remove( TrainingProjectID id );
     void update( const GameTime time, const GameTime delta );
     void gameEnd() final;
