@@ -359,18 +359,18 @@ namespace hivemind {
       rgb[2] = (uint8_t)b_temp;
     }
 
-    template <class M, M member, class Container, typename T, typename Comparison, typename Needle>
-    const T* findClosestPtr( const Container& haystack, Needle needle, Comparison distfunc )
+    template <class Container, typename Needle, typename DistanceFunction>
+    typename Container::value_type findClosestPtr(const Container& haystack, Needle needle, DistanceFunction distanceFunction)
     {
-      const T* closest = nullptr;
-      Real bestDist = std::numeric_limits<Real>::max();
-      for ( auto it : haystack )
+      typename Container::value_type closest{};
+      Real bestDistance = std::numeric_limits<Real>::max();
+      for ( auto item : haystack )
       {
-        auto dist = distfunc( it->*member, needle );
-        if ( dist < bestDist || !closest )
+        Real distance = distanceFunction( item, needle );
+        if ( distance < bestDistance || !closest )
         {
-          closest = it;
-          bestDist = dist;
+          closest = item;
+          bestDistance = distance;
         }
       }
       return closest;
@@ -379,13 +379,13 @@ namespace hivemind {
     //! Return the unit in set closest to given world position.
     inline const UnitRef findClosestUnit( const UnitSet& haystack, const Vector2& pos )
     {
-      return findClosestPtr<decltype( &Unit::pos ), &Unit::pos, UnitSet, Unit>( haystack, pos, []( const sc2::Point3D& a, const Vector2& b ) { return b.distance( a ); } );
+      return findClosestPtr( haystack, pos, []( const Unit* unit, const Vector2& b ) { return b.distance(unit->pos); } );
     }
 
     //! Return the unit in vector closest to given world position.
     inline const UnitRef findClosestUnit( const UnitVector& haystack, const Vector2& pos )
     {
-      return findClosestPtr<decltype( &Unit::pos ), &Unit::pos, UnitVector, Unit>( haystack, pos, []( const sc2::Point3D& a, const Vector2& b ) { return b.distance( a ); } );
+      return findClosestPtr( haystack, pos, []( const Unit* unit, const Vector2& b ) { return b.distance(unit->pos); } );
     }
 
   }
