@@ -154,6 +154,9 @@ namespace hivemind {
       /*for ( size_t i = 0; i < contourSimpleOut.size(); i++ )
         printf( "util_clipperPathToCleanPolygon: poly %d, size %d\r\n", i, contourSimpleOut[i].size() );*/
 
+      if ( contourSimpleOut.empty() )
+        return Polygon();
+
       auto toSimplify = util_clipperPathToBoostPolygon( contourSimpleOut[0] );
 
       if ( !simplify )
@@ -181,8 +184,14 @@ namespace hivemind {
         auto clipperContour = util_contourToClipperPath( component.contour );
         out_comp.contour = util_clipperPathToCleanPolygon( clipperContour );
 
+        if ( out_comp.contour.empty() )
+          continue;
+
         for ( auto& hole : component.holes )
         {
+          if ( hole.empty() )
+            continue;
+
           auto clipperHole = util_contourToClipperPath( hole );
           out_comp.contour.holes.push_back( util_clipperPathToCleanPolygon( clipperHole ) );
         }
@@ -329,6 +338,9 @@ namespace hivemind {
 
       for ( const auto& poly: polygons_in )
       {
+        if ( poly.contour.empty() )
+          continue;
+
         size_t lastPoint = poly.contour.size() - 1;
         for ( size_t i = 0, j = 1; i < lastPoint; ++i, ++j )
         {

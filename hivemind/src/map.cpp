@@ -15,6 +15,8 @@
 #pragma warning(default: 4996)
 #include "external/simple_svg_1.0.0.hpp"
 
+HIVE_DECLARE_CONVAR( analysis_invertwalkable, "Whether to invert the detected walkable area polygons. Try this if terrain analysis fails for a map.", false );
+
 namespace hivemind {
 
   const size_t c_legalActions = 4;
@@ -239,11 +241,13 @@ namespace hivemind {
 
     Analysis::Map_ComponentPolygons( components_, polygons_ );
 
-    //bot_->console().printf( "Map: Inverting walkable polygons to obstacles..." );
-
-    //Analysis::Map_InvertPolygons( polygons_, obstacles_, Rect2( info.playable_min, info.playable_max ), Vector2( (Real)info.width, (Real)info.height ) );
-
-    obstacles_ = polygons_;
+    if ( g_CVar_analysis_invertwalkable.as_b() )
+    {
+      bot_->console().printf( "Map: Inverting walkable polygons to obstacles..." );
+      Analysis::Map_InvertPolygons( polygons_, obstacles_, Rect2( info.playable_min, info.playable_max ), Vector2( (Real)info.width, (Real)info.height ) );
+    }
+    else
+      obstacles_ = polygons_;
 
     bot_->console().printf( "Map: Generating Voronoi diagram..." );
 
