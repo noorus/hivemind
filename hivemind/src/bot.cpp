@@ -125,8 +125,8 @@ namespace hivemind {
       console_.printf( "- vespene: %s", checki( dbData.vespeneCost, sc2Data.vespene_cost ).c_str() );
       console_.printf( "- speed: %s", checkf( dbData.speed, sc2Data.movement_speed ).c_str() );
       console_.printf( "- sight: %s", checkf( dbData.sight, sc2Data.sight_range ).c_str() );
-      console_.printf( "- armor: %s", checkf( dbData.lifeArmor, sc2Data.armor ).c_str() );
-      console_.printf( "- weapon count: %s", checki( dbData.weapons.size(), sc2Data.weapons.size() ).c_str() );
+      console_.printf( "- armor: %s", checkf( (float)dbData.lifeArmor, sc2Data.armor ).c_str() );
+      console_.printf( "- weapon count: %s", checki( (int)dbData.weapons.size(), (int)sc2Data.weapons.size() ).c_str() );
       // TODO: Try to figure out the same weapon(s) for comparison, by melee flags or range or so
       if ( !dbData.weapons.empty() && !sc2Data.weapons.empty() )
       {

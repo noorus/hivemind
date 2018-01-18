@@ -225,46 +225,48 @@ namespace hivemind {
 
     bot_->console().printf( "Map: Processing contours..." );
 
-    components_.clear();
-    polygons_.clear();
+    ComponentVector components;
+    PolygonComponentVector polygons;
+
     obstacles_.clear();
 
     for ( auto regptr : regions_ )
       delete regptr;
     regions_.clear();
 
-    Analysis::Map_ProcessContours( flagsMap_, labelsMap_, components_ );
+    Analysis::Map_ProcessContours( flagsMap_, labelsMap_, components );
 
     debugDumpLabels( labelsMap_ );
 
     bot_->console().printf( "Map: Generating polygons..." );
 
-    Analysis::Map_ComponentPolygons( components_, polygons_ );
+    Analysis::Map_ComponentPolygons( components, polygons );
 
     if ( g_CVar_analysis_invertwalkable.as_b() )
     {
       bot_->console().printf( "Map: Inverting walkable polygons to obstacles..." );
-      Analysis::Map_InvertPolygons( polygons_, obstacles_, Rect2( info.playable_min, info.playable_max ), Vector2( (Real)info.width, (Real)info.height ) );
+      Analysis::Map_InvertPolygons( polygons, obstacles_, Rect2( info.playable_min, info.playable_max ), Vector2( (Real)info.width, (Real)info.height ) );
     }
     else
-      obstacles_ = polygons_;
+      obstacles_ = polygons;
 
     bot_->console().printf( "Map: Generating Voronoi diagram..." );
 
-    bgi::rtree<BoostSegmentI, bgi::quadratic<16> > rtree;
-    Analysis::Map_MakeVoronoi( info, obstacles_, labelsMap_, graph_, rtree );
+    Analysis::RegionGraph graph;
+    bgi::rtree<BoostSegmentI, bgi::quadratic<16>> rtree;
+    Analysis::Map_MakeVoronoi( info, obstacles_, labelsMap_, graph, rtree );
 
     bot_->console().printf( "Map: Pruning Voronoi diagram..." );
 
-    Analysis::Map_PruneVoronoi( graph_ );
+    Analysis::Map_PruneVoronoi( graph );
 
     bot_->console().printf( "Map: Detecting nodes..." );
 
-    Analysis::Map_DetectNodes( graph_, obstacles_ );
+    Analysis::Map_DetectNodes( graph, obstacles_ );
 
     bot_->console().printf( "Map: Simplifying graph..." );
 
-    Analysis::Map_SimplifyGraph( graph_, graphSimplified_ );
+    Analysis::Map_SimplifyGraph( graph, graphSimplified_ );
 
     bot_->console().printf( "Map: Merging graph region nodes..." );
 
@@ -276,13 +278,13 @@ namespace hivemind {
 
     dumpPolygons( width_, height_, obstacles_, chokepointSides_ );
 
-    Analysis::Map_MakeRegions( polygons_, chokepointSides_, flagsMap_, width_, height_, regions_, regionMap_, graphSimplified_ );
+    Analysis::Map_MakeRegions( polygons, chokepointSides_, flagsMap_, width_, height_, regions_, regionMap_, graphSimplified_ );
 
     bot_->console().printf( "Map: Finding resource clusters..." );
 
-    resourceClusters_.clear();
+    vector<UnitVector> resourceClusters;
 
-    Analysis::Map_FindResourceClusters( bot_->observation(), resourceClusters_, 4, 16.0f );
+    Analysis::Map_FindResourceClusters( bot_->observation(), resourceClusters, 4, 16.0f );
 
     updateReservedMap();
 
@@ -291,12 +293,12 @@ namespace hivemind {
     baseLocations_.clear();
 
     size_t index = 0;
-    for ( auto& cluster : resourceClusters_ )
+    for ( auto& cluster : resourceClusters )
       baseLocations_.emplace_back( bot_, index++, cluster );
 
     Analysis::Map_MarkBaseTiles( flagsMap_, baseLocations_ );
 
-    debugDumpBaseLocations( flagsMap_, resourceClusters_, info, baseLocations_ );
+    debugDumpBaseLocations( flagsMap_, resourceClusters, info, baseLocations_ );
 
     bot_->console().printf( "Map: Rebuild done" );
   }

@@ -84,32 +84,32 @@ namespace hivemind {
       Reserved_NearResource,
       Reserved_Reserved
     };
-    Bot* bot_;
+  public:
+    // Generated once per map
     size_t width_; //!< Map width
     size_t height_; //!< Map height
     Array2<uint64_t> flagsMap_; //!< Static walkable & buildable flags
     Array2<Real> heightMap_; //!< Map heights
     Array2<int> labelsMap_; //!< Map component labels
-    Array2<bool> creepMap_; //!< Current creep spread visible to us
-    Array2<CreepTile> zergBuildable_; //!< Space that is currently buildable to us
-    Array2<int> labeledCreeps_; //!< Contour-traced buildable creeps by label (index)
-    Array2<ReservedTile> reservedMap_; //!< Spots that are used up by building footprints
-    BuildingReservationMap buildingReservations_; //!< Our own to-build structure footprints
-    vector<MapPoint2> creepTumors_;
-    CreepVector creeps_;
-    uint8_t* contourTraceImageBuffer_;
-    ComponentVector components_; //!< Map components
-    PolygonComponentVector polygons_;
     Real maxZ_; //!< Highest terrain Z coordinate in the map
-    mutable std::map<std::pair<size_t, size_t>, DistanceMap> distanceMapCache_;
-    vector<UnitVector> resourceClusters_;
-    Analysis::RegionGraph graph_;
     Analysis::RegionGraph graphSimplified_;
     PolygonComponentVector obstacles_;
     std::map<Analysis::RegionNodeID, Analysis::ChokeSides> chokepointSides_;
     BaseLocationVector baseLocations_;
     RegionVector regions_;
     Array2<int> regionMap_;
+    // Constantly updated throughout game
+    Array2<ReservedTile> reservedMap_; //!< Spots that are used up by building footprints
+    BuildingReservationMap buildingReservations_; //!< Our own to-build structure footprints
+    Array2<CreepTile> zergBuildable_; //!< Space that is currently buildable to us
+    Array2<bool> creepMap_; //!< Current creep spread visible to us
+    Array2<int> labeledCreeps_; //!< Contour-traced buildable creeps by label (index)
+    CreepVector creeps_;
+    vector<MapPoint2> creepTumors_;
+  private:
+    Bot* bot_;
+    uint8_t* contourTraceImageBuffer_;
+    mutable std::map<std::pair<size_t, size_t>, DistanceMap> distanceMapCache_;
   private:
     bool rampHasCreepTumor( int x, int y );
     void updateReservedMap();
