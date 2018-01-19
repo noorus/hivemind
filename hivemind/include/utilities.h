@@ -1,6 +1,7 @@
 #pragma once
 #include "sc2_forward.h"
 #include "hive_math.h"
+#include "database.h"
 
 namespace hivemind {
 
@@ -121,13 +122,13 @@ namespace hivemind {
     }
 
     inline const bool isMine( const Unit& unit ) { return ( unit.alliance == Unit::Alliance::Self ); }
-    inline const bool isMine( const Unit* unit ) { return ( unit->alliance == Unit::Alliance::Self ); }
+    inline const bool isMine( const UnitRef unit ) { return ( unit->alliance == Unit::Alliance::Self ); }
 
     inline const bool isEnemy( const Unit& unit ) { return ( unit.alliance == Unit::Alliance::Enemy ); }
-    inline const bool isEnemy( const Unit* unit ) { return ( unit->alliance == Unit::Alliance::Enemy ); }
+    inline const bool isEnemy( const UnitRef unit ) { return ( unit->alliance == Unit::Alliance::Enemy ); }
 
     inline const bool isNeutral( const Unit& unit ) { return ( unit.alliance == Unit::Alliance::Neutral ); }
-    inline const bool isNeutral( const Unit* unit ) { return ( unit->alliance == Unit::Alliance::Neutral ); }
+    inline const bool isNeutral( const UnitRef unit ) { return ( unit->alliance == Unit::Alliance::Neutral ); }
 
     struct isFlying {
       inline bool operator()( const Unit& unit ) {
@@ -155,7 +156,7 @@ namespace hivemind {
     }
 
     inline const bool isMainStructure( const Unit& unit ) { return isMainStructure( unit.unit_type ); }
-    inline const bool isMainStructure( const Unit* unit ) { return isMainStructure( unit->unit_type ); }
+    inline const bool isMainStructure( const UnitRef unit ) { return isMainStructure( unit->unit_type ); }
 
     struct isMainStructure {
       inline bool operator()( const Unit& unit ) {
@@ -165,52 +166,27 @@ namespace hivemind {
 
     inline const bool isRefinery( const UnitTypeID& type )
     {
-      switch ( type.ToType() )
-      {
-        case sc2::UNIT_TYPEID::TERRAN_REFINERY:
-        case sc2::UNIT_TYPEID::PROTOSS_ASSIMILATOR:
-        case sc2::UNIT_TYPEID::ZERG_EXTRACTOR:
-          return true;
-        default:
-          return false;
-      }
+      return ( Database::unit( type ).resource == UnitData::Resource_GasHarvestable );
     }
 
     inline const bool isRefinery( const Unit& unit ) { return isRefinery( unit.unit_type ); }
-    inline const bool isRefinery( const Unit* unit ) { return isRefinery( unit->unit_type ); }
+    inline const bool isRefinery( const UnitRef unit ) { return isRefinery( unit->unit_type ); }
 
     inline const bool isMineral( const UnitTypeID& type )
     {
-      switch ( type.ToType() )
-      {
-        case sc2::UNIT_TYPEID::NEUTRAL_MINERALFIELD:
-        case sc2::UNIT_TYPEID::NEUTRAL_MINERALFIELD750:
-        case sc2::UNIT_TYPEID::NEUTRAL_RICHMINERALFIELD:
-        case sc2::UNIT_TYPEID::NEUTRAL_RICHMINERALFIELD750:
-          return true;
-        default:
-          return false;
-      }
+      return ( Database::unit( type ).resource == UnitData::Resource_MineralsHarvestable );
     }
 
     inline const bool isMineral( const Unit& unit ) { return isMineral( unit.unit_type ); }
-    inline const bool isMineral( const Unit* unit ) { return isMineral( unit->unit_type ); }
+    inline const bool isMineral( const UnitRef unit ) { return isMineral( unit->unit_type ); }
 
     inline const bool isGeyser( const UnitTypeID& type )
     {
-      switch ( type.ToType() )
-      {
-        case sc2::UNIT_TYPEID::NEUTRAL_VESPENEGEYSER:
-        case sc2::UNIT_TYPEID::NEUTRAL_PROTOSSVESPENEGEYSER:
-        case sc2::UNIT_TYPEID::NEUTRAL_SPACEPLATFORMGEYSER:
-          return true;
-        default:
-          return false;
-      }
+      return ( Database::unit( type ).resource == UnitData::Resource_GasBuildable );
     }
 
     inline const bool isGeyser( const Unit& unit ) { return isGeyser( unit.unit_type ); }
-    inline const bool isGeyser( const Unit* unit ) { return isGeyser( unit->unit_type ); }
+    inline const bool isGeyser( const UnitRef unit ) { return isGeyser( unit->unit_type ); }
 
     inline const bool isWorker( const UnitTypeID& type )
     {
@@ -227,102 +203,23 @@ namespace hivemind {
     }
 
     inline const bool isWorker( const Unit& unit ) { return isWorker( unit.unit_type ); }
-    inline const bool isWorker( const Unit* unit ) { return isWorker( unit->unit_type ); }
+    inline const bool isWorker( const UnitRef unit ) { return isWorker( unit->unit_type ); }
 
     inline const bool isSupplyProvider( const UnitTypeID& type )
     {
-      switch ( type.ToType() )
-      {
-        case sc2::UNIT_TYPEID::ZERG_OVERLORD:
-        case sc2::UNIT_TYPEID::PROTOSS_PYLON:
-        case sc2::UNIT_TYPEID::PROTOSS_PYLONOVERCHARGED:
-        case sc2::UNIT_TYPEID::TERRAN_SUPPLYDEPOT:
-        case sc2::UNIT_TYPEID::TERRAN_SUPPLYDEPOTLOWERED:
-          return true;
-        default:
-          return false;
-      }
+      return ( Database::unit( type ).food > 0 );
     }
 
     inline const bool isSupplyProvider( const Unit& unit ) { return isSupplyProvider( unit.unit_type ); }
-    inline const bool isSupplyProvider( const Unit* unit ) { return isSupplyProvider( unit->unit_type ); }
+    inline const bool isSupplyProvider( const UnitRef unit ) { return isSupplyProvider( unit->unit_type ); }
 
-    inline const bool isBuilding( const UnitTypeID& type )
+    inline const bool isStructure( const UnitTypeID& type )
     {
-      switch ( type.ToType() )
-      {
-        // Zerg
-        case sc2::UNIT_TYPEID::ZERG_EVOLUTIONCHAMBER:
-        case sc2::UNIT_TYPEID::ZERG_EXTRACTOR:
-        case sc2::UNIT_TYPEID::ZERG_GREATERSPIRE:
-        case sc2::UNIT_TYPEID::ZERG_HATCHERY:
-        case sc2::UNIT_TYPEID::ZERG_HIVE:
-        case sc2::UNIT_TYPEID::ZERG_HYDRALISKDEN:
-        case sc2::UNIT_TYPEID::ZERG_INFESTATIONPIT:
-        case sc2::UNIT_TYPEID::ZERG_LAIR:
-        case sc2::UNIT_TYPEID::ZERG_NYDUSNETWORK:
-        case sc2::UNIT_TYPEID::ZERG_SPAWNINGPOOL:
-        case sc2::UNIT_TYPEID::ZERG_SPINECRAWLER:
-        case sc2::UNIT_TYPEID::ZERG_SPINECRAWLERUPROOTED:
-        case sc2::UNIT_TYPEID::ZERG_SPIRE:
-        case sc2::UNIT_TYPEID::ZERG_SPORECRAWLER:
-        case sc2::UNIT_TYPEID::ZERG_SPORECRAWLERUPROOTED:
-        case sc2::UNIT_TYPEID::ZERG_ULTRALISKCAVERN:
-        // Terran
-        case sc2::UNIT_TYPEID::TERRAN_ARMORY:
-        case sc2::UNIT_TYPEID::TERRAN_BARRACKS:
-        case sc2::UNIT_TYPEID::TERRAN_BARRACKSFLYING:
-        case sc2::UNIT_TYPEID::TERRAN_BARRACKSREACTOR:
-        case sc2::UNIT_TYPEID::TERRAN_BARRACKSTECHLAB:
-        case sc2::UNIT_TYPEID::TERRAN_BUNKER:
-        case sc2::UNIT_TYPEID::TERRAN_COMMANDCENTER:
-        case sc2::UNIT_TYPEID::TERRAN_COMMANDCENTERFLYING:
-        case sc2::UNIT_TYPEID::TERRAN_ENGINEERINGBAY:
-        case sc2::UNIT_TYPEID::TERRAN_FACTORY:
-        case sc2::UNIT_TYPEID::TERRAN_FACTORYFLYING:
-        case sc2::UNIT_TYPEID::TERRAN_FACTORYREACTOR:
-        case sc2::UNIT_TYPEID::TERRAN_FACTORYTECHLAB:
-        case sc2::UNIT_TYPEID::TERRAN_FUSIONCORE:
-        case sc2::UNIT_TYPEID::TERRAN_GHOSTACADEMY:
-        case sc2::UNIT_TYPEID::TERRAN_MISSILETURRET:
-        case sc2::UNIT_TYPEID::TERRAN_ORBITALCOMMAND:
-        case sc2::UNIT_TYPEID::TERRAN_ORBITALCOMMANDFLYING:
-        case sc2::UNIT_TYPEID::TERRAN_PLANETARYFORTRESS:
-        case sc2::UNIT_TYPEID::TERRAN_REFINERY:
-        case sc2::UNIT_TYPEID::TERRAN_SENSORTOWER:
-        case sc2::UNIT_TYPEID::TERRAN_STARPORT:
-        case sc2::UNIT_TYPEID::TERRAN_STARPORTFLYING:
-        case sc2::UNIT_TYPEID::TERRAN_STARPORTREACTOR:
-        case sc2::UNIT_TYPEID::TERRAN_STARPORTTECHLAB:
-        case sc2::UNIT_TYPEID::TERRAN_SUPPLYDEPOT:
-        case sc2::UNIT_TYPEID::TERRAN_SUPPLYDEPOTLOWERED:
-        case sc2::UNIT_TYPEID::TERRAN_REACTOR:
-        case sc2::UNIT_TYPEID::TERRAN_TECHLAB:
-        // Protoss
-        case sc2::UNIT_TYPEID::PROTOSS_ASSIMILATOR:
-        case sc2::UNIT_TYPEID::PROTOSS_CYBERNETICSCORE:
-        case sc2::UNIT_TYPEID::PROTOSS_DARKSHRINE:
-        case sc2::UNIT_TYPEID::PROTOSS_FLEETBEACON:
-        case sc2::UNIT_TYPEID::PROTOSS_FORGE:
-        case sc2::UNIT_TYPEID::PROTOSS_GATEWAY:
-        case sc2::UNIT_TYPEID::PROTOSS_NEXUS:
-        case sc2::UNIT_TYPEID::PROTOSS_PHOTONCANNON:
-        case sc2::UNIT_TYPEID::PROTOSS_PYLON:
-        case sc2::UNIT_TYPEID::PROTOSS_PYLONOVERCHARGED:
-        case sc2::UNIT_TYPEID::PROTOSS_ROBOTICSBAY:
-        case sc2::UNIT_TYPEID::PROTOSS_ROBOTICSFACILITY:
-        case sc2::UNIT_TYPEID::PROTOSS_STARGATE:
-        case sc2::UNIT_TYPEID::PROTOSS_TEMPLARARCHIVE:
-        case sc2::UNIT_TYPEID::PROTOSS_TWILIGHTCOUNCIL:
-        case sc2::UNIT_TYPEID::PROTOSS_WARPGATE:
-          return true;
-        default:
-          return false;
-      }
+      return ( Database::unit( type ).structure );
     }
 
-    inline const bool isBuilding( const Unit& unit ) { return isBuilding( unit.unit_type ); }
-    inline const bool isBuilding( const Unit* unit ) { return isBuilding( unit->unit_type ); }
+    inline const bool isStructure( const Unit& unit ) { return isStructure( unit.unit_type ); }
+    inline const bool isStructure( const UnitRef unit ) { return isStructure( unit->unit_type ); }
 
     inline void hsl2rgb( uint16_t hue, uint8_t sat, uint8_t lum, uint8_t rgb[3] )
     {

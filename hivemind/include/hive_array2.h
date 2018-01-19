@@ -1,6 +1,4 @@
 #pragma once
-#include "hive_types.h"
-#include "sc2_forward.h"
 
 namespace hivemind {
 

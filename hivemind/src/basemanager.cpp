@@ -69,7 +69,7 @@ namespace hivemind {
         return;
       assignedUnits_.insert( msg.unit() );
 
-      if ( utils::isBuilding( msg.unit() ) )
+      if ( utils::isStructure( msg.unit() ) )
       {
         bot_->console().printf( "Building created: %s", sc2::UnitTypeToName( msg.unit()->unit_type ) );
         addBuilding( msg.unit() );

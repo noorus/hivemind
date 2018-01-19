@@ -1,6 +1,7 @@
 #pragma once
 #include "hive_types.h"
 #include "sc2_forward.h"
+#include "hive_array2.h"
 
 namespace hivemind {
 
@@ -67,12 +68,20 @@ namespace hivemind {
   using UnitTypeSet = set<UnitType64>;
 
   struct UnitData {
+  public:
     enum Footprint: uint8_t {
       Footprint_Empty = 0,
       Footprint_Creep,
       Footprint_NearResource,
       Footprint_Reserved
     };
+    enum ResourceType {
+      Resource_None = 0,
+      Resource_MineralsHarvestable, //!< Mineral patch
+      Resource_GasBuildable, //!< Gas geyser
+      Resource_GasHarvestable //!< Gas extractor
+    };
+  public:
     UnitType64 id;
     string name;
     Real acceleration;
@@ -107,6 +116,7 @@ namespace hivemind {
     Array2<Footprint> footprint; //!< Note: footprint has x & y flipped, otherwise there's a heap corruption on data load. (wtf?)
     Point2DI footprintOffset;
     vector<string> weapons;
+    ResourceType resource;
 
     inline operator UnitTypeID() const
     {

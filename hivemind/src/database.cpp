@@ -253,6 +253,21 @@ namespace hivemind {
       entry.shieldsStart = unit["shieldsStart"].asInt();
       entry.vespeneCost = unit["vespeneCost"].asInt();
 
+      entry.resource = UnitData::Resource_None;
+
+      auto& resource = unit["resource"];
+      if ( resource.isArray() && resource.size() == 2 )
+      {
+        if ( boost::iequals( resource[0].asString(), "minerals" ) && boost::iequals( resource[1].asString(), "harvestable" ) )
+          entry.resource = UnitData::Resource_MineralsHarvestable;
+        else if ( boost::iequals( resource[0].asString(), "vespene" ) && boost::iequals( resource[1].asString(), "raw" ) )
+          entry.resource = UnitData::Resource_GasBuildable;
+        else if ( boost::iequals( resource[0].asString(), "vespene" ) && boost::iequals( resource[1].asString(), "harvestable" ) )
+          entry.resource = UnitData::Resource_GasHarvestable;
+        else
+          HIVE_EXCEPT( "Unknown resource type " + resource[0].asString() + "/" + resource[1].asString() );
+      }
+
       if ( unit["footprint"].isObject() && !unit["footprint"].empty() )
       {
         size_t width = 0;

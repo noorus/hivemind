@@ -40,7 +40,7 @@ namespace hivemind {
         if ( !utils::isMine( unit ) )
           return;
 
-        if( utils::isBuilding(unit) && msg.code == M_Global_UnitCreated)
+        if( utils::isStructure(unit) && msg.code == M_Global_UnitCreated)
           return;
 
         auto& stats = unitStats_[unit->unit_type];

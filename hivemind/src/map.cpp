@@ -449,8 +449,8 @@ namespace hivemind {
       );
 
       if ( topleft.x < 0 || topleft.y < 0
-        || topleft.x + dbUnit.footprint.width() >= width_
-        || topleft.y + dbUnit.footprint.height() >= height_ )
+        || ( topleft.x + dbUnit.footprint.width() ) >= width_
+        || ( topleft.y + dbUnit.footprint.height() ) >= height_ )
         return;
 
       for ( size_t y = 0; y < dbUnit.footprint.height(); y++ )
