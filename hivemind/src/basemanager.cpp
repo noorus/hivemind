@@ -60,6 +60,15 @@ namespace hivemind {
       base.draw( bot_ );
   }
 
+  bool BaseManager::isMyBase( BaseLocation* location ) const
+  {
+    for ( auto& base : bases_ )
+      if ( base.location()->baseID_ == location->baseID_ )
+        return true;
+
+    return false;
+  }
+
   void BaseManager::onMessage( const Message& msg )
   {
     if ( msg.code == M_Global_UnitCreated && utils::isMine( msg.unit() ) )

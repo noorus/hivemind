@@ -30,12 +30,16 @@ namespace hivemind {
       status_ = AI::Goal::Status_Active;
       worker_ = nullptr;
 
+      exploredStartLocations_.clear();
+
       unexploredStartLocations_.clear();
       for ( auto& location : bot_->map().baseLocations_ )
         if ( location.isStartLocation() )
-          unexploredStartLocations_.insert( location.baseID_ );
+          if ( bot_->bases().isMyBase( &location ) )
+            exploredStartLocations_.insert( location.baseID_ );
+          else
+            unexploredStartLocations_.insert( location.baseID_ );
 
-      exploredStartLocations_.clear();
       route_.clear();
       routeIndex_ = -1;
     }
