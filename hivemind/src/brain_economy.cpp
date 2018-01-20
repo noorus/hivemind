@@ -52,14 +52,17 @@ namespace hivemind {
       harvestersGoal_ = new Brain_UpdateHarvesters( owner_ );
       creepGoal_ = new Brain_SpreadCreep( owner_ );
       buildGoal_ = new Brain_Macro( owner_ );
+      overlordGoal_ = new Brain_ManageOverlords( owner_ );
 
       goalList_.push_back( harvestersGoal_ );
       goalList_.push_back( creepGoal_ );
       goalList_.push_back( buildGoal_ );
+      goalList_.push_back( overlordGoal_ );
 
       harvestersGoal_->activate();
       creepGoal_->activate();
       buildGoal_->activate();
+      overlordGoal_->activate();
     }
 
     void Brain_ManageEconomy::terminate()
@@ -70,6 +73,8 @@ namespace hivemind {
       delete creepGoal_;
       buildGoal_->terminate();
       delete buildGoal_;
+      overlordGoal_->terminate();
+      delete overlordGoal_;
 
       goalList_.clear();
     }
@@ -78,7 +83,8 @@ namespace hivemind {
     {
       harvestersGoal_->setImportance( 1.0f );
       creepGoal_->setImportance( 0.7f );
-      buildGoal_->setImportance( 0.6f );
+      buildGoal_->setImportance( 0.8f );
+      overlordGoal_->setImportance( 0.5f );
     }
 
   }

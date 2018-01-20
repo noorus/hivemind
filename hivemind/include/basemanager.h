@@ -23,6 +23,7 @@ namespace hivemind {
     void gameEnd() final;
     void update( const GameTime time, const GameTime delta );
     void draw() final;
+    bool isMyBase( BaseLocation* location ) const;
     Base* findClosest( const Vector3& pos );
     void addBuilding( UnitRef unit );
     void addWorker( UnitRef unit );

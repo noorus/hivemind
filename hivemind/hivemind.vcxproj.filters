@@ -243,6 +243,9 @@
     <ClInclude Include="..\..\SDK\s2client-api\include\sc2api\sc2_unit.h">
       <Filter>SC2API</Filter>
     </ClInclude>
+    <ClInclude Include="include\vision.h">
+      <Filter>Header Files\Systems</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\stdafx.cpp">
@@ -343,6 +346,12 @@
     </ClCompile>
     <ClCompile Include="src\brain_macro.cpp">
       <Filter>Source Files\Brain</Filter>
+    </ClCompile>
+    <ClCompile Include="src\brain_overlords.cpp">
+      <Filter>Source Files\Brain</Filter>
+    </ClCompile>
+    <ClCompile Include="src\vision.cpp">
+      <Filter>Source Files\Systems</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

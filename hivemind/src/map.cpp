@@ -368,7 +368,7 @@ namespace hivemind {
     {
       Point3D p0 = util_tileToMarker( asd.second.side1, heightMap_, 0.5f, maxZ_ );
       Point3D p1 = util_tileToMarker( asd.second.side2, heightMap_, 0.5f, maxZ_ );
-      bot_->debug().DebugLineOut( p0, p1, sc2::Colors::Green );
+      bot_->debug().drawLine( p0, p1, sc2::Colors::Green );
     }*/
     for ( auto& node : graphSimplified_.nodes )
     {

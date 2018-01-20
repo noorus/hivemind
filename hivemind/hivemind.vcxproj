@@ -160,6 +160,7 @@
     <ClInclude Include="include\targetver.h" />
     <ClInclude Include="include\trainer.h" />
     <ClInclude Include="include\utilities.h" />
+    <ClInclude Include="include\vision.h" />
     <ClInclude Include="include\workers.h" />
   </ItemGroup>
   <ItemGroup>
@@ -176,6 +177,7 @@
     <ClCompile Include="src\brain_creep.cpp" />
     <ClCompile Include="src\brain_economy.cpp" />
     <ClCompile Include="src\brain_macro.cpp" />
+    <ClCompile Include="src\brain_overlords.cpp" />
     <ClCompile Include="src\brain_scouting.cpp" />
     <ClCompile Include="src\builder.cpp" />
     <ClCompile Include="src\console.cpp" />
@@ -198,6 +200,7 @@
     <ClCompile Include="src\strategy.cpp" />
     <ClCompile Include="src\trainer.cpp" />
     <ClCompile Include="src\utilities_internal.cpp" />
+    <ClCompile Include="src\vision.cpp" />
     <ClCompile Include="src\workers.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

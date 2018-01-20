@@ -29,16 +29,17 @@ namespace hivemind {
     {
       status_ = AI::Goal::Status_Active;
       worker_ = nullptr;
+      shouldReplan_ = false;
 
-      exploredStartLocations_.clear();
+      bot_->vision().startLocations().explored_.clear();
 
-      unexploredStartLocations_.clear();
+      bot_->vision().startLocations().unexplored_.clear();
       for ( auto& location : bot_->map().baseLocations_ )
         if ( location.isStartLocation() )
           if ( bot_->bases().isMyBase( &location ) )
-            exploredStartLocations_.insert( location.baseID_ );
+            bot_->vision().startLocations().explored_.insert( location.baseID_ );
           else
-            unexploredStartLocations_.insert( location.baseID_ );
+            bot_->vision().startLocations().unexplored_.insert( location.baseID_ );
 
       route_.clear();
       routeIndex_ = -1;
@@ -62,15 +63,7 @@ namespace hivemind {
     {
       bot_->console().printf( "WorkerScout: Found player %llu (%s)", player, sc2::UnitTypeToName( unit->unit_type ) );
 
-      for ( auto& locId : unexploredStartLocations_ )
-        if ( bot_->map().baseLocations_[locId].containsPosition( unit->pos ) )
-        {
-          unexploredStartLocations_.erase( locId );
-          exploredStartLocations_.insert( locId );
-          break;
-        }
-
-      _replanRoute();
+      shouldReplan_ = true;
     }
 
     void Brain_WorkerScout::_sendWorker()
@@ -114,12 +107,12 @@ namespace hivemind {
           break;
         }
 
-      if ( undiscoveredPlayers && !unexploredStartLocations_.empty() )
+      if ( undiscoveredPlayers && !bot_->vision().startLocations().unexplored_.empty() )
       {
         if ( route_.empty() || routeIndex_ == route_.size() )
         {
           vector<Vector2> locations;
-          for ( auto locId : unexploredStartLocations_ )
+          for ( auto locId : bot_->vision().startLocations().unexplored_ )
             locations.emplace_back( bot_->map().baseLocations_[locId].position() );
 
           routeIndex_ = -1;
@@ -153,16 +146,21 @@ namespace hivemind {
           _replanRoute();
         }
       }
+      else if ( shouldReplan_ )
+      {
+        _replanRoute();
+        shouldReplan_ = false;
+      }
       else if ( !route_.empty() && routeIndex_ < route_.size() )
       {
         if ( route_[routeIndex_].distance( worker_->pos ) < 5.0f )
         {
           bot_->console().printf( "WorkerScout: Reached route node %llu, nothing here" );
-          for ( auto locId : unexploredStartLocations_ )
+          for ( auto locId : bot_->vision().startLocations().unexplored_ )
             if ( bot_->map().baseLocations_[locId].containsPosition( worker_->pos ) )
             {
-              unexploredStartLocations_.erase( locId );
-              exploredStartLocations_.insert( locId );
+              bot_->vision().startLocations().unexplored_.erase( locId );
+              bot_->vision().startLocations().explored_.insert( locId );
               break;
             }
           _routeAdvance();

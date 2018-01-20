@@ -15,10 +15,9 @@ namespace hivemind {
     class Brain_WorkerScout: public AI::CompositeGoal, public hivemind::Listener {
     private:
       UnitRef worker_;
-      set<size_t> unexploredStartLocations_;
-      set<size_t> exploredStartLocations_;
       Path route_;
       size_t routeIndex_;
+      bool shouldReplan_;
       void _foundPlayer( PlayerID player, UnitRef unit );
       void _routeAdvance();
       void _replanRoute();
@@ -35,6 +34,22 @@ namespace hivemind {
     public:
       Brain_WorkerScout( AI::Agent* agent );
       virtual ~Brain_WorkerScout();
+      virtual void activate() final;
+      virtual Status process() final;
+      virtual void terminate() final;
+    };
+
+    class Brain_ManageOverlords: public AI::CompositeGoal, public hivemind::Listener {
+    private:
+      UnitSet overlords_;
+      void _add( UnitRef overlord );
+      void _remove( UnitRef overlord );
+    public:
+      virtual const string& getName() const final { static string name = "Brain_OverlordScout"; return name; }
+      virtual void onMessage( const Message& msg ) final;
+    public:
+      Brain_ManageOverlords( AI::Agent* agent );
+      virtual ~Brain_ManageOverlords();
       virtual void activate() final;
       virtual Status process() final;
       virtual void terminate() final;
@@ -79,6 +94,7 @@ namespace hivemind {
       Brain_UpdateHarvesters* harvestersGoal_;
       Brain_SpreadCreep* creepGoal_; // TODO somewhere else
       Brain_Macro* buildGoal_;
+      Brain_ManageOverlords* overlordGoal_; // TODO somewhere else
     public:
       virtual const string& getName() const final { static string name = "Brain_ManageEconomy"; return name; }
     public:

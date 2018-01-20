@@ -50,6 +50,7 @@ namespace hivemind {
     strategy_( this ),
     builder_( this ),
     trainer_( this ),
+    vision_( this ),
     cheatCostIgnore_( false ),
     cheatGodmode_( false )
   {
@@ -199,6 +200,8 @@ namespace hivemind {
 
     baseManager_.gameBegin();
 
+    vision_.gameBegin();
+
     intelligence_.gameBegin();
 
     strategy_.gameBegin();
@@ -270,6 +273,7 @@ namespace hivemind {
     workers_.update( time_ );
     brain_.update( time_, delta );
     strategy_.update( time_, delta );
+    vision_.update( time_, delta );
 
     action_->SendActions();
 
@@ -317,6 +321,7 @@ namespace hivemind {
     trainer_.gameEnd();
     players_.gameEnd();
     workers_.gameEnd();
+    vision_.gameEnd();
     baseManager_.gameEnd();
     intelligence_.gameEnd();
     messaging_.gameEnd();
