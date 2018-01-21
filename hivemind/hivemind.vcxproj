@@ -134,6 +134,7 @@
     <ClInclude Include="include\brain_macro.h" />
     <ClInclude Include="include\builder.h" />
     <ClInclude Include="include\console.h" />
+    <ClInclude Include="include\controllers.h" />
     <ClInclude Include="include\database.h" />
     <ClInclude Include="include\debug.h" />
     <ClInclude Include="include\distancemap.h" />
@@ -181,6 +182,7 @@
     <ClCompile Include="src\brain_scouting.cpp" />
     <ClCompile Include="src\builder.cpp" />
     <ClCompile Include="src\console.cpp" />
+    <ClCompile Include="src\controller.cpp" />
     <ClCompile Include="src\database.cpp" />
     <ClCompile Include="src\distancemap.cpp" />
     <ClCompile Include="src\exception.cpp" />

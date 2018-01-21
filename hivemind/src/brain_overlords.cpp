@@ -2,6 +2,7 @@
 #include "brain.h"
 #include "ai_goals.h"
 #include "bot.h"
+#include "controllers.h"
 
 namespace hivemind {
 
@@ -87,7 +88,7 @@ namespace hivemind {
           auto& choke = ( *it ).second;
 
           auto midpoint = choke.side1 + ( ( choke.side1 - choke.side2 ) * 0.5f );
-          bot_->action().UnitCommand( overlord, sc2::ABILITY_ID::MOVE, midpoint, false );
+          Overlord( overlord ).move( midpoint );
         }
       }
       return status_;

@@ -2,6 +2,7 @@
 #include "brain.h"
 #include "ai_goals.h"
 #include "bot.h"
+#include "controllers.h"
 
 namespace hivemind {
 
@@ -79,7 +80,7 @@ namespace hivemind {
       if ( routeIndex_ < route_.size() )
       {
         bot_->console().printf( "WorkerScout: Navigating to next route node %llu", routeIndex_ );
-        bot_->action().UnitCommand( worker_, sc2::ABILITY_ID::MOVE, route_[routeIndex_] );
+        Drone( worker_ ).move( route_[routeIndex_] );
       }
       else
       {

@@ -4,6 +4,7 @@
 #include "bot.h"
 #include "trainer.h"
 #include "database.h"
+#include "controllers.h"
 
 namespace hivemind {
 
@@ -26,9 +27,7 @@ namespace hivemind {
       return false;
     }
 
-    auto ability = Database::techTree().getBuildAbility( unit, trainer );
-
-    Training build( idPool_++, unit, trainer, ability );
+    Training build( idPool_++, unit, trainer );
     build.trainer = *larvae.begin();
 
     bot_->bases().removeLarva(build.trainer);
@@ -133,7 +132,7 @@ namespace hivemind {
           {
             bot_->unitDebugMsgs_[training.trainer] = "Trainer, Op " + std::to_string( training.id );
             bot_->console().printf( "TrainOp %d: Got trainer %x for %s", training.id, training.trainer, sc2::UnitTypeToName(training.type) );
-            bot_->action().UnitCommand( training.trainer, training.buildAbility );
+            Larva( training.trainer ).morph( training.type );
             training.tries++;
           }
           else

@@ -2,6 +2,7 @@
 #include "bot.h"
 #include "utilities.h"
 #include "database.h"
+#include "controllers.h"
 
 namespace hivemind {
 
@@ -264,6 +265,8 @@ namespace hivemind {
       map_.updateZergBuildable();
       nextCreepUpdate = time_ + cCreepUpdateDelay;
     }
+
+    ControllerBase::setActions( action_ );
 
     builder_.update( time_, delta );
     trainer_.update( time_, delta );

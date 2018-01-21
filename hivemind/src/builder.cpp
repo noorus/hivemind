@@ -4,6 +4,7 @@
 #include "bot.h"
 #include "builder.h"
 #include "database.h"
+#include "controllers.h"
 
 namespace hivemind {
 
@@ -186,7 +187,7 @@ namespace hivemind {
           }
           bot_->unitDebugMsgs_[build.builder] = "Builder, Op " + std::to_string( build.id );
           bot_->console().printf( "BuildOp %d: Got worker %x", build.id, build.builder );
-          bot_->action().UnitCommand( build.builder, sc2::ABILITY_ID::MOVE, build.position, false );
+          Drone( build.builder ).move( build.position );
           build.tries++;
         }
 
@@ -212,11 +213,11 @@ namespace hivemind {
             }
             if ( build.target )
             {
-              bot_->action().UnitCommand( build.builder, build.buildAbility, build.target, false );
+              Drone( build.builder ).build( build.buildAbility, build.target );
             }
             else
             {
-              bot_->action().UnitCommand(build.builder, build.buildAbility, build.position, false);
+              Drone( build.builder ).build( build.buildAbility, build.position );
             }
             build.lastOrderTime = time;
             build.orderTries++;

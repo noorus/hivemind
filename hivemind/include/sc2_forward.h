@@ -37,6 +37,8 @@ namespace hivemind {
 
   using sc2::Color;
 
+  using sc2::ActionInterface;
+
   namespace Colors {
     using namespace sc2::Colors;
   }

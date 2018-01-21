@@ -27,9 +27,8 @@ namespace hivemind {
     bool moneyAllocated;
     size_t tries;
     size_t orderTries;
-    AbilityID buildAbility;
 
-    Training(TrainingProjectID id_, UnitTypeID type_, UnitTypeID trainerType_, AbilityID abil_) :
+    Training(TrainingProjectID id_, UnitTypeID type_, UnitTypeID trainerType_) :
         id(id_),
         type(type_),
         trainerType(trainerType_),
@@ -40,7 +39,6 @@ namespace hivemind {
         nextUpdateTime(0),
         tries(0),
         orderTries(0),
-        buildAbility(abil_),
         buildStartTime(0),
         buildCompleteTime(0),
         completed(false),
