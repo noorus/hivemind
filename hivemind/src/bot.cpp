@@ -266,6 +266,8 @@ namespace hivemind {
       nextCreepUpdate = time_ + cCreepUpdateDelay;
     }
 
+    vision_.update( time_, delta );
+
     ControllerBase::setActions( action_ );
 
     builder_.update( time_, delta );
@@ -276,7 +278,6 @@ namespace hivemind {
     workers_.update( time_ );
     brain_.update( time_, delta );
     strategy_.update( time_, delta );
-    vision_.update( time_, delta );
 
     action_->SendActions();
 
@@ -301,7 +302,7 @@ namespace hivemind {
         debug_.drawText( txt, Vector3( unit->pos ), sc2::Colors::Green );
         MapPoint2 coord( unit->pos );
         auto regIndex = map_.regionMap_[coord.x][coord.y];
-        string nrg = "region: " + std::to_string( regIndex );
+        string nrg = "region: " + std::to_string( regIndex ) + " - vision: " + std::to_string( regIndex >= 0 ? vision_.regionVision().at( regIndex ).coverage() : 0.0f );
         /*for ( size_t i = 0; i < map_.tempRegionPolygons_.size(); i++ )
         {
           if ( map_.tempRegionPolygons_[i].contains( unit->pos ) )

@@ -983,6 +983,7 @@ namespace hivemind {
       for ( auto& regionPoly : regionPolygons )
       {
         auto region = new Region();
+        region->label_ = regions.size();
         region->polygon_ = regionPoly;
         regions.push_back( region );
       }
