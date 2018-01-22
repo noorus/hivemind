@@ -22,7 +22,7 @@ namespace hivemind {
   {
     gameEnd();
     for ( PlayerID i = 0; i < c_maxPlayers; i++ )
-      players_.push_back( Player( i ) );
+      players_.emplace_back( i );
 
     myID_ = bot_->observation().GetPlayerID();
     auto gameInfo = &bot_->observation().GetGameInfo();

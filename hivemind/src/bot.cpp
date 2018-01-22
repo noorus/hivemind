@@ -6,8 +6,6 @@
 
 namespace hivemind {
 
-  const GameTime cCreepUpdateDelay = 40;
-
   Bot* g_Bot = nullptr;
 
   static bool callbackCVARGodmode( ConVar* variable, ConVar::Value oldValue );
@@ -75,107 +73,6 @@ namespace hivemind {
     }
   }
 
-  void Bot::verifyData()
-  {
-    auto apiTypeData = observation_->GetUnitTypeData();
-
-    vector<UnitTypeID> unitTypes = {
-      sc2::UNIT_TYPEID::TERRAN_MARINE,
-      sc2::UNIT_TYPEID::PROTOSS_ZEALOT,
-      sc2::UNIT_TYPEID::ZERG_ZERGLING,
-      sc2::UNIT_TYPEID::TERRAN_MARAUDER,
-      sc2::UNIT_TYPEID::PROTOSS_STALKER,
-      sc2::UNIT_TYPEID::ZERG_BANELING,
-      sc2::UNIT_TYPEID::TERRAN_REAPER,
-      sc2::UNIT_TYPEID::PROTOSS_ADEPT,
-      sc2::UNIT_TYPEID::ZERG_ROACH,
-      sc2::UNIT_TYPEID::PROTOSS_ARCHON,
-      sc2::UNIT_TYPEID::ZERG_QUEEN,
-      sc2::UNIT_TYPEID::PROTOSS_IMMORTAL
-    };
-
-    auto checki = []( int a, int b ) -> string
-    {
-      if ( a == b )
-        return "ok";
-      else
-      {
-        char asd[128];
-        sprintf_s( asd, 128, "fail: %i (db) - %i (sc2)", a, b );
-        return asd;
-      }
-    };
-
-    auto checkf = []( Real a, Real b ) -> string
-    {
-      if ( math::abs( a - b ) < 0.0001f )
-        return "ok";
-      else
-      {
-        char asd[128];
-        sprintf_s( asd, 128, "fail: %.4f (db) - %.4f (sc2)", a, b );
-        return asd;
-      }
-    };
-
-    for ( auto uid : unitTypes )
-    {
-      console_.printf( "Verifying: %s", UnitTypeToName( uid ) );
-      auto sc2Data = apiTypeData[uid];
-      auto dbData = Database::unit( uid );
-      console_.printf( "- minerals: %s", checki( dbData.mineralCost, sc2Data.mineral_cost ).c_str() );
-      console_.printf( "- vespene: %s", checki( dbData.vespeneCost, sc2Data.vespene_cost ).c_str() );
-      console_.printf( "- speed: %s", checkf( dbData.speed, sc2Data.movement_speed ).c_str() );
-      console_.printf( "- sight: %s", checkf( dbData.sight, sc2Data.sight_range ).c_str() );
-      console_.printf( "- armor: %s", checkf( (float)dbData.lifeArmor, sc2Data.armor ).c_str() );
-      console_.printf( "- weapon count: %s", checki( (int)dbData.weapons.size(), (int)sc2Data.weapons.size() ).c_str() );
-      // TODO: Try to figure out the same weapon(s) for comparison, by melee flags or range or so
-      if ( !dbData.weapons.empty() && !sc2Data.weapons.empty() )
-      {
-        if ( dbData.weapons.size() < sc2Data.weapons.size() )
-          console_.printf( "- wtf?! db has less weapons than sc2 (%d vs %d) - not parsing", dbData.weapons.size(), sc2Data.weapons.size() );
-        else
-        {
-          // auto dbWpn = Database::weapon( uid );
-          // auto sc2Wpn = sc2Data.weapons.back();
-          for ( auto& sc2Wpn : sc2Data.weapons )
-          {
-            const WeaponData* dbWpn = nullptr;
-            for ( auto& dbWpnName : dbData.weapons )
-            {
-              if ( !dbWpnName.empty() )
-              {
-                auto& wpn = Database::weapons().at( dbWpnName );
-                if ( !dbWpn || math::abs( sc2Wpn.range - wpn.range ) < math::abs( sc2Wpn.range - dbWpn->range ) )
-                  dbWpn = &wpn;
-              }
-            }
-            if ( !dbWpn )
-            {
-              console_.printf( "--- wtf?! no db counterpart for weapon entry" );
-            }
-            else
-            {
-              console_.printf( "--- damage: %s", checkf( dbWpn->calculateBasicDamage(), sc2Wpn.damage_ ).c_str() );
-              console_.printf( "--- range: %s", checkf( dbWpn->range, sc2Wpn.range ).c_str() );
-              console_.printf( "--- period: %s", checkf( dbWpn->period, sc2Wpn.speed ).c_str() );
-              // Don't bother checking attribute bonuses, since the API has all zeroes for now
-              /*for ( size_t i = 0; i < (size_t)Attribute::Invalid; i++ )
-              {
-                auto dbVal = dbWpn->calculateAttributeBonuses( (Attribute)i );
-                auto sc2Val = 0.0f;
-                for ( auto& v : sc2Wpn.damage_bonus )
-                  if ( v.attribute == (Attribute)i )
-                    sc2Val = v.bonus;
-                console_.printf( "--- attribute bonus %d: %s", i, checkf( dbVal, sc2Val ).c_str() );
-              }*/
-            }
-          }
-        }
-      }
-    }
-  }
-
   void Bot::OnGameStart()
   {
     time_ = 0;
@@ -193,6 +90,7 @@ namespace hivemind {
     messaging_.gameBegin();
 
     map_.rebuild();
+    map_.gameBegin();
 
     workers_.gameBegin();
 
@@ -209,8 +107,6 @@ namespace hivemind {
 
     builder_.gameBegin();
     trainer_.gameBegin();
-
-    verifyData();
 
     if ( g_CVar_cheat_godmode.as_b() )
       enableGodmodeCheat();
@@ -238,16 +134,6 @@ namespace hivemind {
     cheatCostIgnore_ = true;
   }
 
-  static std::string GetAbilityText( sc2::AbilityID ability_id )
-  {
-    std::string str;
-    str += sc2::AbilityTypeToName( ability_id );
-    str += " (";
-    str += std::to_string( uint32_t( ability_id ) );
-    str += ")";
-    return str;
-  }
-
   void Bot::OnStep()
   {
     observation_ = Observation();
@@ -259,12 +145,7 @@ namespace hivemind {
     auto delta = ( time_ - lastStepTime_ );
     lastStepTime_ = time_;
 
-    if ( time_ > nextCreepUpdate )
-    {
-      map_.updateCreep();
-      map_.updateZergBuildable();
-      nextCreepUpdate = time_ + cCreepUpdateDelay;
-    }
+    map_.update( time_ );
 
     vision_.update( time_, delta );
 
@@ -290,23 +171,6 @@ namespace hivemind {
     map_.draw();
     baseManager_.draw();
 
-    UnitRef q1 = nullptr;
-    UnitRef q2 = nullptr;
-
-    for ( auto unit : observation_->GetUnits() )
-    {
-      if ( utils::isMine( unit ) && unit->unit_type == UNIT_TYPEID::ZERG_QUEEN )
-      {
-        if ( q1 && !q2 )
-          q2 = unit;
-        else
-          q1 = unit;
-      }
-    }
-    if ( q1 && q2 )
-    {
-      debug_.drawLine( q1->pos, q2->pos, Colors::Red );
-    }
     for ( auto unit : observation_->GetUnits() )
     {
       if ( unit->is_selected && utils::isMine( unit ) )
@@ -315,26 +179,12 @@ namespace hivemind {
         sprintf_s( hex, 16, "%x", id( unit ) );
         string txt = string( hex ) + " " + sc2::UnitTypeToName( unit->unit_type );
         txt.append( " (" + std::to_string( unit->unit_type ) + ")\n" );
-        /*for ( auto& order : unit->orders )
-          txt.append( GetAbilityText( order.ability_id ) + "\n" );*/
+        for ( auto& order : unit->orders )
+          txt.append( string( sc2::AbilityTypeToName( order.ability_id ) ) + "\n" );
         debug_.drawText( txt, Vector3( unit->pos ), sc2::Colors::Green );
         MapPoint2 coord( unit->pos );
-        auto regIndex = map_.closestRegionMap_[coord.x][coord.y];
-        string nrg = "region: " + std::to_string( regIndex ) + " - vision: " + std::to_string( regIndex >= 0 ? vision_.regionVision().at( regIndex ).coverage() : 0.0f );
-        /*for ( size_t i = 0; i < map_.tempRegionPolygons_.size(); i++ )
-        {
-          if ( map_.tempRegionPolygons_[i].contains( unit->pos ) )
-          {
-            nrg.append( "inside polygon " + std::to_string( i ) + "\n" );
-          }
-        }*/
-        if ( q1 && q2 )
-        {
-          auto l0 = Vector2( q1->pos.x, q1->pos.y );
-          auto l1 = Vector2( q2->pos.x, q2->pos.y );
-          auto dist = utils::distanceToLineSegment( l0, l1, Vector3( unit->pos ).to2() );
-          nrg = "dist: " + std::to_string( dist );
-        }
+        auto regIndex = map_.regionMap_[coord.x][coord.y];
+        string nrg = "region: " + std::to_string( regIndex );
         Vector3 nrgpos( unit->pos.x, unit->pos.y, unit->pos.z + 1.0f );
         debug_.drawText( nrg, nrgpos, sc2::Colors::Teal );
       }

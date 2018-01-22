@@ -112,6 +112,7 @@ namespace hivemind {
     uint8_t* contourTraceImageBuffer_;
     mutable std::map<std::pair<size_t, size_t>, DistanceMap> distanceMapCache_;
   private:
+    GameTime nextCreepUpdate_;
     bool rampHasCreepTumor( int x, int y );
     void updateReservedMap();
     void splitCreepFronts();
@@ -123,6 +124,8 @@ namespace hivemind {
     void rebuild();
     void draw();
     bool updateCreep();
+    void gameBegin();
+    void update( const GameTime time );
     bool hasCreep( size_t x, size_t y ) { return ( labeledCreeps_[x][y] > 0 ); }
     bool hasCreep( const Vector2& position ) { return hasCreep( (size_t)position.x, (size_t)position.y ); }
     Creep* creep( size_t x, size_t y );

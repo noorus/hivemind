@@ -184,6 +184,7 @@
     <ClCompile Include="src\console.cpp" />
     <ClCompile Include="src\controller.cpp" />
     <ClCompile Include="src\database.cpp" />
+    <ClCompile Include="src\database_verify.cpp" />
     <ClCompile Include="src\distancemap.cpp" />
     <ClCompile Include="src\exception.cpp" />
     <ClCompile Include="src\external\clipper.cpp" />

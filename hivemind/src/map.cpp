@@ -15,6 +15,7 @@
 #pragma warning(default: 4996)
 #include "external/simple_svg_1.0.0.hpp"
 
+HIVE_DECLARE_CONVAR( creep_updateinterval, "Delay between map creep spread/buildability updates.", 40 );
 HIVE_DECLARE_CONVAR( analysis_invertwalkable, "Whether to invert the detected walkable area polygons. Try this if terrain analysis fails for a map.", false );
 
 namespace hivemind {
@@ -459,6 +460,21 @@ namespace hivemind {
         creepMap_[x][y] = ( creep[x + ( height_ - 1 - y ) * width_] ? true : false );
 
     return true;
+  }
+
+  void Map::gameBegin()
+  {
+    nextCreepUpdate_ = 0;
+  }
+
+  void Map::update( const GameTime time )
+  {
+    if ( time > nextCreepUpdate_ )
+    {
+      updateCreep();
+      updateZergBuildable();
+      nextCreepUpdate_ = time + g_CVar_creep_updateinterval.as_i();
+    }
   }
 
   void Map::updateReservedMap()
