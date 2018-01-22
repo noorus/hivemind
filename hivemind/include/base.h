@@ -21,6 +21,11 @@ namespace hivemind {
       size_t overhead_; //!< Ideal amount of overhead queens
       size_t total() const; //!< Total ideal amount of queens
     };
+    struct Refinery
+    {
+      UnitRef refinery_;
+      UnitSet workers_;
+    };
   private:
     BaseManager* manager_;
     size_t index_;
@@ -29,7 +34,8 @@ namespace hivemind {
     UnitSet queens_; //!< Queens assigned to this base
     WantedWorkers wantWorkers_; //!< Wanted worker counts
     WantedQueens wantQueens_; //!< Wanted queen counts
-    UnitMap buildings_; //!< Buildings in this base
+    UnitSet buildings_; //!< Buildings in this base
+    vector<Refinery> refineries_; //!< Refineries and their workers in this base.
     UnitSet larvae_;
     UnitSet depots_;
     void _refreshWorkers();
@@ -47,12 +53,14 @@ namespace hivemind {
     BaseLocation* location() const; //!< Base location
     Real saturation() const; //!< Worker saturation between 0..1
     UnitSet releaseWorkers( int count ); //!< Release a set of workers for other use
+    UnitRef releaseWorker(); //!< Release a worker for other use
     UnitSet releaseQueens( int count ); //!< Release a set of queens for other use
     const WantedWorkers& wantWorkers() const; //!< Wanted worker counts
     const WantedQueens& wantQueens() const; //!< Wanted queen counts
     const UnitSet& workers() const; //!< Return our set of workers
     const UnitSet& queens() const; //!< Return our set of queens
-    const UnitMap& buildings() const; //!< Return our buildings
+    const UnitSet& buildings() const; //!< Return our buildings
+    vector<Refinery>& refineries(); //!< Return our extractors
     const UnitSet& larvae() const; //!< Return our larvae
     const UnitSet& depots() const; //!< Return our main buildings
     UnitRef queen();

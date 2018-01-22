@@ -58,7 +58,6 @@ namespace hivemind {
   //!   Pointer is guaranteed unique and valid for the lifetime of the current game.
   //!   To see whether a unit is still alive, use \c unit->is_alive .
   using UnitRef = const Unit*;
-  using UnitMap = std::map<UnitRef, sc2::UNIT_TYPEID>;
 
   using UnitTypeIDSet = set<UnitTypeID>;
 

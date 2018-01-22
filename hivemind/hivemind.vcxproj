@@ -181,6 +181,7 @@
     <ClCompile Include="src\brain_macro.cpp" />
     <ClCompile Include="src\brain_overlords.cpp" />
     <ClCompile Include="src\brain_scouting.cpp" />
+    <ClCompile Include="src\brain_updateharvesters.cpp" />
     <ClCompile Include="src\builder.cpp" />
     <ClCompile Include="src\cache.cpp" />
     <ClCompile Include="src\console.cpp" />

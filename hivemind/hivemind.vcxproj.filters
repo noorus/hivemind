@@ -368,5 +368,8 @@
     <ClCompile Include="src\cache.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\brain_updateharvesters.cpp">
+      <Filter>Source Files\Brain</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

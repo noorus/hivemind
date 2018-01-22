@@ -54,7 +54,7 @@ namespace hivemind {
     for ( auto building : depots_ )
       bot->debug().drawSphere( building->pos, building->radius, color );
     for ( auto building : buildings_ )
-      bot->debug().drawSphere( building.first->pos, building.first->radius, color );
+      bot->debug().drawSphere( building->pos, building->radius, color );
   }
 
   BaseLocation* Base::location() const
@@ -70,14 +70,23 @@ namespace hivemind {
   {
   }
 
+  UnitRef Base::releaseWorker()
+  {
+    if(workers_.empty())
+      return nullptr;
+
+    auto worker = *workers_.begin();
+    workers_.erase(workers_.begin());
+
+    return worker;
+  }
+
   UnitSet Base::releaseWorkers( int count )
   {
     UnitSet set;
     for ( int i = 0; i < count; i++ )
     {
-      /*for ( auto worker : workers_ ) {
-      if (  )
-      }*/
+      set.insert(releaseWorker());
     }
     return set;
   }
@@ -111,9 +120,14 @@ namespace hivemind {
     return queens_;
   }
 
-  const UnitMap & Base::buildings() const
+  const UnitSet & Base::buildings() const
   {
     return buildings_;
+  }
+
+  vector<Base::Refinery> & Base::refineries()
+  {
+    return refineries_;
   }
 
   const UnitSet & Base::larvae() const
@@ -189,6 +203,24 @@ namespace hivemind {
     larvae_.erase( unit );
     queens_.erase( unit );
     buildings_.erase( unit );
+
+    for(auto it = refineries_.begin(); it != refineries_.end(); ++it)
+    {
+      if(it->refinery_ == unit)
+      {
+        for(auto worker : it->workers_)
+        {
+          addWorker(worker);
+        }
+        refineries_.erase(it);
+        break;
+      }
+    }
+
+    for(auto& x : refineries_)
+    {
+      x.workers_.erase(unit);
+    }
   }
 
   void Base::addDepot( UnitRef depot )
@@ -198,7 +230,12 @@ namespace hivemind {
 
   void Base::addBuilding( UnitRef building )
   {
-    buildings_[building] = building->unit_type;
+    buildings_.insert(building);
+
+    if(utils::isRefinery(building))
+    {
+      refineries_.push_back({ building, {} });
+    }
   }
 
   void Base::update( Bot& bot )

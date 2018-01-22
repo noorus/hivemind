@@ -384,4 +384,9 @@ namespace hivemind {
 
   }
 
+  template <class T, class Alloc, class Predicate>
+  void erase_if(std::vector<T, Alloc>& c, Predicate pred)
+  {
+    c.erase(std::remove_if(c.begin(), c.end(), pred), c.end());
+  }
 }

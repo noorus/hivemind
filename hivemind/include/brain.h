@@ -9,6 +9,7 @@
 namespace hivemind {
 
   class Bot;
+  class Base;
 
   namespace Goals {
 
@@ -73,6 +74,9 @@ namespace hivemind {
       virtual void activate() final;
       virtual Status process() final;
       virtual void terminate() final;
+
+      void saturate(Base& base);
+      GameTime lastSaturateTime_;
     };
 
     class Brain_SpreadCreep: public AI::CompositeGoal {

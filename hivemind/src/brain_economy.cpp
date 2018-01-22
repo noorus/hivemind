@@ -8,32 +8,6 @@ namespace hivemind {
 
   namespace Goals {
 
-    /* Brain: Update Harvesters goal */
-
-    Brain_UpdateHarvesters::Brain_UpdateHarvesters( AI::Agent * agent ):
-      AI::CompositeGoal( agent )
-    {
-    }
-
-    void Brain_UpdateHarvesters::activate()
-    {
-      status_ = AI::Goal::Status_Active;
-    }
-
-    AI::Goal::Status Brain_UpdateHarvesters::process()
-    {
-      for ( auto& base : bot_->bases().bases() )
-      {
-        // base.saturation()
-      }
-      return status_;
-    }
-
-    void Brain_UpdateHarvesters::terminate()
-    {
-      status_ = AI::Goal::Status_Inactive;
-    }
-
     /* Brain: Manage Economy goal */
 
     Brain_ManageEconomy::Brain_ManageEconomy( AI::Agent* agent ):
