@@ -290,7 +290,25 @@ namespace hivemind {
     map_.draw();
     baseManager_.draw();
 
+    UnitRef q1 = nullptr;
+    UnitRef q2 = nullptr;
+
     for ( auto unit : observation_->GetUnits() )
+    {
+      if ( utils::isMine( unit ) && unit->unit_type == UNIT_TYPEID::ZERG_QUEEN )
+      {
+        if ( q1 && !q2 )
+          q2 = unit;
+        else
+          q1 = unit;
+      }
+    }
+    if ( q1 && q2 )
+    {
+      debug_.drawLine( q1->pos, q2->pos, Colors::Red );
+    }
+    for ( auto unit : observation_->GetUnits() )
+    {
       if ( unit->is_selected && utils::isMine( unit ) )
       {
         char hex[16];
@@ -301,7 +319,7 @@ namespace hivemind {
           txt.append( GetAbilityText( order.ability_id ) + "\n" );*/
         debug_.drawText( txt, Vector3( unit->pos ), sc2::Colors::Green );
         MapPoint2 coord( unit->pos );
-        auto regIndex = map_.regionMap_[coord.x][coord.y];
+        auto regIndex = map_.closestRegionMap_[coord.x][coord.y];
         string nrg = "region: " + std::to_string( regIndex ) + " - vision: " + std::to_string( regIndex >= 0 ? vision_.regionVision().at( regIndex ).coverage() : 0.0f );
         /*for ( size_t i = 0; i < map_.tempRegionPolygons_.size(); i++ )
         {
@@ -310,9 +328,17 @@ namespace hivemind {
             nrg.append( "inside polygon " + std::to_string( i ) + "\n" );
           }
         }*/
+        if ( q1 && q2 )
+        {
+          auto l0 = Vector2( q1->pos.x, q1->pos.y );
+          auto l1 = Vector2( q2->pos.x, q2->pos.y );
+          auto dist = utils::distanceToLineSegment( l0, l1, Vector3( unit->pos ).to2() );
+          nrg = "dist: " + std::to_string( dist );
+        }
         Vector3 nrgpos( unit->pos.x, unit->pos.y, unit->pos.z + 1.0f );
         debug_.drawText( nrg, nrgpos, sc2::Colors::Teal );
       }
+    }
 
     debug_.send();
   }

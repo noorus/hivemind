@@ -21,6 +21,7 @@ namespace hivemind {
     Real top_;
     Real bottom_;
     bool startLocation_;
+    int region_;
   public:
     BaseLocation( Bot* bot, size_t baseID, const UnitVector& resources );
     int getGroundDistance( const Vector2& pos ) const;

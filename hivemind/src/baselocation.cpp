@@ -56,6 +56,12 @@ namespace hivemind {
       bot_->map().findClosestBuildablePosition( fixpos, sc2::UNIT_TYPEID::ZERG_HATCHERY, false );
       position_ = static_cast<Vector2>( fixpos );
     }
+
+    auto region = bot_->map().region( position_ );
+    if ( !region )
+      HIVE_EXCEPT( "Base location is not inside a region" );
+
+    region_ = region->label_;
   }
 
   int BaseLocation::getGroundDistance( const Vector2 & pos ) const

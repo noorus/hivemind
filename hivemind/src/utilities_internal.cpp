@@ -14,7 +14,26 @@ namespace hivemind {
   namespace utils {
     namespace internal {
 
-      int pointInsidePolyOuter( const Vector2 & pt, const vector<Vector2>& poly )
+      Real pointDistanceToPoly( const Vector2& pt, const vector<Vector2>& poly )
+      {
+        Real bestDist = std::numeric_limits<Real>::max();
+
+        if ( poly.size() < 2 )
+          return bestDist;
+
+        auto previous = poly.back();
+        for ( auto& current : poly )
+        {
+          auto dist = utils::distanceToLineSegment( previous, current, pt );
+          if ( dist < bestDist )
+            bestDist = dist;
+          previous = current;
+        }
+
+        return bestDist;
+      }
+
+      int pointInsidePolyOuter( const Vector2& pt, const vector<Vector2>& poly )
       {
         if ( poly.size() < 3 )
           return 0;

@@ -113,6 +113,24 @@ namespace hivemind {
     stbi_write_png( "debug_map_creep_realtime.png", (int)labels.width(), (int)labels.height(), 3, rgb8.data(), (int)labels.width() * 3 );
   }
 
+  void debugDumpClosestRegions( Array2<int>& regions )
+  {
+    const rgb background = { 0, 0, 0 };
+    const rgb contour = { 255, 255, 255 };
+
+    Array2<rgb> rgb8( regions.width(), regions.height() );
+
+    for ( size_t y = 0; y < regions.height(); y++ )
+      for ( size_t x = 0; x < regions.width(); x++ )
+      {
+        rgb tmp;
+        utils::hsl2rgb( ( (uint16_t)regions[x][y] ) * 120, 230, 200, (uint8_t*)&tmp );
+        rgb8[y][x] = tmp;
+      }
+
+    stbi_write_png( "debug_map_closestregions.png", (int)regions.width(), (int)regions.height(), 3, rgb8.data(), (int)regions.width() * 3 );
+  }
+
   void debugDumpBaseLocations( Array2<uint64_t>& flagmap, vector<UnitVector>& clusters, const GameInfo& info, BaseLocationVector& bases )
   {
     const rgb empty = { 0, 0, 0 };
@@ -280,6 +298,15 @@ namespace hivemind {
 
     Analysis::Map_MakeRegions( polygons, chokepointSides_, flagsMap_, width_, height_, regions_, regionMap_, graphSimplified_ );
 
+    bot_->console().printf( "Map: Caching tile-closest regions..." );
+
+    closestRegionMap_.resize( width_, height_ );
+    closestRegionMap_.reset( -1 );
+
+    Analysis::Map_CacheClosestRegions( regions_, regionMap_, closestRegionMap_ );
+
+    debugDumpClosestRegions( closestRegionMap_ );
+
     bot_->console().printf( "Map: Finding resource clusters..." );
 
     vector<UnitVector> resourceClusters;
@@ -394,7 +421,7 @@ namespace hivemind {
     for ( auto& location : baseLocations_ )
     {
       char msg[64];
-      sprintf_s( msg, 64, "Base location %zd", location.baseID_ );
+      sprintf_s( msg, 64, "Base location %zd (region %d)", location.baseID_, location.region_ );
       bot_->debug().drawText( msg, Vector3( location.position_.x, location.position_.y, maxZ_ ), sc2::Colors::White );
       Real height = heightMap_[math::floor( location.position_.x )][math::floor( location.position_.y )];
       bot_->debug().drawBox(
@@ -514,6 +541,18 @@ namespace hivemind {
         return &creep;
 
     return nullptr;
+  }
+
+  Region* Map::region( size_t x, size_t y )
+  {
+    if ( !isValid( x, y ) )
+      return nullptr;
+
+    auto id = regionMap_[x][y];
+    if ( id < 0 || id >= regions_.size() )
+      return nullptr;
+
+    return regions_[id];
   }
 
   bool Map::updateZergBuildable()

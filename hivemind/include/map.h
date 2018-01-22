@@ -98,6 +98,7 @@ namespace hivemind {
     BaseLocationVector baseLocations_;
     RegionVector regions_;
     Array2<int> regionMap_;
+    Array2<int> closestRegionMap_;
     // Constantly updated throughout game
     Array2<ReservedTile> reservedMap_; //!< Spots that are used up by building footprints
     BuildingReservationMap buildingReservations_; //!< Our own to-build structure footprints
@@ -125,7 +126,7 @@ namespace hivemind {
     bool hasCreep( size_t x, size_t y ) { return ( labeledCreeps_[x][y] > 0 ); }
     bool hasCreep( const Vector2& position ) { return hasCreep( (size_t)position.x, (size_t)position.y ); }
     Creep* creep( size_t x, size_t y );
-    Creep* creep( const Vector2& position ) { return creep( (size_t)position.x, (size_t)position.y ); }
+    inline Creep* creep( const Vector2& position ) { return creep( (size_t)position.x, (size_t)position.y ); }
     bool updateZergBuildable(); // Make sure that creep is up to date first
     bool canZergBuild( UnitTypeID structure, size_t x, size_t y, int padding = 0, bool nearResources = true, bool noMainOverlap = true, bool notNearMain = true, bool notNearRamp = true );
     bool isBuildable( const MapPoint2& position, UnitTypeID structure, bool nearResources = true );
@@ -136,6 +137,14 @@ namespace hivemind {
     BaseLocation* closestLocation( const Vector2& position );
     Vector2 closestByGround( const Vector2& from, const list<Vector2>& to );
     Path shortestScoutPath( const Vector2& start, vector<Vector2>& locations );
+    inline Region* region( int index )
+    {
+      if ( index < 0 )
+        return nullptr;
+      return regions_.at( index );
+    }
+    Region* region( size_t x, size_t y );
+    inline Region* region( const Vector2& position ) { return region( (size_t)position.x, (size_t)position.y ); }
     void reserveFootprint( const Point2DI& position, UnitTypeID type );
     void clearFootprint( const Point2DI& position );
     bool isValid( size_t x, size_t y ) const;

@@ -1088,8 +1088,41 @@ namespace hivemind {
       }
     }
 
+    void Map_CacheClosestRegions( RegionVector& regions, Array2<int>& regionMap, Array2<int>& closest_out )
+    {
+      auto width = closest_out.width();
+      auto height = closest_out.height();
+
+      for ( int x = 0; x < width; x++ )
+        for ( int y = 0; y < height; y++ )
+        {
+          if ( regionMap[x][y] >= 0 )
+            closest_out[x][y] = regionMap[x][y];
+          else
+          {
+            Vector2 point( (Real)x, (Real)y );
+            Region* bestReg = nullptr;
+            Real bestDist = std::numeric_limits<Real>::max();
+            for ( auto region : regions )
+            {
+              auto dist = region->polygon_.distanceTo( point, true );
+              if ( dist < bestDist )
+              {
+                bestDist = dist;
+                bestReg = region;
+              }
+              if ( bestDist == 0.0f )
+                break;
+            }
+            if ( !bestReg )
+              HIVE_EXCEPT( "No closest region found" );
+            closest_out[x][y] = bestReg->label_;
+          }
+        }
+    }
+
     /*
-    * 11) Add tile flags based on processed base locations
+    * xx) Add tile flags based on processed base locations
     **/
     void Map_MarkBaseTiles( Array2<uint64_t>& flags_out, const BaseLocationVector & locations )
     {

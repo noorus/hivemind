@@ -57,6 +57,9 @@ namespace hivemind {
 
     namespace internal {
 
+      // Don't call this; use Polygon::distanceTo() instead.
+      Real pointDistanceToPoly( const Vector2& pt, const vector<Vector2>& poly );
+
       // Don't call this; use Polygon::contains() instead.
       int pointInsidePolyOuter( const Vector2& pt, const vector<Vector2>& poly );
 
@@ -283,6 +286,20 @@ namespace hivemind {
     inline const UnitRef findClosestUnit( const UnitVector& haystack, const Vector2& pos )
     {
       return findClosestPtr( haystack, pos, []( const Unit* unit, const Vector2& b ) { return b.distance(unit->pos); } );
+    }
+
+    inline Real distanceToLineSegment( const Vector2& l0, const Vector2& l1, const Vector2& pt )
+    {
+      auto diff = ( l1 - l0 );
+      auto sqrlen = diff.squaredLength();
+      Real t = 0.0f;
+      if ( sqrlen )
+      {
+        t = ( ( pt.x - l0.x ) * diff.x + ( pt.y - l0.y ) * diff.y ) / sqrlen;
+        t = math::clamp( t, 0.0f, 1.0f );
+      }
+      auto ret = ( pt - ( l0 + t * diff ) );
+      return ret.length();
     }
 
   }

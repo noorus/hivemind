@@ -97,6 +97,29 @@ namespace hivemind {
           return false;
       return ( utils::internal::pointInsidePolyOuter( pt, *this ) > 0 );
     }
+    //! \fn inline Real Polygon::distanceTo( const Vector2& pt, const bool checkInside = true )
+    //! \brief Get the distance from given point to nearest point
+    //!    on an edge segment of this polygon. If checkInside is true,
+    //!    a point on the inside of the polygon will return zero.
+    //! \param  pt Point to get distance to.
+    //! \param  checkInside Whether to check if pt is inside the polygon.
+    //!    Without this the returned distance will always be to the nearest edge.
+    //! \return Distance between pt and the nearest point on this polygon.
+    inline Real distanceTo( const Vector2& pt, const bool checkInside = true )
+    {
+      if ( checkInside && contains( pt ) )
+        return 0.0f;
+
+      Real bestDist = utils::internal::pointDistanceToPoly( pt, *this );
+      for ( auto& hole : holes )
+      {
+        auto dist = utils::internal::pointDistanceToPoly( pt, hole );
+        if ( dist < bestDist )
+          bestDist = dist;
+      }
+
+      return bestDist;
+    }
   };
 
   inline Polygon util_clipperPathToPolygon( const ClipperLib::Path& in )

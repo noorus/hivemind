@@ -38,6 +38,8 @@ namespace hivemind {
 
     void Map_FindResourceClusters( const sc2::ObservationInterface& observation, vector<UnitVector>& clusters_out, size_t minClusterSize = 4, Real maxResourceDistance = 32.0f );
 
+    void Map_CacheClosestRegions( RegionVector& regions, Array2<int>& regionMap, Array2<int>& closest_out );
+
     void Map_MarkBaseTiles( Array2<uint64_t>& flagsmap, const BaseLocationVector& locations );
 
   }
