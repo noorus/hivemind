@@ -60,9 +60,6 @@ namespace hivemind {
   {
   }
 
-  // TODO move somewhere smart
-  static GameTime nextCreepUpdate = 0;
-
   void Bot::initialize( const Options& opts )
   {
     options_ = opts;
@@ -78,8 +75,6 @@ namespace hivemind {
     time_ = 0;
     lastStepTime_ = 0;
 
-    nextCreepUpdate = 0;
-
     observation_ = Observation();
     debug_.setForward( Debug() );
     query_ = Query();
@@ -87,9 +82,21 @@ namespace hivemind {
 
     console_.gameBegin();
 
+    auto& gameInfo = observation_->GetGameInfo();
+    console_.printf( "Map: %s (%dx%d)", gameInfo.map_name.c_str(),
+      gameInfo.width, gameInfo.height );
+
+    std::experimental::filesystem::path mapPath( gameInfo.local_map_path );
+
+    MapData mapData;
+    mapData.filepath = mapPath.string();
+    utils::readAndHashFile( mapData.filepath, mapData.hash );
+
+    console_.printf( "Map: SHA256 %s", utils::hexString( mapData.hash ).c_str() );
+
     messaging_.gameBegin();
 
-    map_.rebuild();
+    map_.rebuild( mapData );
     map_.gameBegin();
 
     workers_.gameBegin();

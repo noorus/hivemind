@@ -133,6 +133,7 @@
     <ClInclude Include="include\brain.h" />
     <ClInclude Include="include\brain_macro.h" />
     <ClInclude Include="include\builder.h" />
+    <ClInclude Include="include\cache.h" />
     <ClInclude Include="include\console.h" />
     <ClInclude Include="include\controllers.h" />
     <ClInclude Include="include\database.h" />
@@ -181,6 +182,7 @@
     <ClCompile Include="src\brain_overlords.cpp" />
     <ClCompile Include="src\brain_scouting.cpp" />
     <ClCompile Include="src\builder.cpp" />
+    <ClCompile Include="src\cache.cpp" />
     <ClCompile Include="src\console.cpp" />
     <ClCompile Include="src\controller.cpp" />
     <ClCompile Include="src\database.cpp" />

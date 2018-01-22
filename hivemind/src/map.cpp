@@ -8,6 +8,7 @@
 #include "database.h"
 #include "blob_algo.h"
 #include "regiongraph.h"
+#include "cache.h"
 
 #pragma warning(disable: 4996)
 #define STB_IMAGE_WRITE_IMPLEMENTATION
@@ -206,9 +207,11 @@ namespace hivemind {
     doc.save();
   }
 
-  void Map::rebuild()
+  void Map::rebuild( const MapData& data )
   {
     bot_->console().printf( "Map: Rebuilding..." );
+
+    info_ = data;
 
     bot_->console().printf( "Map: Clearing distance map cache" );
     distanceMapCache_.clear();
@@ -253,9 +256,11 @@ namespace hivemind {
       delete regptr;
     regions_.clear();
 
-    Analysis::Map_ProcessContours( flagsMap_, labelsMap_, components );
+    Array2<int> componentLabels;
 
-    debugDumpLabels( labelsMap_ );
+    Analysis::Map_ProcessContours( flagsMap_, componentLabels, components );
+
+    debugDumpLabels( componentLabels );
 
     bot_->console().printf( "Map: Generating polygons..." );
 
@@ -273,7 +278,7 @@ namespace hivemind {
 
     Analysis::RegionGraph graph;
     bgi::rtree<BoostSegmentI, bgi::quadratic<16>> rtree;
-    Analysis::Map_MakeVoronoi( info, obstacles_, labelsMap_, graph, rtree );
+    Analysis::Map_MakeVoronoi( info, obstacles_, componentLabels, graph, rtree );
 
     bot_->console().printf( "Map: Pruning Voronoi diagram..." );
 
@@ -304,7 +309,11 @@ namespace hivemind {
     closestRegionMap_.resize( width_, height_ );
     closestRegionMap_.reset( -1 );
 
-    Analysis::Map_CacheClosestRegions( regions_, regionMap_, closestRegionMap_ );
+    if ( !Cache::mapReadIntArray2( data, closestRegionMap_, "regionclosetiles" ) )
+    {
+      Analysis::Map_CacheClosestRegions( regions_, regionMap_, closestRegionMap_ );
+      Cache::mapWriteIntArray2( data, closestRegionMap_, "regionclosetiles" );
+    }
 
     debugDumpClosestRegions( closestRegionMap_ );
 

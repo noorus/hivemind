@@ -2,6 +2,7 @@
 #include "sc2_forward.h"
 #include "hive_math.h"
 #include "database.h"
+#include "exception.h"
 
 namespace hivemind {
 
@@ -21,6 +22,68 @@ namespace hivemind {
       void lockShared() { AcquireSRWLockShared( &mLock ); }
       void unlockShared() { ReleaseSRWLockShared( &mLock ); }
     };
+
+    class FileReader {
+    protected:
+      HANDLE file_;
+      uint64_t size_;
+    public:
+      FileReader( const string& filename ): file_( INVALID_HANDLE_VALUE )
+      {
+        file_ = CreateFileA( filename.c_str(), GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0 );
+        if ( file_ == INVALID_HANDLE_VALUE )
+          HIVE_EXCEPT( "File open failed" );
+
+        DWORD sizeHigh = 0;
+        DWORD sizeLow = GetFileSize( file_, &sizeHigh );
+
+        size_ = ( (uint64_t)sizeHigh << 32 | sizeLow );
+
+        SetFilePointer( file_, 0, NULL, FILE_BEGIN );
+      }
+      inline const uint64_t size() const { return size_; }
+      ~FileReader()
+      {
+        if ( file_ != INVALID_HANDLE_VALUE )
+          CloseHandle( file_ );
+      }
+      void read( void* out, uint32_t length )
+      {
+        DWORD read = 0;
+        if ( ReadFile( file_, out, length, &read, nullptr ) != TRUE || read < length )
+          HIVE_EXCEPT( "File read failed or length mismatch" );
+      }
+    };
+
+    class FileWriter {
+    protected:
+      HANDLE file_;
+    public:
+      FileWriter( const string& filename ): file_( INVALID_HANDLE_VALUE )
+      {
+        file_ = CreateFileA( filename.c_str(), GENERIC_WRITE, FILE_SHARE_WRITE, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0 );
+        if ( file_ == INVALID_HANDLE_VALUE )
+          HIVE_EXCEPT( "File creation failed" );
+      }
+      ~FileWriter()
+      {
+        if ( file_ != INVALID_HANDLE_VALUE )
+          CloseHandle( file_ );
+      }
+      void writeBlob( const void* buffer, uint32_t length )
+      {
+        DWORD written = 0;
+        auto ret = WriteFile( file_, buffer, length, &written, nullptr );
+        if ( !ret || written != length )
+          HIVE_EXCEPT( "Failed to write data" );
+      }
+    };
+
+    inline bool fileExists( const string& path )
+    {
+      DWORD attributes = GetFileAttributesA( path.c_str() );
+      return ( attributes != INVALID_FILE_ATTRIBUTES && !( attributes & FILE_ATTRIBUTE_DIRECTORY ) );
+    }
 
   }
 
@@ -300,6 +363,23 @@ namespace hivemind {
       }
       auto ret = ( pt - ( l0 + t * diff ) );
       return ret.length();
+    }
+
+    inline void readAndHashFile( const string& filename, Sha256& hash )
+    {
+      platform::FileReader reader( filename );
+      auto buffer = malloc( reader.size() );
+      reader.read( buffer, (uint32_t)reader.size() );
+      auto ptr = (uint8_t*)buffer;
+      picosha2::hash256( ptr, ptr + reader.size(), hash, hash + 32 );
+      free( buffer );
+    }
+
+    inline string hexString( const Sha256& hash )
+    {
+      std::ostringstream oss;
+      picosha2::output_hex( hash, hash + 32, oss );
+      return oss.str();
     }
 
   }

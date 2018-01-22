@@ -77,6 +77,11 @@ namespace hivemind {
     Vector2 opennessPoint_;
   };
 
+  struct MapData {
+    string filepath;
+    Sha256 hash;
+  };
+
   class Map {
   public:
     enum ReservedTile: uint8_t {
@@ -90,7 +95,6 @@ namespace hivemind {
     size_t height_; //!< Map height
     Array2<uint64_t> flagsMap_; //!< Static walkable & buildable flags
     Array2<Real> heightMap_; //!< Map heights
-    Array2<int> labelsMap_; //!< Map component labels
     Real maxZ_; //!< Highest terrain Z coordinate in the map
     Analysis::RegionGraph graphSimplified_;
     PolygonComponentVector obstacles_;
@@ -107,6 +111,7 @@ namespace hivemind {
     Array2<int> labeledCreeps_; //!< Contour-traced buildable creeps by label (index)
     CreepVector creeps_;
     vector<MapPoint2> creepTumors_;
+    MapData info_;
   private:
     Bot* bot_;
     uint8_t* contourTraceImageBuffer_;
@@ -121,7 +126,7 @@ namespace hivemind {
   public:
     Map( Bot* bot );
     ~Map();
-    void rebuild();
+    void rebuild( const MapData& info );
     void draw();
     bool updateCreep();
     void gameBegin();

@@ -49,6 +49,8 @@ namespace hivemind {
     BACKSLASH = 92
   };
 
+  using Sha256 = uint8_t[32];
+
   // This is just a quick nagless conversion from 64-bit pointer to 32-bit uint.
   template <typename T>
   constexpr uint32_t id( T* ptr )

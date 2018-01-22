@@ -36,6 +36,7 @@
 #include <cstdint>
 #include <algorithm>
 #include <random>
+#include <filesystem>
 
 #undef min
 #undef max
@@ -60,6 +61,10 @@
 #pragma warning(pop)
 
 #include "external/clipper.hpp"
+#pragma warning(push)
+#pragma warning(disable:4244)
+#include "external/picosha2.h"
+#pragma warning(pop)
 
 #pragma warning(push)
 #pragma warning(disable: 4275 4996)

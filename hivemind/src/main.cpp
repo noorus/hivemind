@@ -4,6 +4,7 @@
 #include "database.h"
 #include "hive_array2.h"
 #include "console.h"
+#include "cache.h"
 
 using sc2::Coordinator;
 
@@ -91,6 +92,8 @@ int main( int argc, char* argv[] )
 
     hivemind::g_Bot = &hivemindBot;
 
+    hivemind::Cache::setBot( hivemind::g_Bot );
+
     hivemind::Database::load( g_CVar_data_path.as_s() );
 
   #if 0
@@ -116,6 +119,8 @@ int main( int argc, char* argv[] )
       g_CVar_screen_width.as_i(),
       g_CVar_screen_height.as_i()
     );
+
+    coordinator.SetUseGeneralizedAbilityId( false );
 
     coordinator.SetParticipants( {
       CreateParticipant( sc2::Zerg, &hivemindBot ),
