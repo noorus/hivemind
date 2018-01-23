@@ -123,6 +123,8 @@ namespace hivemind {
     void setBot( Bot* bot );
     void gameBegin();
     void gameEnd();
+    void print( const char* str );
+    inline void print( const string& str ) { print( str.c_str() ); }
     void printf( const char* str, ... );
     void execute( string commandLine, const bool echo = true );
   };

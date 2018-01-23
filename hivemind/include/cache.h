@@ -15,6 +15,7 @@ namespace hivemind {
     static Bot* bot_;
   public:
     static void setBot( Bot* bot );
+    static bool hasMapCache( const MapData& map, const string& name );
     static bool mapReadIntArray2( const MapData& map, Array2<int>& data, const string& name );
     static void mapWriteIntArray2( const MapData& map, Array2<int>& data, const string& name );
   };

@@ -79,4 +79,6 @@
 # define SAFE_CLOSE_HANDLE(p) {if(p){CloseHandle(p);(p)=NULL;}}
 #endif
 
+#include "hive_config.h"
+
 #include "hive_types.h"

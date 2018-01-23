@@ -23,6 +23,30 @@ namespace hivemind {
       void unlockShared() { ReleaseSRWLockShared( &mLock ); }
     };
 
+    class PerformanceTimer {
+    private:
+      LARGE_INTEGER frequency_;
+      LARGE_INTEGER time_;
+    public:
+      PerformanceTimer()
+      {
+        QueryPerformanceFrequency( &frequency_ );
+      }
+      void start()
+      {
+        QueryPerformanceCounter( &time_ );
+      }
+      double stop()
+      {
+        LARGE_INTEGER newTime;
+        QueryPerformanceCounter( &newTime );
+        auto delta = ( newTime.QuadPart - time_.QuadPart ) * 1000000;
+        delta /= frequency_.QuadPart;
+        double ms = (double)delta / 1000.0;
+        return ms;
+      }
+    };
+
     class FileReader {
     protected:
       HANDLE file_;
@@ -380,6 +404,19 @@ namespace hivemind {
       std::ostringstream oss;
       picosha2::output_hex( hash, hash + 32, oss );
       return oss.str();
+    }
+
+    template <typename T>
+    Color prettyColor( T index, uint16_t seed = 0, uint16_t increment = 120 )
+    {
+      Color color;
+      rgb tmp;
+      index += seed;
+      utils::hsl2rgb( (uint16_t)index * increment, 255, 250, (uint8_t*)&tmp );
+      color.r = tmp.r;
+      color.g = tmp.g;
+      color.b = tmp.b;
+      return color;
     }
 
   }

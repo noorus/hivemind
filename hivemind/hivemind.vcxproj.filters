@@ -252,6 +252,9 @@
     <ClInclude Include="include\cache.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\hive_config.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\stdafx.cpp">
@@ -370,6 +373,9 @@
     </ClCompile>
     <ClCompile Include="src\brain_updateharvesters.cpp">
       <Filter>Source Files\Brain</Filter>
+    </ClCompile>
+    <ClCompile Include="src\debug.cpp">
+      <Filter>Source Files\Utilities</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

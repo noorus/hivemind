@@ -3,12 +3,15 @@
 #include "hive_types.h"
 #include "hive_vector2.h"
 #include "hive_vector3.h"
+#include "hive_array2.h"
+#include "map.h"
 
 namespace hivemind {
 
   class DebugExtended {
   private:
     sc2::DebugInterface* debug_;
+    Point3D mapTileToMarker( const Vector2& v, const Array2<Real>& heightmap, Real offset, Real maxZ );
   public:
     DebugExtended(): debug_( nullptr ) {}
     inline void setForward( sc2::DebugInterface* fwd )
@@ -73,6 +76,20 @@ namespace hivemind {
       debug_->DebugMoveCamera( pos );
     }
     void send() { debug_->SendDebug(); }
+    void drawMapPolygon( Map& map, Polygon& poly, Color color );
+
+  #ifdef HIVE_SUPPORT_MAP_DUMPS
+    void mapDumpBasicMaps( Array2<uint64_t>& flagmap, Array2<Real>& heightmap, const GameInfo& info );
+    void mapDumpLabelMap( Array2<int>& map, bool contoured, const string& name );
+    //! Caution! This is very, VERY slow!
+    void mapDumpBaseLocations( Array2<uint64_t>& flagmap, vector<UnitVector>& clusters, const GameInfo& info, BaseLocationVector& bases );
+    void mapDumpPolygons( size_t width, size_t height, PolygonComponentVector& polys, std::map<Analysis::RegionNodeID, Analysis::ChokeSides>& chokes );
+  #else
+    inline void mapDumpBasicMaps( Array2<uint64_t>& flagmap, Array2<Real>& heightmap, const GameInfo& info ) { /* disabled */ }
+    inline void mapDumpLabelMap( Array2<int>& map, bool contoured, const string& name ) { /* disabled */ }
+    inline void mapDumpBaseLocations( Array2<uint64_t>& flagmap, vector<UnitVector>& clusters, const GameInfo& info, BaseLocationVector& bases ) { /* disabled */ }
+    inline void mapDumpPolygons( size_t width, size_t height, PolygonComponentVector& polys, std::map<Analysis::RegionNodeID, Analysis::ChokeSides>& chokes ) { /* disabled */ }
+  #endif
   };
 
 }

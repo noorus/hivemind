@@ -47,6 +47,12 @@ namespace hivemind {
     bot_ = bot;
   }
 
+  bool Cache::hasMapCache( const MapData& map, const string& name )
+  {
+    auto path = makeCacheFilePath( map.hash, name );
+    return platform::fileExists( path );
+  }
+
   bool Cache::mapReadIntArray2( const MapData& map, Array2<int>& data, const string& name )
   {
     auto reader = openCacheFile( map.hash, name );

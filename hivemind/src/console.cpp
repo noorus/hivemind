@@ -244,6 +244,24 @@ namespace hivemind {
       now.year, now.month, now.day, now.hour, now.minute, now.second );
   }
 
+  void Console::print( const char* str )
+  {
+    auto ticks = bot_->time();
+    auto realTime = utils::ticksToTime( ticks );
+    unsigned int minutes = ( realTime / 60 );
+    unsigned int seconds = ( realTime % 60 );
+
+    char fullbuf[c_sprintfBufferSize + 128];
+    sprintf_s( fullbuf, c_sprintfBufferSize + 128, c_fileLogFormat, ticks, minutes, seconds, str );
+
+    if ( fileOut_ )
+      fileOut_->write( fullbuf );
+    ::printf( fullbuf );
+  #ifdef _DEBUG
+    OutputDebugStringA( fullbuf );
+  #endif
+  }
+
   void Console::printf( const char* str, ... )
   {
     va_list va_alist;
@@ -252,20 +270,7 @@ namespace hivemind {
     _vsnprintf_s( buffer, c_sprintfBufferSize, str, va_alist );
     va_end( va_alist );
 
-    auto ticks = bot_->time();
-    auto realTime = utils::ticksToTime( ticks );
-    unsigned int minutes = ( realTime / 60 );
-    unsigned int seconds = ( realTime % 60 );
-
-    char fullbuf[c_sprintfBufferSize + 128];
-    sprintf_s( fullbuf, c_sprintfBufferSize + 128, c_fileLogFormat, ticks, minutes, seconds, buffer );
-
-    if ( fileOut_ )
-      fileOut_->write( fullbuf );
-    ::printf( fullbuf );
-  #ifdef _DEBUG
-    OutputDebugStringA( fullbuf );
-  #endif
+    print( buffer );
   }
 
   StringVector Console::tokenize( const string& str )

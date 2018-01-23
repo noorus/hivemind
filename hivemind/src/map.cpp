@@ -10,20 +10,22 @@
 #include "regiongraph.h"
 #include "cache.h"
 
-#pragma warning(disable: 4996)
-#define STB_IMAGE_WRITE_IMPLEMENTATION
-#include "external/stb_image_write.h"
-#pragma warning(default: 4996)
-#include "external/simple_svg_1.0.0.hpp"
-
 HIVE_DECLARE_CONVAR( creep_updateinterval, "Delay between map creep spread/buildability updates.", 40 );
 HIVE_DECLARE_CONVAR( analysis_invertwalkable, "Whether to invert the detected walkable area polygons. Try this if terrain analysis fails for a map.", false );
+HIVE_DECLARE_CONVAR( analysis_verbose, "Print verbose status messages on map analysis.", true );
+HIVE_DECLARE_CONVAR( analysis_use_cache, "Whether to cache expensive map analysis data.", true );
+
+#ifdef HIVE_SUPPORT_MAP_DUMPS
+HIVE_DECLARE_CONVAR( analysis_dump_maps, "Dump out images of generated map layers upon analysis.", false );
+#endif
 
 namespace hivemind {
 
   const size_t c_legalActions = 4;
   const int c_actionX[c_legalActions] = { 1, -1, 0, 0 };
   const int c_actionY[c_legalActions] = { 0, 0, 1, -1 };
+
+  const char cClosestRegionTilesCacheName[] = "regionclosetiles";
 
   Map::Map( Bot* bot ): bot_( bot ), width_( 0 ), height_( 0 ), contourTraceImageBuffer_( nullptr )
   {
@@ -38,173 +40,22 @@ namespace hivemind {
       ::free( contourTraceImageBuffer_ );
   }
 
-  void debugDumpMaps( Array2<uint64_t>& flagmap, Array2<Real>& heightmap, const GameInfo& info )
+  template <typename Call>
+  void util_verbosePerfSection( Bot* bot, const string& description, Call c )
   {
-    Array2<uint8_t> height8( info.width, info.height );
-    Array2<uint8_t> build8( info.width, info.height );
-    Array2<uint8_t> path8( info.width, info.height );
-
-    for ( size_t y = 0; y < info.height; y++ )
-      for ( size_t x = 0; x < info.width; x++ )
-      {
-        uint8_t val;
-        val = (uint8_t)( ( ( heightmap[x][y] + 200.0f ) / 400.0f ) * 255.0f );
-        height8[y][x] = val;
-        val = ( flagmap[x][y] & MapFlag_Buildable ) ? 0xFF : 0x00;
-        build8[y][x] = val;
-        val = ( flagmap[x][y] & MapFlag_Walkable ) ? 0xFF : 0x00;
-        path8[y][x] = val;
-      }
-
-    stbi_write_png( "debug_map_height.png", info.width, info.height, 1, height8.data(), info.width );
-    stbi_write_png( "debug_map_buildable.png", info.width, info.height, 1, build8.data(), info.width );
-    stbi_write_png( "debug_map_pathable.png", info.width, info.height, 1, path8.data(), info.width );
-  }
-
-#pragma pack(push, 1)
-  struct rgb {
-    uint8_t r, g, b;
-  };
-#pragma pack(pop)
-
-  void debugDumpLabels( Array2<int>& labels )
-  {
-    const rgb unwalkable = { 0, 0, 0 };
-    const rgb contour = { 255, 255, 255 };
-
-    Array2<rgb> rgb8( labels.width(), labels.height() );
-
-    for ( size_t y = 0; y < labels.height(); y++ )
-      for ( size_t x = 0; x < labels.width(); x++ )
-      {
-        if ( labels[x][y] == -1 )
-          rgb8[y][x] = contour;
-        else if ( labels[x][y] == 0 )
-          rgb8[y][x] = unwalkable;
-        else {
-          rgb tmp;
-          utils::hsl2rgb( ( (uint16_t)labels[x][y] - 1 ) * 120, 230, 200, (uint8_t*)&tmp );
-          rgb8[y][x] = tmp;
-        }
-      }
-
-    stbi_write_png( "debug_map_components.png", (int)labels.width(), (int)labels.height(), 3, rgb8.data(), (int)labels.width() * 3 );
-  }
-
-  void debugDumpCreeps( Array2<int>& labels )
-  {
-    const rgb background = { 0, 0, 0 };
-    const rgb contour = { 255, 255, 255 };
-
-    Array2<rgb> rgb8( labels.width(), labels.height() );
-
-    for ( size_t y = 0; y < labels.height(); y++ )
-      for ( size_t x = 0; x < labels.width(); x++ )
-      {
-        if ( labels[x][y] == -1 )
-          rgb8[y][x] = contour;
-        else if ( labels[x][y] == 0 )
-          rgb8[y][x] = background;
-        else {
-          rgb tmp;
-          utils::hsl2rgb( ( (uint16_t)labels[x][y] - 1 ) * 120, 230, 200, (uint8_t*)&tmp );
-          rgb8[y][x] = tmp;
-        }
-      }
-
-    stbi_write_png( "debug_map_creep_realtime.png", (int)labels.width(), (int)labels.height(), 3, rgb8.data(), (int)labels.width() * 3 );
-  }
-
-  void debugDumpClosestRegions( Array2<int>& regions )
-  {
-    const rgb background = { 0, 0, 0 };
-    const rgb contour = { 255, 255, 255 };
-
-    Array2<rgb> rgb8( regions.width(), regions.height() );
-
-    for ( size_t y = 0; y < regions.height(); y++ )
-      for ( size_t x = 0; x < regions.width(); x++ )
-      {
-        rgb tmp;
-        utils::hsl2rgb( ( (uint16_t)regions[x][y] ) * 120, 230, 200, (uint8_t*)&tmp );
-        rgb8[y][x] = tmp;
-      }
-
-    stbi_write_png( "debug_map_closestregions.png", (int)regions.width(), (int)regions.height(), 3, rgb8.data(), (int)regions.width() * 3 );
-  }
-
-  void debugDumpBaseLocations( Array2<uint64_t>& flagmap, vector<UnitVector>& clusters, const GameInfo& info, BaseLocationVector& bases )
-  {
-    const rgb empty = { 0, 0, 0 };
-    const rgb field = { 132, 47, 132 };
-    const rgb mineral = { 4, 218, 255 };
-    const rgb gas = { 129, 255, 15 };
-    const rgb startloc = { 228, 255, 0 };
-    const rgb startpoint = { 255, 0, 0 };
-
-    Array2<rgb> rgb8( info.width, info.height );
-    rgb8.reset( empty );
-
-    for ( size_t y = 0; y < info.height; y++ )
-      for ( size_t x = 0; x < info.width; x++ )
-      {
-        Vector2 pos( (Real)x, (Real)y );
-        for ( auto& cluster : clusters )
-        {
-          bool gotit = false;
-          if ( flagmap[x][y] & MapFlag_StartLocation )
-          {
-            rgb8[y][x] = startloc;
-            gotit = true;
-          }
-          if ( !gotit )
-            for ( auto unit : cluster )
-              if ( pos.distance( unit->pos ) <= unit->radius )
-              {
-                rgb8[y][x] = ( utils::isMineral( unit ) ? mineral : gas );
-                gotit = true;
-                break;
-              }
-          if ( !gotit && pos.distance( cluster.center() ) <= 14.0f ) // shouldn't be hardcoded
-            rgb8[y][x] = field;
-        }
-      }
-
-    for ( auto& base : bases )
+    if ( !g_CVar_analysis_verbose.as_b() )
     {
-      rgb8[(int)base.position().y][(int)base.position().x] = startpoint;
+      c();
+      return;
     }
-
-    stbi_write_png( "debug_map_bases.png", (int)info.width, (int)info.height, 3, rgb8.data(), (int)info.width * 3 );
-  }
-
-  void dumpPolygons( size_t width, size_t height, PolygonComponentVector& polys, std::map<Analysis::RegionNodeID, Analysis::ChokeSides>& chokes )
-  {
-    svg::Dimensions dim( (double)width * 16.0, (double)height * 16.0 );
-    svg::Document doc( "debug_map_polygons_invert.svg", svg::Layout( dim, svg::Layout::TopLeft ) );
-    for ( auto& poly : polys )
+    else
     {
-      svg::Polygon svgPoly( svg::Stroke( 2.0, svg::Color::Purple ) );
-
-      for ( auto& pt : poly.contour )
-        svgPoly << svg::Point( pt.x * 16.0, pt.y * 16.0 );
-      for ( auto& hole : poly.contour.holes )
-      {
-        svg::Polygon holePoly( svg::Stroke( 2.0, svg::Color::Red ) );
-        for ( auto& pt : hole )
-          holePoly << svg::Point( pt.x * 16.0, pt.y * 16.0 );
-        doc << holePoly;
-      }
-      doc << svgPoly;
+      platform::PerformanceTimer timer;
+      bot->console().printf( "%s...", description.c_str() );
+      timer.start();
+      c();
+      bot->console().printf( "%s... took %.5f ms", description.c_str(), timer.stop() );
     }
-    for ( auto& pair : chokes )
-    {
-      Vector2 p0( pair.second.side1.x, pair.second.side1.y );
-      Vector2 p1( pair.second.side2.x, pair.second.side2.y );
-      svg::Line line( svg::Point( p0.x * 16, p0.y * 16 ), svg::Point( p1.x * 16, p1.y * 16 ), svg::Stroke( 2.0, svg::Color::Cyan ) );
-      doc << line;
-    }
-    doc.save();
   }
 
   void Map::rebuild( const MapData& data )
@@ -213,22 +64,30 @@ namespace hivemind {
 
     info_ = data;
 
-    bot_->console().printf( "Map: Clearing distance map cache" );
+    // These could be different in the future
+    bool readCache = g_CVar_analysis_use_cache.as_b();
+    bool writeCache = g_CVar_analysis_use_cache.as_b();
+
+    bool dumpImages = false;
+  #ifdef HIVE_SUPPORT_MAP_DUMPS
+    dumpImages = g_CVar_analysis_dump_maps.as_b();
+  #endif
+
     distanceMapCache_.clear();
 
     const GameInfo& info = bot_->observation().GetGameInfo();
 
-    Analysis::Map_BuildBasics( bot_->observation(), width_, height_, flagsMap_, heightMap_ );
+    util_verbosePerfSection( bot_, "Map: Extracting walkability- and heightmaps", [&]
+    {
+      Analysis::Map_BuildBasics( bot_->observation(), width_, height_, flagsMap_, heightMap_ );
 
-    for ( auto unit : bot_->observation().GetUnits( Unit::Alliance::Neutral ) )
-      maxZ_ = std::max( unit->pos.z, maxZ_ );
+      for ( auto unit : bot_->observation().GetUnits( Unit::Alliance::Neutral ) )
+        maxZ_ = std::max( unit->pos.z, maxZ_ );
+    } );
 
-    bot_->console().printf( "Map: Width %d, height %d", width_, height_ );
-    bot_->console().printf( "Map: Got build-, walkability- and height map" );
+    if ( dumpImages )
+      bot_->debug().mapDumpBasicMaps( flagsMap_, heightMap_, info );
 
-    debugDumpMaps( flagsMap_, heightMap_, info );
-
-    bot_->console().printf( "Map: Initializing dynamic data" );
     creepMap_.resize( width_, height_ );
     creepMap_.reset( false );
     zergBuildable_.resize( width_, height_ );
@@ -245,8 +104,6 @@ namespace hivemind {
 
     contourTraceImageBuffer_ = ( uint8_t* )::malloc( width_ * height_ );
 
-    bot_->console().printf( "Map: Processing contours..." );
-
     ComponentVector components;
     PolygonComponentVector polygons;
 
@@ -258,110 +115,116 @@ namespace hivemind {
 
     Array2<int> componentLabels;
 
-    Analysis::Map_ProcessContours( flagsMap_, componentLabels, components );
-
-    debugDumpLabels( componentLabels );
-
-    bot_->console().printf( "Map: Generating polygons..." );
-
-    Analysis::Map_ComponentPolygons( components, polygons );
-
-    if ( g_CVar_analysis_invertwalkable.as_b() )
+    util_verbosePerfSection( bot_, "Map: Processing contours", [&]
     {
-      bot_->console().printf( "Map: Inverting walkable polygons to obstacles..." );
-      Analysis::Map_InvertPolygons( polygons, obstacles_, Rect2( info.playable_min, info.playable_max ), Vector2( (Real)info.width, (Real)info.height ) );
-    }
-    else
-      obstacles_ = polygons;
+      Analysis::Map_ProcessContours( flagsMap_, componentLabels, components );
 
-    bot_->console().printf( "Map: Generating Voronoi diagram..." );
+      if ( dumpImages )
+        bot_->debug().mapDumpLabelMap( componentLabels, true, "components" );
+    } );
+
+    // Polygon generation from traced contours ---
+
+    util_verbosePerfSection( bot_, "Map: Generating polygons", [&]
+    {
+      Analysis::Map_ComponentPolygons( components, polygons );
+
+      if ( g_CVar_analysis_invertwalkable.as_b() )
+      {
+        bot_->console().printf( "Map: Inverting walkable polygons to obstacles..." );
+        Analysis::Map_InvertPolygons( polygons, obstacles_, Rect2( info.playable_min, info.playable_max ), Vector2( (Real)info.width, (Real)info.height ) );
+      } else
+        obstacles_ = polygons;
+    } );
+
+    // Voronoi graph generation & pruning from area polygons
 
     Analysis::RegionGraph graph;
     bgi::rtree<BoostSegmentI, bgi::quadratic<16>> rtree;
-    Analysis::Map_MakeVoronoi( info, obstacles_, componentLabels, graph, rtree );
 
-    bot_->console().printf( "Map: Pruning Voronoi diagram..." );
+    util_verbosePerfSection( bot_, "Map: Generating Voronoi diagram", [&]
+    {
+      Analysis::Map_MakeVoronoi( info, obstacles_, componentLabels, graph, rtree );
+      Analysis::Map_PruneVoronoi( graph );
+    } );
 
-    Analysis::Map_PruneVoronoi( graph );
+    // Graph processing ---
 
-    bot_->console().printf( "Map: Detecting nodes..." );
+    util_verbosePerfSection( bot_, "Map: Processing graph", [&]
+    {
+      Analysis::Map_DetectNodes( graph, obstacles_ );
+      Analysis::Map_SimplifyGraph( graph, graphSimplified_ );
+      Analysis::Map_MergeRegionNodes( graphSimplified_ );
+    } );
 
-    Analysis::Map_DetectNodes( graph, obstacles_ );
+    // Region splitting ---
 
-    bot_->console().printf( "Map: Simplifying graph..." );
+    util_verbosePerfSection( bot_, "Map: Splitting region polygons", [&]
+    {
+      Analysis::Map_GetChokepointSides( graphSimplified_, rtree, chokepointSides_ );
 
-    Analysis::Map_SimplifyGraph( graph, graphSimplified_ );
+      if ( dumpImages )
+        bot_->debug().mapDumpPolygons( width_, height_, obstacles_, chokepointSides_ );
 
-    bot_->console().printf( "Map: Merging graph region nodes..." );
+      Analysis::Map_MakeRegions( polygons, chokepointSides_, flagsMap_, width_, height_, regions_, regionMap_, graphSimplified_ );
+    } );
 
-    Analysis::Map_MergeRegionNodes( graphSimplified_ );
-
-    bot_->console().printf( "Map: Expanding chokepoints..." );
-
-    Analysis::Map_GetChokepointSides( graphSimplified_, rtree, chokepointSides_ );
-
-    dumpPolygons( width_, height_, obstacles_, chokepointSides_ );
-
-    Analysis::Map_MakeRegions( polygons, chokepointSides_, flagsMap_, width_, height_, regions_, regionMap_, graphSimplified_ );
-
-    bot_->console().printf( "Map: Caching tile-closest regions..." );
+    // Closest-region tile cache ---
 
     closestRegionMap_.resize( width_, height_ );
     closestRegionMap_.reset( -1 );
 
-    if ( !Cache::mapReadIntArray2( data, closestRegionMap_, "regionclosetiles" ) )
+    bool gotClosestRegionTiles = false;
+    if ( readCache && Cache::hasMapCache( data, cClosestRegionTilesCacheName ) )
     {
-      Analysis::Map_CacheClosestRegions( regions_, regionMap_, closestRegionMap_ );
-      Cache::mapWriteIntArray2( data, closestRegionMap_, "regionclosetiles" );
+      util_verbosePerfSection( bot_, "Map: Loading tile-closest regions (cached)", [&]
+      {
+        if ( Cache::mapReadIntArray2( data, closestRegionMap_, cClosestRegionTilesCacheName ) )
+          gotClosestRegionTiles = true;
+      } );
     }
 
-    debugDumpClosestRegions( closestRegionMap_ );
+    if ( !gotClosestRegionTiles )
+    {
+      util_verbosePerfSection( bot_, "Map: Precalculating tile-closest regions", [&]
+      {
+        Analysis::Map_CacheClosestRegions( regions_, regionMap_, closestRegionMap_ );
+        if ( writeCache )
+          Cache::mapWriteIntArray2( data, closestRegionMap_, cClosestRegionTilesCacheName );
+      } );
+    }
 
-    bot_->console().printf( "Map: Finding resource clusters..." );
+    if ( dumpImages )
+      bot_->debug().mapDumpLabelMap( closestRegionMap_, false, "closest_tiles" );
+
+    // Resource clusters ---
 
     vector<UnitVector> resourceClusters;
 
-    Analysis::Map_FindResourceClusters( bot_->observation(), resourceClusters, 4, 16.0f );
+    util_verbosePerfSection( bot_, "Map: Finding resource clusters", [&]
+    {
+      Analysis::Map_FindResourceClusters( bot_->observation(), resourceClusters, 4, 16.0f );
 
-    updateReservedMap();
+      updateReservedMap();
+    } );
 
-    bot_->console().printf( "Map: Creating base locations..." );
+    // Base locations ---
 
-    baseLocations_.clear();
+    util_verbosePerfSection( bot_, "Map: Creating base locations", [&]
+    {
+      baseLocations_.clear();
 
-    size_t index = 0;
-    for ( auto& cluster : resourceClusters )
-      baseLocations_.emplace_back( bot_, index++, cluster );
+      size_t index = 0;
+      for ( auto& cluster : resourceClusters )
+        baseLocations_.emplace_back( bot_, index++, cluster );
 
-    Analysis::Map_MarkBaseTiles( flagsMap_, baseLocations_ );
+      Analysis::Map_MarkBaseTiles( flagsMap_, baseLocations_ );
 
-    debugDumpBaseLocations( flagsMap_, resourceClusters, info, baseLocations_ );
+      if ( dumpImages )
+        bot_->debug().mapDumpBaseLocations( flagsMap_, resourceClusters, info, baseLocations_ );
+    } );
 
     bot_->console().printf( "Map: Rebuild done" );
-  }
-
-  Point3D util_tileToMarker( const Vector2& v, const Array2<Real>& heightmap, Real offset, Real maxZ )
-  {
-    MapPoint2 tile = MapPoint2( math::floor( v.x ), math::floor( v.y ) );
-    maxZ += offset;
-    Real z = heightmap[tile.x][tile.y] + offset;
-    if ( z > ( maxZ + offset ) )
-      z = ( maxZ + offset );
-    return Point3D( v.x + 0.5f, v.y + 0.5f, z );
-  }
-
-  void Map::drawPoly( DebugExtended& debug, Polygon& poly, sc2::Color color )
-  {
-    auto previous = poly.back();
-    for ( auto& vec : poly )
-    {
-      Point3D p0 = util_tileToMarker( previous, heightMap_, 0.5f, maxZ_ );
-      Point3D p1 = util_tileToMarker( vec, heightMap_, 0.5f, maxZ_ );
-      debug.drawLine( p0, p1, color );
-      bot_->debug().drawSphere( p1, 0.1f, color );
-      // debug.DebugSphereOut( p0, 0.25f, sc2::Colors::Green );
-      previous = vec;
-    }
   }
 
   void Map::draw()
@@ -392,13 +255,7 @@ namespace hivemind {
     size_t i = 0;
     for ( auto& regptr : regions_ )
     {
-      rgb tmp;
-      sc2::Color color;
-      utils::hsl2rgb( (uint16_t)i * 120, 255, 250, (uint8_t*)&tmp );
-      color.r = tmp.r;
-      color.g = tmp.g;
-      color.b = tmp.b;
-      drawPoly( bot_->debug(), regptr->polygon_, color );
+      bot_->debug().drawMapPolygon( *this, regptr->polygon_, utils::prettyColor( i ) );
       i++;
     }
     /*for ( auto& asd : chokepointSides_ )
@@ -407,7 +264,7 @@ namespace hivemind {
       Point3D p1 = util_tileToMarker( asd.second.side2, heightMap_, 0.5f, maxZ_ );
       bot_->debug().drawLine( p0, p1, sc2::Colors::Green );
     }*/
-    for ( auto& node : graphSimplified_.nodes )
+    /*for ( auto& node : graphSimplified_.nodes )
     {
       auto pt = util_tileToMarker( node, heightMap_, 1.0f, maxZ_ );
       bot_->debug().drawSphere( pt, 0.25f, sc2::Colors::Teal );
@@ -422,7 +279,7 @@ namespace hivemind {
         Vector3 p1 = util_tileToMarker( v1, heightMap_, 1.0f, maxZ_ );
         bot_->debug().drawLine( p0, p1, sc2::Colors::Teal );
       }
-    }
+    }*/
     /*for ( auto& cluster : resourceClusters_ )
     {
       for ( auto res : cluster )
