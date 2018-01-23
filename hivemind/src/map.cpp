@@ -28,6 +28,7 @@ namespace hivemind {
   const char cClosestRegionTilesCacheName[] = "regionclosetiles";
   const char cRegionLabelMapCacheName[] = "regionlabels";
   const char cRegionVectorCacheName[] = "regions";
+  const char cFlagsMapCacheName[] = "flagtiles";
 
   Map::Map( Bot* bot ): bot_( bot ), width_( 0 ), height_( 0 ), contourTraceImageBuffer_( nullptr )
   {
@@ -124,6 +125,7 @@ namespace hivemind {
 
     bool gotRegions = false;
     bool gotClosestRegionTiles = false;
+    bool gotFlagsMap = false;
 
     util_verbosePerfSection( bot_, "Map: Processing contours", [&]
     {
@@ -150,6 +152,16 @@ namespace hivemind {
 
       return true;
     } );
+
+    // Try to load flagsmap
+
+    if ( readCache && Cache::hasMapCache( data, cFlagsMapCacheName ) )
+    {
+      gotFlagsMap = util_verbosePerfSection( bot_, "Map: Loading ground flags tilemap (cached)", [&]
+      {
+        return ( Cache::mapReadUint64Array2( data, flagsMap_, cFlagsMapCacheName ) );
+      } );
+    }
 
     // Try to load regions + regionlabelmaps
 
@@ -270,13 +282,18 @@ namespace hivemind {
       for ( auto& cluster : resourceClusters )
         baseLocations_.emplace_back( bot_, index++, cluster );
 
-      Analysis::Map_MarkBaseTiles( flagsMap_, baseLocations_ );
-
-      if ( dumpImages )
-        bot_->debug().mapDumpBaseLocations( flagsMap_, resourceClusters, info, baseLocations_ );
+      if ( !gotFlagsMap )
+      {
+        Analysis::Map_MarkBaseTiles( flagsMap_, baseLocations_ );
+        if ( writeCache )
+          Cache::mapWriteUint64Array2( data, flagsMap_, cFlagsMapCacheName );
+      }
 
       return true;
     } );
+
+    if ( dumpImages )
+      bot_->debug().mapDumpBaseLocations( flagsMap_, resourceClusters, info, baseLocations_ );
 
     bot_->console().printf( "Map: Rebuild done" );
   }

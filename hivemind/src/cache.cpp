@@ -93,6 +93,44 @@ namespace hivemind {
     writer->writeBlob( (const void*)data.data(), size );
   }
 
+  bool Cache::mapReadUint64Array2( const MapData & map, Array2<uint64_t>& data, const string & name )
+  {
+    auto reader = openCacheFile( map.hash, name );
+
+    if ( !reader )
+      return false;
+
+    auto version = reader->readUint32();
+    if ( version != cMapCacheVersion )
+    {
+      bot_->console().printf( "Cache: Error; cache file version mismatch: v%d, expected v%d", version, cMapCacheVersion );
+      return false;
+    }
+
+    auto size = (uint32_t)( data.width() * data.height() * sizeof( uint64_t ) );
+    if ( reader->size() != ( size + sizeof( version ) ) )
+    {
+      bot_->console().printf( "Cache: Error; cache file size mismatch: %d, expected %d bytes", reader->size(), size );
+      return false;
+    }
+
+    reader->read( (void*)data.data(), size );
+    return true;
+  }
+
+  void Cache::mapWriteUint64Array2( const MapData & map, Array2<uint64_t>& data, const string & name )
+  {
+    auto writer = createCacheFile( map.hash, name );
+
+    if ( !writer )
+      HIVE_EXCEPT( "Cache file creation failed" );
+
+    writer->writeUint32( cMapCacheVersion );
+
+    auto size = (uint32_t)( data.width() * data.height() * sizeof( uint64_t ) );
+    writer->writeBlob( (const void*)data.data(), size );
+  }
+
   Polygon unserializePolygon( FileReaderPtr reader )
   {
     Polygon ret;
