@@ -95,9 +95,8 @@ namespace hivemind {
     Array2<uint64_t> flagsMap_; //!< Static walkable & buildable flags
     Array2<Real> heightMap_; //!< Map heights
     Real maxZ_; //!< Highest terrain Z coordinate in the map
-    Analysis::RegionGraph graphSimplified_;
     PolygonComponentVector obstacles_;
-    std::map<Analysis::RegionNodeID, Analysis::ChokeSides> chokepointSides_;
+    Analysis::RegionChokesMap chokepointSides_;
     BaseLocationVector baseLocations_;
     RegionVector regions_;
     Array2<int> regionMap_;

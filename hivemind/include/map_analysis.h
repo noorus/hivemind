@@ -30,12 +30,12 @@ namespace hivemind {
 
     void Map_MergeRegionNodes( RegionGraph& graph );
 
-    void Map_GetChokepointSides( const RegionGraph& graph, const bgi::rtree<BoostSegmentI, bgi::quadratic<16>>& rtree, ChokeSidesMap& chokepointSides );
+    void Map_GetChokepointSides( const RegionGraph& graph, const bgi::rtree<BoostSegmentI, bgi::quadratic<16>>& rtree, RegionChokesMap& chokepointSides );
 
     //! in: polygons, chokesidesmap, flagsmap, width, height, graph
     //! out: regions, regionlabelmap
     void Map_MakeRegions( const PolygonComponentVector& polygons,
-      const ChokeSidesMap& chokepointSides, Array2<uint64_t>& flagsmap, size_t width, size_t height,
+      const RegionChokesMap& chokepointSides, Array2<uint64_t>& flagsmap, size_t width, size_t height,
       RegionVector& regions, Array2<int>& regionLabelMap, const RegionGraph& graph );
 
     void Map_FindResourceClusters( const sc2::ObservationInterface& observation, vector<UnitVector>& clusters_out, size_t minClusterSize = 4, Real maxResourceDistance = 32.0f );

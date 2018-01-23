@@ -845,7 +845,7 @@ namespace hivemind {
     /*
     * 10) Project the chokepoints from the graph
     **/
-    void Map_GetChokepointSides( const RegionGraph& graph, const bgi::rtree<BoostSegmentI, bgi::quadratic<16>>& rtree, std::map<RegionNodeID, ChokeSides>& chokepointSides )
+    void Map_GetChokepointSides( const RegionGraph& graph, const bgi::rtree<BoostSegmentI, bgi::quadratic<16>>& rtree, std::map<RegionNodeID, Chokepoint>& chokepointSides )
     {
       for ( const auto& id : graph.chokeNodes )
       {
@@ -865,7 +865,7 @@ namespace hivemind {
             break;
           }
         }
-        chokepointSides.emplace( id, ChokeSides( side1, side2 ) );
+        chokepointSides.emplace( id, Chokepoint( side1, side2 ) );
       }
     }
 
@@ -923,7 +923,7 @@ namespace hivemind {
       }
     }
 
-    void Map_MakeRegions( const PolygonComponentVector& polygons, const ChokeSidesMap& chokepointSides, Array2<uint64_t>& flagsmap, size_t width, size_t height, RegionVector& regions, Array2<int>& regionLabelMap, const RegionGraph& graph )
+    void Map_MakeRegions( const PolygonComponentVector& polygons, const RegionChokesMap& chokepointSides, Array2<uint64_t>& flagsmap, size_t width, size_t height, RegionVector& regions, Array2<int>& regionLabelMap, const RegionGraph& graph )
     {
       PolygonVector regionPolygons;
 

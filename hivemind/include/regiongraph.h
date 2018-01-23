@@ -11,15 +11,15 @@ namespace hivemind {
 
     using RegionNodeID = size_t;
 
-    struct ChokeSides {
+    struct Chokepoint {
       Vector2 side1;
       Vector2 side2;
-      ChokeSides( Vector2 s1, Vector2 s2 ): side1( s1 ), side2( s2 ) {}
+      Chokepoint( Vector2 s1, Vector2 s2 ): side1( s1 ), side2( s2 ) {}
     };
 
-    using ChokeSidesMap = std::map<RegionNodeID, ChokeSides>;
+    using RegionChokesMap = std::map<RegionNodeID, Chokepoint>;
 
-    using ChokeSidesSet = set<ChokeSides*>;
+    // using ChokeSidesSet = set<Chokepoint*>;
 
     class RegionGraph {
     public:
@@ -41,8 +41,8 @@ namespace hivemind {
 
       std::set<RegionNodeID> regionNodes;
       std::set<RegionNodeID> chokeNodes;
-      std::set<RegionNodeID> gateNodesA;
-      std::set<RegionNodeID> gateNodesB;
+      // std::set<RegionNodeID> gateNodesA;
+      // std::set<RegionNodeID> gateNodesB;
 
       RegionNodeID addNode( const BoostVoronoi::vertex_type* vertex, const Vector2& pos );
       RegionNodeID addNode( const Vector2& pos, const double& minDist );

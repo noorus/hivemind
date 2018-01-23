@@ -139,7 +139,7 @@ namespace hivemind {
         obstacles_ = polygons;
     } );
 
-    // Voronoi graph generation & pruning from area polygons
+    // Voronoi graph generation & pruning ---
 
     Analysis::RegionGraph graph;
     bgi::rtree<BoostSegmentI, bgi::quadratic<16>> rtree;
@@ -152,18 +152,20 @@ namespace hivemind {
 
     // Graph processing ---
 
+    Analysis::RegionGraph simplifiedGraph;
+
     util_verbosePerfSection( bot_, "Map: Processing graph", [&]
     {
       Analysis::Map_DetectNodes( graph, obstacles_ );
-      Analysis::Map_SimplifyGraph( graph, graphSimplified_ );
-      Analysis::Map_MergeRegionNodes( graphSimplified_ );
+      Analysis::Map_SimplifyGraph( graph, simplifiedGraph );
+      Analysis::Map_MergeRegionNodes( simplifiedGraph );
     } );
 
     // Chokepoints ---
 
     util_verbosePerfSection( bot_, "Map: Figuring out chokepoints", [&]
     {
-      Analysis::Map_GetChokepointSides( graphSimplified_, rtree, chokepointSides_ );
+      Analysis::Map_GetChokepointSides( simplifiedGraph, rtree, chokepointSides_ );
     } );
 
     if ( dumpImages )
@@ -187,7 +189,7 @@ namespace hivemind {
     {
       util_verbosePerfSection( bot_, "Map: Splitting region polygons", [&]
       {
-        Analysis::Map_MakeRegions( polygons, chokepointSides_, flagsMap_, width_, height_, regions_, regionMap_, graphSimplified_ );
+        Analysis::Map_MakeRegions( polygons, chokepointSides_, flagsMap_, width_, height_, regions_, regionMap_, simplifiedGraph );
 
         if ( writeCache )
         {
@@ -205,7 +207,7 @@ namespace hivemind {
     bool gotClosestRegionTiles = false;
     if ( readCache && Cache::hasMapCache( data, cClosestRegionTilesCacheName ) )
     {
-      util_verbosePerfSection( bot_, "Map: Loading tile-closest regions (cached)", [&]
+      util_verbosePerfSection( bot_, "Map: Loading closest-region tilemap (cached)", [&]
       {
         if ( Cache::mapReadIntArray2( data, closestRegionMap_, cClosestRegionTilesCacheName ) )
           gotClosestRegionTiles = true;
@@ -214,7 +216,7 @@ namespace hivemind {
 
     if ( !gotClosestRegionTiles )
     {
-      util_verbosePerfSection( bot_, "Map: Precalculating tile-closest regions", [&]
+      util_verbosePerfSection( bot_, "Map: Precalculating closest-region tilemap", [&]
       {
         Analysis::Map_CacheClosestRegions( regions_, regionMap_, closestRegionMap_ );
         if ( writeCache )

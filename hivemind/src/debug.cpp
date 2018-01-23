@@ -140,7 +140,7 @@ namespace hivemind {
     stbi_write_png( "debug_map_bases.png", (int)info.width, (int)info.height, 3, rgb8.data(), (int)info.width * 3 );
   }
 
-  void DebugExtended::mapDumpPolygons( size_t width, size_t height, PolygonComponentVector& polys, std::map<Analysis::RegionNodeID, Analysis::ChokeSides>& chokes )
+  void DebugExtended::mapDumpPolygons( size_t width, size_t height, PolygonComponentVector& polys, Analysis::RegionChokesMap& chokes )
   {
     svg::Dimensions dim( (double)width * 16.0, (double)height * 16.0 );
     svg::Document doc( "debug_map_polygons_invert.svg", svg::Layout( dim, svg::Layout::TopLeft ) );

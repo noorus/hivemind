@@ -83,12 +83,12 @@ namespace hivemind {
     void mapDumpLabelMap( Array2<int>& map, bool contoured, const string& name );
     //! Caution! This is very, VERY slow!
     void mapDumpBaseLocations( Array2<uint64_t>& flagmap, vector<UnitVector>& clusters, const GameInfo& info, BaseLocationVector& bases );
-    void mapDumpPolygons( size_t width, size_t height, PolygonComponentVector& polys, std::map<Analysis::RegionNodeID, Analysis::ChokeSides>& chokes );
+    void mapDumpPolygons( size_t width, size_t height, PolygonComponentVector& polys, Analysis::RegionChokesMap& chokes );
   #else
     inline void mapDumpBasicMaps( Array2<uint64_t>& flagmap, Array2<Real>& heightmap, const GameInfo& info ) { /* disabled */ }
     inline void mapDumpLabelMap( Array2<int>& map, bool contoured, const string& name ) { /* disabled */ }
     inline void mapDumpBaseLocations( Array2<uint64_t>& flagmap, vector<UnitVector>& clusters, const GameInfo& info, BaseLocationVector& bases ) { /* disabled */ }
-    inline void mapDumpPolygons( size_t width, size_t height, PolygonComponentVector& polys, std::map<Analysis::RegionNodeID, Analysis::ChokeSides>& chokes ) { /* disabled */ }
+    inline void mapDumpPolygons( size_t width, size_t height, PolygonComponentVector& polys, Analysis::RegionChokesMap& chokes ) { /* disabled */ }
   #endif
   };
 
