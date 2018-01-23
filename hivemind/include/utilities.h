@@ -77,6 +77,38 @@ namespace hivemind {
         if ( ReadFile( file_, out, length, &read, nullptr ) != TRUE || read < length )
           HIVE_EXCEPT( "File read failed or length mismatch" );
       }
+      uint64_t readUint64()
+      {
+        uint64_t ret;
+        DWORD read = 0;
+        if ( ReadFile( file_, &ret, sizeof( uint64_t ), &read, nullptr ) != TRUE || read < sizeof( uint64_t ) )
+          HIVE_EXCEPT( "File read failed or length mismatch" );
+        return ret;
+      }
+      int readInt()
+      {
+        int ret;
+        DWORD read = 0;
+        if ( ReadFile( file_, &ret, sizeof( int ), &read, nullptr ) != TRUE || read < sizeof( int ) )
+          HIVE_EXCEPT( "File read failed or length mismatch" );
+        return ret;
+      }
+      Real readReal()
+      {
+        Real ret;
+        DWORD read = 0;
+        if ( ReadFile( file_, &ret, sizeof( Real ), &read, nullptr ) != TRUE || read < sizeof( Real ) )
+          HIVE_EXCEPT( "File read failed or length mismatch" );
+        return ret;
+      }
+      Vector2 readVector2()
+      {
+        Real vals[2];
+        DWORD read = 0;
+        if ( ReadFile( file_, vals, sizeof( Real ) * 2, &read, nullptr ) != TRUE || read < ( sizeof( Real ) * 2 ) )
+          HIVE_EXCEPT( "File read failed or length mismatch" );
+        return Vector2( vals[0], vals[1] );
+      }
     };
 
     class FileWriter {
@@ -93,6 +125,27 @@ namespace hivemind {
       {
         if ( file_ != INVALID_HANDLE_VALUE )
           CloseHandle( file_ );
+      }
+      void writeInt( int value )
+      {
+        DWORD written = 0;
+        auto ret = WriteFile( file_, &value, sizeof( int ), &written, nullptr );
+        if ( !ret || written != sizeof( int ) )
+          HIVE_EXCEPT( "Failed to write data" );
+      }
+      void writeUint64( uint64_t value )
+      {
+        DWORD written = 0;
+        auto ret = WriteFile( file_, &value, sizeof( uint64_t ), &written, nullptr );
+        if ( !ret || written != sizeof( uint64_t ) )
+          HIVE_EXCEPT( "Failed to write data" );
+      }
+      void writeReal( Real value )
+      {
+        DWORD written = 0;
+        auto ret = WriteFile( file_, &value, sizeof( Real ), &written, nullptr );
+        if ( !ret || written != sizeof( Real ) )
+          HIVE_EXCEPT( "Failed to write data" );
       }
       void writeBlob( const void* buffer, uint32_t length )
       {

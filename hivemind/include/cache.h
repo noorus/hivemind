@@ -18,6 +18,8 @@ namespace hivemind {
     static bool hasMapCache( const MapData& map, const string& name );
     static bool mapReadIntArray2( const MapData& map, Array2<int>& data, const string& name );
     static void mapWriteIntArray2( const MapData& map, Array2<int>& data, const string& name );
+    static bool mapReadRegionVector( const MapData& map, RegionVector& regions, const string& name );
+    static void mapWriteRegionVector( const MapData& map, RegionVector& regions, const string& name );
   };
 
 }

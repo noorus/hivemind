@@ -21,7 +21,7 @@ namespace hivemind {
     return path;
   }
 
-  using FileReaderPtr = std::unique_ptr<platform::FileReader>;
+  using FileReaderPtr = std::shared_ptr<platform::FileReader>;
 
   FileReaderPtr openCacheFile( const Sha256& hash, const string& name )
   {
@@ -30,16 +30,16 @@ namespace hivemind {
     if ( !platform::fileExists( path ) )
       return FileReaderPtr();
 
-    return std::make_unique<platform::FileReader>( path );
+    return std::make_shared<platform::FileReader>( path );
   }
 
-  using FileWriterPtr = std::unique_ptr<platform::FileWriter>;
+  using FileWriterPtr = std::shared_ptr<platform::FileWriter>;
 
   FileWriterPtr createCacheFile( const Sha256& hash, const string& name )
   {
     auto path = makeCacheFilePath( hash, name );
 
-    return std::make_unique<platform::FileWriter>( path );
+    return std::make_shared<platform::FileWriter>( path );
   }
 
   void Cache::setBot( Bot* bot )
@@ -80,6 +80,68 @@ namespace hivemind {
 
     auto size = (uint32_t)( data.width() * data.height() * sizeof( int ) );
     writer->writeBlob( (const void*)data.data(), size );
+  }
+
+  Polygon unserializePolygon( FileReaderPtr reader )
+  {
+    Polygon ret;
+    size_t size = reader->readUint64();
+    for ( size_t i = 0; i < size; ++i )
+    {
+      ret.push_back( reader->readVector2() );
+    }
+    size_t holeCount = reader->readUint64();
+    for ( size_t j = 0; j < holeCount; j++ )
+      ret.holes.push_back( unserializePolygon( reader ) );
+    return ret;
+  }
+
+  bool Cache::mapReadRegionVector( const MapData& map, RegionVector& regions, const string& name )
+  {
+    auto reader = openCacheFile( map.hash, name );
+
+    if ( !reader )
+      return false;
+
+    size_t size = reader->readUint64();
+    for ( size_t i = 0; i < size; ++i )
+    {
+      auto region = new Region();
+      region->label_ = reader->readInt();
+      region->polygon_ = unserializePolygon( reader );
+      regions.push_back( region );
+    }
+
+    return true;
+  }
+
+  void serializePolygon( Polygon& poly, FileWriterPtr writer )
+  {
+    size_t length = poly.size();
+    writer->writeUint64( length );
+    for ( size_t i = 0; i < length; ++i )
+    {
+      writer->writeReal( poly[i].x );
+      writer->writeReal( poly[i].y );
+    }
+    writer->writeUint64( poly.holes.size() );
+    for ( auto& hole : poly.holes )
+      serializePolygon( hole, writer );
+  }
+
+  void Cache::mapWriteRegionVector( const MapData& map, RegionVector& regions, const string& name )
+  {
+    auto writer = createCacheFile( map.hash, name );
+
+    if ( !writer )
+      HIVE_EXCEPT( "Cache file creation failed" );
+
+    writer->writeUint64( regions.size() );
+    for ( auto region : regions )
+    {
+      writer->writeInt( region->label_ );
+      serializePolygon( region->polygon_, writer );
+    }
   }
 
 }

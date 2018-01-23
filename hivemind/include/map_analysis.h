@@ -32,6 +32,8 @@ namespace hivemind {
 
     void Map_GetChokepointSides( const RegionGraph& graph, const bgi::rtree<BoostSegmentI, bgi::quadratic<16>>& rtree, ChokeSidesMap& chokepointSides );
 
+    //! in: polygons, chokesidesmap, flagsmap, width, height, graph
+    //! out: regions, regionlabelmap
     void Map_MakeRegions( const PolygonComponentVector& polygons,
       const ChokeSidesMap& chokepointSides, Array2<uint64_t>& flagsmap, size_t width, size_t height,
       RegionVector& regions, Array2<int>& regionLabelMap, const RegionGraph& graph );

@@ -70,10 +70,10 @@ namespace hivemind {
   public:
     int label_;
     Polygon polygon_;
-    Analysis::ChokeSidesSet chokepoints_;
+    /*Analysis::ChokeSidesSet chokepoints_;
     RegionSet reachableRegions_;
     Real opennessDistance_;
-    Vector2 opennessPoint_;
+    Vector2 opennessPoint_;*/
   };
 
   struct MapData {

@@ -26,6 +26,8 @@ namespace hivemind {
   const int c_actionY[c_legalActions] = { 0, 0, 1, -1 };
 
   const char cClosestRegionTilesCacheName[] = "regionclosetiles";
+  const char cRegionLabelMapCacheName[] = "regionlabels";
+  const char cRegionVectorCacheName[] = "regions";
 
   Map::Map( Bot* bot ): bot_( bot ), width_( 0 ), height_( 0 ), contourTraceImageBuffer_( nullptr )
   {
@@ -157,17 +159,43 @@ namespace hivemind {
       Analysis::Map_MergeRegionNodes( graphSimplified_ );
     } );
 
-    // Region splitting ---
+    // Chokepoints ---
 
-    util_verbosePerfSection( bot_, "Map: Splitting region polygons", [&]
+    util_verbosePerfSection( bot_, "Map: Figuring out chokepoints", [&]
     {
       Analysis::Map_GetChokepointSides( graphSimplified_, rtree, chokepointSides_ );
-
-      if ( dumpImages )
-        bot_->debug().mapDumpPolygons( width_, height_, obstacles_, chokepointSides_ );
-
-      Analysis::Map_MakeRegions( polygons, chokepointSides_, flagsMap_, width_, height_, regions_, regionMap_, graphSimplified_ );
     } );
+
+    if ( dumpImages )
+      bot_->debug().mapDumpPolygons( width_, height_, obstacles_, chokepointSides_ );
+
+    // Region splitting ---
+
+    bool gotRegions = false;
+    if ( readCache && Cache::hasMapCache( data, cRegionVectorCacheName ) && Cache::hasMapCache( data, cRegionLabelMapCacheName ) )
+    {
+      assert( regions_.empty() );
+      util_verbosePerfSection( bot_, "Map: Loading regions (cached)", [&]
+      {
+        if ( Cache::mapReadRegionVector( data, regions_, cRegionVectorCacheName )
+          && Cache::mapReadIntArray2( data, regionMap_, cRegionLabelMapCacheName) )
+          gotRegions = true;
+      } );
+    }
+
+    if ( !gotRegions )
+    {
+      util_verbosePerfSection( bot_, "Map: Splitting region polygons", [&]
+      {
+        Analysis::Map_MakeRegions( polygons, chokepointSides_, flagsMap_, width_, height_, regions_, regionMap_, graphSimplified_ );
+
+        if ( writeCache )
+        {
+          Cache::mapWriteRegionVector( data, regions_, cRegionVectorCacheName );
+          Cache::mapWriteIntArray2( data, regionMap_, cRegionLabelMapCacheName );
+        }
+      } );
+    }
 
     // Closest-region tile cache ---
 
