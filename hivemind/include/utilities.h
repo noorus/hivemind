@@ -459,6 +459,29 @@ namespace hivemind {
       return oss.str();
     }
 
+    inline bool hex2bin( const char* src, uint8_t* target )
+    {
+      auto char2int = []( char input ) -> int {
+        if ( input >= '0' && input <= '9' )
+          return input - '0';
+        if ( input >= 'A' && input <= 'F' )
+          return input - 'A' + 10;
+        if ( input >= 'a' && input <= 'f' )
+          return input - 'a' + 10;
+        return -1;
+      };
+      while ( *src && src[1] )
+      {
+        auto first = char2int( *src );
+        auto second = char2int( src[1] );
+        if ( first == -1 || second == -1 )
+          return false;
+        *( target++ ) = first * 16 + second;
+        src += 2;
+      }
+      return true;
+    }
+
     template <typename T>
     Color prettyColor( T index, uint16_t seed = 0, uint16_t increment = 120 )
     {

@@ -3,6 +3,7 @@
 #include "utilities.h"
 #include "database.h"
 #include "controllers.h"
+#include "utilities.h"
 
 namespace hivemind {
 
@@ -13,6 +14,7 @@ namespace hivemind {
 
   HIVE_DECLARE_CONVAR_WITH_CB( cheat_godmode, "Cheat: Invulnerability.", false, callbackCVARGodmode );
   HIVE_DECLARE_CONVAR_WITH_CB( cheat_ignorecost, "Cheat: Ignore all resource cost checks.", false, callbackCVARCostIgnore );
+  HIVE_DECLARE_CONVAR( map_always_hash, "Always hash the map file to obtain an identifier instead of recognizing Battle.net cache files.", false );
 
   bool callbackCVARGodmode( ConVar* variable, ConVar::Value oldValue )
   {
@@ -75,6 +77,9 @@ namespace hivemind {
     time_ = 0;
     lastStepTime_ = 0;
 
+    platform::PerformanceTimer timer;
+    timer.start();
+
     observation_ = Observation();
     debug_.setForward( Debug() );
     query_ = Query();
@@ -90,9 +95,23 @@ namespace hivemind {
 
     MapData mapData;
     mapData.filepath = mapPath.string();
-    utils::readAndHashFile( mapData.filepath, mapData.hash );
 
-    console_.printf( "Map: SHA256 %s", utils::hexString( mapData.hash ).c_str() );
+    bool gotHash = false;
+    if ( !g_CVar_map_always_hash.as_b()
+      && mapPath.stem().string().length() == 64
+      && boost::iequals( mapPath.extension().string(), ".s2ma" ) )
+    {
+      if ( utils::hex2bin( mapPath.stem().string().c_str(), mapData.hash ) )
+      {
+        console_.printf( "Map: Assuming hash identifier from filename" );
+        gotHash = true;
+      }
+    }
+
+    if ( !gotHash )
+      utils::readAndHashFile( mapData.filepath, mapData.hash );
+
+    console_.printf( "Map: Hash %s", utils::hexString( mapData.hash ).c_str() );
 
     messaging_.gameBegin();
 
@@ -114,6 +133,8 @@ namespace hivemind {
 
     builder_.gameBegin();
     trainer_.gameBegin();
+
+    console_.printf( "AI initialization took %.5fms", timer.stop() );
 
     if ( g_CVar_cheat_godmode.as_b() )
       enableGodmodeCheat();
