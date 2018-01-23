@@ -19,18 +19,22 @@ namespace hivemind {
 
       struct UnitStats
       {
-        int unitCount;
+        UnitSet units;
         int inProgressCount;
 
         explicit UnitStats():
-          unitCount(0),
           inProgressCount(0)
         {
         }
 
         int futureCount() const
         {
-          return unitCount + inProgressCount;
+          return static_cast<int>(units.size()) + inProgressCount;
+        }
+
+        int unitCount() const
+        {
+          return static_cast<int>(units.size());
         }
       };
 

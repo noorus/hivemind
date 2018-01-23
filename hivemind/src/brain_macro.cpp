@@ -15,10 +15,6 @@ namespace hivemind {
       AI::CompositeGoal( agent )
     {
       bot_->messaging().listen( Listen_Global, this );
-
-      // Hack for startup buildings.
-      auto& hatcheryState = unitStats_[sc2::UNIT_TYPEID::ZERG_HATCHERY];
-      hatcheryState.unitCount = 1;
     }
 
     Brain_Macro::~Brain_Macro()
@@ -40,16 +36,23 @@ namespace hivemind {
         if ( !utils::isMine( unit ) )
           return;
 
-        if( utils::isStructure(unit) && msg.code == M_Global_UnitCreated)
+        if(utils::isStructure(unit) && msg.code == M_Global_UnitCreated && unit->build_progress < 1.0f)
+        {
+          // Store buildings only after they are complete.
           return;
+        }
 
         auto& stats = unitStats_[unit->unit_type];
-        ++stats.unitCount;
 
-        if(stats.inProgressCount > 0) // TODO: this is a hack for the startup units.
+        if(stats.units.count(unit) == 0) // This protects from drone getting created after exiting extractor.
         {
-          --stats.inProgressCount; // TODO: Human commands mess this up.
+          if(stats.inProgressCount > 0) // TODO: this is a hack for the startup units, but it also protects from units created by human controller.
+          {
+            --stats.inProgressCount;
+          }
         }
+
+        stats.units.insert(unit);
       }
       else if(msg.code == M_Global_UnitDestroyed)
       {
@@ -58,7 +61,7 @@ namespace hivemind {
           return;
 
         auto& stats = unitStats_[unit->unit_type];
-        --stats.unitCount;
+        stats.units.erase(unit);
         // TODO: destroyed building might have been in progress.
         // TODO: zerg egg might have been in progress.
         // TODO: destroyed building might have had other units in progress.
@@ -100,16 +103,17 @@ namespace hivemind {
       auto& extractorState = unitStats_[sc2::UNIT_TYPEID::ZERG_EXTRACTOR];
       auto& hatcheryState = unitStats_[sc2::UNIT_TYPEID::ZERG_HATCHERY];
       auto& droneState = unitStats_[sc2::UNIT_TYPEID::ZERG_DRONE];
+      auto& queenState = unitStats_[sc2::UNIT_TYPEID::ZERG_QUEEN];
 
       int futureSupplyLimit = std::min(200, supplyLimit + overlordState.inProgressCount * 8);
       int overlordNeed = (usedSupply >= futureSupplyLimit - 1 ? 1 : 0);
 
       int scoutDroneCount = 1;
       int futureDroneCount = droneState.futureCount();
-      int droneNeed = futureDroneCount < hatcheryState.unitCount * (16 + 2 * 3) + 1 + scoutDroneCount;
+      int droneNeed = futureDroneCount < hatcheryState.unitCount() * (16 + 2 * 3) + scoutDroneCount;
 
       int futureExtractorCount = extractorState.futureCount();
-      int extractorNeed = futureExtractorCount < hatcheryState.unitCount * 2 && futureDroneCount > hatcheryState.unitCount * 16 + futureExtractorCount * 3 + 1 + scoutDroneCount;
+      int extractorNeed = futureExtractorCount < hatcheryState.unitCount() * 2 && futureDroneCount > hatcheryState.unitCount() * 16 + futureExtractorCount * 3 + 1 + scoutDroneCount;
 
       int poolNeed = poolState.futureCount() == 0 && futureDroneCount >= 16 + 1 + scoutDroneCount;
 
@@ -176,7 +180,7 @@ namespace hivemind {
           }
         }
       }
-      else if(minerals >= 50 && usedSupply < supplyLimit && poolState.unitCount > 0)
+      else if(minerals >= 50 && usedSupply < supplyLimit && poolState.unitCount() > 0)
       {
         BuildProjectID id;
 
