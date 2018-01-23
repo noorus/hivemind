@@ -151,44 +151,7 @@ namespace hivemind {
       return true;
     } );
 
-    // Voronoi graph generation & pruning ---
-
-    Analysis::RegionGraph graph;
-    bgi::rtree<BoostSegmentI, bgi::quadratic<16>> rtree;
-
-    util_verbosePerfSection( bot_, "Map: Generating Voronoi diagram", [&]
-    {
-      Analysis::Map_MakeVoronoi( info, obstacles_, componentLabels, graph, rtree );
-      Analysis::Map_PruneVoronoi( graph );
-      return true;
-    } );
-
-    // Graph processing ---
-
-    Analysis::RegionGraph simplifiedGraph;
-
-    util_verbosePerfSection( bot_, "Map: Processing graph", [&]
-    {
-      Analysis::Map_DetectNodes( graph, obstacles_ );
-      Analysis::Map_SimplifyGraph( graph, simplifiedGraph );
-      Analysis::Map_MergeRegionNodes( simplifiedGraph );
-      return true;
-    } );
-
-    // Chokepoints ---
-
-    Analysis::RegionChokesMap tempChokeSides;
-
-    util_verbosePerfSection( bot_, "Map: Figuring out chokepoints", [&]
-    {
-      Analysis::Map_GetChokepointSides( simplifiedGraph, rtree, tempChokeSides );
-      return true;
-    } );
-
-    if ( dumpImages )
-      bot_->debug().mapDumpPolygons( width_, height_, obstacles_, tempChokeSides );
-
-    // Region splitting ---
+    // Try to load regions + regionlabelmaps
 
     if ( readCache && Cache::hasMapCache( data, cRegionVectorCacheName ) && Cache::hasMapCache( data, cRegionLabelMapCacheName ) )
     {
@@ -200,8 +163,48 @@ namespace hivemind {
       } );
     }
 
+    // All of the stuff inside here is only needed if we couldn't load complete regions from the cache.
     if ( !gotRegions )
     {
+      // Voronoi graph generation & pruning ---
+
+      Analysis::RegionGraph graph;
+      bgi::rtree<BoostSegmentI, bgi::quadratic<16>> rtree;
+
+      util_verbosePerfSection( bot_, "Map: Generating Voronoi diagram", [&]
+      {
+        Analysis::Map_MakeVoronoi( info, obstacles_, componentLabels, graph, rtree );
+        Analysis::Map_PruneVoronoi( graph );
+        return true;
+      } );
+
+      // Graph processing ---
+
+      Analysis::RegionGraph simplifiedGraph;
+
+      util_verbosePerfSection( bot_, "Map: Processing graph", [&]
+      {
+        Analysis::Map_DetectNodes( graph, obstacles_ );
+        Analysis::Map_SimplifyGraph( graph, simplifiedGraph );
+        Analysis::Map_MergeRegionNodes( simplifiedGraph );
+        return true;
+      } );
+
+      // Chokepoints ---
+
+      Analysis::RegionChokesMap tempChokeSides;
+
+      util_verbosePerfSection( bot_, "Map: Figuring out chokepoints", [&]
+      {
+        Analysis::Map_GetChokepointSides( simplifiedGraph, rtree, tempChokeSides );
+        return true;
+      } );
+
+      if ( dumpImages )
+        bot_->debug().mapDumpPolygons( width_, height_, obstacles_, tempChokeSides );
+
+      // Region splitting ---
+
       util_verbosePerfSection( bot_, "Map: Splitting region polygons", [&]
       {
         Analysis::Map_MakeRegions( polygons, tempChokeSides, flagsMap_, width_, height_, regions_, regionMap_, simplifiedGraph );
