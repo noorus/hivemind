@@ -4,13 +4,15 @@
 #include "bot.h"
 #include "intelligence.h"
 #include "database.h"
-#include "..\include\cache.h"
+#include "cache.h"
 
 namespace hivemind {
 
   Bot* Cache::bot_ = nullptr;
 
   HIVE_DECLARE_CONVAR( cache_path, "Path to a directory where the bot can cache stuff.", R"(..\cache)" );
+
+  const uint32_t cMapCacheVersion = 1;
 
   string makeCacheFilePath( const Sha256& hash, const string& name )
   {
@@ -60,10 +62,17 @@ namespace hivemind {
     if ( !reader )
       return false;
 
-    auto size = (uint32_t)( data.width() * data.height() * sizeof( int ) );
-    if ( reader->size() != size )
+    auto version = reader->readUint32();
+    if ( version != cMapCacheVersion )
     {
-      bot_->console().printf( "Cache: Error; Cache file size mismatch: %d, expected %d bytes", reader->size(), size );
+      bot_->console().printf( "Cache: Error; cache file version mismatch: v%d, expected v%d", version, cMapCacheVersion );
+      return false;
+    }
+
+    auto size = (uint32_t)( data.width() * data.height() * sizeof( int ) );
+    if ( reader->size() != ( size + sizeof( version ) ) )
+    {
+      bot_->console().printf( "Cache: Error; cache file size mismatch: %d, expected %d bytes", reader->size(), size );
       return false;
     }
 
@@ -77,6 +86,8 @@ namespace hivemind {
 
     if ( !writer )
       HIVE_EXCEPT( "Cache file creation failed" );
+
+    writer->writeUint32( cMapCacheVersion );
 
     auto size = (uint32_t)( data.width() * data.height() * sizeof( int ) );
     writer->writeBlob( (const void*)data.data(), size );
@@ -102,6 +113,13 @@ namespace hivemind {
 
     if ( !reader )
       return false;
+
+    auto version = reader->readUint32();
+    if ( version != cMapCacheVersion )
+    {
+      bot_->console().printf( "Cache: Error; Cache file version mismatch: v%d, expected v%d", version, cMapCacheVersion );
+      return false;
+    }
 
     size_t size = reader->readUint64();
     for ( size_t i = 0; i < size; ++i )
@@ -135,6 +153,8 @@ namespace hivemind {
 
     if ( !writer )
       HIVE_EXCEPT( "Cache file creation failed" );
+
+    writer->writeUint32( cMapCacheVersion );
 
     writer->writeUint64( regions.size() );
     for ( auto region : regions )

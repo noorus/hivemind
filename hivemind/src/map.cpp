@@ -43,20 +43,23 @@ namespace hivemind {
   }
 
   template <typename Call>
-  void util_verbosePerfSection( Bot* bot, const string& description, Call c )
+  bool util_verbosePerfSection( Bot* bot, const string& description, Call c )
   {
     if ( !g_CVar_analysis_verbose.as_b() )
     {
-      c();
-      return;
+      return c();
     }
     else
     {
       platform::PerformanceTimer timer;
       bot->console().printf( "%s...", description.c_str() );
       timer.start();
-      c();
-      bot->console().printf( "%s... took %.5f ms", description.c_str(), timer.stop() );
+      bool ret = c();
+      if ( ret )
+        bot->console().printf( "%s... took %.5f ms", description.c_str(), timer.stop() );
+      else
+        bot->console().printf( "%s... failed", description.c_str() );
+      return ret;
     }
   }
 
@@ -85,6 +88,8 @@ namespace hivemind {
 
       for ( auto unit : bot_->observation().GetUnits( Unit::Alliance::Neutral ) )
         maxZ_ = std::max( unit->pos.z, maxZ_ );
+
+      return true;
     } );
 
     if ( dumpImages )
@@ -117,12 +122,17 @@ namespace hivemind {
 
     Array2<int> componentLabels;
 
+    bool gotRegions = false;
+    bool gotClosestRegionTiles = false;
+
     util_verbosePerfSection( bot_, "Map: Processing contours", [&]
     {
       Analysis::Map_ProcessContours( flagsMap_, componentLabels, components );
 
       if ( dumpImages )
         bot_->debug().mapDumpLabelMap( componentLabels, true, "components" );
+
+      return true;
     } );
 
     // Polygon generation from traced contours ---
@@ -137,6 +147,8 @@ namespace hivemind {
         Analysis::Map_InvertPolygons( polygons, obstacles_, Rect2( info.playable_min, info.playable_max ), Vector2( (Real)info.width, (Real)info.height ) );
       } else
         obstacles_ = polygons;
+
+      return true;
     } );
 
     // Voronoi graph generation & pruning ---
@@ -148,6 +160,7 @@ namespace hivemind {
     {
       Analysis::Map_MakeVoronoi( info, obstacles_, componentLabels, graph, rtree );
       Analysis::Map_PruneVoronoi( graph );
+      return true;
     } );
 
     // Graph processing ---
@@ -159,29 +172,31 @@ namespace hivemind {
       Analysis::Map_DetectNodes( graph, obstacles_ );
       Analysis::Map_SimplifyGraph( graph, simplifiedGraph );
       Analysis::Map_MergeRegionNodes( simplifiedGraph );
+      return true;
     } );
 
     // Chokepoints ---
 
+    Analysis::RegionChokesMap tempChokeSides;
+
     util_verbosePerfSection( bot_, "Map: Figuring out chokepoints", [&]
     {
-      Analysis::Map_GetChokepointSides( simplifiedGraph, rtree, chokepointSides_ );
+      Analysis::Map_GetChokepointSides( simplifiedGraph, rtree, tempChokeSides );
+      return true;
     } );
 
     if ( dumpImages )
-      bot_->debug().mapDumpPolygons( width_, height_, obstacles_, chokepointSides_ );
+      bot_->debug().mapDumpPolygons( width_, height_, obstacles_, tempChokeSides );
 
     // Region splitting ---
 
-    bool gotRegions = false;
     if ( readCache && Cache::hasMapCache( data, cRegionVectorCacheName ) && Cache::hasMapCache( data, cRegionLabelMapCacheName ) )
     {
       assert( regions_.empty() );
-      util_verbosePerfSection( bot_, "Map: Loading regions (cached)", [&]
+      gotRegions = util_verbosePerfSection( bot_, "Map: Loading regions (cached)", [&]
       {
-        if ( Cache::mapReadRegionVector( data, regions_, cRegionVectorCacheName )
-          && Cache::mapReadIntArray2( data, regionMap_, cRegionLabelMapCacheName) )
-          gotRegions = true;
+        return ( Cache::mapReadRegionVector( data, regions_, cRegionVectorCacheName )
+          && Cache::mapReadIntArray2( data, regionMap_, cRegionLabelMapCacheName ) );
       } );
     }
 
@@ -189,13 +204,15 @@ namespace hivemind {
     {
       util_verbosePerfSection( bot_, "Map: Splitting region polygons", [&]
       {
-        Analysis::Map_MakeRegions( polygons, chokepointSides_, flagsMap_, width_, height_, regions_, regionMap_, simplifiedGraph );
+        Analysis::Map_MakeRegions( polygons, tempChokeSides, flagsMap_, width_, height_, regions_, regionMap_, simplifiedGraph );
 
         if ( writeCache )
         {
           Cache::mapWriteRegionVector( data, regions_, cRegionVectorCacheName );
           Cache::mapWriteIntArray2( data, regionMap_, cRegionLabelMapCacheName );
         }
+
+        return true;
       } );
     }
 
@@ -204,13 +221,11 @@ namespace hivemind {
     closestRegionMap_.resize( width_, height_ );
     closestRegionMap_.reset( -1 );
 
-    bool gotClosestRegionTiles = false;
     if ( readCache && Cache::hasMapCache( data, cClosestRegionTilesCacheName ) )
     {
-      util_verbosePerfSection( bot_, "Map: Loading closest-region tilemap (cached)", [&]
+      gotClosestRegionTiles = util_verbosePerfSection( bot_, "Map: Loading closest-region tilemap (cached)", [&]
       {
-        if ( Cache::mapReadIntArray2( data, closestRegionMap_, cClosestRegionTilesCacheName ) )
-          gotClosestRegionTiles = true;
+        return ( Cache::mapReadIntArray2( data, closestRegionMap_, cClosestRegionTilesCacheName ) );
       } );
     }
 
@@ -221,6 +236,8 @@ namespace hivemind {
         Analysis::Map_CacheClosestRegions( regions_, regionMap_, closestRegionMap_ );
         if ( writeCache )
           Cache::mapWriteIntArray2( data, closestRegionMap_, cClosestRegionTilesCacheName );
+
+        return true;
       } );
     }
 
@@ -236,6 +253,8 @@ namespace hivemind {
       Analysis::Map_FindResourceClusters( bot_->observation(), resourceClusters, 4, 16.0f );
 
       updateReservedMap();
+
+      return true;
     } );
 
     // Base locations ---
@@ -252,6 +271,8 @@ namespace hivemind {
 
       if ( dumpImages )
         bot_->debug().mapDumpBaseLocations( flagsMap_, resourceClusters, info, baseLocations_ );
+
+      return true;
     } );
 
     bot_->console().printf( "Map: Rebuild done" );

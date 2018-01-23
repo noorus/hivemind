@@ -4,6 +4,7 @@
 #include "hive_array2.h"
 #include "hive_polygon.h"
 #include "hive_geometry.h"
+#include "chokepoint.h"
 
 namespace hivemind {
 
@@ -11,15 +12,7 @@ namespace hivemind {
 
     using RegionNodeID = size_t;
 
-    struct Chokepoint {
-      Vector2 side1;
-      Vector2 side2;
-      Chokepoint( Vector2 s1, Vector2 s2 ): side1( s1 ), side2( s2 ) {}
-    };
-
     using RegionChokesMap = std::map<RegionNodeID, Chokepoint>;
-
-    // using ChokeSidesSet = set<Chokepoint*>;
 
     class RegionGraph {
     public:

@@ -255,6 +255,9 @@
     <ClInclude Include="include\hive_config.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\chokepoint.h">
+      <Filter>Header Files\Map</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\stdafx.cpp">

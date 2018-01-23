@@ -96,7 +96,6 @@ namespace hivemind {
     Array2<Real> heightMap_; //!< Map heights
     Real maxZ_; //!< Highest terrain Z coordinate in the map
     PolygonComponentVector obstacles_;
-    Analysis::RegionChokesMap chokepointSides_;
     BaseLocationVector baseLocations_;
     RegionVector regions_;
     Array2<int> regionMap_;

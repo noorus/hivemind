@@ -79,7 +79,7 @@ namespace hivemind {
       if ( lastTime <= bot_->time() )
       {
         lastTime = bot_->time() + 1000;
-        auto& chokes = bot_->map().chokepointSides_;
+        /*auto& chokes = bot_->map().chokepointSides_;
         for ( auto overlord : overlords_ )
         {
           auto it = chokes.cbegin();
@@ -89,7 +89,7 @@ namespace hivemind {
 
           auto midpoint = choke.side1 + ( ( choke.side1 - choke.side2 ) * 0.5f );
           Overlord( overlord ).move( midpoint );
-        }
+        }*/
       }
       return status_;
     }
