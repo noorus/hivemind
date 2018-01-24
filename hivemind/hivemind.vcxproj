@@ -71,6 +71,9 @@
       <AdditionalOptions>/ignore:4099 /ignore:4217 %(AdditionalOptions)</AdditionalOptions>
       <IgnoreSpecificDefaultLibraries>msvcrt</IgnoreSpecificDefaultLibraries>
     </Link>
+    <Manifest>
+      <AdditionalManifestFiles>hivemind.manifest</AdditionalManifestFiles>
+    </Manifest>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -97,6 +100,9 @@
       <AdditionalDependencies>winmm.lib;imm32.lib;version.lib;civetweb.lib;libprotobuf.lib;sc2lib.lib;sc2api.lib;sc2protocol.lib;sc2renderer.lib;sc2utils.lib;jsoncpp.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalOptions>/ignore:4099 /ignore:4217 %(AdditionalOptions)</AdditionalOptions>
     </Link>
+    <Manifest>
+      <AdditionalManifestFiles>hivemind.manifest</AdditionalManifestFiles>
+    </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\SDK\s2client-api\include\sc2api\sc2_action.h" />
@@ -200,6 +206,7 @@
     <ClCompile Include="src\map.cpp" />
     <ClCompile Include="src\map_analysis.cpp" />
     <ClCompile Include="src\messaging.cpp" />
+    <ClCompile Include="src\platform_windows.cpp" />
     <ClCompile Include="src\player.cpp" />
     <ClCompile Include="src\playermanager.cpp" />
     <ClCompile Include="src\regiongraph.cpp" />

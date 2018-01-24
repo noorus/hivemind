@@ -65,6 +65,10 @@ int main( int argc, char* argv[] )
   {
 #endif
 
+    hivemind::platform::initialize();
+
+    hivemind::platform::prepareProcess();
+
     Coordinator coordinator;
 
     if ( !coordinator.LoadSettings( argc, argv ) )
@@ -138,6 +142,9 @@ int main( int argc, char* argv[] )
     }
 
     hivemind::g_Bot = nullptr;
+
+    hivemind::platform::shutdown();
+
 #ifndef _DEBUG
   }
   catch ( hivemind::Exception& e )

@@ -8,7 +8,14 @@
 #define WIN32_LEAN_AND_MEAN
 #define NOMINMAX
 #include <windows.h>
-#include <shellapi.h>
+
+#ifdef HIVE_SUPPORT_GUI
+# include <shellapi.h>
+# include <shlobj.h>
+# include <commctrl.h>
+# include <richedit.h>
+#endif
+
 #endif // HIVE_PLATFROM_WINDOWS
 
 #ifdef _DEBUG
