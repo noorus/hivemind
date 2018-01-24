@@ -65,6 +65,31 @@ int runMain( hivemind::Bot::Options& options )
   hivemind::platform::prepareProcess();
 
 #if 0
+  hivemind::platform::Thread test( (HINSTANCE)0, "my_test_thread", [](
+    hivemind::platform::Event& running, hivemind::platform::Event& wantStop, void* arg ) -> bool
+  {
+    OutputDebugStringA( "hello from thread\r\n" );
+    OutputDebugStringA( "setting run\r\n" );
+    running.set();
+    while ( !wantStop.wait( 1000 ) )
+    {
+      OutputDebugStringA( "thread working!\r\n" );
+    }
+    OutputDebugStringA( "thread done, returning!\r\n" );
+    return true;
+  }, (void*)0xaabbccdd );
+  OutputDebugStringA( "main: starting thread\r\n" );
+  test.start();
+  OutputDebugStringA( "main: waiting 10s\r\n" );
+  Sleep( 10000 );
+  OutputDebugStringA( "main: stopping thread\r\n" );
+  test.stop();
+  OutputDebugStringA( "main: done!\r\n" );
+
+  return EXIT_SUCCESS;
+#endif
+
+#if 0
   hivemind::platform::ConsoleWindow wnd( "foobar", 100, 100, 200, 200 );
 
   while ( true )
@@ -76,9 +101,9 @@ int runMain( hivemind::Bot::Options& options )
 
   Coordinator coordinator;
 
-  char pathcopy[MAX_PATH];
-  strcpy_s( pathcopy, MAX_PATH, options.hivemindExecPath_.c_str() );
-  char* junkArgs[] = { pathcopy };
+  char myExePath[MAX_PATH];
+  strcpy_s( myExePath, MAX_PATH, options.hivemindExecPath_.c_str() );
+  char* junkArgs[] = { myExePath };
 
   if ( !coordinator.LoadSettings( 1, junkArgs ) )
     HIVE_EXCEPT( "Failed to load settings" );

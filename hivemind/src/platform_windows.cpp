@@ -84,6 +84,68 @@ namespace hivemind {
       shutdownGUI();
     }
 
+    // Thread
+
+    Thread::Thread( HINSTANCE instance, const string& name, Callback callback, void* argument ):
+      thread_( nullptr ), id_( 0 ), name_( name ), callback_( callback ), argument_( argument )
+    {
+    }
+
+    DWORD Thread::threadProc( void* argument )
+    {
+      auto self = (Thread*)argument;
+      auto ret = self->callback_( self->run_, self->stop_, self->argument_ );
+      return ( ret ? EXIT_SUCCESS : EXIT_FAILURE );
+    }
+
+    bool Thread::start()
+    {
+      thread_ = CreateThread( nullptr, 0, threadProc, this, CREATE_SUSPENDED, &id_ );
+      if ( !thread_ )
+        return false;
+
+      setDebuggerThreadName( id_, name_ );
+
+      if ( ResumeThread( thread_ ) == -1 )
+        HIVE_EXCEPT( "Thread resume failed" );
+
+      HANDLE events[2] = {
+        run_.get(), thread_
+      };
+
+      auto wait = WaitForMultipleObjects( 2, events, FALSE, INFINITE );
+      if ( wait == WAIT_OBJECT_0 )
+      {
+        return true;
+      }
+      else if ( wait == WAIT_OBJECT_0 + 1 )
+      {
+        return false;
+      }
+      else
+        HIVE_EXCEPT( "Thread wait failed" );
+
+      return false;
+    }
+
+    void Thread::stop()
+    {
+      if ( thread_ )
+      {
+        stop_.set();
+        WaitForSingleObject( thread_, INFINITE );
+      }
+      stop_.reset();
+      run_.reset();
+      thread_ = nullptr;
+      id_ = 0;
+    }
+
+    Thread::~Thread()
+    {
+      stop();
+    }
+
   #ifdef HIVE_SUPPORT_GUI
 
     //! Get generic window text as widestring

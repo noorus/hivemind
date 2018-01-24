@@ -1,6 +1,7 @@
 #pragma once
 #include "sc2_forward.h"
 #include "exception.h"
+#include <windows.h>
 
 namespace hivemind {
 
@@ -11,6 +12,52 @@ namespace hivemind {
     void shutdown();
 
     using std::wstring;
+
+    class Event {
+    private:
+      HANDLE handle_;
+    public:
+      Event( bool initialState = false ): handle_( 0 )
+      {
+        handle_ = CreateEventW( nullptr, TRUE, initialState ? TRUE : FALSE, nullptr );
+        if ( !handle_ )
+          HIVE_EXCEPT( "Event creation failed" );
+      }
+      inline void set() { SetEvent( handle_ ); }
+      inline void reset() { ResetEvent( handle_ ); }
+      inline bool wait( uint32_t milliseconds = INFINITE ) const
+      {
+        return ( WaitForSingleObject( handle_, milliseconds ) == WAIT_OBJECT_0 );
+      }
+      inline bool check() const {
+        return ( WaitForSingleObject( handle_, 0 ) == WAIT_OBJECT_0 );
+      }
+      inline HANDLE get() const { return handle_; }
+      ~Event()
+      {
+        if ( handle_ )
+          CloseHandle( handle_ );
+      }
+    };
+
+    class Thread {
+    public:
+      using Callback = bool(*)( Event& running, Event& wantStop, void* argument );
+    protected:
+      HANDLE thread_;
+      DWORD id_;
+      string name_;
+      Event run_;
+      Event stop_;
+      void* argument_;
+      Callback callback_;
+      static DWORD WINAPI threadProc( void* argument );
+    public:
+      Thread( HINSTANCE instance, const string& name, Callback callback, void* argument );
+      virtual bool start();
+      virtual void stop();
+      ~Thread();
+    };
 
     class Window {
     protected:
@@ -233,6 +280,33 @@ namespace hivemind {
       vector<char> conversion( length );
       WideCharToMultiByte( CP_UTF8, 0, in.c_str(), -1, &conversion[0], length, 0, FALSE );
       return string( &conversion[0] );
+    }
+
+    //! Assign a thread name that will be visible in debuggers
+    inline void setDebuggerThreadName( DWORD threadID, const std::string& threadName )
+    {
+#ifdef _DEBUG
+#pragma pack( push, 8 )
+      struct threadNamingStruct
+      {
+        DWORD type;
+        LPCSTR name;
+        DWORD threadID;
+        DWORD flags;
+      } nameSignalStruct;
+#pragma pack( pop )
+      nameSignalStruct.type = 0x1000;
+      nameSignalStruct.name = threadName.c_str();
+      nameSignalStruct.threadID = threadID;
+      nameSignalStruct.flags = 0;
+      __try
+      {
+        RaiseException( 0x406D1388, 0,
+          sizeof( nameSignalStruct ) / sizeof( ULONG_PTR ),
+          (const ULONG_PTR*)&nameSignalStruct );
+      }
+      __except ( EXCEPTION_EXECUTE_HANDLER ) {}
+#endif
     }
 
   }
