@@ -58,6 +58,9 @@ namespace hivemind {
     virtual void onMessage( const Message& msg ) final;
     BuildProjectID& idPool_;
     std::unordered_map<sc2::UNIT_TYPEID, UnitStats>& unitStats_;
+    UnitSet trainers_;
+
+    UnitRef getTrainer(Base& base, UnitTypeID trainerType) const;
 
   public:
     Trainer( Bot* bot, BuildProjectID& idPool, std::unordered_map<sc2::UNIT_TYPEID, UnitStats>& );

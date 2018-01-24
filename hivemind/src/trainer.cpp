@@ -21,7 +21,7 @@ namespace hivemind {
     bot_->messaging().listen(Listen_Global, this);
   }
 
-  static UnitRef getTrainer(Base& base, UnitTypeID trainerType)
+  UnitRef Trainer::getTrainer(Base& base, UnitTypeID trainerType) const
   {
     if(trainerType == sc2::UNIT_TYPEID::ZERG_LARVA)
     {
@@ -47,6 +47,8 @@ namespace hivemind {
 
         if(!building->orders.empty())
           continue;
+        if(trainers_.count(building) > 0)
+          continue;
 
         return building;
       }
@@ -67,6 +69,7 @@ namespace hivemind {
 
     trainingProjects_.push_back( build );
     bot_->console().printf( "Trainer: New TrainOp %d for %s", build.id, sc2::UnitTypeToName( unitType ) );
+    trainers_.insert(trainer);
 
     unitStats_[unitType].inProgress.insert(build.id);
 
@@ -92,6 +95,21 @@ namespace hivemind {
 
   void Trainer::onMessage( const Message& msg )
   {
+    auto trainingComplete = [this](auto it)
+    {
+      auto training = *it;
+      bot_->console().printf( "Trainer: Removing TrainOp %d (%s)", training.id, training.completed ? "completed" : "canceled" );
+      if ( training.completed )
+        bot_->messaging().sendGlobal( M_Training_Finished, training.id );
+      else
+        bot_->messaging().sendGlobal( M_Training_Canceled, training.id );
+
+      trainers_.erase(training.trainer);
+      auto& stats = unitStats_[training.type];
+      stats.inProgress.erase(training.id);
+      trainingProjects_.erase(it);
+    };
+
     if ( msg.code == M_Global_UnitCreated )
     {
       UnitRef unit = msg.unit();
@@ -104,6 +122,22 @@ namespace hivemind {
         return;
 
       stats.units.insert(unit);
+
+      for(auto it = trainingProjects_.begin(); it != trainingProjects_.end(); ++it)
+      {
+        auto& training = *it;
+        if(training.type == unit->unit_type)
+        {
+          if(training.trainer->orders.empty())
+          {
+            // Hatchery produced a queen.
+            training.completed = true;
+
+            trainingComplete(it);
+            break;
+          }
+        }
+      }
     }
     else if(msg.code == M_Global_UnitDestroyed)
     {
@@ -115,23 +149,24 @@ namespace hivemind {
         return;
       }
 
-      for ( auto& build : trainingProjects_ )
+      for(auto it = trainingProjects_.begin(); it != trainingProjects_.end(); ++it)
       {
-        if(build.trainer == unit)
+        auto& training = *it;
+        if(training.trainer == unit)
         {
-          auto& stats = unitStats_[build.type];
-          stats.inProgress.erase(build.id);
-
           if(unit->health > 0.0f)
           {
             // Egg hatched.
-            build.completed = true;
+            training.completed = true;
           }
           else
           {
-            // Egg got destroyed.
-            build.cancel = true;
+            // Egg or hatchery got destroyed.
+            training.cancel = true;
           }
+
+          trainingComplete(it);
+          break;
         }
       }
 
@@ -143,26 +178,8 @@ namespace hivemind {
   {
     const GameTime cTrainRecheckInterval = 50;
 
-    auto it = trainingProjects_.begin();
-    while ( it != trainingProjects_.end() )
+    for(auto& training : trainingProjects_)
     {
-      auto& training = ( *it );
-
-      if ( training.completed || training.cancel )
-      {
-        if ( training.completed )
-          bot_->messaging().sendGlobal( M_Training_Finished, training.id );
-        else
-          bot_->messaging().sendGlobal( M_Training_Canceled, training.id );
-
-        bot_->console().printf( "Trainer: Removing TrainOp %d (%s)", training.id, training.completed ? "completed" : "canceled" );
-
-        it = trainingProjects_.erase( it );
-        continue;
-      }
-
-      ++it;
-
       if(!training.moneyAllocated)
       {
         if(training.trainer && training.trainer->is_alive && !training.trainer->orders.empty())

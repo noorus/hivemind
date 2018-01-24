@@ -9,8 +9,6 @@ namespace hivemind {
 
   namespace Goals {
 
-
-
     Brain_Macro::Brain_Macro( AI::Agent * agent ):
       AI::CompositeGoal( agent )
     {
@@ -69,14 +67,14 @@ namespace hivemind {
 
       int scoutDroneCount = 1;
       int futureDroneCount = droneState.futureCount();
-      int droneNeed = futureDroneCount < hatcheryState.unitCount() * (16 + 2 * 3) + scoutDroneCount;
+      int droneNeed = futureDroneCount < hatcheryState.unitCount() * (16 + 2 * 3) + scoutDroneCount && futureDroneCount <= 75;
 
       int futureExtractorCount = extractorState.futureCount();
       int extractorNeed = futureExtractorCount < hatcheryState.unitCount() * 2 && futureDroneCount > hatcheryState.unitCount() * 16 + futureExtractorCount * 3 + 1 + scoutDroneCount;
 
       int poolNeed = poolState.futureCount() == 0 && futureDroneCount >= 16 + 1 + scoutDroneCount;
 
-      int queenNeed = poolState.unitCount() > 0 && queenState.futureCount() < hatcheryState.unitCount() * 2;
+      int queenNeed = poolState.unitCount() > 0 && queenState.futureCount() < hatcheryState.unitCount() * 2 && queenState.inProgressCount() < hatcheryState.unitCount();
 
       //bot_->console().printf( "minerals left: %d, allocated minerals %d", minerals, allocatedResources.first );
 
@@ -96,16 +94,14 @@ namespace hivemind {
           bool started = builder.train(sc2::UNIT_TYPEID::ZERG_OVERLORD, base, sc2::UNIT_TYPEID::ZERG_LARVA, id);
         }
       }
-      /*
       else if(queenNeed > 0)
       {
-        if(minerals >= 150)
+        if(minerals >= 150 && usedSupply + 1 < supplyLimit)
         {
           BuildProjectID id;
           bool started = builder.train(sc2::UNIT_TYPEID::ZERG_QUEEN, base, sc2::UNIT_TYPEID::ZERG_HATCHERY, id);
         }
       }
-      */
       else if(extractorNeed > 0)
       {
         if(minerals >= 50)
