@@ -50,7 +50,6 @@ namespace hivemind {
     intelligence_( this ),
     strategy_( this ),
     builder_( this ),
-    trainer_( this ),
     vision_( this ),
     cheatCostIgnore_( false ),
     cheatGodmode_( false )
@@ -132,7 +131,6 @@ namespace hivemind {
     strategy_.gameBegin();
 
     builder_.gameBegin();
-    trainer_.gameBegin();
 
     console_.printf( "AI initialization took %.5fms", timer.stop() );
 
@@ -180,7 +178,6 @@ namespace hivemind {
     ControllerBase::setActions( action_ );
 
     builder_.update( time_, delta );
-    trainer_.update( time_, delta );
 
     baseManager_.update( time_, delta );
     messaging_.update( time_ );
@@ -226,7 +223,6 @@ namespace hivemind {
     strategy_.gameEnd();
     brain_.gameEnd();
     builder_.gameEnd();
-    trainer_.gameEnd();
     players_.gameEnd();
     workers_.gameEnd();
     vision_.gameEnd();

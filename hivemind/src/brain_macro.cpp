@@ -30,42 +30,6 @@ namespace hivemind {
 
     void Brain_Macro::onMessage( const Message& msg )
     {
-      if (msg.code == M_Global_ConstructionCompleted || msg.code == M_Global_UnitCreated)
-      {
-        UnitRef unit = msg.unit();
-        if ( !utils::isMine( unit ) )
-          return;
-
-        if(utils::isStructure(unit) && msg.code == M_Global_UnitCreated && unit->build_progress < 1.0f)
-        {
-          // Store buildings only after they are complete.
-          return;
-        }
-
-        auto& stats = unitStats_[unit->unit_type];
-
-        if(stats.units.count(unit) == 0) // This protects from drone getting created after exiting extractor.
-        {
-          if(stats.inProgressCount > 0) // TODO: this is a hack for the startup units, but it also protects from units created by human controller.
-          {
-            --stats.inProgressCount;
-          }
-        }
-
-        stats.units.insert(unit);
-      }
-      else if(msg.code == M_Global_UnitDestroyed)
-      {
-        UnitRef unit = msg.unit();
-        if ( !utils::isMine( unit ) )
-          return;
-
-        auto& stats = unitStats_[unit->unit_type];
-        stats.units.erase(unit);
-        // TODO: destroyed building might have been in progress.
-        // TODO: zerg egg might have been in progress.
-        // TODO: destroyed building might have had other units in progress.
-      }
     }
 
     AI::Goal::Status Brain_Macro::process()
@@ -82,15 +46,10 @@ namespace hivemind {
 
       auto& baseManager = bot_->bases();
       auto& builder = bot_->builder();
-      auto& trainer = bot_->trainer();
 
-      std::pair<int,int> allocatedResourcesBuildings = builder.getAllocatedResources();
-      minerals -= allocatedResourcesBuildings.first;
-      vespene -= allocatedResourcesBuildings.second;
-
-      std::pair<int,int> allocatedResourcesUnits = trainer.getAllocatedResources();
-      minerals -= allocatedResourcesUnits.first;
-      vespene -= allocatedResourcesUnits.second;
+      std::pair<int,int> allocatedResources = builder.getAllocatedResources();
+      minerals -= allocatedResources.first;
+      vespene -= allocatedResources.second;
 
       if(baseManager.bases().empty())
       {
@@ -98,14 +57,14 @@ namespace hivemind {
       }
       auto& base = baseManager.bases().back();
 
-      auto& poolState = unitStats_[sc2::UNIT_TYPEID::ZERG_SPAWNINGPOOL];
-      auto& overlordState = unitStats_[sc2::UNIT_TYPEID::ZERG_OVERLORD];
-      auto& extractorState = unitStats_[sc2::UNIT_TYPEID::ZERG_EXTRACTOR];
-      auto& hatcheryState = unitStats_[sc2::UNIT_TYPEID::ZERG_HATCHERY];
-      auto& droneState = unitStats_[sc2::UNIT_TYPEID::ZERG_DRONE];
-      auto& queenState = unitStats_[sc2::UNIT_TYPEID::ZERG_QUEEN];
+      auto& poolState = builder.getUnitStats(sc2::UNIT_TYPEID::ZERG_SPAWNINGPOOL);
+      auto& overlordState = builder.getUnitStats(sc2::UNIT_TYPEID::ZERG_OVERLORD);
+      auto& extractorState = builder.getUnitStats(sc2::UNIT_TYPEID::ZERG_EXTRACTOR);
+      auto& hatcheryState = builder.getUnitStats(sc2::UNIT_TYPEID::ZERG_HATCHERY);
+      auto& droneState = builder.getUnitStats(sc2::UNIT_TYPEID::ZERG_DRONE);
+      auto& queenState = builder.getUnitStats(sc2::UNIT_TYPEID::ZERG_QUEEN);
 
-      int futureSupplyLimit = std::min(200, supplyLimit + overlordState.inProgressCount * 8);
+      int futureSupplyLimit = std::min(200, supplyLimit + overlordState.inProgressCount() * 8);
       int overlordNeed = (usedSupply >= futureSupplyLimit - 1 ? 1 : 0);
 
       int scoutDroneCount = 1;
@@ -117,52 +76,42 @@ namespace hivemind {
 
       int poolNeed = poolState.futureCount() == 0 && futureDroneCount >= 16 + 1 + scoutDroneCount;
 
-      //bot_->console().printf( "minerals left: %d, allocated minerals %d", minerals, allocatedResourcesUnits.first );
+      int queenNeed = poolState.unitCount() > 0 && queenState.futureCount() < hatcheryState.unitCount() * 2;
+
+      //bot_->console().printf( "minerals left: %d, allocated minerals %d", minerals, allocatedResources.first );
 
       if(poolNeed > 0)
       {
-        if(minerals > 200)
+        if(minerals >= 200)
         {
           BuildProjectID id;
-
-          auto buildingType = sc2::UNIT_TYPEID::ZERG_SPAWNINGPOOL;
-          bool started = builder.add( buildingType, base, BuildPlacement_Generic, id);
-
-          if(started)
-          {
-            ++poolState.inProgressCount;
-          }
+          bool started = builder.build( sc2::UNIT_TYPEID::ZERG_SPAWNINGPOOL, base, BuildPlacement_Generic, id);
         }
       }
       else if(overlordNeed > 0)
       {
-        if(minerals > 100)
+        if(minerals >= 100)
         {
           BuildProjectID id;
-
-          bool started = trainer.add(sc2::UNIT_TYPEID::ZERG_OVERLORD, base, sc2::UNIT_TYPEID::ZERG_LARVA, id);
-
-          auto& unitState = unitStats_[sc2::UNIT_TYPEID::ZERG_OVERLORD];
-          if(started)
-          {
-            unitState.inProgressCount += 1;
-          }
+          bool started = builder.train(sc2::UNIT_TYPEID::ZERG_OVERLORD, base, sc2::UNIT_TYPEID::ZERG_LARVA, id);
         }
       }
-      else if(extractorNeed > 0)
+      /*
+      else if(queenNeed > 0)
       {
-        if(minerals > 50)
+        if(minerals >= 150)
         {
           BuildProjectID id;
-
-          auto buildingType = sc2::UNIT_TYPEID::ZERG_EXTRACTOR;
-          bool started = builder.add( buildingType, base, BuildPlacement_Extractor, id);
-
-          auto& unitState = unitStats_[buildingType];
-          if(started)
-          {
-            unitState.inProgressCount += 1;
-          }
+          bool started = builder.train(sc2::UNIT_TYPEID::ZERG_QUEEN, base, sc2::UNIT_TYPEID::ZERG_HATCHERY, id);
+        }
+      }
+      */
+      else if(extractorNeed > 0)
+      {
+        if(minerals >= 50)
+        {
+          BuildProjectID id;
+          bool started = builder.build( sc2::UNIT_TYPEID::ZERG_EXTRACTOR, base, BuildPlacement_Extractor, id);
         }
       }
       else if(droneNeed > 0)
@@ -170,29 +119,14 @@ namespace hivemind {
         if(minerals >= 50 && usedSupply < supplyLimit)
         {
           BuildProjectID id;
-
-          bool started = trainer.add(sc2::UNIT_TYPEID::ZERG_DRONE, base, sc2::UNIT_TYPEID::ZERG_LARVA, id);
-
-          auto& unitState = unitStats_[sc2::UNIT_TYPEID::ZERG_DRONE];
-          if(started)
-          {
-            unitState.inProgressCount += 1;
-          }
+          bool started = builder.train(sc2::UNIT_TYPEID::ZERG_DRONE, base, sc2::UNIT_TYPEID::ZERG_LARVA, id);
         }
       }
       else if(minerals >= 50 && usedSupply < supplyLimit && poolState.unitCount() > 0)
       {
         BuildProjectID id;
-
-        bool started = trainer.add(sc2::UNIT_TYPEID::ZERG_ZERGLING, base, sc2::UNIT_TYPEID::ZERG_LARVA, id);
-
-        auto& unitState = unitStats_[sc2::UNIT_TYPEID::ZERG_ZERGLING];
-        if(started)
-        {
-          unitState.inProgressCount += 2;
-        }
+        bool started = builder.train(sc2::UNIT_TYPEID::ZERG_ZERGLING, base, sc2::UNIT_TYPEID::ZERG_LARVA, id);
       }
-
 
       return status_;
     }

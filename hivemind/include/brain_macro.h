@@ -16,34 +16,6 @@ namespace hivemind {
 
     class Brain_Macro: public AI::CompositeGoal, public hivemind::Listener {
     public:
-
-      struct UnitStats
-      {
-        UnitSet units;
-        int inProgressCount;
-
-        explicit UnitStats():
-          inProgressCount(0)
-        {
-        }
-
-        int futureCount() const
-        {
-          return static_cast<int>(units.size()) + inProgressCount;
-        }
-
-        int unitCount() const
-        {
-          return static_cast<int>(units.size());
-        }
-      };
-
-    protected:
-      GameTime nextCreepTime_;
-
-      std::unordered_map<sc2::UNIT_TYPEID, UnitStats> unitStats_;
-
-    public:
       virtual const string& getName() const final { static string name = "Brain_Macro"; return name; }
       virtual void onMessage( const Message& msg ) final;
 

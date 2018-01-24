@@ -8,7 +8,10 @@
 
 namespace hivemind {
 
-  Builder::Builder( Bot* bot ): Subsystem( bot ), idPool_( 0 )
+  Builder::Builder(Bot* bot) :
+    Subsystem(bot),
+    idPool_(0),
+    trainer_(bot, idPool_, unitStats_)
   {
   }
 
@@ -16,27 +19,36 @@ namespace hivemind {
   {
     buildProjects_.clear();
     idPool_ = 0;
-    bot_->messaging().listen( Listen_Global, this );
+    bot_->messaging().listen(Listen_Global, this);
+
+    trainer_.gameBegin();
   }
 
-  bool Builder::add( UnitTypeID structure, const Base& base, BuildingPlacement placement, BuildProjectID& idOut )
+  bool Builder::build( UnitTypeID structureType, const Base& base, BuildingPlacement placement, BuildProjectID& idOut )
   {
-    auto ability = Database::techTree().getBuildAbility( structure, sc2::UNIT_TYPEID::ZERG_DRONE );
+    auto ability = Database::techTree().getBuildAbility( structureType, sc2::UNIT_TYPEID::ZERG_DRONE );
 
     Vector2 pos;
     UnitRef target = nullptr;
-    if ( !findPlacement( structure, base, placement, ability, pos, target ) )
+    if ( !findPlacement( structureType, base, placement, ability, pos, target ) )
       return false;
 
-    Building build( idPool_++, structure, ability );
+    Building build( idPool_++, structureType, ability );
     build.position = pos;
     build.target = target;
-    bot_->map().reserveFootprint( build.position, structure );
+    bot_->map().reserveFootprint( build.position, structureType );
     buildProjects_.push_back( build );
-    bot_->console().printf( "Builder: New BuildOp %d for %s, position %d,%d", build.id, sc2::UnitTypeToName( structure ), build.position.x, build.position.y );
+    bot_->console().printf( "Builder: New BuildOp %d for %s, position %d,%d", build.id, sc2::UnitTypeToName( structureType ), build.position.x, build.position.y );
+
+    unitStats_[structureType].inProgress.insert(build.id);
 
     idOut = build.id;
     return true;
+  }
+
+  bool Builder::train(UnitTypeID unitType, Base& base, UnitTypeID trainerType, BuildProjectID& idOut)
+  {
+    return trainer_.train(unitType, base, trainerType, idOut);
   }
 
   void Builder::remove( BuildProjectID id )
@@ -44,25 +56,48 @@ namespace hivemind {
     for ( auto& building : buildProjects_ )
       if ( building.id == id )
         building.cancel = true;
+
+    trainer_.remove(id);
   }
 
   void Builder::gameEnd()
   {
+    trainer_.gameEnd();
+
     bot_->messaging().remove( this );
   }
 
   void Builder::draw()
   {
+    auto& debug = bot_->debug();
+
     for ( auto& b : buildProjects_ )
     {
       Vector3 pt( (Real)b.position.x + 0.5f, (Real)b.position.y + 0.5f, bot_->map().maxZ_ );
-      bot_->debug().drawSphere( pt, 1.5f, sc2::Colors::Red );
-      bot_->debug().drawText( std::to_string( b.id ), pt, sc2::Colors::Yellow );
+      debug.drawSphere( pt, 1.5f, sc2::Colors::Red );
+      debug.drawText( std::to_string( b.id ), pt, sc2::Colors::Yellow );
       if ( b.builder && ( !b.building || !b.building->is_alive ) )
       {
-        bot_->debug().drawSphere( b.builder->pos, 0.85f, sc2::Colors::Red );
-        bot_->debug().drawText( std::to_string( b.id ), Vector3( b.builder->pos ), sc2::Colors::Yellow );
+        debug.drawSphere( b.builder->pos, 0.85f, sc2::Colors::Red );
+        debug.drawText( std::to_string( b.id ), Vector3( b.builder->pos ), sc2::Colors::Yellow );
       }
+    }
+
+    trainer_.draw();
+
+    Point2D screenPosition = Point2D(0.03f, 0.5f);
+    const Point2D increment( 0.0f, 0.011f );
+    for(auto& stats : unitStats_)
+    {
+      if(stats.first == sc2::UNIT_TYPEID::ZERG_LARVA) // Larva counts are not properly tracked.
+        continue;
+      if(stats.first == sc2::UNIT_TYPEID::ZERG_EGG) // Egg counts are always 0.
+        continue;
+
+      char text[128];
+      sprintf_s( text, 128, "%s: %d (+%d)", sc2::UnitTypeToName(stats.first), stats.second.unitCount(), stats.second.inProgressCount() );
+      debug.drawText( text, screenPosition, sc2::Colors::Yellow );
+      screenPosition += increment;
     }
   }
 
@@ -72,20 +107,29 @@ namespace hivemind {
   {
     if ( msg.code == M_Global_UnitCreated )
     {
-      if ( !utils::isMine( msg.unit() ) )
+      UnitRef unit = msg.unit();
+      auto& stats = unitStats_[unit->unit_type];
+
+      if ( !utils::isMine( unit ) )
         return;
-      if ( !Database::unit( msg.unit()->unit_type ).structure )
+      if ( !utils::isStructure(unit) )
         return;
+
+      if(unit->build_progress == 1.0f) // The initial hatchery is created without construction.
+      {
+        stats.units.insert(unit);
+      }
+
       for ( auto& build : buildProjects_ )
       {
-        if ( !build.building && build.type == msg.unit()->unit_type )
+        if ( !build.building && build.type == unit->unit_type )
         {
-          Vector2 pos = msg.unit()->pos;
+          Vector2 pos = unit->pos;
           auto dist = pos.distance( build.position );
           if ( dist < cBuildDistHeur )
           {
-            bot_->console().printf( "BuildOp %d: Got building %x at pos %f,%f", build.id, msg.unit(), pos.x, pos.y );
-            build.building = msg.unit();
+            bot_->console().printf( "BuildOp %d: Got building %x at pos %f,%f", build.id, unit, pos.x, pos.y );
+            build.building = unit;
             build.buildStartTime = bot_->time();
             bot_->messaging().sendGlobal( M_Build_Started, build.id );
             return;
@@ -95,6 +139,9 @@ namespace hivemind {
     }
     else if ( msg.code == M_Global_ConstructionCompleted )
     {
+      UnitRef unit = msg.unit();
+      auto& stats = unitStats_[unit->unit_type];
+
       if ( !utils::isMine( msg.unit() ) )
         return;
       if ( !Database::unit( msg.unit()->unit_type ).structure )
@@ -106,6 +153,9 @@ namespace hivemind {
           build.completed = true;
           build.buildCompleteTime = bot_->time();
           bot_->console().printf( "BuildOp %d: Completed in time %d", build.id, build.buildCompleteTime - build.buildStartTime );
+
+          stats.units.insert(unit);
+          stats.inProgress.erase(build.id);
         }
       }
     }
@@ -225,6 +275,8 @@ namespace hivemind {
         }
       }
     }
+
+    trainer_.update(time, delta);
   }
 
   bool Builder::findPlacement( UnitTypeID structure, const Base& base, BuildingPlacement type, AbilityID ability, Vector2& placementOut, UnitRef& targetOut )
@@ -283,6 +335,8 @@ namespace hivemind {
       mineralSum += data.mineralCost;
       vespeneSum += data.vespeneCost;
     }
-    return { mineralSum, vespeneSum };
+
+    auto s = trainer_.getAllocatedResources();
+    return { s.first + mineralSum, s.second + vespeneSum };
   }
 }
