@@ -13,6 +13,8 @@ namespace hivemind {
 
     using std::wstring;
 
+    extern HINSTANCE g_instance;
+
     class Event {
     private:
       HANDLE handle_;
@@ -53,9 +55,10 @@ namespace hivemind {
       Callback callback_;
       static DWORD WINAPI threadProc( void* argument );
     public:
-      Thread( HINSTANCE instance, const string& name, Callback callback, void* argument );
+      Thread( const string& name, Callback callback, void* argument );
       virtual bool start();
       virtual void stop();
+      virtual bool waitFor( uint32_t milliseconds = INFINITE );
       ~Thread();
     };
 
@@ -70,7 +73,7 @@ namespace hivemind {
       Window( HINSTANCE instance, WNDPROC wndproc, void* userdata );
       virtual ~Window();
       void create( const string& classname, const string& title, int x, int y, int w, int h );
-      bool threadStep();
+      void messageLoop( Event& stopEvent );
     };
 
     class ConsoleWindow: public Window {

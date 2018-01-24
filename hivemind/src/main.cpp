@@ -64,37 +64,21 @@ int runMain( hivemind::Bot::Options& options )
 
   hivemind::platform::prepareProcess();
 
+  using hivemind::platform::Thread;
+  using hivemind::platform::Event;
+  using hivemind::platform::ConsoleWindow;
+
 #if 0
-  hivemind::platform::Thread test( (HINSTANCE)0, "my_test_thread", [](
-    hivemind::platform::Event& running, hivemind::platform::Event& wantStop, void* arg ) -> bool
+  Thread test( "my_test_thread", [](
+    Event& running, Event& wantStop, void* arg ) -> bool
   {
-    OutputDebugStringA( "hello from thread\r\n" );
-    OutputDebugStringA( "setting run\r\n" );
+    ConsoleWindow wnd( "foobar", 100, 100, 200, 200 );
     running.set();
-    while ( !wantStop.wait( 1000 ) )
-    {
-      OutputDebugStringA( "thread working!\r\n" );
-    }
-    OutputDebugStringA( "thread done, returning!\r\n" );
+    wnd.messageLoop( wantStop );
     return true;
   }, (void*)0xaabbccdd );
-  OutputDebugStringA( "main: starting thread\r\n" );
   test.start();
-  OutputDebugStringA( "main: waiting 10s\r\n" );
-  Sleep( 10000 );
-  OutputDebugStringA( "main: stopping thread\r\n" );
-  test.stop();
-  OutputDebugStringA( "main: done!\r\n" );
-
-  return EXIT_SUCCESS;
-#endif
-
-#if 0
-  hivemind::platform::ConsoleWindow wnd( "foobar", 100, 100, 200, 200 );
-
-  while ( true )
-    if ( !wnd.threadStep() )
-      break;
+  test.waitFor();
 
   return EXIT_SUCCESS;
 #endif
@@ -183,6 +167,8 @@ int APIENTRY wWinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCm
 
   // CRT memory allocation breakpoints can be set here
   // _CrtSetBreakAlloc( x );
+
+  hivemind::platform::g_instance = hInstance;
 
   // Parse command line arguments into engine options
   int argCount;

@@ -18,6 +18,8 @@ namespace hivemind {
 
   namespace platform {
 
+    HINSTANCE g_instance = nullptr;
+
 #ifdef HIVE_SUPPORT_GUI
 
     const wchar_t cRichEditDLL[] = L"msftedit.dll";
@@ -86,7 +88,7 @@ namespace hivemind {
 
     // Thread
 
-    Thread::Thread( HINSTANCE instance, const string& name, Callback callback, void* argument ):
+    Thread::Thread( const string& name, Callback callback, void* argument ):
       thread_( nullptr ), id_( 0 ), name_( name ), callback_( callback ), argument_( argument )
     {
     }
@@ -139,6 +141,11 @@ namespace hivemind {
       run_.reset();
       thread_ = nullptr;
       id_ = 0;
+    }
+
+    bool Thread::waitFor( uint32_t milliseconds )
+    {
+      return ( WaitForSingleObject( thread_, milliseconds ) == WAIT_OBJECT_0 );
     }
 
     Thread::~Thread()
@@ -205,19 +212,30 @@ namespace hivemind {
       UpdateWindow( handle_ );
     }
 
-    bool Window::threadStep()
+    void Window::messageLoop( Event& stopEvent )
     {
-      MSG msg;
-      BOOL ret = GetMessageW( &msg, handle_, 0, 0 );
-      if ( ret == -1 )
-        return false; // 2. window no longer exists
-      else if ( ret == 0 )
-        return false; // 1. thread received WM_QUIT (if pumping without handle)
-      else
+      HANDLE handles[] = { stopEvent.get() };
+      bool quitting = false;
+      while ( !quitting )
       {
-        TranslateMessage( &msg );
-        DispatchMessage( &msg );
-        return true;
+        auto wait = MsgWaitForMultipleObjects( 1, handles, FALSE, INFINITE, QS_ALLINPUT );
+        if ( wait == WAIT_OBJECT_0 )
+        {
+          DestroyWindow( handle_ );
+        }
+        else if ( wait == WAIT_OBJECT_0 + 1 )
+        {
+          MSG msg;
+          while ( PeekMessageW( &msg, nullptr, 0, 0, PM_REMOVE ) )
+          {
+            TranslateMessage( &msg );
+            DispatchMessage( &msg );
+            if ( msg.message == WM_QUIT )
+              quitting = true;
+          }
+        }
+        else
+          HIVE_EXCEPT( "Wait for multiple objects failed" );
       }
     }
 
@@ -233,7 +251,7 @@ namespace hivemind {
     const long minHeight = 240;
 
     ConsoleWindow::ConsoleWindow( const string& title, int x, int y, int w, int h ):
-      Window( 0, wndProc, this ), cmdline_( nullptr ), log_( nullptr )
+      Window( g_instance, wndProc, this ), cmdline_( nullptr ), log_( nullptr )
     {
       create( "hiveConsole", title, x, y, w, h );
       // MARGINS margins = { 0, 0, headerHeight, 0 };
