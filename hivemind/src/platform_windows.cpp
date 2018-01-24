@@ -86,6 +86,19 @@ namespace hivemind {
 
   #ifdef HIVE_SUPPORT_GUI
 
+    //! Get generic window text as widestring
+    inline wstring getWindowText( HWND wnd ) throw( )
+    {
+      wstring str;
+      int length = GetWindowTextLengthW( wnd );
+      if ( !length )
+        return str;
+      str.resize( length + 1, '\0' );
+      GetWindowTextW( wnd, &str[0], length + 1 );
+      str.resize( length );
+      return str;
+    }
+
     // Window
 
     Window::Window( HINSTANCE instance, WNDPROC wndproc, void* userdata ):
@@ -203,6 +216,48 @@ namespace hivemind {
         SendMessageW( ctrl, EM_SETEVENTMASK, NULL, ENM_CHANGE );
     }
 
+    void ConsoleWindow::print( COLORREF color, const wstring& line )
+    {
+      CHARRANGE range = { -1, -1 };
+      SendMessage( log_, EM_EXSETSEL, 0, (LPARAM)&range );
+      CHARFORMAT2W format;
+      format.cbSize = sizeof( CHARFORMAT2W );
+      format.dwEffects = NULL;
+      format.dwMask = CFM_COLOR | CFM_EFFECTS;
+      format.crTextColor = color;
+      SendMessage( log_, EM_SETCHARFORMAT, SCF_SELECTION, (LPARAM)&format );
+      SETTEXTEX textex = { ST_SELECTION, 1200 };
+      SendMessage( log_, EM_SETTEXTEX, (WPARAM)&textex, (LPARAM)line.c_str() );
+    }
+
+    void ConsoleWindow::print( const wstring& line )
+    {
+      print( cConsoleWindowForeground, line );
+    }
+
+    void ConsoleWindow::print( const string& line )
+    {
+      print( utf8ToWide( line ) );
+    }
+
+    void ConsoleWindow::clearCmdline()
+    {
+      SETTEXTEX textex = { ST_DEFAULT, 1200 };
+      SendMessageW( cmdline_, EM_SETEVENTMASK, NULL, ENM_NONE );
+      SendMessageW( cmdline_, EM_SETTEXTEX, (WPARAM)&textex, (LPARAM)NULL );
+      SendMessageW( cmdline_, EM_SETEVENTMASK, NULL, ENM_CHANGE );
+    }
+
+    void ConsoleWindow::setCmdline( const string& line )
+    {
+      auto wideLine = utf8ToWide( line );
+
+      SETTEXTEX textex = { ST_DEFAULT, 1200 };
+      SendMessageW( cmdline_, EM_SETEVENTMASK, NULL, ENM_NONE );
+      SendMessageW( cmdline_, EM_SETTEXTEX, (WPARAM)&textex, (LPARAM)wideLine.c_str() );
+      SendMessageW( cmdline_, EM_SETEVENTMASK, NULL, ENM_CHANGE );
+    }
+
     inline gdip::RectF makeRectf( LONG left, LONG top, LONG right, LONG bottom )
     {
       return gdip::RectF( left, top, right - left, bottom - top );
@@ -265,11 +320,32 @@ namespace hivemind {
       return ret;
     }
 
-    LRESULT ConsoleWindow::wndProc( HWND wnd, UINT msg, WPARAM wParam, LPARAM lParam )
+    LRESULT ConsoleWindow::cmdlineProc( HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam )
+    {
+      auto window = (ConsoleWindow*)GetWindowLongPtrW( wnd, GWLP_USERDATA );
+
+      if ( msg == WM_CHAR && wparam == TAB )
+        return 0;
+      else if ( msg == WM_KEYDOWN )
+      {
+        // todo
+        if ( wparam == VK_RETURN )
+        {
+          auto line = getWindowText( window->cmdline_ );
+          window->print( line );
+          window->clearCmdline();
+          return 0;
+        }
+      }
+
+      return CallWindowProcW( window->baseCmdlineProc_, wnd, msg, wparam, lparam );
+    }
+
+    LRESULT ConsoleWindow::wndProc( HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam )
     {
       if ( msg == WM_CREATE )
       {
-        auto self = (ConsoleWindow*)( (LPCREATESTRUCTW)lParam )->lpCreateParams;
+        auto self = (ConsoleWindow*)( (LPCREATESTRUCTW)lparam )->lpCreateParams;
         SetWindowLongPtrW( wnd, GWLP_USERDATA, (LONG_PTR)self );
         RECT rect;
         GetClientRect( wnd, &rect );
@@ -288,6 +364,10 @@ namespace hivemind {
 
         if ( !self->log_ || !self->cmdline_ )
           HIVE_EXCEPT( "Window control creation failed" );
+
+        SetWindowLongPtrW( self->cmdline_, GWLP_USERDATA, (LONG_PTR)self );
+        self->baseCmdlineProc_ = (WNDPROC)SetWindowLongPtrW(
+          self->cmdline_, GWLP_WNDPROC, (LONG_PTR)(WNDPROC)cmdlineProc );
 
         self->initTextControl( self->log_, false );
         self->initTextControl( self->cmdline_, true );
@@ -337,7 +417,7 @@ namespace hivemind {
       }
       else if ( msg == WM_GETMINMAXINFO )
       {
-        auto minmax = (LPMINMAXINFO)lParam;
+        auto minmax = (LPMINMAXINFO)lparam;
         minmax->ptMinTrackSize.x = minWidth;
         minmax->ptMinTrackSize.y = minHeight;
       }
@@ -348,10 +428,15 @@ namespace hivemind {
       }
       else if ( msg == WM_SIZE )
       {
-        RECT fit = fitLogControl( LOWORD( lParam ), HIWORD( lParam ) );
+        RECT fit = fitLogControl( LOWORD( lparam ), HIWORD( lparam ) );
         MoveWindow( self->log_, fit.left, fit.top, fit.right, fit.bottom, TRUE );
-        fit = fitCmdlineControl( LOWORD( lParam ), HIWORD( lParam ) );
+        fit = fitCmdlineControl( LOWORD( lparam ), HIWORD( lparam ) );
         MoveWindow( self->cmdline_, fit.left, fit.top, fit.right, fit.bottom, TRUE );
+        return 0;
+      }
+      else if ( msg == WM_SETFOCUS )
+      {
+        SetFocus( self->cmdline_ );
         return 0;
       }
       else if ( msg == WM_DESTROY )
@@ -360,7 +445,7 @@ namespace hivemind {
         return 0;
       }
 
-      return DefWindowProcW( wnd, msg, wParam, lParam );
+      return DefWindowProcW( wnd, msg, wparam, lparam );
     }
 
   #endif

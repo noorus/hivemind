@@ -31,11 +31,18 @@ namespace hivemind {
       HWND log_;
       HWND cmdline_;
       float dpiScaling_;
+      WNDPROC baseCmdlineProc_;
       static LRESULT CALLBACK wndProc( HWND wnd, UINT msg, WPARAM wParam, LPARAM lParam );
+      static LRESULT CALLBACK cmdlineProc( HWND wnd, UINT msg, WPARAM wParam, LPARAM lParam );
       void initTextControl( HWND ctrl, bool lineinput );
       void paint( HWND wnd, HDC hdc, RECT& client );
     public:
       ConsoleWindow( const string& title, int x, int y, int w, int h );
+      void clearCmdline();
+      void setCmdline( const string& line );
+      void print( COLORREF color, const wstring& line );
+      void print( const wstring& line );
+      void print( const string& line );
       virtual ~ConsoleWindow() {}
     };
 
