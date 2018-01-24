@@ -20,6 +20,7 @@ namespace hivemind {
   class Bot: public sc2::Agent {
   public:
     struct Options {
+      string hivemindExecPath_; //!< Cmdline argv[0]
       StringVector executeCommands_; //!< Extra commands to execute on startup
     };
     std::map<UnitRef, std::string> unitDebugMsgs_;

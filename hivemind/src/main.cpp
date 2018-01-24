@@ -58,111 +58,159 @@ void testTechChain(hivemind::Console& console, sc2::UPGRADE_ID targetType)
   }
 }
 
-int main( int argc, char* argv[] )
+int runMain( hivemind::Bot::Options& options )
 {
+  hivemind::platform::initialize();
+
+  hivemind::platform::prepareProcess();
+
+#if 0
+  hivemind::platform::ConsoleWindow wnd( "foobar", 100, 100, 200, 200 );
+
+  while ( true )
+    if ( !wnd.threadStep() )
+      break;
+
+  return EXIT_SUCCESS;
+#endif
+
+  Coordinator coordinator;
+
+  char pathcopy[MAX_PATH];
+  strcpy_s( pathcopy, MAX_PATH, options.hivemindExecPath_.c_str() );
+  char* junkArgs[] = { pathcopy };
+
+  if ( !coordinator.LoadSettings( 1, junkArgs ) )
+    HIVE_EXCEPT( "Failed to load settings" );
+
+  hivemind::Console console;
+
+  hivemind::Bot hivemindBot( console );
+
+  hivemindBot.initialize( options );
+
+  hivemind::g_Bot = &hivemindBot;
+
+  hivemind::Cache::setBot( hivemind::g_Bot );
+
+  hivemind::Database::load( g_CVar_data_path.as_s() );
+
+#if 0
+  hivemind::Database::dumpWeapons();
+  return 0;
+#endif
+
+#if 0
+  testTechChain( console, sc2::UNIT_TYPEID::TERRAN_SIEGETANK );
+  testTechChain( console, sc2::UNIT_TYPEID::TERRAN_SIEGETANKSIEGED );
+  testTechChain( console, sc2::UNIT_TYPEID::ZERG_HYDRALISK );
+  testTechChain( console, sc2::UNIT_TYPEID::ZERG_HYDRALISKBURROWED );
+  testTechChain( console, sc2::UNIT_TYPEID::TERRAN_SUPPLYDEPOTLOWERED );
+  testTechChain( console, sc2::UNIT_TYPEID::TERRAN_SUPPLYDEPOT );
+  testTechChain( console, sc2::UNIT_TYPEID::TERRAN_BARRACKS );
+  testTechChain( console, sc2::UNIT_TYPEID::TERRAN_BARRACKSFLYING );
+  return 0;
+#endif
+
+  coordinator.SetRealtime( true );
+
+  coordinator.SetWindowSize(
+    g_CVar_screen_width.as_i(),
+    g_CVar_screen_height.as_i()
+  );
+
+  coordinator.SetUseGeneralizedAbilityId( false );
+
+  coordinator.SetParticipants( {
+    CreateParticipant( sc2::Zerg, &hivemindBot ),
+    CreateComputer( sc2::Terran, sc2::Difficulty::Medium ),
+    CreateComputer( sc2::Terran, sc2::Difficulty::Medium )
+    } );
+
+  coordinator.LaunchStarcraft();
+  if ( !coordinator.StartGame( g_CVar_map.as_s() ) )
+    HIVE_EXCEPT( "Failed to start game" );
+
+  while ( coordinator.Update() )
+  {
+    sc2::SleepFor( g_CVar_update_delay.as_i() );
+  }
+
+  hivemind::g_Bot = nullptr;
+
+  hivemind::platform::shutdown();
+
+  return EXIT_SUCCESS;
+}
+
+#ifdef HIVE_PLATFORM_WINDOWS
+
+int APIENTRY wWinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLine, int nCmdShow )
+{
+  UNREFERENCED_PARAMETER( hPrevInstance );
+  UNREFERENCED_PARAMETER( lpCmdLine );
+  UNREFERENCED_PARAMETER( nCmdShow );
+
+  // Enable leak checking in debug builds
+#if defined( _DEBUG ) || defined( DEBUG )
+  _CrtSetDbgFlag( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF );
+#endif
+
+  // CRT memory allocation breakpoints can be set here
+  // _CrtSetBreakAlloc( x );
+
+  // Parse command line arguments into engine options
+  int argCount;
+  wchar_t** arguments = CommandLineToArgvW( lpCmdLine, &argCount );
+  if ( !arguments )
+    return EXIT_FAILURE;
+
+  hivemind::Bot::Options options;
+
+  if ( argCount > 0 )
+  {
+    options.hivemindExecPath_ = hivemind::platform::wideToUtf8( arguments[0] );
+
+    int i = 1;
+    while ( i < argCount )
+    {
+      if ( _wcsicmp( arguments[i], L"-exec" ) == 0 )
+      {
+        i++;
+        if ( i < argCount )
+          options.executeCommands_.emplace_back( hivemind::platform::wideToUtf8( arguments[i] ) );
+      }
+      i++;
+    }
+  }
+
+  LocalFree( arguments );
+
+  int retval = EXIT_FAILURE;
+
 #ifndef _DEBUG
   try
   {
 #endif
 
-    hivemind::platform::initialize();
-
-    hivemind::platform::prepareProcess();
-
-  #if 0
-    hivemind::platform::ConsoleWindow wnd( "foobar", 100, 100, 200, 200 );
-
-    while ( true )
-      if ( !wnd.threadStep() )
-        break;
-
-    return EXIT_SUCCESS;
-  #endif
-
-    Coordinator coordinator;
-
-    if ( !coordinator.LoadSettings( argc, argv ) )
-      HIVE_EXCEPT( "Failed to load settings" );
-
-    hivemind::Bot::Options options;
-
-    int i = 0;
-    while ( i < argc )
-    {
-      if ( _stricmp( argv[i], "-exec" ) == 0 )
-      {
-        i++;
-        if ( i < argc )
-          options.executeCommands_.emplace_back( argv[i] );
-      }
-      i++;
-    }
-
-    hivemind::Console console;
-
-    hivemind::Bot hivemindBot( console );
-
-    hivemindBot.initialize( options );
-
-    hivemind::g_Bot = &hivemindBot;
-
-    hivemind::Cache::setBot( hivemind::g_Bot );
-
-    hivemind::Database::load( g_CVar_data_path.as_s() );
-
-  #if 0
-    hivemind::Database::dumpWeapons();
-    return 0;
-  #endif
-
-  #if 0
-    testTechChain(console, sc2::UNIT_TYPEID::TERRAN_SIEGETANK);
-    testTechChain(console, sc2::UNIT_TYPEID::TERRAN_SIEGETANKSIEGED);
-    testTechChain(console, sc2::UNIT_TYPEID::ZERG_HYDRALISK);
-    testTechChain(console, sc2::UNIT_TYPEID::ZERG_HYDRALISKBURROWED);
-    testTechChain(console, sc2::UNIT_TYPEID::TERRAN_SUPPLYDEPOTLOWERED);
-    testTechChain(console, sc2::UNIT_TYPEID::TERRAN_SUPPLYDEPOT);
-    testTechChain(console, sc2::UNIT_TYPEID::TERRAN_BARRACKS);
-    testTechChain(console, sc2::UNIT_TYPEID::TERRAN_BARRACKSFLYING);
-    return 0;
-  #endif
-
-    coordinator.SetRealtime( true );
-
-    coordinator.SetWindowSize(
-      g_CVar_screen_width.as_i(),
-      g_CVar_screen_height.as_i()
-    );
-
-    coordinator.SetUseGeneralizedAbilityId( false );
-
-    coordinator.SetParticipants( {
-      CreateParticipant( sc2::Zerg, &hivemindBot ),
-      CreateComputer( sc2::Terran, sc2::Difficulty::Medium ),
-      CreateComputer( sc2::Terran, sc2::Difficulty::Medium )
-    } );
-
-    coordinator.LaunchStarcraft();
-    if ( !coordinator.StartGame( g_CVar_map.as_s() ) )
-      HIVE_EXCEPT( "Failed to start game" );
-
-    while ( coordinator.Update() )
-    {
-      sc2::SleepFor( g_CVar_update_delay.as_i() );
-    }
-
-    hivemind::g_Bot = nullptr;
-
-    hivemind::platform::shutdown();
+    retval = runMain( options );
 
 #ifndef _DEBUG
   }
   catch ( hivemind::Exception& e )
   {
-    printf_s( "EXCEPTION: %s\n", e.getFullDescription().c_str() );
+    MessageBoxA( 0, e.getFullDescription().c_str(), "Exception", MB_OK );
+    return EXIT_FAILURE;
+  }
+  catch ( ... )
+  {
+    MessageBoxW( 0, L"Unknown exception", 0, MB_OK );
     return EXIT_FAILURE;
   }
 #endif
 
-  return EXIT_SUCCESS;
+  return retval;
+
 }
+
+#endif // HIVE_PLATFORM_WINDOWS

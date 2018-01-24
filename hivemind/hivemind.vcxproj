@@ -65,7 +65,7 @@
       <ShowIncludes>false</ShowIncludes>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <AdditionalLibraryDirectories>$(SolutionDir)..\SDK\s2client-api\lib;$(SolutionDir)..\SDK\jsoncpp\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>winmm.lib;imm32.lib;version.lib;civetweb.lib;libprotobufd.lib;sc2libd.lib;sc2apid.lib;sc2protocold.lib;sc2rendererd.lib;sc2utilsd.lib;SDL2.lib;jsoncppd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalOptions>/ignore:4099 /ignore:4217 %(AdditionalOptions)</AdditionalOptions>
@@ -93,7 +93,7 @@
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>$(SolutionDir)..\SDK\s2client-api\lib;$(SolutionDir)..\SDK\jsoncpp\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
