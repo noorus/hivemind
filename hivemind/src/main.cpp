@@ -69,6 +69,16 @@ int main( int argc, char* argv[] )
 
     hivemind::platform::prepareProcess();
 
+  #if 0
+    hivemind::platform::ConsoleWindow wnd( "foobar", 100, 100, 200, 200 );
+
+    while ( true )
+      if ( !wnd.threadStep() )
+        break;
+
+    return EXIT_SUCCESS;
+  #endif
+
     Coordinator coordinator;
 
     if ( !coordinator.LoadSettings( argc, argv ) )

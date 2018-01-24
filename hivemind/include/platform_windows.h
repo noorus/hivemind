@@ -12,6 +12,33 @@ namespace hivemind {
 
     using std::wstring;
 
+    class Window {
+    protected:
+      ATOM class_;
+      WNDPROC wndProc_;
+      HINSTANCE instance_;
+      HWND handle_;
+      void* userData_;
+    public:
+      Window( HINSTANCE instance, WNDPROC wndproc, void* userdata );
+      virtual ~Window();
+      void create( const string& classname, const string& title, int x, int y, int w, int h );
+      bool threadStep();
+    };
+
+    class ConsoleWindow: public Window {
+    private:
+      HWND log_;
+      HWND cmdline_;
+      float dpiScaling_;
+      static LRESULT CALLBACK wndProc( HWND wnd, UINT msg, WPARAM wParam, LPARAM lParam );
+      void initTextControl( HWND ctrl, bool lineinput );
+      void paint( HWND wnd, HDC hdc, RECT& client );
+    public:
+      ConsoleWindow( const string& title, int x, int y, int w, int h );
+      virtual ~ConsoleWindow() {}
+    };
+
     //! \class RWLock
     //! Reader-writer lock class for easy portability.
     class RWLock: boost::noncopyable {

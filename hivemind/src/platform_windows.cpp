@@ -1,0 +1,372 @@
+#include "stdafx.h"
+
+#ifdef HIVE_PLATFORM_WINDOWS
+
+#include "platform_windows.h"
+#include "exception.h"
+
+#include <windows.h>
+#include <unknwn.h>
+#define max(a,b) (((a) > (b)) ? (a) : (b))
+#define min(a,b) (((a) < (b)) ? (a) : (b))
+#include <gdiplus.h>
+
+#pragma comment(lib, "comctl32.lib")
+#pragma comment(lib, "gdiplus.lib")
+
+namespace hivemind {
+
+  namespace platform {
+
+#ifdef HIVE_SUPPORT_GUI
+
+    const wchar_t cRichEditDLL[] = L"msftedit.dll";
+    const wchar_t cRichEditControl[] = L"RichEdit50W";
+
+    static HMODULE g_richEditLibrary = nullptr;
+    static ULONG_PTR g_gdiplusToken = 0;
+
+    namespace gdip {
+      using namespace Gdiplus;
+    }
+
+    void initializeGUI()
+    {
+      INITCOMMONCONTROLSEX ctrls;
+      ctrls.dwSize = sizeof( INITCOMMONCONTROLSEX );
+      ctrls.dwICC = ICC_STANDARD_CLASSES | ICC_NATIVEFNTCTL_CLASS;
+
+      if ( !InitCommonControlsEx( &ctrls ) )
+        HIVE_EXCEPT( "Common controls init failed, missing manifest?" );
+
+      g_richEditLibrary = LoadLibraryW( cRichEditDLL );
+      if ( !g_richEditLibrary )
+        HIVE_EXCEPT( "RichEdit library load failed" );
+
+      gdip::GdiplusStartupInput gdiplusStartupInput;
+      gdiplusStartupInput.SuppressExternalCodecs = TRUE;
+      gdip::GdiplusStartup( &g_gdiplusToken, &gdiplusStartupInput, nullptr );
+    }
+
+    void shutdownGUI()
+    {
+      if ( g_gdiplusToken )
+        gdip::GdiplusShutdown( g_gdiplusToken );
+
+      if ( g_richEditLibrary )
+        FreeLibrary( g_richEditLibrary );
+    }
+
+  #else
+
+    inline void initializeGUI() {}
+    inline void shutdownGUI() {}
+
+  #endif // HIVE_SUPPORT_GUI
+
+    void initialize()
+    {
+      initializeGUI();
+    }
+
+    void prepareProcess()
+    {
+      SetErrorMode( SEM_FAILCRITICALERRORS | SEM_NOGPFAULTERRORBOX );
+
+      // SetPriorityClass( GetCurrentProcess(), HIGH_PRIORITY_CLASS );
+
+      // DWORD index = 0;
+      // AvSetMmThreadCharacteristicsW( L"Games", &index );
+    }
+
+    void shutdown()
+    {
+      shutdownGUI();
+    }
+
+  #ifdef HIVE_SUPPORT_GUI
+
+    // Window
+
+    Window::Window( HINSTANCE instance, WNDPROC wndproc, void* userdata ):
+    instance_( instance ), wndProc_( wndproc ), userData_( userdata ), handle_( nullptr ), class_( 0 )
+    {
+    }
+
+    Window::~Window()
+    {
+      if ( handle_ )
+        DestroyWindow( handle_ );
+      if ( class_ )
+        UnregisterClassW( (LPCWSTR)class_, instance_ );
+    }
+
+    void Window::create( const string& classname, const string& title, int x, int y, int w, int h )
+    {
+      wstring wideClass = utf8ToWide( classname );
+      wstring wideTitle = utf8ToWide( title );
+
+      WNDCLASSEXW cls = { 0 };
+      cls.cbSize = sizeof( WNDCLASSEXW );
+      cls.lpfnWndProc = wndProc_;
+      cls.hInstance = instance_;
+      cls.hIcon = nullptr;
+      cls.lpszClassName = wideClass.c_str();
+      class_ = RegisterClassExW( &cls );
+      if ( !class_ )
+        HIVE_EXCEPT( "Window class registration failed" );
+
+      bool sizable = true;
+      bool maximizable = true;
+      DWORD style = WS_CLIPCHILDREN | WS_OVERLAPPEDWINDOW | WS_POPUP;
+      sizable ? style |= WS_SIZEBOX : style &= ~WS_SIZEBOX;
+      maximizable ? style |= WS_MAXIMIZEBOX : style &= ~WS_MAXIMIZEBOX;
+
+      handle_ = CreateWindowExW( 0, (LPCWSTR)class_, wideTitle.c_str(), style, x, y, w, h, nullptr, nullptr, instance_, userData_ );
+      if ( !handle_ )
+        HIVE_EXCEPT( "Window creation failed" );
+
+      ShowWindow( handle_, SW_SHOWNORMAL );
+      UpdateWindow( handle_ );
+    }
+
+    bool Window::threadStep()
+    {
+      MSG msg;
+      BOOL ret = GetMessageW( &msg, handle_, 0, 0 );
+      if ( ret == -1 )
+        return false; // 2. window no longer exists
+      else if ( ret == 0 )
+        return false; // 1. thread received WM_QUIT (if pumping without handle)
+      else
+      {
+        TranslateMessage( &msg );
+        DispatchMessage( &msg );
+        return true;
+      }
+    }
+
+    // ConsoleWindow
+
+    const COLORREF cConsoleWindowBackground = RGB( 255, 255, 255 );
+    const COLORREF cConsoleWindowForeground = RGB( 10, 13, 20 );
+
+    const int headerHeight = 6;
+    const int ctrlMargin = 2;
+    const int cmdlineHeight = 20;
+    const long minWidth = 320;
+    const long minHeight = 240;
+
+    ConsoleWindow::ConsoleWindow( const string& title, int x, int y, int w, int h ):
+      Window( 0, wndProc, this ), cmdline_( nullptr ), log_( nullptr )
+    {
+      create( "hiveConsole", title, x, y, w, h );
+      // MARGINS margins = { 0, 0, headerHeight, 0 };
+      // DwmExtendFrameIntoClientArea( handle_, &margins );
+    }
+
+    void ConsoleWindow::initTextControl( HWND ctrl, bool lineinput )
+    {
+      SendMessageW( ctrl, EM_LIMITTEXT, lineinput ? 100 : -1, 0 );
+
+      if ( !lineinput )
+      {
+        SendMessageW( ctrl, EM_AUTOURLDETECT, TRUE, 0 );
+        SendMessageW( ctrl, EM_SETEVENTMASK, NULL, ENM_SELCHANGE | ENM_LINK );
+        SendMessageW( ctrl, EM_SETOPTIONS, ECOOP_OR,
+          ECO_AUTOVSCROLL | ECO_NOHIDESEL | ECO_SAVESEL | ECO_SELECTIONBAR );
+      }
+
+      CHARFORMAT2W format;
+      memset( &format, 0, sizeof( format ) );
+      format.cbSize = sizeof( CHARFORMAT2W );
+      format.dwMask = CFM_SIZE | CFM_OFFSET | CFM_EFFECTS | CFM_COLOR | CFM_BACKCOLOR | CFM_CHARSET | CFM_UNDERLINETYPE | CFM_FACE;
+      format.yHeight = 160;
+      format.crTextColor = cConsoleWindowForeground;
+      format.crBackColor = cConsoleWindowBackground;
+      format.bCharSet = DEFAULT_CHARSET;
+      format.bUnderlineType = CFU_UNDERLINENONE;
+
+      wcscpy_s( format.szFaceName, LF_FACESIZE,
+        utf8ToWide( "Trebuchet MS" ).c_str() );
+
+      SendMessageW( ctrl, EM_SETCHARFORMAT, SCF_ALL, (LPARAM)&format );
+      SendMessageW( ctrl, EM_SETMARGINS, EC_LEFTMARGIN | EC_RIGHTMARGIN | EC_USEFONTINFO, NULL );
+
+      CHARRANGE range = { -1, -1 };
+      SendMessageW( ctrl, EM_EXSETSEL, 0, (LPARAM)&range );
+
+      SETTEXTEX textex = { ST_DEFAULT, 1200 };
+      SendMessageW( ctrl, EM_SETTEXTEX, (WPARAM)&textex, NULL );
+
+      if ( lineinput )
+        SendMessageW( ctrl, EM_SETEVENTMASK, NULL, ENM_CHANGE );
+    }
+
+    inline gdip::RectF makeRectf( LONG left, LONG top, LONG right, LONG bottom )
+    {
+      return gdip::RectF( left, top, right - left, bottom - top );
+    }
+
+    void ConsoleWindow::paint( HWND wnd, HDC hdc, RECT& area )
+    {
+      auto width = ( area.right - area.left );
+      auto height = ( area.bottom - area.top );
+
+      HDC memdc = CreateCompatibleDC( hdc );
+      BITMAPINFOHEADER bmpInfoHdr = { sizeof( BITMAPINFOHEADER ), width, -height, 1, 32 };
+      HBITMAP hbitmap = CreateDIBSection( memdc, (BITMAPINFO*)( &bmpInfoHdr ), DIB_RGB_COLORS, 0, 0, 0 );
+      HGDIOBJ oldbitmap = SelectObject( memdc, hbitmap );
+
+      // ---
+
+      gdip::Graphics gfx( memdc );
+
+      auto header = makeRectf( area.left, area.top, area.right, headerHeight );
+      auto client = makeRectf( area.left, area.top + headerHeight, area.right, area.bottom );
+
+      static const gdip::SolidBrush brush_consoleHeader( gdip::Color( 255, 255, 46, 115 ) );
+      static const gdip::SolidBrush brush_consoleBg( gdip::Color( 255, 240, 240, 240 ) );
+      static const gdip::SolidBrush brush_transWhite( gdip::Color( 175, 255, 255, 255 ) );
+      static const gdip::SolidBrush brush_transBlack( gdip::Color( 100, 0, 0, 0 ) );
+
+      gfx.FillRectangle( &brush_consoleHeader, header );
+
+      gfx.FillRectangle( &brush_transWhite, 0, 0, width, 1 );
+      gfx.FillRectangle( &brush_transBlack, 0, headerHeight - 1, width, 1 );
+
+      gfx.FillRectangle( &brush_consoleBg, client );
+
+      // ---
+
+      BitBlt( hdc, 0, 0, area.right, area.bottom, memdc, 0, 0, SRCCOPY );
+      SelectObject( memdc, oldbitmap );
+      DeleteObject( hbitmap );
+      DeleteDC( memdc );
+    }
+
+    inline RECT fitLogControl( int w, int h )
+    {
+      RECT ret;
+      ret.left = ctrlMargin;
+      ret.right = w - ret.left - ctrlMargin;
+      ret.top = headerHeight + ctrlMargin;
+      ret.bottom = h - ret.top - cmdlineHeight - ( ctrlMargin * 2 );
+      return ret;
+    }
+
+    inline RECT fitCmdlineControl( int w, int h )
+    {
+      RECT ret;
+      ret.left = ctrlMargin;
+      ret.right = w - ret.left - ctrlMargin;
+      ret.top = h - cmdlineHeight - ctrlMargin;
+      ret.bottom = cmdlineHeight;
+      return ret;
+    }
+
+    LRESULT ConsoleWindow::wndProc( HWND wnd, UINT msg, WPARAM wParam, LPARAM lParam )
+    {
+      if ( msg == WM_CREATE )
+      {
+        auto self = (ConsoleWindow*)( (LPCREATESTRUCTW)lParam )->lpCreateParams;
+        SetWindowLongPtrW( wnd, GWLP_USERDATA, (LONG_PTR)self );
+        RECT rect;
+        GetClientRect( wnd, &rect );
+
+        RECT fit = fitLogControl( rect.right, rect.bottom );
+        self->log_ = CreateWindowExW( WS_EX_LEFT | WS_EX_STATICEDGE, cRichEditControl, L"",
+          WS_VISIBLE | WS_CHILD | WS_VSCROLL | ES_LEFT | ES_MULTILINE | ES_WANTRETURN | ES_READONLY,
+          fit.left, fit.top, fit.right, fit.bottom, wnd, nullptr,
+          self->instance_, (void*)self );
+
+        fit = fitCmdlineControl( rect.right, rect.bottom );
+        self->cmdline_ = CreateWindowExW( WS_EX_LEFT | WS_EX_STATICEDGE,
+          cRichEditControl, L"", WS_VISIBLE | WS_CHILD | ES_LEFT,
+          fit.left, fit.top, fit.right, fit.bottom, wnd, nullptr,
+          self->instance_, (void*)self );
+
+        if ( !self->log_ || !self->cmdline_ )
+          HIVE_EXCEPT( "Window control creation failed" );
+
+        self->initTextControl( self->log_, false );
+        self->initTextControl( self->cmdline_, true );
+
+        auto dpi = GetDpiForSystem();
+        self->dpiScaling_ = static_cast<float>( dpi ) / 96.0f;
+
+        SetWindowPos( wnd, nullptr, 0, 0, 0, 0, SWP_FRAMECHANGED | SWP_NOMOVE | SWP_NOSIZE );
+
+        return 0;
+      }
+
+      auto self = (ConsoleWindow*)GetWindowLongPtrW( wnd, GWLP_USERDATA );
+
+      if ( msg == WM_ERASEBKGND )
+      {
+        /*RECT clientRect, topRect;
+        GetClientRect( wnd, &clientRect );
+        topRect = clientRect;
+        topRect.bottom = headerHeight;
+        clientRect.top += headerHeight;
+
+        auto hdc = (HDC)wParam;
+        FillRect( hdc, &topRect, (HBRUSH)GetStockObject( BLACK_BRUSH ) );
+        FillRect( hdc, &clientRect, (HBRUSH)GetStockObject( WHITE_BRUSH ) );*/
+
+        return 1;
+      }
+      else if ( msg == WM_ACTIVATE )
+      {
+        InvalidateRect( wnd, nullptr, true );
+        return 0;
+      }
+      else if ( msg == WM_PAINT )
+      {
+        PAINTSTRUCT ps;
+        auto dc = BeginPaint( wnd, &ps );
+
+        RECT clientRect;
+        GetClientRect( wnd, &clientRect );
+
+        self->paint( wnd, dc, clientRect );
+
+        EndPaint( wnd, &ps );
+
+        return 0;
+      }
+      else if ( msg == WM_GETMINMAXINFO )
+      {
+        auto minmax = (LPMINMAXINFO)lParam;
+        minmax->ptMinTrackSize.x = minWidth;
+        minmax->ptMinTrackSize.y = minHeight;
+      }
+      else if ( msg == WM_EXITSIZEMOVE )
+      {
+        InvalidateRect( wnd, nullptr, FALSE );
+        return 0;
+      }
+      else if ( msg == WM_SIZE )
+      {
+        RECT fit = fitLogControl( LOWORD( lParam ), HIWORD( lParam ) );
+        MoveWindow( self->log_, fit.left, fit.top, fit.right, fit.bottom, TRUE );
+        fit = fitCmdlineControl( LOWORD( lParam ), HIWORD( lParam ) );
+        MoveWindow( self->cmdline_, fit.left, fit.top, fit.right, fit.bottom, TRUE );
+        return 0;
+      }
+      else if ( msg == WM_DESTROY )
+      {
+        PostQuitMessage( EXIT_SUCCESS );
+        return 0;
+      }
+
+      return DefWindowProcW( wnd, msg, wParam, lParam );
+    }
+
+  #endif
+
+  }
+
+}
+
+#endif // HIVE_PLATFORM_WINDOWS
