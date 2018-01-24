@@ -1,17 +1,21 @@
 #pragma once
 
+#include "hive_config.h"
+
+#ifdef HIVE_PLATFORM_WINDOWS
 #include "targetver.h"
 
 #define WIN32_LEAN_AND_MEAN
 #define NOMINMAX
 #include <windows.h>
 #include <shellapi.h>
-#include <stdio.h>
+#endif // HIVE_PLATFROM_WINDOWS
 
 #ifdef _DEBUG
 //# define _CRTDBG_MAP_ALLOC
 # include <crtdbg.h>
 #endif
+#include <stdio.h>
 #include <malloc.h>
 #include <memory.h>
 #include <wchar.h>
@@ -78,7 +82,5 @@
 #ifndef SAFE_CLOSE_HANDLE
 # define SAFE_CLOSE_HANDLE(p) {if(p){CloseHandle(p);(p)=NULL;}}
 #endif
-
-#include "hive_config.h"
 
 #include "hive_types.h"

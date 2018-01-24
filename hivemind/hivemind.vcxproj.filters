@@ -258,6 +258,9 @@
     <ClInclude Include="include\chokepoint.h">
       <Filter>Header Files\Map</Filter>
     </ClInclude>
+    <ClInclude Include="include\platform_windows.h">
+      <Filter>Header Files\Utilities</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\stdafx.cpp">
