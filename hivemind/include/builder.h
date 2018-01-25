@@ -4,6 +4,7 @@
 #include "distancemap.h"
 #include "hive_rect2.h"
 #include "base.h"
+#include "trainer.h"
 
 namespace hivemind {
 
@@ -21,6 +22,28 @@ namespace hivemind {
   };
 
   using BuildProjectID = uint64_t;
+
+  class UnitStats
+  {
+  public:
+    UnitSet units;
+    std::set<BuildProjectID> inProgress;
+
+    int inProgressCount() const
+    {
+      return static_cast<int>(inProgress.size());
+    }
+
+    int futureCount() const
+    {
+      return unitCount() + inProgressCount();
+    }
+
+    int unitCount() const
+    {
+      return static_cast<int>(units.size());
+    }
+  };
 
   struct Building {
     BuildProjectID id;
@@ -68,10 +91,19 @@ namespace hivemind {
     BuildingVector buildProjects_;
     BuildProjectID idPool_;
     virtual void onMessage( const Message& msg ) final;
+
+    Trainer trainer_;
+
+  private:
+    std::unordered_map<sc2::UNIT_TYPEID, UnitStats> unitStats_;
+
   public:
     Builder( Bot* bot );
     void gameBegin() final;
-    bool add( UnitTypeID structure, const Base& base, BuildingPlacement placement, BuildProjectID& idOut );
+
+    bool build( UnitTypeID structureType, const Base& base, BuildingPlacement placement, BuildProjectID& idOut );
+    bool train( UnitTypeID unitType, Base& base, UnitTypeID trainerType, BuildProjectID& idOut );
+
     void remove( BuildProjectID id );
     void update( const GameTime time, const GameTime delta );
     void draw() override;
@@ -80,6 +112,11 @@ namespace hivemind {
 
     // Returns the amount of {minerals,vespene} that the not-yet-paid-trainings will cost.
     std::pair<int,int> getAllocatedResources() const;
+
+    UnitStats& getUnitStats(sc2::UNIT_TYPEID unitType)
+    {
+      return unitStats_[unitType];
+    }
   };
 
 }

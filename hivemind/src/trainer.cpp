@@ -8,38 +8,76 @@
 
 namespace hivemind {
 
-  Trainer::Trainer( Bot* bot ): Subsystem( bot ), idPool_( 0 )
+  Trainer::Trainer(Bot* bot, BuildProjectID& idPool, std::unordered_map<sc2::UNIT_TYPEID, UnitStats>& unitStats) :
+      Subsystem(bot),
+      idPool_(idPool),
+      unitStats_(unitStats)
   {
   }
 
   void Trainer::gameBegin()
   {
     trainingProjects_.clear();
-    idPool_ = 0;
-    bot_->messaging().listen( Listen_Global, this );
+    bot_->messaging().listen(Listen_Global, this);
   }
 
-  bool Trainer::add( UnitTypeID unit, const Base& base, UnitTypeID trainer, TrainingProjectID& idOut )
+  UnitRef Trainer::getTrainer(Base& base, UnitTypeID trainerType) const
   {
-    auto& larvae = base.larvae();
-    if(larvae.empty())
+    if(trainerType == sc2::UNIT_TYPEID::ZERG_LARVA)
+    {
+      auto& larvae = base.larvae();
+      if(larvae.empty())
+      {
+        return nullptr;
+      }
+
+      auto larva = *larvae.begin();
+      base.removeLarva(larva);
+
+      return larva;
+    }
+    else if(trainerType == sc2::UNIT_TYPEID::ZERG_HATCHERY)
+    {
+      for(auto building : base.depots())
+      {
+        if(building->unit_type != trainerType)
+          continue;
+        if(building->build_progress < 1.0f)
+          continue;
+
+        if(!building->orders.empty())
+          continue;
+        if(trainers_.count(building) > 0)
+          continue;
+
+        return building;
+      }
+    }
+    return nullptr;
+  }
+
+  bool Trainer::train( UnitTypeID unitType, Base& base, UnitTypeID trainerType, BuildProjectID& idOut )
+  {
+    auto trainer = getTrainer(base, trainerType);
+
+    if(!trainer)
     {
       return false;
     }
 
-    Training build( idPool_++, unit, trainer );
-    build.trainer = *larvae.begin();
-
-    bot_->bases().removeLarva(build.trainer);
+    Training build( idPool_++, unitType, trainerType, trainer );
 
     trainingProjects_.push_back( build );
-    bot_->console().printf( "Trainer: New TrainOp %d for %s", build.id, sc2::UnitTypeToName( unit ) );
+    bot_->console().printf( "Trainer: New TrainOp %d for %s", build.id, sc2::UnitTypeToName( unitType ) );
+    trainers_.insert(trainer);
+
+    unitStats_[unitType].inProgress.insert(build.id);
 
     idOut = build.id;
     return true;
   }
 
-  void Trainer::remove( TrainingProjectID id )
+  void Trainer::remove( BuildProjectID id )
   {
     for(auto& training : trainingProjects_)
     {
@@ -57,38 +95,82 @@ namespace hivemind {
 
   void Trainer::onMessage( const Message& msg )
   {
+    auto trainingComplete = [this](auto it)
+    {
+      auto training = *it;
+      bot_->console().printf( "Trainer: Removing TrainOp %d (%s)", training.id, training.completed ? "completed" : "canceled" );
+      if ( training.completed )
+        bot_->messaging().sendGlobal( M_Training_Finished, training.id );
+      else
+        bot_->messaging().sendGlobal( M_Training_Canceled, training.id );
+
+      trainers_.erase(training.trainer);
+      auto& stats = unitStats_[training.type];
+      stats.inProgress.erase(training.id);
+      trainingProjects_.erase(it);
+    };
+
     if ( msg.code == M_Global_UnitCreated )
     {
-      if ( !utils::isMine( msg.unit() ) )
+      UnitRef unit = msg.unit();
+      auto& stats = unitStats_[unit->unit_type];
+
+      if ( !utils::isMine( unit ) )
         return;
-      for ( auto& training : trainingProjects_ )
+
+      if(utils::isStructure(unit))
+        return;
+
+      stats.units.insert(unit);
+
+      for(auto it = trainingProjects_.begin(); it != trainingProjects_.end(); ++it)
       {
+        auto& training = *it;
+        if(training.type == unit->unit_type)
+        {
+          if(training.trainer->orders.empty())
+          {
+            // Hatchery produced a queen.
+            training.completed = true;
+
+            trainingComplete(it);
+            break;
+          }
+        }
       }
     }
     else if(msg.code == M_Global_UnitDestroyed)
     {
       UnitRef unit = msg.unit();
+      auto& stats = unitStats_[unit->unit_type];
+
       if(!utils::isMine(unit))
       {
         return;
       }
 
-      for ( auto& build : trainingProjects_ )
+      for(auto it = trainingProjects_.begin(); it != trainingProjects_.end(); ++it)
       {
-        if(build.trainer == unit)
+        auto& training = *it;
+        if(training.trainer == unit)
         {
           if(unit->health > 0.0f)
           {
             // Egg hatched.
-            build.completed = true;
+            training.completed = true;
           }
           else
           {
-            // Egg got destroyed.
-            build.cancel = true;
+            // Egg or hatchery got destroyed.
+            training.cancel = true;
           }
+
+          trainingComplete(it);
+          break;
         }
       }
+
+      stats.units.erase(unit);
     }
   }
 
@@ -96,26 +178,8 @@ namespace hivemind {
   {
     const GameTime cTrainRecheckInterval = 50;
 
-    auto it = trainingProjects_.begin();
-    while ( it != trainingProjects_.end() )
+    for(auto& training : trainingProjects_)
     {
-      auto& training = ( *it );
-
-      if ( training.completed || training.cancel )
-      {
-        if ( training.completed )
-          bot_->messaging().sendGlobal( M_Training_Finished, training.id );
-        else
-          bot_->messaging().sendGlobal( M_Training_Canceled, training.id );
-
-        bot_->console().printf( "Trainer: Removing TrainOp %d (%s)", training.id, training.completed ? "completed" : "canceled" );
-
-        it = trainingProjects_.erase( it );
-        continue;
-      }
-
-      ++it;
-
       if(!training.moneyAllocated)
       {
         if(training.trainer && training.trainer->is_alive && !training.trainer->orders.empty())
@@ -130,9 +194,9 @@ namespace hivemind {
 
           if(training.trainer && training.trainer->is_alive && training.trainer->orders.empty())
           {
-            bot_->unitDebugMsgs_[training.trainer] = "Trainer, Op " + std::to_string( training.id );
-            bot_->console().printf( "TrainOp %d: Got trainer %x for %s", training.id, training.trainer, sc2::UnitTypeToName(training.type) );
-            Larva( training.trainer ).morph( training.type );
+            bot_->unitDebugMsgs_[training.trainer] = "Trainer, Op " + std::to_string(training.id);
+            bot_->console().printf("TrainOp %d: Got trainer %x for %s", training.id, training.trainer, sc2::UnitTypeToName(training.type));
+            Larva(training.trainer).morph(training.type);
             training.tries++;
           }
           else

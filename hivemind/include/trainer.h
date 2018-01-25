@@ -9,10 +9,12 @@ namespace hivemind {
 
   class Bot;
 
-  using TrainingProjectID = uint64_t;
+  using BuildProjectID = uint64_t;
+
+  class UnitStats;
 
   struct Training {
-    TrainingProjectID id;
+    BuildProjectID id;
     UnitTypeID type;
     UnitTypeID trainerType;
     UnitRef building;
@@ -28,12 +30,12 @@ namespace hivemind {
     size_t tries;
     size_t orderTries;
 
-    Training(TrainingProjectID id_, UnitTypeID type_, UnitTypeID trainerType_) :
+    Training(BuildProjectID id_, UnitTypeID type_, UnitTypeID trainerType_, UnitRef trainer_) :
         id(id_),
         type(type_),
         trainerType(trainerType_),
         building(nullptr),
-        trainer(nullptr),
+        trainer(trainer_),
         cancel(false),
         position(0, 0),
         nextUpdateTime(0),
@@ -53,13 +55,18 @@ namespace hivemind {
   class Trainer: public Subsystem, public hivemind::Listener {
   protected:
     TrainingVector trainingProjects_;
-    TrainingProjectID idPool_;
     virtual void onMessage( const Message& msg ) final;
+    BuildProjectID& idPool_;
+    std::unordered_map<sc2::UNIT_TYPEID, UnitStats>& unitStats_;
+    UnitSet trainers_;
+
+    UnitRef getTrainer(Base& base, UnitTypeID trainerType) const;
+
   public:
-    Trainer( Bot* bot );
+    Trainer( Bot* bot, BuildProjectID& idPool, std::unordered_map<sc2::UNIT_TYPEID, UnitStats>& );
     void gameBegin() final;
-    bool add( UnitTypeID unit, const Base& base, UnitTypeID trainer, TrainingProjectID& idOut );
-    void remove( TrainingProjectID id );
+    bool train( UnitTypeID unitType, Base& base, UnitTypeID trainerType, BuildProjectID& idOut );
+    void remove( BuildProjectID id );
     void update( const GameTime time, const GameTime delta );
     void gameEnd() final;
 
