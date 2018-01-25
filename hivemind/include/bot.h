@@ -22,6 +22,16 @@ namespace hivemind {
       string hivemindExecPath_; //!< Cmdline argv[0]
       StringVector executeCommands_; //!< Extra commands to execute on startup
     };
+    enum Action {
+      Bot_Playing,
+      Bot_WantToQuit,
+      Bot_Quitting,
+      Bot_GameOver
+    };
+    struct State {
+      bool inGame_;
+      Action action_;
+    };
     std::map<UnitRef, std::string> unitDebugMsgs_;
   protected:
     GameTime time_;
@@ -42,6 +52,7 @@ namespace hivemind {
     Builder builder_;
     Vision vision_;
     Options options_;
+    State state_;
     bool cheatGodmode_;
     bool cheatCostIgnore_;
   public:
@@ -62,9 +73,11 @@ namespace hivemind {
     inline Strategy& strategy() { return strategy_; }
     inline Builder& builder() { return builder_; }
     inline Vision& vision() { return vision_; }
+    inline const State& state() const { return state_; }
     void initialize( const Options& opts );
     void enableGodmodeCheat(); //!< This cannot be toggled back in the same game
     void enableCostIgnoreCheat(); //!< This cannot be toggled back in the same game
+    void requestEndGame();
   public:
     //! Callbacks
     virtual void OnGameStart() final;

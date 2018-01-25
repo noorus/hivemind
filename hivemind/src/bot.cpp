@@ -69,12 +69,26 @@ namespace hivemind {
     {
       console_.execute( exec, true );
     }
+
+    state_.inGame_ = false;
+    state_.action_ = Bot_GameOver;
+  }
+
+  void Bot::requestEndGame()
+  {
+    if ( state_.inGame_ )
+    {
+      state_.action_ = Bot_WantToQuit;
+    }
   }
 
   void Bot::OnGameStart()
   {
     time_ = 0;
     lastStepTime_ = 0;
+
+    state_.inGame_ = true;
+    state_.action_ = Bot_Playing;
 
     platform::PerformanceTimer timer;
     timer.start();
@@ -173,6 +187,22 @@ namespace hivemind {
 
     console_.executeBuffered();
 
+    if ( state_.action_ == Bot_WantToQuit )
+    {
+      state_.action_ = Bot_Quitting;
+      console_.print( "Ending current game by request" );
+      debug_.endGame( false );
+      action_->SendActions();
+      debug_.send();
+      return;
+    }
+    else if ( state_.action_ == Bot_Quitting )
+    {
+      action_->SendActions();
+      debug_.send();
+      return;
+    }
+
     map_.update( time_ );
 
     vision_.update( time_, delta );
@@ -232,6 +262,9 @@ namespace hivemind {
     intelligence_.gameEnd();
     messaging_.gameEnd();
     console_.gameEnd();
+
+    state_.inGame_ = false;
+    state_.action_ = Bot_GameOver;
   }
 
   void Bot::OnUnitCreated( const Unit* unit )

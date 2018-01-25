@@ -9,6 +9,8 @@
 
 using namespace hivemind;
 
+static void concmdQuit( Console* console, ConCmd* command, StringVector& arguments );
+
 HIVE_DECLARE_CONVAR( screen_width, "Width of the launched game window.", 1920 );
 HIVE_DECLARE_CONVAR( screen_height, "Height of the launched game window.", 1080 );
 
@@ -17,6 +19,10 @@ HIVE_DECLARE_CONVAR( data_path, "Path to the bot's data directory.", R"(..\data)
 HIVE_DECLARE_CONVAR( map, "Name or path of the map to launch.", "Fractured Glacier" );
 
 HIVE_DECLARE_CONVAR( update_delay, "Time delay between main loop updates in milliseconds.", 10 );
+
+HIVE_DECLARE_CONVAR( net_timeout, "Game API communications timeout in milliseconds.", 20000 );
+
+HIVE_DECLARE_CONCMD( quit, "Quit currently active game.", concmdQuit );
 
 void testTechChain(Console& console, sc2::UNIT_TYPEID targetType)
 {
@@ -32,6 +38,14 @@ void testTechChain(Console& console, sc2::UNIT_TYPEID targetType)
   {
     console.printf("  %s", sc2::UnitTypeToName(unitType));
   }
+}
+
+void concmdQuit( Console* console, ConCmd* command, StringVector& arguments )
+{
+  if ( !g_Bot || !g_Bot->state().inGame_ )
+    return;
+
+  g_Bot->requestEndGame();
 }
 
 void testTechChain(Console& console, sc2::UPGRADE_ID targetType)
@@ -68,6 +82,18 @@ int runMain( hivemind::Bot::Options& options )
 
   platform::prepareProcess();
 
+  Console console;
+
+  platform::Thread consoleWindowThread( c_consoleThreadName,
+    []( platform::Event& running, platform::Event& wantStop, void* argument ) -> bool
+  {
+    auto cnsl = (Console*)argument;
+    platform::ConsoleWindow window( cnsl, c_consoleTitle, 220, 220, 640, 320 );
+    running.set();
+    window.messageLoop( wantStop );
+    return true;
+  }, &console );
+
   sc2::Coordinator coordinator;
 
   char myExePath[MAX_PATH];
@@ -77,17 +103,7 @@ int runMain( hivemind::Bot::Options& options )
   if ( !coordinator.LoadSettings( 1, junkArgs ) )
     HIVE_EXCEPT( "Failed to load settings" );
 
-  Console console;
-
-  platform::Thread consoleWindowThread( c_consoleThreadName,
-  []( platform::Event& running, platform::Event& wantStop, void* argument ) -> bool
-  {
-    auto cnsl = (Console*)argument;
-    platform::ConsoleWindow window( cnsl, c_consoleTitle, 220, 220, 640, 320 );
-    running.set();
-    window.messageLoop( wantStop );
-    return true;
-  }, &console );
+  coordinator.SetTimeoutMS( g_CVar_net_timeout.as_i() );
 
   consoleWindowThread.start();
 
@@ -101,24 +117,8 @@ int runMain( hivemind::Bot::Options& options )
 
   Database::load( g_CVar_data_path.as_s() );
 
-#if 0
-  Database::dumpWeapons();
-  return 0;
-#endif
-
-#if 0
-  testTechChain( console, sc2::UNIT_TYPEID::TERRAN_SIEGETANK );
-  testTechChain( console, sc2::UNIT_TYPEID::TERRAN_SIEGETANKSIEGED );
-  testTechChain( console, sc2::UNIT_TYPEID::ZERG_HYDRALISK );
-  testTechChain( console, sc2::UNIT_TYPEID::ZERG_HYDRALISKBURROWED );
-  testTechChain( console, sc2::UNIT_TYPEID::TERRAN_SUPPLYDEPOTLOWERED );
-  testTechChain( console, sc2::UNIT_TYPEID::TERRAN_SUPPLYDEPOT );
-  testTechChain( console, sc2::UNIT_TYPEID::TERRAN_BARRACKS );
-  testTechChain( console, sc2::UNIT_TYPEID::TERRAN_BARRACKSFLYING );
-  return 0;
-#endif
-
   coordinator.SetRealtime( true );
+  coordinator.SetMultithreaded( false );
 
   coordinator.SetWindowSize(
     g_CVar_screen_width.as_i(),
@@ -134,13 +134,25 @@ int runMain( hivemind::Bot::Options& options )
     } );
 
   coordinator.LaunchStarcraft();
+
   if ( !coordinator.StartGame( g_CVar_map.as_s() ) )
     HIVE_EXCEPT( "Failed to start game" );
 
-  while ( coordinator.Update() )
+  while ( true )
   {
+    if ( !consoleWindowThread.check() )
+    {
+      hivemindBot.requestEndGame();
+    }
+    if ( !coordinator.Update() )
+    {
+      coordinator.LeaveGame();
+      break;
+    }
     sc2::SleepFor( g_CVar_update_delay.as_i() );
   }
+
+  coordinator.WaitForAllResponses();
 
   hivemind::g_Bot = nullptr;
 
@@ -160,12 +172,12 @@ int APIENTRY wWinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCm
   UNREFERENCED_PARAMETER( nCmdShow );
 
   // Enable leak checking in debug builds
+  // FIXME: Disabled for now because sc2::Coordinator dumps a shitload of memory for whatever reason and it's annoying
 #if defined( _DEBUG ) || defined( DEBUG )
-  _CrtSetDbgFlag( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF );
-#endif
-
+  // _CrtSetDbgFlag( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF );
   // CRT memory allocation breakpoints can be set here
   // _CrtSetBreakAlloc( x );
+#endif
 
   platform::g_instance = hInstance;
 

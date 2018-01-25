@@ -70,7 +70,10 @@ namespace hivemind {
       Thread( const string& name, Callback callback, void* argument );
       virtual bool start();
       virtual void stop();
-      virtual bool waitFor( uint32_t milliseconds = INFINITE );
+      //! Returns true if thread is alive within given time
+      virtual bool waitFor( uint32_t milliseconds = INFINITE ) const;
+      //! Returns true if thread is alive
+      inline bool check() const { return waitFor( 0 ); }
       ~Thread();
     };
 

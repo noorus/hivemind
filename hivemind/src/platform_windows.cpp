@@ -145,9 +145,10 @@ namespace hivemind {
       id_ = 0;
     }
 
-    bool Thread::waitFor( uint32_t milliseconds )
+    bool Thread::waitFor( uint32_t milliseconds ) const
     {
-      return ( WaitForSingleObject( thread_, milliseconds ) == WAIT_OBJECT_0 );
+      auto retval = WaitForSingleObject( thread_, milliseconds );
+      return ( retval == WAIT_TIMEOUT );
     }
 
     Thread::~Thread()

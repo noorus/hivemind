@@ -45,7 +45,7 @@ namespace hivemind {
     // Window
 
     Window::Window( HINSTANCE instance, WNDPROC wndproc, void* userdata ):
-      instance_( instance ), wndProc_( wndproc ), userData_( userdata ), handle_( nullptr ), class_( 0 )
+    instance_( instance ), wndProc_( wndproc ), userData_( userdata ), handle_( nullptr ), class_( 0 )
     {
     }
 
@@ -286,12 +286,12 @@ namespace hivemind {
       auto header = makeRectf( area.left, area.top, area.right, headerHeight );
       auto client = makeRectf( area.left, area.top + headerHeight, area.right, area.bottom );
 
-      static const gdip::SolidBrush brush_consoleHeader( gdip::Color( 255, 255, 0, 99 ) );
-      static const gdip::SolidBrush brush_consoleBg( gdip::Color( 255, 240, 240, 240 ) );
-      static const gdip::SolidBrush brush_transWhite( gdip::Color( 175, 255, 255, 255 ) );
-      static const gdip::SolidBrush brush_transBlack( gdip::Color( 125, 0, 0, 0 ) );
-      static const gdip::SolidBrush brush_editBg( gdip::Color( 255, 255, 255, 255 ) );
-      static const gdip::SolidBrush brush_editBorder( gdip::Color( 255, 163, 163, 163 ) );
+      gdip::SolidBrush brush_consoleHeader( gdip::Color( 255, 255, 0, 99 ) );
+      gdip::SolidBrush brush_consoleBg( gdip::Color( 255, 240, 240, 240 ) );
+      gdip::SolidBrush brush_transWhite( gdip::Color( 175, 255, 255, 255 ) );
+      gdip::SolidBrush brush_transBlack( gdip::Color( 125, 0, 0, 0 ) );
+      gdip::SolidBrush brush_editBg( gdip::Color( 255, 255, 255, 255 ) );
+      gdip::SolidBrush brush_editBorder( gdip::Color( 255, 163, 163, 163 ) );
 
       gfx.FillRectangle( &brush_consoleHeader, header );
 
