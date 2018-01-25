@@ -173,6 +173,8 @@ namespace hivemind {
     auto delta = ( time_ - lastStepTime_ );
     lastStepTime_ = time_;
 
+    console_.executeBuffered();
+
     map_.update( time_ );
 
     vision_.update( time_, delta );

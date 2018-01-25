@@ -106,6 +106,7 @@ namespace hivemind {
       void initTextControl( HWND ctrl, bool lineinput );
       void paint( HWND wnd, HDC hdc, RECT& client );
       void flushBuffer();
+      void forwardExecute( const wstring& command );
     public:
       ConsoleWindow( Console* console, const string& title, int x, int y, int w, int h );
       void onConsolePrint( Console* console, const string& str ) override;

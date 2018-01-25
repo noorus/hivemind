@@ -246,13 +246,13 @@ namespace hivemind {
 
   void Console::addListener( ConsoleListener* listener )
   {
-    ScopedRWLock lock( &bufferLock_ );
+    ScopedRWLock lock( &listenerLock_ );
     listeners_.insert( listener );
   }
 
   void Console::removeListener( ConsoleListener* listener )
   {
-    ScopedRWLock lock( &bufferLock_ );
+    ScopedRWLock lock( &listenerLock_ );
     listeners_.erase( listener );
   }
 
@@ -269,12 +269,12 @@ namespace hivemind {
     if ( fileOut_ )
       fileOut_->write( fullbuf );
 
-    bufferLock_.lock();
+    listenerLock_.lockShared();
     for ( auto listener : listeners_ )
     {
       listener->onConsolePrint( this, fullbuf );
     }
-    bufferLock_.unlock();
+    listenerLock_.unlockShared();
 
     // ::printf( fullbuf );
 
@@ -416,6 +416,23 @@ namespace hivemind {
     SAFE_DELETE( fileOut_ );
 
     bot_ = nullptr;
+  }
+
+  void Console::queueCommand( const string& commandLine )
+  {
+    ScopedRWLock lock( &bufferLock_ );
+    bufferedCommands_.push_back( commandLine );
+  }
+
+  void Console::executeBuffered()
+  {
+    bufferLock_.lockShared();
+    for ( auto& cmd : bufferedCommands_ )
+      execute( cmd, true );
+    bufferLock_.unlockShared();
+    bufferLock_.lock();
+    bufferedCommands_.clear();
+    bufferLock_.unlock();
   }
 
 }

@@ -113,8 +113,10 @@ namespace hivemind {
     CVarList cvars_; //!< Registered commands & variables
     static CVarList precreated_; //!< Pre-created commands & variables
     platform::RWLock lock_; //!< Execution lock
+    platform::RWLock listenerLock_; //!< Listener add/remove/callback lock
     platform::RWLock bufferLock_; //!< Command buffer lock
     set<ConsoleListener*> listeners_;
+    StringVector bufferedCommands_;
     void writeStartBanner();
     void writeStopBanner();
     //! Registers a console variable or command.
@@ -127,6 +129,8 @@ namespace hivemind {
     void setBot( Bot* bot );
     void gameBegin();
     void gameEnd();
+    void queueCommand( const string& commandLine );
+    void executeBuffered();
     void print( const char* str );
     inline void print( const string& str ) { print( str.c_str() ); }
     void printf( const char* str, ... );

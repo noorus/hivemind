@@ -433,6 +433,11 @@ namespace hivemind {
       return ret;
     }
 
+    void ConsoleWindow::forwardExecute( const wstring& command )
+    {
+      console_->queueCommand( wideToUtf8( command ) );
+    }
+
     LRESULT ConsoleWindow::cmdlineProc( HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam )
     {
       auto window = (ConsoleWindow*)GetWindowLongPtrW( wnd, GWLP_USERDATA );
@@ -445,7 +450,7 @@ namespace hivemind {
         if ( wparam == VK_RETURN )
         {
           auto line = getWindowText( window->cmdline_ );
-          window->print( line );
+          window->forwardExecute( line );
           window->clearCmdline();
           return 0;
         }
