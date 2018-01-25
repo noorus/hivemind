@@ -25,6 +25,8 @@ namespace hivemind {
 
     const wchar_t cRichEditDLL[] = L"msftedit.dll";
     const wchar_t cRichEditControl[] = L"RichEdit50W";
+    // const wchar_t cRichEditDLL[] = L"riched20.dll";
+    // const wchar_t cRichEditControl[] = L"RichEdit60W";
 
     static HMODULE g_richEditLibrary = nullptr;
     static ULONG_PTR g_gdiplusToken = 0;
@@ -272,12 +274,12 @@ namespace hivemind {
       console_->removeListener( this );
     }
 
-    void ConsoleWindow::onConsolePrint( Console * console, const string & str )
+    void ConsoleWindow::onConsolePrint( Console* console, const string& str )
     {
       lock_.lock();
       linesBuffer_.push_back( str );
-      PostMessageW( handle_, WM_HIVE_CONSOLEFLUSHBUFFER, 0, 0 );
       lock_.unlock();
+      PostMessageW( handle_, WM_HIVE_CONSOLEFLUSHBUFFER, 0, 0 );
     }
 
     void ConsoleWindow::flushBuffer()
@@ -339,8 +341,14 @@ namespace hivemind {
       format.dwMask = CFM_COLOR | CFM_EFFECTS;
       format.crTextColor = color;
       SendMessage( log_, EM_SETCHARFORMAT, SCF_SELECTION, (LPARAM)&format );
-      SETTEXTEX textex = { ST_SELECTION, 1200 };
-      SendMessage( log_, EM_SETTEXTEX, (WPARAM)&textex, (LPARAM)line.c_str() );
+      SETTEXTEX textex = { ST_SELECTION | ST_UNICODE, 1200 };
+      if ( line.length() < 3 || 0x000a000d != *(uint32_t*)(line.c_str() + (line.length() - 2)) )
+        SendMessage( log_, EM_SETTEXTEX, (WPARAM)&textex, (LPARAM)line.c_str() );
+      else
+      {
+        wstring feedFixedLine = L"\r\n" + line.substr( 0, line.length() - 2 );
+        SendMessage( log_, EM_SETTEXTEX, (WPARAM)&textex, (LPARAM)feedFixedLine.c_str() );
+      }
     }
 
     void ConsoleWindow::print( const wstring& line )
