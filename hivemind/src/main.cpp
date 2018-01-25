@@ -189,21 +189,20 @@ int APIENTRY wWinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCm
 
   Bot::Options options;
 
-  if ( argCount > 0 )
-  {
-    options.hivemindExecPath_ = platform::wideToUtf8( arguments[0] );
+  wchar_t modulePath[MAX_PATH + 1];
+  GetModuleFileNameW( nullptr, modulePath, MAX_PATH + 1 );
+  options.hivemindExecPath_ = platform::wideToUtf8( modulePath );
 
-    int i = 1;
-    while ( i < argCount )
+  int i = 0;
+  while ( i < argCount )
+  {
+    if ( _wcsicmp( arguments[i], L"-exec" ) == 0 )
     {
-      if ( _wcsicmp( arguments[i], L"-exec" ) == 0 )
-      {
-        i++;
-        if ( i < argCount )
-          options.executeCommands_.emplace_back( platform::wideToUtf8( arguments[i] ) );
-      }
-      i++;
+      ++i;
+      if ( i < argCount )
+        options.executeCommands_.emplace_back( platform::wideToUtf8( arguments[i] ) );
     }
+    ++i;
   }
 
   LocalFree( arguments );
