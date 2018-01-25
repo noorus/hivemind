@@ -10,6 +10,7 @@
 namespace hivemind {
 
   using std::string;
+  using std::wstring;
   using std::stringstream;
   using std::vector;
   using std::list;

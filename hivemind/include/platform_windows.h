@@ -6,15 +6,11 @@
 
 namespace hivemind {
 
-  class Console;
-
   namespace platform {
 
     void initialize();
     void prepareProcess();
     void shutdown();
-
-    using std::wstring;
 
     extern HINSTANCE g_instance;
 
@@ -76,46 +72,6 @@ namespace hivemind {
       virtual void stop();
       virtual bool waitFor( uint32_t milliseconds = INFINITE );
       ~Thread();
-    };
-
-    class Window {
-    protected:
-      ATOM class_;
-      WNDPROC wndProc_;
-      HINSTANCE instance_;
-      HWND handle_;
-      void* userData_;
-    public:
-      Window( HINSTANCE instance, WNDPROC wndproc, void* userdata );
-      virtual ~Window();
-      void create( const string& classname, const string& title, int x, int y, int w, int h );
-      void messageLoop( Event& stopEvent );
-    };
-
-    class ConsoleWindow: public Window, public ConsoleListener {
-    private:
-      HWND log_;
-      HWND cmdline_;
-      float dpiScaling_;
-      WNDPROC baseCmdlineProc_;
-      Console* console_;
-      StringVector linesBuffer_;
-      platform::RWLock lock_;
-      static LRESULT CALLBACK wndProc( HWND wnd, UINT msg, WPARAM wParam, LPARAM lParam );
-      static LRESULT CALLBACK cmdlineProc( HWND wnd, UINT msg, WPARAM wParam, LPARAM lParam );
-      void initTextControl( HWND ctrl, bool lineinput );
-      void paint( HWND wnd, HDC hdc, RECT& client );
-      void flushBuffer();
-      void forwardExecute( const wstring& command );
-    public:
-      ConsoleWindow( Console* console, const string& title, int x, int y, int w, int h );
-      void onConsolePrint( Console* console, const string& str ) override;
-      void clearCmdline();
-      void setCmdline( const string& line );
-      void print( COLORREF color, const wstring& line );
-      void print( const wstring& line );
-      void print( const string& line );
-      virtual ~ConsoleWindow();
     };
 
     class PerformanceTimer {

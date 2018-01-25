@@ -4,6 +4,7 @@
 #include "database.h"
 #include "hive_array2.h"
 #include "console.h"
+#include "consolewindow_windows.h"
 #include "cache.h"
 
 using namespace hivemind;

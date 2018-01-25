@@ -143,6 +143,7 @@
     <ClInclude Include="include\chokepoint.h" />
     <ClInclude Include="include\console.h" />
     <ClInclude Include="include\consolelistener.h" />
+    <ClInclude Include="include\consolewindow_windows.h" />
     <ClInclude Include="include\controllers.h" />
     <ClInclude Include="include\database.h" />
     <ClInclude Include="include\debug.h" />
@@ -195,6 +196,7 @@
     <ClCompile Include="src\builder.cpp" />
     <ClCompile Include="src\cache.cpp" />
     <ClCompile Include="src\console.cpp" />
+    <ClCompile Include="src\consolewindow_windows.cpp" />
     <ClCompile Include="src\controller.cpp" />
     <ClCompile Include="src\database.cpp" />
     <ClCompile Include="src\database_verify.cpp" />
