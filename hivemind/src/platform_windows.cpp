@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "console.h"
 
 #ifdef HIVE_PLATFORM_WINDOWS
 
@@ -241,8 +242,15 @@ namespace hivemind {
 
     // ConsoleWindow
 
-    const COLORREF cConsoleWindowBackground = RGB( 255, 255, 255 );
-    const COLORREF cConsoleWindowForeground = RGB( 10, 13, 20 );
+#   define WM_HIVE_CONSOLEFLUSHBUFFER (WM_USER + 1)
+
+    const COLORREF c_consoleBackground = RGB( 255, 255, 255 );
+    const COLORREF c_consoleForeground = RGB( 10, 13, 20 );
+
+    const string c_consoleFont = "Lucida Console";
+    const long c_consoleFontSize = 160; // in TWIPs. if you can figure out what the fuck that means in human terms, congratulations.
+
+    const string c_consoleClassname = "hiveConsole"; // does not matter
 
     const int headerHeight = 6;
     const int ctrlMargin = 2;
@@ -250,12 +258,37 @@ namespace hivemind {
     const long minWidth = 320;
     const long minHeight = 240;
 
-    ConsoleWindow::ConsoleWindow( const string& title, int x, int y, int w, int h ):
-      Window( g_instance, wndProc, this ), cmdline_( nullptr ), log_( nullptr )
+    ConsoleWindow::ConsoleWindow( Console* console, const string& title, int x, int y, int w, int h ):
+      Window( g_instance, wndProc, this ),
+      cmdline_( nullptr ), log_( nullptr ),
+      console_( console )
     {
-      create( "hiveConsole", title, x, y, w, h );
-      // MARGINS margins = { 0, 0, headerHeight, 0 };
-      // DwmExtendFrameIntoClientArea( handle_, &margins );
+      console_->addListener( this );
+      create( c_consoleClassname, title, x, y, w, h );
+    }
+
+    ConsoleWindow::~ConsoleWindow()
+    {
+      console_->removeListener( this );
+    }
+
+    void ConsoleWindow::onConsolePrint( Console * console, const string & str )
+    {
+      lock_.lock();
+      linesBuffer_.push_back( str );
+      PostMessageW( handle_, WM_HIVE_CONSOLEFLUSHBUFFER, 0, 0 );
+      lock_.unlock();
+    }
+
+    void ConsoleWindow::flushBuffer()
+    {
+      lock_.lockShared();
+      for ( auto& line : linesBuffer_ )
+        print( line );
+      lock_.unlockShared();
+      lock_.lock();
+      linesBuffer_.clear();
+      lock_.unlock();
     }
 
     void ConsoleWindow::initTextControl( HWND ctrl, bool lineinput )
@@ -274,14 +307,14 @@ namespace hivemind {
       memset( &format, 0, sizeof( format ) );
       format.cbSize = sizeof( CHARFORMAT2W );
       format.dwMask = CFM_SIZE | CFM_OFFSET | CFM_EFFECTS | CFM_COLOR | CFM_BACKCOLOR | CFM_CHARSET | CFM_UNDERLINETYPE | CFM_FACE;
-      format.yHeight = 160;
-      format.crTextColor = cConsoleWindowForeground;
-      format.crBackColor = cConsoleWindowBackground;
+      format.yHeight = c_consoleFontSize;
+      format.crTextColor = c_consoleForeground;
+      format.crBackColor = c_consoleBackground;
       format.bCharSet = DEFAULT_CHARSET;
       format.bUnderlineType = CFU_UNDERLINENONE;
 
       wcscpy_s( format.szFaceName, LF_FACESIZE,
-        utf8ToWide( "Trebuchet MS" ).c_str() );
+        utf8ToWide( c_consoleFont ).c_str() );
 
       SendMessageW( ctrl, EM_SETCHARFORMAT, SCF_ALL, (LPARAM)&format );
       SendMessageW( ctrl, EM_SETMARGINS, EC_LEFTMARGIN | EC_RIGHTMARGIN | EC_USEFONTINFO, NULL );
@@ -312,7 +345,7 @@ namespace hivemind {
 
     void ConsoleWindow::print( const wstring& line )
     {
-      print( cConsoleWindowForeground, line );
+      print( c_consoleForeground, line );
     }
 
     void ConsoleWindow::print( const string& line )
@@ -340,7 +373,7 @@ namespace hivemind {
 
     inline gdip::RectF makeRectf( LONG left, LONG top, LONG right, LONG bottom )
     {
-      return gdip::RectF( left, top, right - left, bottom - top );
+      return gdip::RectF( (float)left, (float)top, (float)right - left, (float)bottom - top );
     }
 
     void ConsoleWindow::paint( HWND wnd, HDC hdc, RECT& area )
@@ -522,6 +555,11 @@ namespace hivemind {
       else if ( msg == WM_DESTROY )
       {
         PostQuitMessage( EXIT_SUCCESS );
+        return 0;
+      }
+      else if ( msg == WM_HIVE_CONSOLEFLUSHBUFFER )
+      {
+        self->flushBuffer();
         return 0;
       }
 

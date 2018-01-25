@@ -1,9 +1,12 @@
 #pragma once
 #include "sc2_forward.h"
 #include "exception.h"
+#include "consolelistener.h"
 #include <windows.h>
 
 namespace hivemind {
+
+  class Console;
 
   namespace platform {
 
@@ -14,6 +17,19 @@ namespace hivemind {
     using std::wstring;
 
     extern HINSTANCE g_instance;
+
+    //! \class RWLock
+    //! Reader-writer lock class for easy portability.
+    class RWLock: boost::noncopyable {
+    protected:
+      SRWLOCK mLock;
+    public:
+      RWLock() { InitializeSRWLock( &mLock ); }
+      void lock() { AcquireSRWLockExclusive( &mLock ); }
+      void unlock() { ReleaseSRWLockExclusive( &mLock ); }
+      void lockShared() { AcquireSRWLockShared( &mLock ); }
+      void unlockShared() { ReleaseSRWLockShared( &mLock ); }
+    };
 
     class Event {
     private:
@@ -76,37 +92,29 @@ namespace hivemind {
       void messageLoop( Event& stopEvent );
     };
 
-    class ConsoleWindow: public Window {
+    class ConsoleWindow: public Window, public ConsoleListener {
     private:
       HWND log_;
       HWND cmdline_;
       float dpiScaling_;
       WNDPROC baseCmdlineProc_;
+      Console* console_;
+      StringVector linesBuffer_;
+      platform::RWLock lock_;
       static LRESULT CALLBACK wndProc( HWND wnd, UINT msg, WPARAM wParam, LPARAM lParam );
       static LRESULT CALLBACK cmdlineProc( HWND wnd, UINT msg, WPARAM wParam, LPARAM lParam );
       void initTextControl( HWND ctrl, bool lineinput );
       void paint( HWND wnd, HDC hdc, RECT& client );
+      void flushBuffer();
     public:
-      ConsoleWindow( const string& title, int x, int y, int w, int h );
+      ConsoleWindow( Console* console, const string& title, int x, int y, int w, int h );
+      void onConsolePrint( Console* console, const string& str ) override;
       void clearCmdline();
       void setCmdline( const string& line );
       void print( COLORREF color, const wstring& line );
       void print( const wstring& line );
       void print( const string& line );
-      virtual ~ConsoleWindow() {}
-    };
-
-    //! \class RWLock
-    //! Reader-writer lock class for easy portability.
-    class RWLock: boost::noncopyable {
-    protected:
-      SRWLOCK mLock;
-    public:
-      RWLock() { InitializeSRWLock( &mLock ); }
-      void lock() { AcquireSRWLockExclusive( &mLock ); }
-      void unlock() { ReleaseSRWLockExclusive( &mLock ); }
-      void lockShared() { AcquireSRWLockShared( &mLock ); }
-      void unlockShared() { ReleaseSRWLockShared( &mLock ); }
+      virtual ~ConsoleWindow();
     };
 
     class PerformanceTimer {

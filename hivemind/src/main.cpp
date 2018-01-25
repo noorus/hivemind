@@ -6,7 +6,7 @@
 #include "console.h"
 #include "cache.h"
 
-using sc2::Coordinator;
+using namespace hivemind;
 
 HIVE_DECLARE_CONVAR( screen_width, "Width of the launched game window.", 1920 );
 HIVE_DECLARE_CONVAR( screen_height, "Height of the launched game window.", 1080 );
@@ -17,10 +17,10 @@ HIVE_DECLARE_CONVAR( map, "Name or path of the map to launch.", "Fractured Glaci
 
 HIVE_DECLARE_CONVAR( update_delay, "Time delay between main loop updates in milliseconds.", 10 );
 
-void testTechChain(hivemind::Console& console, sc2::UNIT_TYPEID targetType)
+void testTechChain(Console& console, sc2::UNIT_TYPEID targetType)
 {
   std::vector<sc2::UnitTypeID> techChain;
-  hivemind::Database::techTree().findTechChain(targetType, techChain);
+  Database::techTree().findTechChain(targetType, techChain);
 
   //float range = hivemind::Database::weapon((hivemind::UnitType64)targetType).range;
 
@@ -33,10 +33,10 @@ void testTechChain(hivemind::Console& console, sc2::UNIT_TYPEID targetType)
   }
 }
 
-void testTechChain(hivemind::Console& console, sc2::UPGRADE_ID targetType)
+void testTechChain(Console& console, sc2::UPGRADE_ID targetType)
 {
   std::vector<sc2::UnitTypeID> techChain;
-  auto upgrade = hivemind::Database::techTree().findTechChain(targetType, techChain);
+  auto upgrade = Database::techTree().findTechChain(targetType, techChain);
 
   console.printf("How to research upgrade %s:", sc2::UpgradeIDToName(targetType));
   console.printf("  name: %s", upgrade.name.c_str());
@@ -58,32 +58,16 @@ void testTechChain(hivemind::Console& console, sc2::UPGRADE_ID targetType)
   }
 }
 
+const string c_consoleThreadName = "hiveConsole";
+const string c_consoleTitle = "hivemind//console";
+
 int runMain( hivemind::Bot::Options& options )
 {
-  hivemind::platform::initialize();
+  platform::initialize();
 
-  hivemind::platform::prepareProcess();
+  platform::prepareProcess();
 
-  using hivemind::platform::Thread;
-  using hivemind::platform::Event;
-  using hivemind::platform::ConsoleWindow;
-
-#if 0
-  Thread test( "my_test_thread", [](
-    Event& running, Event& wantStop, void* arg ) -> bool
-  {
-    ConsoleWindow wnd( "foobar", 100, 100, 200, 200 );
-    running.set();
-    wnd.messageLoop( wantStop );
-    return true;
-  }, (void*)0xaabbccdd );
-  test.start();
-  test.waitFor();
-
-  return EXIT_SUCCESS;
-#endif
-
-  Coordinator coordinator;
+  sc2::Coordinator coordinator;
 
   char myExePath[MAX_PATH];
   strcpy_s( myExePath, MAX_PATH, options.hivemindExecPath_.c_str() );
@@ -92,20 +76,32 @@ int runMain( hivemind::Bot::Options& options )
   if ( !coordinator.LoadSettings( 1, junkArgs ) )
     HIVE_EXCEPT( "Failed to load settings" );
 
-  hivemind::Console console;
+  Console console;
 
-  hivemind::Bot hivemindBot( console );
+  platform::Thread consoleWindowThread( c_consoleThreadName,
+  []( platform::Event& running, platform::Event& wantStop, void* argument ) -> bool
+  {
+    auto cnsl = (Console*)argument;
+    platform::ConsoleWindow window( cnsl, c_consoleTitle, 220, 220, 640, 320 );
+    running.set();
+    window.messageLoop( wantStop );
+    return true;
+  }, &console );
+
+  consoleWindowThread.start();
+
+  Bot hivemindBot( console );
 
   hivemindBot.initialize( options );
 
   hivemind::g_Bot = &hivemindBot;
 
-  hivemind::Cache::setBot( hivemind::g_Bot );
+  Cache::setBot( hivemind::g_Bot );
 
-  hivemind::Database::load( g_CVar_data_path.as_s() );
+  Database::load( g_CVar_data_path.as_s() );
 
 #if 0
-  hivemind::Database::dumpWeapons();
+  Database::dumpWeapons();
   return 0;
 #endif
 
@@ -147,7 +143,9 @@ int runMain( hivemind::Bot::Options& options )
 
   hivemind::g_Bot = nullptr;
 
-  hivemind::platform::shutdown();
+  consoleWindowThread.stop();
+
+  platform::shutdown();
 
   return EXIT_SUCCESS;
 }
@@ -168,7 +166,7 @@ int APIENTRY wWinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCm
   // CRT memory allocation breakpoints can be set here
   // _CrtSetBreakAlloc( x );
 
-  hivemind::platform::g_instance = hInstance;
+  platform::g_instance = hInstance;
 
   // Parse command line arguments into engine options
   int argCount;
@@ -176,11 +174,11 @@ int APIENTRY wWinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCm
   if ( !arguments )
     return EXIT_FAILURE;
 
-  hivemind::Bot::Options options;
+  Bot::Options options;
 
   if ( argCount > 0 )
   {
-    options.hivemindExecPath_ = hivemind::platform::wideToUtf8( arguments[0] );
+    options.hivemindExecPath_ = platform::wideToUtf8( arguments[0] );
 
     int i = 1;
     while ( i < argCount )
@@ -189,7 +187,7 @@ int APIENTRY wWinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCm
       {
         i++;
         if ( i < argCount )
-          options.executeCommands_.emplace_back( hivemind::platform::wideToUtf8( arguments[i] ) );
+          options.executeCommands_.emplace_back( platform::wideToUtf8( arguments[i] ) );
       }
       i++;
     }

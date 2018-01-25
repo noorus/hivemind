@@ -2,6 +2,7 @@
 #include "sc2_forward.h"
 #include "subsystem.h"
 #include "utilities.h"
+#include "consolelistener.h"
 
 namespace hivemind {
 
@@ -113,6 +114,7 @@ namespace hivemind {
     static CVarList precreated_; //!< Pre-created commands & variables
     platform::RWLock lock_; //!< Execution lock
     platform::RWLock bufferLock_; //!< Command buffer lock
+    set<ConsoleListener*> listeners_;
     void writeStartBanner();
     void writeStopBanner();
     //! Registers a console variable or command.
@@ -120,6 +122,8 @@ namespace hivemind {
     static StringVector tokenize( const string& commandLine );
   public:
     Console();
+    void addListener( ConsoleListener* listener );
+    void removeListener( ConsoleListener* listener );
     void setBot( Bot* bot );
     void gameBegin();
     void gameEnd();

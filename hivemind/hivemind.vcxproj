@@ -142,6 +142,7 @@
     <ClInclude Include="include\cache.h" />
     <ClInclude Include="include\chokepoint.h" />
     <ClInclude Include="include\console.h" />
+    <ClInclude Include="include\consolelistener.h" />
     <ClInclude Include="include\controllers.h" />
     <ClInclude Include="include\database.h" />
     <ClInclude Include="include\debug.h" />

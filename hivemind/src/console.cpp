@@ -244,6 +244,18 @@ namespace hivemind {
       now.year, now.month, now.day, now.hour, now.minute, now.second );
   }
 
+  void Console::addListener( ConsoleListener* listener )
+  {
+    ScopedRWLock lock( &bufferLock_ );
+    listeners_.insert( listener );
+  }
+
+  void Console::removeListener( ConsoleListener* listener )
+  {
+    ScopedRWLock lock( &bufferLock_ );
+    listeners_.erase( listener );
+  }
+
   void Console::print( const char* str )
   {
     auto ticks = bot_->time();
@@ -256,7 +268,16 @@ namespace hivemind {
 
     if ( fileOut_ )
       fileOut_->write( fullbuf );
-    ::printf( fullbuf );
+
+    bufferLock_.lock();
+    for ( auto listener : listeners_ )
+    {
+      listener->onConsolePrint( this, fullbuf );
+    }
+    bufferLock_.unlock();
+
+    // ::printf( fullbuf );
+
   #ifdef _DEBUG
     OutputDebugStringA( fullbuf );
   #endif
