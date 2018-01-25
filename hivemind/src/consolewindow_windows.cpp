@@ -126,7 +126,7 @@ namespace hivemind {
     const string c_consoleClassname = "hiveConsole"; // does not matter
 
     const int headerHeight = 6;
-    const int ctrlMargin = 2;
+    const int ctrlMargin = 3;
     const int cmdlineHeight = 20;
     const long minWidth = 320;
     const long minHeight = 240;
@@ -286,10 +286,12 @@ namespace hivemind {
       auto header = makeRectf( area.left, area.top, area.right, headerHeight );
       auto client = makeRectf( area.left, area.top + headerHeight, area.right, area.bottom );
 
-      static const gdip::SolidBrush brush_consoleHeader( gdip::Color( 255, 255, 46, 115 ) );
+      static const gdip::SolidBrush brush_consoleHeader( gdip::Color( 255, 255, 0, 99 ) );
       static const gdip::SolidBrush brush_consoleBg( gdip::Color( 255, 240, 240, 240 ) );
       static const gdip::SolidBrush brush_transWhite( gdip::Color( 175, 255, 255, 255 ) );
-      static const gdip::SolidBrush brush_transBlack( gdip::Color( 100, 0, 0, 0 ) );
+      static const gdip::SolidBrush brush_transBlack( gdip::Color( 125, 0, 0, 0 ) );
+      static const gdip::SolidBrush brush_editBg( gdip::Color( 255, 255, 255, 255 ) );
+      static const gdip::SolidBrush brush_editBorder( gdip::Color( 255, 163, 163, 163 ) );
 
       gfx.FillRectangle( &brush_consoleHeader, header );
 
@@ -297,6 +299,13 @@ namespace hivemind {
       gfx.FillRectangle( &brush_transBlack, 0, headerHeight - 1, width, 1 );
 
       gfx.FillRectangle( &brush_consoleBg, client );
+
+      int editLeft = area.left + ctrlMargin;
+      int editTop = area.bottom - ctrlMargin - cmdlineHeight;
+      int editWidth = area.right - area.left - ( ctrlMargin * 2 );
+      gfx.FillRectangle( &brush_editBorder, editLeft, editTop, editWidth, cmdlineHeight );
+      gfx.FillRectangle( &brush_transWhite, editLeft + 1, editTop + 1, editWidth - 1, cmdlineHeight - 1 );
+      gfx.FillRectangle( &brush_editBg, editLeft + 1, editTop + 1, editWidth - 2, cmdlineHeight - 2 );
 
       // ---
 
@@ -316,13 +325,16 @@ namespace hivemind {
       return ret;
     }
 
+    const int cmdlinePadding = 2;
+    const int cmdlineHeightFix = 2;
+
     inline RECT fitCmdlineControl( int w, int h )
     {
       RECT ret;
-      ret.left = ctrlMargin;
-      ret.right = w - ret.left - ctrlMargin;
-      ret.top = h - cmdlineHeight - ctrlMargin;
-      ret.bottom = cmdlineHeight;
+      ret.left = ctrlMargin + cmdlinePadding;
+      ret.right = ( w - ret.left - ctrlMargin ) - cmdlinePadding; // really width
+      ret.top = ( h - cmdlineHeight - ctrlMargin ) + cmdlinePadding + cmdlineHeightFix;
+      ret.bottom = cmdlineHeight - ( cmdlinePadding * 2 ) - cmdlineHeightFix; // really height
       return ret;
     }
 
@@ -470,13 +482,15 @@ namespace hivemind {
 
         RECT fit = fitLogControl( rect.right, rect.bottom );
         self->log_ = CreateWindowExW( WS_EX_LEFT | WS_EX_STATICEDGE, cRichEditControl, L"",
-          WS_VISIBLE | WS_CHILD | WS_VSCROLL | ES_LEFT | ES_MULTILINE | ES_WANTRETURN | ES_READONLY,
+          WS_VISIBLE | WS_CHILD | WS_VSCROLL
+          | ES_LEFT | ES_MULTILINE | ES_WANTRETURN | ES_READONLY
+          | ES_SELECTIONBAR | ES_NOOLEDRAGDROP | ES_DISABLENOSCROLL | ES_AUTOVSCROLL,
           fit.left, fit.top, fit.right, fit.bottom, wnd, nullptr,
           self->instance_, (void*)self );
 
         fit = fitCmdlineControl( rect.right, rect.bottom );
-        self->cmdline_ = CreateWindowExW( WS_EX_LEFT | WS_EX_STATICEDGE,
-          cRichEditControl, L"", WS_VISIBLE | WS_CHILD | ES_LEFT,
+        self->cmdline_ = CreateWindowExW( WS_EX_LEFT,
+          cRichEditControl, L"", WS_VISIBLE | WS_CHILD | ES_LEFT | ES_NOOLEDRAGDROP,
           fit.left, fit.top, fit.right, fit.bottom, wnd, nullptr,
           self->instance_, (void*)self );
 
