@@ -256,6 +256,18 @@ namespace hivemind {
     listeners_.erase( listener );
   }
 
+  void Console::autoComplete( const string& line, CVarList& matches )
+  {
+    matches.clear();
+    auto trimmed = boost::trim_copy( line );
+    for ( ConBase* base : cvars_ )
+    {
+      auto comparison = base->name().substr( 0, trimmed.length() );
+      if ( boost::iequals( trimmed, comparison ) )
+        matches.push_back( base );
+    }
+  }
+
   void Console::print( const char* str )
   {
     auto ticks = bot_->time();

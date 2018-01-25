@@ -33,10 +33,17 @@ namespace hivemind {
       Console* console_;
       StringVector linesBuffer_;
       platform::RWLock lock_;
+      struct Autocomplete {
+        CVarList matches; //!< Autocomplete matches vector
+        ConBase* suggestion; //!< Autocomplete last suggestion
+        string base; //!< Search string for autocomplete
+        Autocomplete() { reset(); }
+        void reset();
+      } autocomplete_;
       struct History {
-        StringVector stack;     //!< Command history stack
-        bool browsing;          //!< Is the user browsing through the history?
-        size_t position;        //!< Position of currently located command
+        StringVector stack; //!< Command history stack
+        bool browsing; //!< Is the user browsing through the history?
+        size_t position; //!< Position of currently located command
         History() { reset(); }
         void reset();
       } history_;

@@ -49,6 +49,8 @@
 #include <random>
 #include <filesystem>
 
+#include <boost/algorithm/string/trim.hpp>
+
 #undef min
 #undef max
 

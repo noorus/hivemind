@@ -126,6 +126,7 @@ namespace hivemind {
     Console();
     void addListener( ConsoleListener* listener );
     void removeListener( ConsoleListener* listener );
+    void autoComplete( const string& line, CVarList& matches );
     void setBot( Bot* bot );
     void gameBegin();
     void gameEnd();

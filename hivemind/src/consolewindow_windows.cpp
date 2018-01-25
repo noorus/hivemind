@@ -131,6 +131,13 @@ namespace hivemind {
     const long minWidth = 320;
     const long minHeight = 240;
 
+    void ConsoleWindow::Autocomplete::reset()
+    {
+      matches.clear();
+      base.clear();
+      suggestion = nullptr;
+    }
+
     void ConsoleWindow::History::reset()
     {
       stack.clear();
@@ -173,7 +180,7 @@ namespace hivemind {
 
     void ConsoleWindow::initTextControl( HWND ctrl, bool lineinput )
     {
-      SendMessageW( ctrl, EM_LIMITTEXT, lineinput ? 100 : -1, 0 );
+      SendMessageW( ctrl, EM_LIMITTEXT, lineinput ? 128 : -1, 0 );
 
       if ( !lineinput )
       {
@@ -327,6 +334,7 @@ namespace hivemind {
     LRESULT ConsoleWindow::cmdlineProc( HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam )
     {
       auto window = (ConsoleWindow*)GetWindowLongPtrW( wnd, GWLP_USERDATA );
+      auto console = window->console_;
 
       CHARRANGE range = { 0, -1 };
 
@@ -336,7 +344,46 @@ namespace hivemind {
       {
         if ( wparam == VK_TAB )
         {
-          //
+          auto typed = wideToUtf8( getWindowText( window->cmdline_ ) );
+          if ( typed.length() < 1 )
+          {
+            window->autocomplete_.suggestion = nullptr;
+            return 0;
+          }
+          if ( window->autocomplete_.suggestion )
+            console->autoComplete( window->autocomplete_.base, window->autocomplete_.matches );
+          else
+          {
+            window->autocomplete_.base = typed;
+            console->autoComplete( typed, window->autocomplete_.matches );
+          }
+          if ( window->autocomplete_.matches.empty() )
+          {
+            window->autocomplete_.suggestion = nullptr;
+            return 0;
+          }
+          if ( window->autocomplete_.suggestion )
+          {
+            auto match = window->autocomplete_.matches.begin();
+            while ( match != window->autocomplete_.matches.end() )
+            {
+              if ( ( *match ) == window->autocomplete_.suggestion )
+              {
+                ++match;
+                if ( match == window->autocomplete_.matches.end() )
+                  break;
+                window->autocomplete_.suggestion = ( *match );
+                window->setCmdline( window->autocomplete_.suggestion->name() + " " );
+                SendMessageW( window->cmdline_, EM_EXSETSEL, 0, (LPARAM)&range );
+                return 0;
+              }
+              ++match;
+            }
+          }
+          window->autocomplete_.suggestion = window->autocomplete_.matches.front();
+          window->setCmdline( window->autocomplete_.suggestion->name() + " " );
+          SendMessageW( window->cmdline_, EM_EXSETSEL, 0, (LPARAM)&range );
+          return 0;
         }
         else if ( wparam == VK_UP && !window->history_.stack.empty() )
         {
@@ -394,17 +441,17 @@ namespace hivemind {
             window->history_.position = window->history_.stack.size() - 1;
             window->history_.browsing = false;
           }
-          // window->mAutocomplete.reset();
+          window->autocomplete_.reset();
           auto line = getWindowText( window->cmdline_ );
           if ( !line.empty() )
           {
             window->forwardExecute( line );
             window->history_.stack.push_back( wideToUtf8( line ) );
             window->history_.position = window->history_.stack.size() - 1;
-            window->clearCmdline();
-            range.cpMin = -1;
-            SendMessageW( window->cmdline_, EM_EXSETSEL, 0, (LPARAM)&range );
           }
+          window->clearCmdline();
+          range.cpMin = -1;
+          SendMessageW( window->cmdline_, EM_EXSETSEL, 0, (LPARAM)&range );
           return 0;
         }
       }
@@ -471,6 +518,17 @@ namespace hivemind {
       {
         InvalidateRect( wnd, nullptr, true );
         return 0;
+      }
+      else if ( msg == WM_COMMAND )
+      {
+        if ( HIWORD( wparam ) == EN_CHANGE )
+        {
+          if ( (HANDLE)lparam == self->cmdline_ )
+          {
+            self->autocomplete_.reset();
+            return 0;
+          }
+        }
       }
       else if ( msg == WM_PAINT )
       {
