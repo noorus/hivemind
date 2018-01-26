@@ -29,6 +29,7 @@ namespace hivemind {
     M_Max_Global,
     M_Min_Intel,
     M_Intel_FoundPlayer, //!< args: PlayerID, Unit
+    M_Intel_StructureDestroyed, //!< args: EnemyStructure
     M_Max_Intel
   };
 

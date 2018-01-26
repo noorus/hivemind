@@ -49,6 +49,9 @@ namespace hivemind {
       auto units = bot_->observation().GetUnits( Unit::Self );
       for ( auto& unit : units )
       {
+        if ( unit->display_type == sc2::Unit::Snapshot )
+          continue;
+
         _add( unit );
       }
     }

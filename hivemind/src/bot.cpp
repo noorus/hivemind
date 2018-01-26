@@ -207,6 +207,8 @@ namespace hivemind {
 
     vision_.update( time_, delta );
 
+    intelligence_.update( time_, delta );
+
     ControllerBase::setActions( action_ );
 
     builder_.update( time_, delta );
@@ -224,6 +226,7 @@ namespace hivemind {
     strategy_.draw();
     workers_.draw();
     builder_.draw();
+    intelligence_.draw();
 
     map_.draw();
     baseManager_.draw();

@@ -52,7 +52,7 @@ namespace hivemind {
   void WorkerManager::_refreshWorkers()
   {
     auto workers = bot_->observation().GetUnits( Unit::Alliance::Self, []( const Unit& unit ) -> bool {
-      return utils::isWorker( unit );
+      return ( utils::isWorker( unit ) && unit.display_type != sc2::Unit::Snapshot );
     } );
 
     for ( auto worker : workers )

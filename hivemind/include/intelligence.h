@@ -34,11 +34,22 @@ namespace hivemind {
 
   using EnemyUnitMap = std::map<UnitRef, EnemyUnit>;
 
+  struct EnemyStructure {
+    UnitRef id_; // init once
+    PlayerID player_; // init once
+    Vector2 position_; // init once
+    GameTime destroyed_;
+    EnemyBase* base_;
+    EnemyStructure(): id_( nullptr ), player_( 0 ), destroyed_( 0 ), base_( nullptr ) {}
+  };
+
+  using EnemyStructureMap = std::map<UnitRef, EnemyStructure>;
+
   struct EnemyIntelligence {
     bool alive_;
     GameTime lastSeen_;
-    EnemyBaseVector bases_;
-    EnemyIntelligence(): alive_( true ), lastSeen_( 0 ) {}
+    void reset();
+    EnemyIntelligence() { reset(); }
   };
 
   using EnemyMap = std::map<PlayerID, EnemyIntelligence>;
@@ -47,12 +58,21 @@ namespace hivemind {
   private:
     EnemyMap enemies_;
     EnemyUnitMap units_;
+    EnemyBaseVector bases_;
+    EnemyStructureMap structures_;
+    EnemyBase* _findExistingBase( UnitRef structure );
+    void _seeStructure( EnemyIntelligence& enemy, UnitRef unit );
+    void _seeUnit( EnemyIntelligence& enemy, UnitRef unit );
+    void _updateStructure( UnitRef unit, const bool destroyed = false );
+    void _updateUnit( UnitRef unit );
+    void _structureDestroyed( EnemyStructure& unit );
   public:
     Intelligence( Bot* bot );
     inline EnemyMap& enemies() { return enemies_; }
     inline EnemyUnitMap& units() { return units_; }
     void gameBegin() final;
     void update( const GameTime time, const GameTime delta );
+    void draw() final;
     void onMessage( const Message& msg ) final;
     void gameEnd() final;
   };
