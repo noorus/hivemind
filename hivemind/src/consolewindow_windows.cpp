@@ -583,7 +583,7 @@ namespace hivemind {
           self->instance_, (void*)self );
 
         fit = fitUnpauseButton( rect.right, rect.bottom );
-        self->unpauseButton_ = CreateWindowExW( 0, L"BUTTON", nullptr, WS_CLIPSIBLINGS | WS_CHILD | BS_DEFPUSHBUTTON,
+        self->unpauseButton_ = CreateWindowExW( 0, L"BUTTON", nullptr, WS_CLIPSIBLINGS | WS_CHILD | BS_PUSHBUTTON,
           fit.left, fit.top, fit.right, fit.bottom, wnd, nullptr, self->instance_, (void*)self );
 
         if ( !self->log_ || !self->cmdline_ || !self->unpauseButton_ )
