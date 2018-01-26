@@ -30,9 +30,20 @@ namespace hivemind {
       HWND cmdline_;
       float dpiScaling_;
       WNDPROC baseCmdlineProc_;
+      WNDPROC baseLogProc_;
       Console* console_;
       StringVector linesBuffer_;
       platform::RWLock lock_;
+      HWND unpauseButton_;
+      RECT logFit_;
+      struct LogState {
+        bool paused;
+        bool selection;
+        uint64_t linecount;
+        uint64_t currentline;
+        uint64_t firstvisibleline;
+        LogState(): paused( false ), selection( false ), linecount( 0 ), currentline( 0 ), firstvisibleline( 0 ) {}
+      } logState_;
       struct Autocomplete {
         CVarList matches; //!< Autocomplete matches vector
         ConBase* suggestion; //!< Autocomplete last suggestion
@@ -47,10 +58,15 @@ namespace hivemind {
         History() { reset(); }
         void reset();
       } history_;
+      void recheckLogState();
+      void logPause();
+      void logUnpause();
       static LRESULT CALLBACK wndProc( HWND wnd, UINT msg, WPARAM wParam, LPARAM lParam );
       static LRESULT CALLBACK cmdlineProc( HWND wnd, UINT msg, WPARAM wParam, LPARAM lParam );
+      static LRESULT CALLBACK logProc( HWND wnd, UINT msg, WPARAM wParam, LPARAM lParam );
       void initTextControl( HWND ctrl, bool lineinput );
       void paint( HWND wnd, HDC hdc, RECT& client );
+      void paintUnpauseButton( HDC hdc, RECT& rc );
       void flushBuffer();
       void forwardExecute( const wstring& command );
     public:

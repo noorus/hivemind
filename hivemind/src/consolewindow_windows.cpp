@@ -185,9 +185,13 @@ namespace hivemind {
       if ( !lineinput )
       {
         SendMessageW( ctrl, EM_AUTOURLDETECT, TRUE, 0 );
-        SendMessageW( ctrl, EM_SETEVENTMASK, NULL, ENM_SELCHANGE | ENM_LINK );
+        SendMessageW( ctrl, EM_SETEVENTMASK, NULL, ENM_SELCHANGE | ENM_SCROLL );
         SendMessageW( ctrl, EM_SETOPTIONS, ECOOP_OR,
           ECO_AUTOVSCROLL | ECO_NOHIDESEL | ECO_SAVESEL | ECO_SELECTIONBAR );
+      }
+      else if ( lineinput )
+      {
+        SendMessageW( ctrl, EM_SETEVENTMASK, NULL, ENM_CHANGE );
       }
 
       CHARFORMAT2W format;
@@ -200,8 +204,7 @@ namespace hivemind {
       format.bCharSet = DEFAULT_CHARSET;
       format.bUnderlineType = CFU_UNDERLINENONE;
 
-      wcscpy_s( format.szFaceName, LF_FACESIZE,
-        utf8ToWide( c_consoleFont ).c_str() );
+      wcscpy_s( format.szFaceName, LF_FACESIZE, utf8ToWide( c_consoleFont ).c_str() );
 
       SendMessageW( ctrl, EM_SETCHARFORMAT, SCF_ALL, (LPARAM)&format );
       SendMessageW( ctrl, EM_SETMARGINS, EC_LEFTMARGIN | EC_RIGHTMARGIN | EC_USEFONTINFO, NULL );
@@ -211,9 +214,6 @@ namespace hivemind {
 
       SETTEXTEX textex = { ST_DEFAULT, 1200 };
       SendMessageW( ctrl, EM_SETTEXTEX, (WPARAM)&textex, NULL );
-
-      if ( lineinput )
-        SendMessageW( ctrl, EM_SETEVENTMASK, NULL, ENM_CHANGE );
     }
 
     void ConsoleWindow::print( COLORREF color, const wstring& line )
@@ -322,6 +322,21 @@ namespace hivemind {
       ret.right = w - ret.left - ctrlMargin;
       ret.top = headerHeight + ctrlMargin;
       ret.bottom = h - ret.top - cmdlineHeight - ( ctrlMargin * 2 );
+      return ret;
+    }
+
+    const int unpauseButtonWidth = 68;
+    const int unpauseButtonHeight = 24;
+    const int unpauseButtonMargin = 6;
+
+    inline RECT fitUnpauseButton( int w, int h )
+    {
+      int scrollbarWidth = GetSystemMetrics( SM_CXVSCROLL );
+      RECT ret;
+      ret.left = ( w - ctrlMargin - scrollbarWidth - unpauseButtonMargin - unpauseButtonWidth );
+      ret.right = unpauseButtonWidth;
+      ret.top = headerHeight + ctrlMargin + unpauseButtonMargin;
+      ret.bottom = unpauseButtonHeight;
       return ret;
     }
 
@@ -471,6 +486,79 @@ namespace hivemind {
       return CallWindowProcW( window->baseCmdlineProc_, wnd, msg, wparam, lparam );
     }
 
+    LRESULT ConsoleWindow::logProc( HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam )
+    {
+      auto window = (ConsoleWindow*)GetWindowLongPtrW( wnd, GWLP_USERDATA );
+      auto console = window->console_;
+
+      // TODO - whatever custom stuff?
+
+      return CallWindowProcW( window->baseLogProc_, wnd, msg, wparam, lparam );
+    }
+
+    void ConsoleWindow::recheckLogState()
+    {
+      bool shouldPause = false;
+
+      //POINT scroll;
+      //SendMessageW( log_, EM_GETSCROLLPOS, 0, (LPARAM)&scroll );
+      logState_.linecount = SendMessageW( log_, EM_GETLINECOUNT, 0, 0 );
+      logState_.currentline = SendMessageW( log_, EM_LINEFROMCHAR, -1, 0 );
+      logState_.firstvisibleline = SendMessageW( log_, EM_GETFIRSTVISIBLELINE, 0, 0 );
+
+      auto lastlinechar = SendMessageW( log_, EM_LINEINDEX, logState_.linecount - 1, 0 );
+      POINTL lastlinept;
+      SendMessageW( log_, EM_POSFROMCHAR, (WPARAM)&lastlinept, lastlinechar );
+
+      if ( logState_.selection )
+      {
+        shouldPause = true;
+      }
+      else if ( lastlinept.y > logFit_.bottom )
+      {
+        shouldPause = true;
+      }
+
+      if ( shouldPause && !logState_.paused )
+        logPause();
+      else if ( !shouldPause && logState_.paused )
+        logUnpause();
+    }
+
+    void ConsoleWindow::logPause()
+    {
+      logState_.paused = true;
+      ShowWindow( unpauseButton_, SW_SHOWNA );
+    }
+
+    void ConsoleWindow::logUnpause()
+    {
+      logState_.paused = false;
+      ShowWindow( unpauseButton_, SW_HIDE );
+      CHARRANGE range = { -1, -1 };
+      SendMessageW( log_, EM_EXSETSEL, 0, (LPARAM)&range );
+      SendMessageW( log_, EM_SCROLLCARET, 0, 0 );
+      PostMessageW( handle_, WM_HIVE_CONSOLEFLUSHBUFFER, 0, 0 );
+    }
+
+    void ConsoleWindow::paintUnpauseButton( HDC hdc, RECT& rc )
+    {
+      gdip::Graphics gfx( hdc );
+
+      gdip::SolidBrush brush_text( gdip::Color( 220, 25, 25, 25 ) );
+
+      auto rect = makeRectf( rc.left, rc.top, rc.right, rc.bottom );
+
+      gdip::FontFamily fontFamily( L"Segoe UI" );
+      gdip::Font font( &fontFamily, 11, gdip::FontStyleBold, gdip::UnitPixel );
+
+      gdip::StringFormat format;
+      format.SetAlignment( gdip::StringAlignmentCenter );
+      format.SetLineAlignment( gdip::StringAlignmentCenter );
+
+      gfx.DrawString( L"unpause »", -1, &font, rect, &format, &brush_text );
+    }
+
     LRESULT ConsoleWindow::wndProc( HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam )
     {
       if ( msg == WM_CREATE )
@@ -480,22 +568,30 @@ namespace hivemind {
         RECT rect;
         GetClientRect( wnd, &rect );
 
-        RECT fit = fitLogControl( rect.right, rect.bottom );
+        self->logFit_ = fitLogControl( rect.right, rect.bottom );
         self->log_ = CreateWindowExW( WS_EX_LEFT | WS_EX_STATICEDGE, cRichEditControl, L"",
-          WS_VISIBLE | WS_CHILD | WS_VSCROLL
+          WS_CLIPSIBLINGS | WS_VISIBLE | WS_CHILD | WS_VSCROLL
           | ES_LEFT | ES_MULTILINE | ES_WANTRETURN | ES_READONLY
           | ES_SELECTIONBAR | ES_NOOLEDRAGDROP | ES_DISABLENOSCROLL | ES_AUTOVSCROLL,
-          fit.left, fit.top, fit.right, fit.bottom, wnd, nullptr,
+          self->logFit_.left, self->logFit_.top, self->logFit_.right, self->logFit_.bottom, wnd, nullptr,
           self->instance_, (void*)self );
 
-        fit = fitCmdlineControl( rect.right, rect.bottom );
+        RECT fit = fitCmdlineControl( rect.right, rect.bottom );
         self->cmdline_ = CreateWindowExW( WS_EX_LEFT,
-          cRichEditControl, L"", WS_VISIBLE | WS_CHILD | ES_LEFT | ES_NOOLEDRAGDROP,
+          cRichEditControl, L"", WS_CLIPSIBLINGS | WS_VISIBLE | WS_CHILD | ES_LEFT | ES_NOOLEDRAGDROP,
           fit.left, fit.top, fit.right, fit.bottom, wnd, nullptr,
           self->instance_, (void*)self );
 
-        if ( !self->log_ || !self->cmdline_ )
+        fit = fitUnpauseButton( rect.right, rect.bottom );
+        self->unpauseButton_ = CreateWindowExW( 0, L"BUTTON", nullptr, WS_CLIPSIBLINGS | WS_CHILD | BS_DEFPUSHBUTTON,
+          fit.left, fit.top, fit.right, fit.bottom, wnd, nullptr, self->instance_, (void*)self );
+
+        if ( !self->log_ || !self->cmdline_ || !self->unpauseButton_ )
           HIVE_EXCEPT( "Window control creation failed" );
+
+        SetWindowLongPtrW( self->log_, GWLP_USERDATA, (LONG_PTR)self );
+        self->baseLogProc_ = (WNDPROC)SetWindowLongPtrW(
+          self->log_, GWLP_WNDPROC, (LONG_PTR)(WNDPROC)logProc );
 
         SetWindowLongPtrW( self->cmdline_, GWLP_USERDATA, (LONG_PTR)self );
         self->baseCmdlineProc_ = (WNDPROC)SetWindowLongPtrW(
@@ -508,6 +604,7 @@ namespace hivemind {
         self->dpiScaling_ = static_cast<float>( dpi ) / 96.0f;
 
         SetWindowPos( wnd, nullptr, 0, 0, 0, 0, SWP_FRAMECHANGED | SWP_NOMOVE | SWP_NOSIZE );
+        SetWindowPos( self->unpauseButton_, HWND_TOP, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
 
         return 0;
       }
@@ -535,12 +632,39 @@ namespace hivemind {
       }
       else if ( msg == WM_COMMAND )
       {
-        if ( HIWORD( wparam ) == EN_CHANGE )
+        if ( HIWORD( wparam ) == EN_CHANGE && (HANDLE)lparam == self->cmdline_ )
         {
-          if ( (HANDLE)lparam == self->cmdline_ )
+          self->autocomplete_.reset();
+          return 0;
+        }
+        else if ( HIWORD( wparam ) == EN_VSCROLL && (HANDLE)lparam == self->log_ )
+        {
+          self->recheckLogState();
+        }
+        else if ( HIWORD( wparam ) == BN_CLICKED && (HANDLE)lparam == self->unpauseButton_ )
+        {
+          self->logUnpause();
+        }
+      }
+      else if ( msg == WM_NOTIFY )
+      {
+        auto selchange = (SELCHANGE*)lparam;
+        if ( selchange->nmhdr.code == EN_SELCHANGE && selchange->nmhdr.hwndFrom == self->log_ )
+        {
+          self->logState_.selection = ( selchange->seltyp != SEL_EMPTY );
+          self->recheckLogState();
+        }
+        auto custom = (NMCUSTOMDRAW*)lparam;
+        if ( custom->hdr.code == NM_CUSTOMDRAW && custom->hdr.hwndFrom == self->unpauseButton_ )
+        {
+          if ( custom->dwDrawStage == CDDS_PREPAINT )
           {
-            self->autocomplete_.reset();
-            return 0;
+            return CDRF_NOTIFYPOSTPAINT;
+          }
+          else if ( custom->dwDrawStage == CDDS_POSTPAINT )
+          {
+            self->paintUnpauseButton( custom->hdc, custom->rc );
+            return CDRF_DODEFAULT;
           }
         }
       }
@@ -571,10 +695,12 @@ namespace hivemind {
       }
       else if ( msg == WM_SIZE )
       {
-        RECT fit = fitLogControl( LOWORD( lparam ), HIWORD( lparam ) );
-        MoveWindow( self->log_, fit.left, fit.top, fit.right, fit.bottom, TRUE );
-        fit = fitCmdlineControl( LOWORD( lparam ), HIWORD( lparam ) );
+        self->logFit_ = fitLogControl( LOWORD( lparam ), HIWORD( lparam ) );
+        MoveWindow( self->log_, self->logFit_.left, self->logFit_.top, self->logFit_.right, self->logFit_.bottom, TRUE );
+        RECT fit = fitCmdlineControl( LOWORD( lparam ), HIWORD( lparam ) );
         MoveWindow( self->cmdline_, fit.left, fit.top, fit.right, fit.bottom, TRUE );
+        fit = fitUnpauseButton( LOWORD( lparam ), HIWORD( lparam ) );
+        MoveWindow( self->unpauseButton_, fit.left, fit.top, fit.right, fit.bottom, TRUE );
         return 0;
       }
       else if ( msg == WM_SETFOCUS )
@@ -589,7 +715,10 @@ namespace hivemind {
       }
       else if ( msg == WM_HIVE_CONSOLEFLUSHBUFFER )
       {
-        self->flushBuffer();
+        if ( !self->logState_.paused )
+        {
+          self->flushBuffer();
+        }
         return 0;
       }
 
