@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "brain.h"
+#include "brain_creep.h"
 #include "ai_goals.h"
 #include "bot.h"
 
@@ -24,39 +25,6 @@ namespace hivemind {
 
     AI::Goal::Status Brain_SpreadCreep::process()
     {
-      if ( nextCreepTime_ <= bot_->time() )
-      {
-        nextCreepTime_ = bot_->time() + cCreepCheckDelay;
-        /*for ( auto& base : bot_->bases().bases() )
-        {
-          auto creep = bot_->map().creep( base.location()->position() );
-          if ( !creep )
-            continue;
-
-          auto queen = base.queen();
-          if ( !queen )
-            continue;
-
-          if ( creep->fronts.empty() )
-            continue;
-
-          // try three times to find a random creep front that is less than 30 units away,
-          // and plant a creep tumor in the middle tile of that front
-          Vector2 destPt;
-          for ( size_t i = 0; i < 3; i++ )
-          {
-            // fronts cannot be empty, so no need to check that
-            auto index = utils::randomBetween( 0, (int)creep->fronts.size() - 1 );
-            auto& front = creep->fronts[index];
-            index = math::floor( (Real)front.size() / 2.0f );
-            destPt = Vector2( (Real)front[index].x, (Real)front[index].y );
-            if ( destPt.distance( queen->pos ) < 30.0f )
-              break;
-          }
-
-          bot_->action().UnitCommand( queen, sc2::ABILITY_ID::BUILD_CREEPTUMOR_QUEEN, destPt );
-        }*/
-      }
       return status_;
     }
 

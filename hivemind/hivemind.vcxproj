@@ -137,7 +137,9 @@
     <ClInclude Include="include\blob_algo.h" />
     <ClInclude Include="include\bot.h" />
     <ClInclude Include="include\brain.h" />
+    <ClInclude Include="include\brain_creep.h" />
     <ClInclude Include="include\brain_macro.h" />
+    <ClInclude Include="include\brain_queen.h" />
     <ClInclude Include="include\builder.h" />
     <ClInclude Include="include\cache.h" />
     <ClInclude Include="include\chokepoint.h" />
@@ -191,6 +193,7 @@
     <ClCompile Include="src\brain_economy.cpp" />
     <ClCompile Include="src\brain_macro.cpp" />
     <ClCompile Include="src\brain_overlords.cpp" />
+    <ClCompile Include="src\brain_queen.cpp" />
     <ClCompile Include="src\brain_scouting.cpp" />
     <ClCompile Include="src\brain_updateharvesters.cpp" />
     <ClCompile Include="src\builder.cpp" />
