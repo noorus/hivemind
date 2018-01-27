@@ -50,6 +50,7 @@
 #include <filesystem>
 
 #include <boost/algorithm/string/trim.hpp>
+#include <boost/algorithm/string/find.hpp>
 
 #undef min
 #undef max

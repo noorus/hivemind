@@ -105,6 +105,8 @@ namespace hivemind {
     ~TextFile();
   };
 
+  using ConCmdPtr = std::unique_ptr<ConCmd>;
+
   class Console {
     friend class ConBase;
   private:
@@ -117,13 +119,22 @@ namespace hivemind {
     platform::RWLock bufferLock_; //!< Command buffer lock
     set<ConsoleListener*> listeners_;
     StringVector bufferedCommands_;
+    ConCmdPtr listCmd_;
+    ConCmdPtr helpCmd_;
+    ConCmdPtr findCmd_;
+    ConCmdPtr execCmd_;
     void writeStartBanner();
     void writeStopBanner();
     //! Registers a console variable or command.
     void registerVariable( ConBase* var );
     static StringVector tokenize( const string& commandLine );
+    static void callbackList( Console* console, ConCmd* command, StringVector& arguments );
+    static void callbackHelp( Console* console, ConCmd* command, StringVector& arguments );
+    static void callbackFind( Console* console, ConCmd* command, StringVector& arguments );
+    static void callbackExec( Console* console, ConCmd* command, StringVector& arguments );
   public:
     Console();
+    void describe( ConBase* base );
     void addListener( ConsoleListener* listener );
     void removeListener( ConsoleListener* listener );
     void autoComplete( const string& line, CVarList& matches );
@@ -136,6 +147,7 @@ namespace hivemind {
     inline void print( const string& str ) { print( str.c_str() ); }
     void printf( const char* str, ... );
     void execute( string commandLine, const bool echo = true );
+    void executeFile( const string& filename );
   };
 
 }

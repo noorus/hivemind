@@ -181,10 +181,87 @@ namespace hivemind {
 
   Console::Console(): bot_( nullptr ), fileOut_( nullptr )
   {
+    listCmd_ = std::make_unique<ConCmd>( "list", "List all cvars.", callbackList );
+    helpCmd_ = std::make_unique<ConCmd>( "help", "Get help on a variable/command.", callbackHelp );
+    findCmd_ = std::make_unique<ConCmd>( "find", "List cvars with name containing given string.", callbackFind );
+    execCmd_ = std::make_unique<ConCmd>( "exec", "Execute a configuration file.", callbackExec );
+
     for ( ConBase* var : precreated_ )
       registerVariable( var );
 
     precreated_.clear();
+
+    cvars_.sort( []( ConBase* a, ConBase* b ) -> bool {
+      return ( _stricmp( a->name().c_str(), b->name().c_str() ) <= 0 );
+    } );
+  }
+
+  void Console::describe( ConBase* base )
+  {
+    printf( "%s: (%s) - %s",
+      base->name().c_str(),
+      base->isCommand() ? "command" : "variable",
+      base->description().c_str() );
+  }
+
+  void Console::callbackList( Console* console, ConCmd* command, StringVector& arguments )
+  {
+    for ( auto base : console->cvars_ )
+      console->describe( base );
+  }
+
+  void Console::callbackHelp( Console* console, ConCmd* command, StringVector& arguments )
+  {
+    if ( arguments.size() < 2 )
+    {
+      console->print( "Format: help <variable/command>" );
+      return;
+    }
+
+    for ( auto base : console->cvars_ )
+    {
+      if ( boost::iequals( base->name(), arguments[1] ) )
+      {
+        console->describe( base );
+        return;
+      }
+    }
+
+    console->printf( R"(Error: Unknown command "%s")", arguments[1].c_str() );
+  }
+
+  void Console::callbackFind( Console* console, ConCmd* command, StringVector& arguments )
+  {
+    if ( arguments.size() < 2 )
+    {
+      console->print( "Format: find <text>" );
+      return;
+    }
+    using StringRange = const boost::iterator_range<string::const_iterator>;
+    for ( auto base : console->cvars_ )
+    {
+      for ( size_t i = 1; i < arguments.size(); i++ )
+      {
+        if ( boost::ifind_first(
+          StringRange( base->name().begin(), base->name().end() ),
+          StringRange( arguments[i].begin(), arguments[i].end() ) ) )
+        {
+          console->describe( base );
+          break;
+        }
+      }
+    }
+  }
+
+  void Console::callbackExec( Console* console, ConCmd* command, StringVector& arguments )
+  {
+    if ( arguments.size() < 2 )
+    {
+      console->print( "Format: exec <filename>" );
+      return;
+    }
+
+    console->executeFile( arguments[1] );
   }
 
   void Console::setBot( Bot* bot )
@@ -270,7 +347,7 @@ namespace hivemind {
 
   void Console::print( const char* str )
   {
-    auto ticks = bot_->time();
+    auto ticks = bot_ ? bot_->time() : 0;
     auto realTime = utils::ticksToTime( ticks );
     unsigned int minutes = ( realTime / 60 );
     unsigned int seconds = ( realTime % 60 );
@@ -445,6 +522,49 @@ namespace hivemind {
     bufferLock_.lock();
     bufferedCommands_.clear();
     bufferLock_.unlock();
+  }
+
+  void Console::executeFile( const string& filename )
+  {
+    printf( "Executing %s", filename.c_str() );
+
+    if ( !platform::fileExists( filename ) )
+    {
+      printf( R"(Error: Cannot execute "%s", file does not exist)", filename.c_str() );
+      return;
+    }
+
+    platform::FileReader reader( filename );
+    auto str = reader.readFullString();
+    const char* content = str.c_str();
+
+    size_t i = 0;
+
+    const BYTE utf8BOM[3] = { 0xEF, 0xBB, 0xBF };
+    if ( !memcmp( content, utf8BOM, 3 ) )
+      i = 3;
+
+    // naive
+    string line;
+    line.reserve( 128 );
+    for ( i; i < str.length(); ++i )
+    {
+      if ( content[i] != 0 && content[i] != LF && content[i] != CR )
+      {
+        line.append( 1, content[i] );
+      }
+      else if ( content[i] == LF )
+      {
+        if ( !line.empty() )
+          execute( line, true );
+        line.clear();
+      }
+      else if ( content[i] == 0 )
+        break;
+    }
+
+    if ( !line.empty() )
+      execute( line, true );
   }
 
 }

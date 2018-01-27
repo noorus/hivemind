@@ -96,6 +96,10 @@ int runMain( hivemind::Bot::Options& options )
 
   sc2::Coordinator coordinator;
 
+  consoleWindowThread.start();
+
+  console.executeFile( "user.cfg" );
+
   char myExePath[MAX_PATH];
   strcpy_s( myExePath, MAX_PATH, options.hivemindExecPath_.c_str() );
   char* junkArgs[] = { myExePath };
@@ -104,8 +108,6 @@ int runMain( hivemind::Bot::Options& options )
     HIVE_EXCEPT( "Failed to load settings" );
 
   coordinator.SetTimeoutMS( g_CVar_net_timeout.as_i() );
-
-  consoleWindowThread.start();
 
   Bot hivemindBot( console );
 

@@ -171,6 +171,19 @@ namespace hivemind {
           HIVE_EXCEPT( "File read failed or length mismatch" );
         return Vector2( vals[0], vals[1] );
       }
+      string readFullString()
+      {
+        string ret;
+        auto pos = SetFilePointer( file_, 0, 0, FILE_CURRENT );
+        if ( pos == INVALID_SET_FILE_POINTER )
+          HIVE_EXCEPT( "SetFilePointer failed" );
+        uint32_t length = ( (uint32_t)size_ - pos );
+        ret.resize( length );
+        DWORD read = 0;
+        if ( ReadFile( file_, (LPVOID)ret.data(), length, &read, nullptr ) != TRUE || read != length )
+          HIVE_EXCEPT( "File read failed or length mismatch" );
+        return ret;
+      }
     };
 
     class FileWriter {
