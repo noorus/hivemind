@@ -1032,7 +1032,10 @@ namespace hivemind {
     void Map_FindResourceClusters( const sc2::ObservationInterface& observation, vector<UnitVector>& clusters_out, size_t minClusterSize, Real maxResourceDistance )
     {
       vector<UnitVector> tempClusters;
-      for ( auto mineral : observation.GetUnits( Unit::Alliance::Neutral ) )
+
+      auto neutrals = observation.GetUnits( Unit::Alliance::Neutral );
+
+      for ( auto mineral : neutrals )
       {
         if ( !utils::isMineral( mineral ) )
           continue;
@@ -1058,7 +1061,7 @@ namespace hivemind {
         }
       }
 
-      for ( auto geyser : observation.GetUnits( Unit::Alliance::Neutral ) )
+      for ( auto geyser : neutrals )
       {
         if ( !utils::isGeyser( geyser ) )
           continue;

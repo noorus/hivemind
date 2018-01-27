@@ -19,7 +19,7 @@ namespace hivemind {
       debug_ = fwd;
     }
     inline sc2::DebugInterface* get() { return debug_; }
-    // Currently unimplemented: create unit, kill unit, show map, enemy control, ignore food,
+    // Currently unimplemented: create unit, kill unit, enemy control, ignore food,
     // give resources, ignore mineral, no cooldowns, all tech, all upgrades, fast build,
     // set energy, set life, set shields, set score
     // ---
@@ -30,6 +30,10 @@ namespace hivemind {
     void cheatIgnoreResourceCost()
     {
       debug_->DebugIgnoreResourceCost();
+    }
+    void cheatShowMap()
+    {
+      debug_->DebugShowMap();
     }
     void drawText( const string& text, Color color = Colors::White )
     {

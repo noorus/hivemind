@@ -125,7 +125,7 @@ namespace hivemind {
 
   void Intelligence::draw()
   {
-    Point2D screenPosition = Point2D( 0.9f, 0.5f );
+    Point2D screenPosition = Point2D( 0.85f, 0.5f );
     const Point2D increment( 0.0f, 0.011f );
     for ( auto& build : structures_ )
     {

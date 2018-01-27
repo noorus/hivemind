@@ -11,9 +11,12 @@ namespace hivemind {
 
   static bool callbackCVARGodmode( ConVar* variable, ConVar::Value oldValue );
   static bool callbackCVARCostIgnore( ConVar* variable, ConVar::Value oldValue );
+  static bool callbackCVARShowMap ( ConVar* variable, ConVar::Value oldValue );
 
   HIVE_DECLARE_CONVAR_WITH_CB( cheat_godmode, "Cheat: Invulnerability.", false, callbackCVARGodmode );
   HIVE_DECLARE_CONVAR_WITH_CB( cheat_ignorecost, "Cheat: Ignore all resource cost checks.", false, callbackCVARCostIgnore );
+  HIVE_DECLARE_CONVAR_WITH_CB( cheat_showmap, "Cheat: Reveal entire map and remove fog of war.", false, callbackCVARShowMap );
+
   HIVE_DECLARE_CONVAR( map_always_hash, "Always hash the map file to obtain an identifier instead of recognizing Battle.net cache files.", false );
 
   bool callbackCVARGodmode( ConVar* variable, ConVar::Value oldValue )
@@ -38,6 +41,17 @@ namespace hivemind {
     return true;
   }
 
+  bool callbackCVARShowMap( ConVar* variable, ConVar::Value oldValue )
+  {
+    if ( !g_Bot )
+      return true;
+
+    if ( variable->as_b() && !oldValue.i )
+      g_Bot->enableShowMapCheat();
+
+    return true;
+  }
+
   Bot::Bot( Console& console ):
     time_( 0 ),
     console_( console ),
@@ -52,7 +66,8 @@ namespace hivemind {
     builder_( this ),
     vision_( this ),
     cheatCostIgnore_( false ),
-    cheatGodmode_( false )
+    cheatGodmode_( false ),
+    cheatShowMap_( false )
   {
     console_.setBot( this );
   }
@@ -148,10 +163,16 @@ namespace hivemind {
 
     console_.printf( "AI initialization took %.5fms", timer.stop() );
 
+    cheatCostIgnore_ = false;
+    cheatGodmode_ = false;
+    cheatShowMap_ = false;
+
     if ( g_CVar_cheat_godmode.as_b() )
       enableGodmodeCheat();
     if ( g_CVar_cheat_ignorecost.as_b() )
       enableCostIgnoreCheat();
+    if ( g_CVar_cheat_showmap.as_b() )
+      enableShowMapCheat();
   }
 
   void Bot::enableGodmodeCheat()
@@ -172,6 +193,16 @@ namespace hivemind {
     console_.printf( "Cheat: Ignoring all resource cost checks" );
     debug_.cheatIgnoreResourceCost();
     cheatCostIgnore_ = true;
+  }
+
+  void Bot::enableShowMapCheat()
+  {
+    if ( cheatShowMap_ || !debug_.get() )
+      return;
+
+    console_.printf( "Cheat: Removing fog of war" );
+    debug_.cheatShowMap();
+    cheatShowMap_ = true;
   }
 
   void Bot::OnStep()
