@@ -272,13 +272,15 @@ namespace hivemind {
 
   void Bot::OnUnitCreated( const Unit* unit )
   {
-    console_.printf( "Bot::UnitCreated %s %p", sc2::UnitTypeToName( unit->unit_type ), unit );
+    if ( unit->alliance == sc2::Unit::Self && unit->unit_type != UNIT_TYPEID::ZERG_DRONE && unit->unit_type != UNIT_TYPEID::ZERG_LARVA )
+      console_.printf( "Bot::UnitCreated %s %x", sc2::UnitTypeToName( unit->unit_type ), id( unit ) );
+
     messaging_.sendGlobal( M_Global_UnitCreated, unit );
   }
 
   void Bot::OnUnitDestroyed( const Unit* unit )
   {
-    console_.printf( "Bot::UnitDestroyed %s %p", sc2::UnitTypeToName( unit->unit_type ), unit );
+    console_.printf( "Bot::UnitDestroyed %s %x", sc2::UnitTypeToName( unit->unit_type ), id( unit ) );
     messaging_.sendGlobal( M_Global_UnitDestroyed, unit );
   }
 

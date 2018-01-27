@@ -198,7 +198,7 @@ namespace hivemind {
           bot_->messaging().sendGlobal( M_Training_Started, training.id );
 
           if ( verbose )
-            bot_->console().printf( "TrainOp %d: training started with %x", training.id, training.trainer );
+            bot_->console().printf( "TrainOp %d: training started with %x", training.id, id( training.trainer ) );
         }
         else if ( training.nextUpdateTime <= time )
         {
@@ -209,7 +209,7 @@ namespace hivemind {
             bot_->unitDebugMsgs_[training.trainer] = "Trainer, Op " + std::to_string(training.id);
 
             if ( verbose )
-              bot_->console().printf( "TrainOp %d: Got trainer %x for %s", training.id, training.trainer, sc2::UnitTypeToName( training.type ) );
+              bot_->console().printf( "TrainOp %d: Got trainer %x for %s", training.id, id( training.trainer ), sc2::UnitTypeToName( training.type ) );
 
             Larva(training.trainer).morph(training.type);
             training.tries++;

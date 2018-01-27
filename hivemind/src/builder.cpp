@@ -137,7 +137,7 @@ namespace hivemind {
           if ( dist < cBuildDistHeur )
           {
             if ( g_CVar_builder_debug.as_i() > 1 )
-              bot_->console().printf( "BuildOp %d: Got building %x at pos %f,%f", build.id, unit, pos.x, pos.y );
+              bot_->console().printf( "BuildOp %d: Got building %x at pos %f,%f", build.id, id( unit ), pos.x, pos.y );
 
             build.building = unit;
             build.buildStartTime = bot_->time();
@@ -210,7 +210,7 @@ namespace hivemind {
         if ( build.builder && build.builder->is_alive && build.cancel )
         {
           if ( verbose )
-            bot_->console().printf( "Builder: Returning worker %x", build.builder );
+            bot_->console().printf( "Builder: Returning worker %x", id( build.builder ) );
 
           bot_->workers().addBack( build.builder );
         }
@@ -259,7 +259,7 @@ namespace hivemind {
           bot_->unitDebugMsgs_[build.builder] = "Builder, Op " + std::to_string( build.id );
 
           if ( verbose )
-            bot_->console().printf( "BuildOp %d: Got worker %x", build.id, build.builder );
+            bot_->console().printf( "BuildOp %d: Got worker %x", build.id, id( build.builder ) );
 
           Drone( build.builder ).move( build.position );
           build.tries++;
