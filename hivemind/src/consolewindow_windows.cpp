@@ -491,7 +491,12 @@ namespace hivemind {
       auto window = (ConsoleWindow*)GetWindowLongPtrW( wnd, GWLP_USERDATA );
       auto console = window->console_;
 
-      // TODO - whatever custom stuff?
+      if ( msg == WM_CHAR )
+      {
+        SetFocus( window->cmdline_ );
+        SendMessageW( window->cmdline_, WM_CHAR, wparam, lparam );
+        return 0;
+      }
 
       return CallWindowProcW( window->baseLogProc_, wnd, msg, wparam, lparam );
     }
