@@ -35,7 +35,7 @@ namespace hivemind {
     distanceMap_ = bot_->map().getDistanceMap( position_ );
 
     for ( auto& pos : bot_->observation().GetGameInfo().enemy_start_locations )
-      if ( containsPosition( pos ) )
+      if ( initialContainsPosition( pos ) )
       {
         startLocation_ = true;
         position_ = pos;
@@ -43,7 +43,7 @@ namespace hivemind {
       }
 
     for ( auto unit : bot_->observation().GetUnits() )
-      if ( utils::isMine( unit ) && utils::isMainStructure( unit ) && containsPosition( unit->pos ) )
+      if ( utils::isMine( unit ) && utils::isMainStructure( unit ) && initialContainsPosition( unit->pos ) )
       {
         startLocation_ = true;
         position_ = unit->pos;
@@ -64,7 +64,7 @@ namespace hivemind {
     region_ = region->label_;
   }
 
-  int BaseLocation::getGroundDistance( const Vector2 & pos ) const
+  int BaseLocation::getGroundDistance( const Vector2& pos ) const
   {
     return distanceMap_.dist( pos );
   }
@@ -74,12 +74,20 @@ namespace hivemind {
     return startLocation_;
   }
 
-  bool BaseLocation::containsPosition( const Vector2 & pos ) const
+  bool BaseLocation::initialContainsPosition( const Vector2& pos ) const
   {
-    if ( !bot_->map().isValid( pos ) || ( pos.x == 0 && pos.y == 0 ) )
+    if ( !bot_->map().isValid( pos ) || ( pos.x == 0.0f && pos.y == 0.0f ) )
       return false;
 
     return ( getGroundDistance( pos ) < c_nearBaseLocationTileDistance );
+  }
+
+  bool BaseLocation::containsPosition( const Vector2& pos ) const
+  {
+    if ( !bot_->map().isValid( pos ) || ( pos.x == 0.0f && pos.y == 0.0f ) )
+      return false;
+
+    return ( bot_->map().closestRegionId( pos ) == region_ );
   }
 
   bool BaseLocation::isInResourceBox( int x, int y ) const

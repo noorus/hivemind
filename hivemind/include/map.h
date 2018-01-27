@@ -149,6 +149,10 @@ namespace hivemind {
     }
     Region* region( size_t x, size_t y );
     inline Region* region( const Vector2& position ) { return region( (size_t)position.x, (size_t)position.y ); }
+    inline int closestRegionId( size_t x, size_t y ) { return closestRegionMap_[x][y]; }
+    inline int closestRegionId( const Vector2& position ) { return closestRegionId( (size_t)position.x, (size_t)position.y ); }
+    inline Region* closestRegion( size_t x, size_t y ) { return region( closestRegionMap_[x][y] ); }
+    inline Region* closestRegion( const Vector2& position ) { return closestRegion( (size_t)position.x, (size_t)position.y ); }
     void reserveFootprint( const Point2DI& position, UnitTypeID type );
     void clearFootprint( const Point2DI& position );
     bool isValid( size_t x, size_t y ) const;

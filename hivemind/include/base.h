@@ -2,8 +2,11 @@
 #include "sc2_forward.h"
 #include "baselocation.h"
 #include "workers.h"
+#include "console.h"
 
 namespace hivemind {
+
+  HIVE_EXTERN_CONVAR( base_debug );
 
   class BaseManager;
 

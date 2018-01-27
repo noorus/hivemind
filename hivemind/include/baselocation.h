@@ -22,6 +22,9 @@ namespace hivemind {
     Real bottom_;
     bool startLocation_;
     int region_;
+  private:
+    // this is a distance check instead of region check, only used before region is available
+    bool initialContainsPosition( const Vector2& pos ) const;
   public:
     BaseLocation( Bot* bot, size_t baseID, const UnitVector& resources );
     int getGroundDistance( const Vector2& pos ) const;

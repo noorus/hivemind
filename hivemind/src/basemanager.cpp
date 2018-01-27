@@ -23,7 +23,8 @@ namespace hivemind {
     if ( !location )
       return false;
 
-    bot_->console().printf( "Adding base (%s) at location %llu", sc2::UnitTypeToName( depot->unit_type ), location->baseID_ );
+    if ( g_CVar_base_debug.as_i() > 0 )
+      bot_->console().printf( "Adding base (%s) at location %llu", sc2::UnitTypeToName( depot->unit_type ), location->baseID_ );
 
     bases_.emplace_back( this, bases_.size(), location, depot );
 
@@ -71,6 +72,8 @@ namespace hivemind {
 
   void BaseManager::onMessage( const Message& msg )
   {
+    auto verbose = ( g_CVar_base_debug.as_i() > 1 );
+
     if ( msg.code == M_Global_UnitCreated && utils::isMine( msg.unit() ) )
     {
       // Hack to avoid double events in the beginning.
@@ -89,12 +92,16 @@ namespace hivemind {
         auto base = findClosest( msg.unit()->pos );
         if ( msg.unit()->unit_type.ToType() == sc2::UNIT_TYPEID::ZERG_LARVA && base )
         {
-          bot_->console().printf( "Base %llu: adding larva %x", base->id(), msg.unit() );
+          if ( verbose )
+            bot_->console().printf( "Base %llu: Adding larva %x", base->id(), id( msg.unit() ) );
+
           base->addLarva( msg.unit() );
         }
         else if ( msg.unit()->unit_type.ToType() == sc2::UNIT_TYPEID::ZERG_QUEEN && base )
         {
-          bot_->console().printf( "Base %llu: adding queen %x", base->id(), msg.unit() );
+          if ( verbose )
+            bot_->console().printf( "Base %llu: Adding queen %x", base->id(), id( msg.unit() ) );
+
           base->addQueen( msg.unit() );
         }
       }
@@ -122,6 +129,10 @@ namespace hivemind {
     Real minDist = 32000.0f;
     for ( auto& base : bases_ )
     {
+      // if location's region contains pos, return that directly
+      if ( base.location()->containsPosition( pos.to2() ) )
+        return &base;
+
       auto dist = base.location()->position().squaredDistance( pos.to2() );
       if ( dist < minDist )
       {
@@ -141,7 +152,6 @@ namespace hivemind {
       // if new main structure is inside an existing base's area, add it to that base.
       // otherwise if building is inside a base location's area, create a new base with that location.
       // otherwise just add it to whatever is the closest base.
-      // TODO Find base by polygonal region rather than distance, distance throws off way too easily.
       depots_.insert( building );
       for ( auto& it : bases_ )
         if ( it.location()->containsPosition( building->pos ) )
@@ -172,7 +182,9 @@ namespace hivemind {
     auto base = findClosest( unit->pos );
     if ( base )
     {
-      bot_->console().printf( "Base %llu: adding worker %x", base->id(), unit );
+      if ( g_CVar_base_debug.as_i() > 1 )
+        bot_->console().printf( "Base %llu: Adding worker %x", base->id(), id( unit ) );
+
       base->addWorker( unit );
     }
   }

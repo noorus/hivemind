@@ -5,6 +5,8 @@
 
 namespace hivemind {
 
+  HIVE_DECLARE_CONVAR( base_debug, "Whether to show and print debug information on bases. 0 = none, 1 = basics, 2 = verbose", 1 );
+
   const size_t c_minersPerPatch = 2;
   const size_t c_collectorsPerGeyser = 3;
 
@@ -39,6 +41,9 @@ namespace hivemind {
 
   void Base::draw( Bot* bot )
   {
+    if ( g_CVar_base_debug.as_i() < 1 )
+      return;
+
     uint8_t rgb[3];
     utils::hsl2rgb( (uint16_t)index_ + 42 * 120, 0xff, 220, rgb );
     sc2::Color color;
@@ -225,16 +230,22 @@ namespace hivemind {
 
   void Base::addDepot( UnitRef depot )
   {
+    if ( g_CVar_base_debug.as_i() > 1 )
+      manager_->bot_->console().printf( "Base %llu: Adding depot %x", index_, hivemind::id( depot ) );
+
     depots_.insert( depot );
   }
 
   void Base::addBuilding( UnitRef building )
   {
-    buildings_.insert(building);
+    if ( g_CVar_base_debug.as_i() > 1 )
+      manager_->bot_->console().printf( "Base %llu: Adding building %x", index_, hivemind::id( building ) );
 
-    if(utils::isRefinery(building))
+    buildings_.insert( building );
+
+    if ( utils::isRefinery( building ) )
     {
-      refineries_.push_back({ building, {} });
+      refineries_.push_back( { building, {} } );
     }
   }
 
@@ -246,7 +257,9 @@ namespace hivemind {
     {
       if ( !( *it )->is_alive )
       {
-        manager_->bot_->console().printf( "Base %llu: Removing larva %x", index_, ( *it ) );
+        if ( g_CVar_base_debug.as_i() > 1 )
+          manager_->bot_->console().printf( "Base %llu: Removing larva %x", index_, hivemind::id( *it ) );
+
         it = larvae_.erase( it );
       }
       else
