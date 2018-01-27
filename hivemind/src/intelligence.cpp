@@ -130,7 +130,7 @@ namespace hivemind {
     for ( auto& build : structures_ )
     {
       char text[128];
-      sprintf_s( text, 128, "%d %s%s", build.second.player_, sc2::UnitTypeToName( build.second.id_->unit_type ), build.second.destroyed_ ? " (destroyed)" : "" );
+      sprintf_s( text, 128, "%s%s", sc2::UnitTypeToName( build.second.id_->unit_type ), build.second.destroyed_ ? " (destroyed)" : "" );
       bot_->debug().drawText( text, screenPosition, sc2::Colors::Red );
       screenPosition += increment;
     }
