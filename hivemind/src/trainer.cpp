@@ -8,6 +8,8 @@
 
 namespace hivemind {
 
+  HIVE_DECLARE_CONVAR( trainer_debug, "Whether to show and print debug information on the trainer subsystem. 0 = none, 1 = basics, 2 = verbose", 1 );
+
   Trainer::Trainer(Bot* bot, BuildProjectID& idPool, std::unordered_map<sc2::UNIT_TYPEID, UnitStats>& unitStats) :
       Subsystem(bot),
       idPool_(idPool),
@@ -68,7 +70,10 @@ namespace hivemind {
     Training build( idPool_++, unitType, trainerType, trainer );
 
     trainingProjects_.push_back( build );
-    bot_->console().printf( "Trainer: New TrainOp %d for %s", build.id, sc2::UnitTypeToName( unitType ) );
+
+    if ( g_CVar_trainer_debug.as_i() > 1 )
+      bot_->console().printf( "Trainer: New TrainOp %d for %s", build.id, sc2::UnitTypeToName( unitType ) );
+
     trainers_.insert(trainer);
 
     unitStats_[unitType].inProgress.insert(build.id);
@@ -98,7 +103,10 @@ namespace hivemind {
     auto trainingComplete = [this](auto it)
     {
       auto training = *it;
-      bot_->console().printf( "Trainer: Removing TrainOp %d (%s)", training.id, training.completed ? "completed" : "canceled" );
+
+      if ( g_CVar_trainer_debug.as_i() > 1 )
+        bot_->console().printf( "Trainer: Removing TrainOp %d (%s)", training.id, training.completed ? "completed" : "canceled" );
+
       if ( training.completed )
         bot_->messaging().sendGlobal( M_Training_Finished, training.id );
       else
@@ -176,6 +184,8 @@ namespace hivemind {
 
   void Trainer::update( const GameTime time, const GameTime delta )
   {
+    auto verbose = ( g_CVar_trainer_debug.as_i() > 1 );
+
     const GameTime cTrainRecheckInterval = 50;
 
     for(auto& training : trainingProjects_)
@@ -186,7 +196,9 @@ namespace hivemind {
         {
           training.moneyAllocated = true;
           bot_->messaging().sendGlobal( M_Training_Started, training.id );
-          bot_->console().printf( "TrainOp %d: training started with %x", training.id, training.trainer );
+
+          if ( verbose )
+            bot_->console().printf( "TrainOp %d: training started with %x", training.id, training.trainer );
         }
         else if ( training.nextUpdateTime <= time )
         {
@@ -195,7 +207,10 @@ namespace hivemind {
           if(training.trainer && training.trainer->is_alive && training.trainer->orders.empty())
           {
             bot_->unitDebugMsgs_[training.trainer] = "Trainer, Op " + std::to_string(training.id);
-            bot_->console().printf("TrainOp %d: Got trainer %x for %s", training.id, training.trainer, sc2::UnitTypeToName(training.type));
+
+            if ( verbose )
+              bot_->console().printf( "TrainOp %d: Got trainer %x for %s", training.id, training.trainer, sc2::UnitTypeToName( training.type ) );
+
             Larva(training.trainer).morph(training.type);
             training.tries++;
           }

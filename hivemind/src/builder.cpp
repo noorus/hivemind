@@ -5,13 +5,16 @@
 #include "builder.h"
 #include "database.h"
 #include "controllers.h"
+#include "console.h"
 
 namespace hivemind {
 
-  Builder::Builder(Bot* bot) :
-    Subsystem(bot),
-    idPool_(0),
-    trainer_(bot, idPool_, unitStats_)
+  HIVE_DECLARE_CONVAR( builder_debug, "Whether to show and print debug information on the builder subsystem. 0 = none, 1 = basics, 2 = verbose", 1 );
+
+  Builder::Builder( Bot* bot ):
+    Subsystem( bot ),
+    idPool_( 0 ),
+    trainer_( bot, idPool_, unitStats_ )
   {
   }
 
@@ -19,7 +22,7 @@ namespace hivemind {
   {
     buildProjects_.clear();
     idPool_ = 0;
-    bot_->messaging().listen(Listen_Global, this);
+    bot_->messaging().listen( Listen_Global, this );
 
     trainer_.gameBegin();
   }
@@ -38,7 +41,9 @@ namespace hivemind {
     build.target = target;
     bot_->map().reserveFootprint( build.position, structureType );
     buildProjects_.push_back( build );
-    bot_->console().printf( "Builder: New BuildOp %d for %s, position %d,%d", build.id, sc2::UnitTypeToName( structureType ), build.position.x, build.position.y );
+
+    if ( g_CVar_builder_debug.as_i() > 1 )
+      bot_->console().printf( "Builder: New BuildOp %d for %s, position %d,%d", build.id, sc2::UnitTypeToName( structureType ), build.position.x, build.position.y );
 
     unitStats_[structureType].inProgress.insert(build.id);
 
@@ -69,6 +74,9 @@ namespace hivemind {
 
   void Builder::draw()
   {
+    if ( g_CVar_builder_debug.as_i() < 1 )
+      return;
+
     auto& debug = bot_->debug();
 
     for ( auto& b : buildProjects_ )
@@ -128,7 +136,9 @@ namespace hivemind {
           auto dist = pos.distance( build.position );
           if ( dist < cBuildDistHeur )
           {
-            bot_->console().printf( "BuildOp %d: Got building %x at pos %f,%f", build.id, unit, pos.x, pos.y );
+            if ( g_CVar_builder_debug.as_i() > 1 )
+              bot_->console().printf( "BuildOp %d: Got building %x at pos %f,%f", build.id, unit, pos.x, pos.y );
+
             build.building = unit;
             build.buildStartTime = bot_->time();
             bot_->messaging().sendGlobal( M_Build_Started, build.id );
@@ -152,7 +162,9 @@ namespace hivemind {
         {
           build.completed = true;
           build.buildCompleteTime = bot_->time();
-          bot_->console().printf( "BuildOp %d: Completed in time %d", build.id, build.buildCompleteTime - build.buildStartTime );
+
+          if ( g_CVar_builder_debug.as_i() > 1 )
+            bot_->console().printf( "BuildOp %d: Completed in time %d", build.id, build.buildCompleteTime - build.buildStartTime );
 
           stats.units.insert(unit);
           stats.inProgress.erase(build.id);
@@ -178,6 +190,8 @@ namespace hivemind {
 
   void Builder::update( const GameTime time, const GameTime delta )
   {
+    auto verbose = ( g_CVar_builder_debug.as_i() > 1 );
+
     auto it = buildProjects_.begin();
     while ( it != buildProjects_.end() )
     {
@@ -189,12 +203,15 @@ namespace hivemind {
         else
           bot_->messaging().sendGlobal( M_Build_Canceled, build.id );
 
-        bot_->console().printf( "Builder: Removing BuildOp %d (%s)", build.id, build.completed ? "completed" : "canceled" );
+        if ( verbose )
+          bot_->console().printf( "Builder: Removing BuildOp %d (%s)", build.id, build.completed ? "completed" : "canceled" );
 
         // there's a bug in the current API where drones which became buildings are still marked as alive.
         if ( build.builder && build.builder->is_alive && build.cancel )
         {
-          bot_->console().printf( "Builder: Returning worker %x", build.builder );
+          if ( verbose )
+            bot_->console().printf( "Builder: Returning worker %x", build.builder );
+
           bot_->workers().addBack( build.builder );
         }
         bot_->map().clearFootprint( build.position );
@@ -225,18 +242,25 @@ namespace hivemind {
         {
           if ( build.tries >= cBuildMaxWorkers )
           {
-            bot_->console().printf( "BuildOp %d: Canceling after %d failed tries (no worker)", build.id, build.tries );
+            if ( verbose )
+              bot_->console().printf( "BuildOp %d: Canceling after %d failed tries (no worker)", build.id, build.tries );
+
             build.cancel = true;
             continue;
           }
           build.builder = bot_->workers().releaseClosest( build.position );
           if ( !build.builder )
           {
-            bot_->console().printf( "BuildOp %d: No worker released from pool", build.id );
+            if ( verbose )
+              bot_->console().printf( "BuildOp %d: No worker released from pool", build.id );
+
             continue;
           }
           bot_->unitDebugMsgs_[build.builder] = "Builder, Op " + std::to_string( build.id );
-          bot_->console().printf( "BuildOp %d: Got worker %x", build.id, build.builder );
+
+          if ( verbose )
+            bot_->console().printf( "BuildOp %d: Got worker %x", build.id, build.builder );
+
           Drone( build.builder ).move( build.position );
           build.tries++;
         }
@@ -244,20 +268,22 @@ namespace hivemind {
         if ( !build.building || !build.building->is_alive )
         {
           bool hasOrder = false;
-          for(auto& order : build.builder->orders)
+          for ( auto& order : build.builder->orders )
           {
-            if(order.ability_id == build.buildAbility)
+            if ( order.ability_id == build.buildAbility )
             {
               hasOrder = true;
               break;
             }
           }
 
-          if(!hasOrder || (build.lastOrderTime + cBuildReorderDelta < time))
+          if ( !hasOrder || ( build.lastOrderTime + cBuildReorderDelta < time ) )
           {
-            if(build.orderTries >= cBuildMaxOrders)
+            if ( build.orderTries >= cBuildMaxOrders )
             {
-              bot_->console().printf("BuildOp %d: Canceling after %d failed tries (order failed)", build.id, build.orderTries);
+              if ( verbose )
+                bot_->console().printf( "BuildOp %d: Canceling after %d failed tries (order failed)", build.id, build.orderTries );
+
               build.cancel = true;
               continue;
             }
