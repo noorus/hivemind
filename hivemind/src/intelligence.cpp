@@ -6,7 +6,7 @@
 
 namespace hivemind {
 
-  Intelligence::Intelligence( Bot* bot ): Subsystem( bot )
+  Intelligence::Intelligence( Bot* bot ): Subsystem( bot ), influence_( bot )
   {
   }
 
@@ -33,6 +33,8 @@ namespace hivemind {
         enemies_[player.id()].reset();
       }
     }
+
+    influence_.gameBegin();
   }
 
   const Real c_enemyBaseHeurDist = 20.0f;
@@ -69,6 +71,8 @@ namespace hivemind {
   void Intelligence::_seeStructure( EnemyIntelligence& enemy, UnitRef unit )
   {
     // auto base = _findExistingBase( unit );
+    auto& data = structures_[unit];
+    data.lastSeen_ = bot_->time();
   }
 
   void Intelligence::_seeUnit( EnemyIntelligence& enemy, UnitRef unit )
@@ -101,6 +105,7 @@ namespace hivemind {
       data.player_ = unit->owner;
       data.position_ = unit->pos;
     }
+    data.lastSeen_ = bot_->time();
     if ( ( destroyed || !unit->is_alive ) && !data.destroyed_ )
     {
       _structureDestroyed( data );
@@ -121,6 +126,21 @@ namespace hivemind {
       else
         _updateUnit( unit );
     }
+
+    for ( auto& presence : regions_ )
+      presence.second.reset();
+
+    for ( auto& structure : structures_ )
+    {
+      if ( structure.second.destroyed_ )
+        continue;
+      auto region = bot_->map().region( structure.second.position_ );
+      if ( !region )
+        continue;
+      regions_[region->label_].structureCount_++;
+    }
+
+    influence_.update( regions_ );
   }
 
   void Intelligence::draw()
@@ -134,7 +154,67 @@ namespace hivemind {
       bot_->debug().drawText( text, screenPosition, sc2::Colors::Red );
       screenPosition += increment;
     }
+    influence_.draw();
   }
+
+  // ---
+
+  InfluenceMap::InfluenceMap( Bot* bot ): bot_( bot )
+  {
+  }
+
+  InfluenceMap::~InfluenceMap()
+  {
+  }
+
+  void InfluenceMap::gameBegin()
+  {
+    influence_.resize( bot_->map().width(), bot_->map().height() );
+    influence_.reset( 0.0f );
+  }
+
+  void InfluenceMap::update( EnemyRegionPresenceMap& regions )
+  {
+    influence_.reset( 0.0f );
+
+    for ( size_t y = 0; y < influence_.height(); ++y )
+    {
+      for ( size_t x = 0; x < influence_.width(); ++x )
+      {
+        auto region = bot_->map().regionId( x, y );
+        if ( region >= 0 )
+        {
+          influence_[x][y] += (Real)regions[region].structureCount_;
+        }
+      }
+    }
+  }
+
+  void InfluenceMap::draw()
+  {
+    for ( size_t y = 0; y < influence_.height(); ++y )
+    {
+      for ( size_t x = 0; x < influence_.width(); ++x )
+      {
+        float influence = influence_[x][y];
+
+        if ( influence != 0.0f )
+        {
+          sc2::Color color = influence > 0.0f ? sc2::Color( 255, 0, 0 ) : sc2::Color( 0, 0, 255 );
+
+          auto pos = sc2::Point3D( float( x ), float( y ), 0.0f );
+          pos.z = bot_->map().heightMap_[x][y] + 0.2f;
+
+          bot_->debug().drawBox( pos, pos + sc2::Point3D( 1.0f, 1.0f, 0.0f ), color );
+
+          string text = std::to_string( int( influence ) );
+          bot_->debug().drawText( text, Vector3( pos + sc2::Point3D( 0.5f, 0.5f, 0.0f ) ), color );
+        }
+      }
+    }
+  }
+
+  // ---
 
   void Intelligence::onMessage( const Message& msg )
   {

@@ -15,6 +15,8 @@ HIVE_DECLARE_CONVAR( analysis_invertwalkable, "Whether to invert the detected wa
 HIVE_DECLARE_CONVAR( analysis_verbose, "Print verbose status messages on map analysis.", true );
 HIVE_DECLARE_CONVAR( analysis_use_cache, "Whether to cache expensive map analysis data.", true );
 
+HIVE_DECLARE_CONVAR( draw_map, "Whether to draw map analysis debug features.", true );
+
 #ifdef HIVE_SUPPORT_MAP_DUMPS
 HIVE_DECLARE_CONVAR( analysis_dump_maps, "Dump out images of generated map layers upon analysis.", false );
 #endif
@@ -300,6 +302,9 @@ namespace hivemind {
 
   void Map::draw()
   {
+    if ( !g_CVar_draw_map.as_b() )
+      return;
+
     Point2D camera = bot_->observation().GetCameraPos();
     for ( float x = camera.x - 16.0f; x < camera.x + 16.0f; ++x )
     {

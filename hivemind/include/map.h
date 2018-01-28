@@ -148,6 +148,7 @@ namespace hivemind {
       return regions_.at( index );
     }
     Region* region( size_t x, size_t y );
+    inline int regionId( size_t x, size_t y ) { return regionMap_[x][y]; }
     inline Region* region( const Vector2& position ) { return region( (size_t)position.x, (size_t)position.y ); }
     inline int closestRegionId( size_t x, size_t y ) { return closestRegionMap_[x][y]; }
     inline int closestRegionId( const Vector2& position ) { return closestRegionId( (size_t)position.x, (size_t)position.y ); }

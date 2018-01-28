@@ -40,6 +40,7 @@ namespace hivemind {
     Vector2 position_; // init once
     GameTime destroyed_;
     EnemyBase* base_;
+    GameTime lastSeen_;
     EnemyStructure(): id_( nullptr ), player_( 0 ), destroyed_( 0 ), base_( nullptr ) {}
   };
 
@@ -54,12 +55,38 @@ namespace hivemind {
 
   using EnemyMap = std::map<PlayerID, EnemyIntelligence>;
 
+  struct EnemyRegionPresence {
+    size_t structureCount_;
+    void reset()
+    {
+      structureCount_ = 0;
+    }
+    EnemyRegionPresence() { reset(); }
+  };
+
+  using EnemyRegionPresenceMap = std::map<int, EnemyRegionPresence>;
+
+  class InfluenceMap {
+  private:
+    Array2<Real> influence_;
+  public:
+    Bot * bot_;
+  public:
+    InfluenceMap( Bot* bot );
+    ~InfluenceMap();
+    void draw();
+    void update( EnemyRegionPresenceMap& regions );
+    void gameBegin();
+  };
+
   class Intelligence: public Subsystem, Listener {
   private:
     EnemyMap enemies_;
     EnemyUnitMap units_;
     EnemyBaseVector bases_;
     EnemyStructureMap structures_;
+    InfluenceMap influence_;
+    EnemyRegionPresenceMap regions_;
     EnemyBase* _findExistingBase( UnitRef structure );
     void _seeStructure( EnemyIntelligence& enemy, UnitRef unit );
     void _seeUnit( EnemyIntelligence& enemy, UnitRef unit );
