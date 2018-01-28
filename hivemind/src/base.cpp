@@ -86,21 +86,17 @@ namespace hivemind {
     return worker;
   }
 
+  void Base::releaseQueen(UnitRef queen)
+  {
+    queens_.erase(queen);
+  }
+
   UnitSet Base::releaseWorkers( int count )
   {
     UnitSet set;
     for ( int i = 0; i < count; i++ )
     {
       set.insert(releaseWorker());
-    }
-    return set;
-  }
-
-  UnitSet Base::releaseQueens( int count )
-  {
-    UnitSet set;
-    for ( int i = 0; i < count; i++ )
-    {
     }
     return set;
   }

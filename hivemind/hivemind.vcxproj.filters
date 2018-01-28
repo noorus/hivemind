@@ -267,6 +267,12 @@
     <ClInclude Include="include\consolewindow_windows.h">
       <Filter>Header Files\Utilities</Filter>
     </ClInclude>
+    <ClInclude Include="include\brain_queen.h">
+      <Filter>Header Files\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="include\brain_creep.h">
+      <Filter>Header Files\Systems</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\stdafx.cpp">
@@ -394,6 +400,9 @@
     </ClCompile>
     <ClCompile Include="src\consolewindow_windows.cpp">
       <Filter>Source Files\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="src\brain_queen.cpp">
+      <Filter>Source Files\Brain</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

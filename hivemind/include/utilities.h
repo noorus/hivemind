@@ -351,4 +351,20 @@ namespace hivemind {
     c.erase(std::remove_if(c.begin(), c.end(), pred), c.end());
   }
 
+  template <class Key, class Compare, class Alloc, class Predicate>
+  void erase_if(std::set<Key,Compare,Alloc>& c, Predicate pred)
+  {
+    for (auto it = c.begin(), last = c.end(); it != last; )
+    {
+      if (pred(*it))
+      {
+        it = c.erase(it);
+      }
+      else
+      {
+        ++it;
+      }
+    }
+  }
+
 }

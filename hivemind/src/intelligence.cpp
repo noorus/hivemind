@@ -229,6 +229,7 @@ namespace hivemind {
       {
         _seeUnit( enemy, msg.unit() );
       }
+      // the following is old temp junk only left over for WorkerScout to function
       if ( enemy.lastSeen_ == 0 )
       {
         // this should be safe, closestLocation could only return false if the map's base location vector is empty

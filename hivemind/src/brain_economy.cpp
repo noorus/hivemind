@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "brain.h"
 #include "brain_macro.h"
+#include "brain_creep.h"
+#include "brain_queen.h"
 #include "ai_goals.h"
 #include "bot.h"
 
@@ -27,16 +29,19 @@ namespace hivemind {
       creepGoal_ = new Brain_SpreadCreep( owner_ );
       buildGoal_ = new Brain_Macro( owner_ );
       overlordGoal_ = new Brain_ManageOverlords( owner_ );
+      queenGoal_ = new Brain_Queen( owner_ );
 
       goalList_.push_back( harvestersGoal_ );
       goalList_.push_back( creepGoal_ );
       goalList_.push_back( buildGoal_ );
       goalList_.push_back( overlordGoal_ );
+      goalList_.push_back( queenGoal_ );
 
       harvestersGoal_->activate();
       creepGoal_->activate();
       buildGoal_->activate();
       overlordGoal_->activate();
+      queenGoal_->activate();
     }
 
     void Brain_ManageEconomy::terminate()
@@ -49,6 +54,8 @@ namespace hivemind {
       delete buildGoal_;
       overlordGoal_->terminate();
       delete overlordGoal_;
+      queenGoal_->terminate();
+      delete queenGoal_;
 
       goalList_.clear();
     }
@@ -59,6 +66,7 @@ namespace hivemind {
       creepGoal_->setImportance( 0.7f );
       buildGoal_->setImportance( 0.8f );
       overlordGoal_->setImportance( 0.5f );
+      queenGoal_->setImportance( 0.5f );
     }
 
   }

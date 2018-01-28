@@ -79,26 +79,17 @@ namespace hivemind {
       GameTime lastSaturateTime_;
     };
 
-    class Brain_SpreadCreep: public AI::CompositeGoal {
-    protected:
-      GameTime nextCreepTime_;
-    public:
-      virtual const string& getName() const final { static string name = "Brain_SpreadCreep"; return name; }
-    public:
-      Brain_SpreadCreep( AI::Agent* agent );
-      virtual void activate() final;
-      virtual Status process() final;
-      virtual void terminate() final;
-    };
-
+    class Brain_SpreadCreep;
     class Brain_Macro;
+    class Brain_Queen;
 
     class Brain_ManageEconomy: public AI::GoalCollection {
     protected:
       Brain_UpdateHarvesters* harvestersGoal_;
-      Brain_SpreadCreep* creepGoal_; // TODO somewhere else
+      Brain_SpreadCreep* creepGoal_;
       Brain_Macro* buildGoal_;
-      Brain_ManageOverlords* overlordGoal_; // TODO somewhere else
+      Brain_ManageOverlords* overlordGoal_;
+      Brain_Queen* queenGoal_;
     public:
       virtual const string& getName() const final { static string name = "Brain_ManageEconomy"; return name; }
     public:
