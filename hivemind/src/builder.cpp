@@ -81,7 +81,8 @@ namespace hivemind {
 
     for ( auto& b : buildProjects_ )
     {
-      Vector3 pt( (Real)b.position.x + 0.5f, (Real)b.position.y + 0.5f, bot_->map().maxZ_ );
+      Real height = bot_->map().heightMap_[b.position.x][b.position.y];
+      Vector3 pt( (Real)b.position.x + 0.5f, (Real)b.position.y + 0.5f, height );
       debug.drawSphere( pt, 1.5f, sc2::Colors::Red );
       debug.drawText( std::to_string( b.id ), pt, sc2::Colors::Yellow );
       if ( b.builder && ( !b.building || !b.building->is_alive ) )
@@ -307,7 +308,7 @@ namespace hivemind {
 
   bool Builder::findPlacement( UnitTypeID structure, const Base& base, BuildingPlacement type, AbilityID ability, Vector2& placementOut, UnitRef& targetOut )
   {
-    assert( type == BuildPlacement_Generic || type == BuildPlacement_Extractor );
+    assert( type == BuildPlacement_Generic || type == BuildPlacement_Extractor || type == BuildPlacement_MainBuilding);
 
     if ( type == BuildPlacement_Generic )
     {
@@ -333,12 +334,58 @@ namespace hivemind {
     }
     else if ( type == BuildPlacement_Extractor )
     {
+      auto position = base.location()->position_;
+
+      auto observedGeysers = bot_->observation().GetUnits( Unit::Alliance::Neutral, []( auto unit ) { return utils::isGeyser( unit ); } );
+
       for ( auto& geyser : base.location()->getGeysers() )
       {
         if ( !bot_->query().Placement( ability, geyser->pos ) )
           continue;
+
         placementOut = geyser->pos;
         targetOut = geyser;
+
+        // Don't return snapshot geysers.
+        for(auto observedGeyser : observedGeysers)
+        {
+          if(Vector3(observedGeyser->pos).distance(geyser->pos) < 1.0f)
+          {
+            targetOut = observedGeyser;
+            break;
+          }
+        }
+
+        return true;
+      }
+    }
+    else if(type == BuildPlacement_MainBuilding)
+    {
+      auto oldBasePosition = base.location()->position_;
+
+      int bestDistance = std::numeric_limits<int>::max();
+      auto bestPosition = oldBasePosition;
+
+      auto& baseLocations = bot_->map().getBaseLocations();
+      for(auto& baseLocation : baseLocations)
+      {
+        auto newBasePosition = baseLocation.position_;
+
+        if(!bot_->query().Placement(ability, newBasePosition))
+          continue;
+
+        int distance = base.location()->distanceMap_.dist(newBasePosition);
+
+        if(distance <= bestDistance)
+        {
+          bestDistance = distance;
+          bestPosition = newBasePosition;
+        }
+      }
+
+      if(bestDistance != std::numeric_limits<int>::max())
+      {
+        placementOut = bestPosition;
         return true;
       }
     }

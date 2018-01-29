@@ -265,13 +265,13 @@ namespace hivemind {
     }
 
     //! Return the unit in set closest to given world position.
-    inline const UnitRef findClosestUnit( const UnitSet& haystack, const Vector2& pos )
+    inline const UnitRef findClosestUnit( const std::set<UnitRef>& haystack, const Vector2& pos )
     {
       return findClosestPtr( haystack, pos, []( const Unit* unit, const Vector2& b ) { return b.distance(unit->pos); } );
     }
 
     //! Return the unit in vector closest to given world position.
-    inline const UnitRef findClosestUnit( const UnitVector& haystack, const Vector2& pos )
+    inline const UnitRef findClosestUnit( const std::vector<UnitRef>& haystack, const Vector2& pos )
     {
       return findClosestPtr( haystack, pos, []( const Unit* unit, const Vector2& b ) { return b.distance(unit->pos); } );
     }

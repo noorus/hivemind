@@ -8,6 +8,8 @@ namespace hivemind {
 
   BaseManager::BaseManager( Bot* bot ): Subsystem( bot )
   {
+    // Don't let Base pointers get invalidated.
+    bases_.reserve(100);
   }
 
   bool BaseManager::addBase( UnitRef depot )

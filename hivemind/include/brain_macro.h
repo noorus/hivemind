@@ -26,6 +26,8 @@ namespace hivemind {
       virtual void activate() final;
       virtual Status process() final;
       virtual void terminate() final;
+
+      void update();
     };
 
   }
