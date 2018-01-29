@@ -30,6 +30,7 @@ namespace hivemind {
     id_( id ), player_( player ), lastPosition_( position ), firstSeen_( time ), lastSeen_( time ), died_( 0 )
     {
     }
+    EnemyUnit(): id_( nullptr ), player_( 0 ), firstSeen_( 0 ), lastSeen_( 0 ), died_( 0 ) {}
   };
 
   using EnemyUnitMap = std::map<UnitRef, EnemyUnit>;
@@ -46,9 +47,19 @@ namespace hivemind {
 
   using EnemyStructureMap = std::map<UnitRef, EnemyStructure>;
 
+  struct EnemyWeaponThreat {
+    Real dps;
+    Real range;
+    Real outrunRange;
+    Real splashRange;
+  };
+
+  using EnemyWeaponThreatVector = vector<EnemyWeaponThreat>;
+
   struct EnemyIntelligence {
     bool alive_;
     GameTime lastSeen_;
+    bool canUnitHit( UnitTypeID src, UnitTypeID dest, EnemyWeaponThreatVector& threats_out ) const;
     void reset();
     EnemyIntelligence() { reset(); }
   };
@@ -91,7 +102,7 @@ namespace hivemind {
     void _seeStructure( EnemyIntelligence& enemy, UnitRef unit );
     void _seeUnit( EnemyIntelligence& enemy, UnitRef unit );
     void _updateStructure( UnitRef unit, const bool destroyed = false );
-    void _updateUnit( UnitRef unit );
+    void _updateUnit( UnitRef unit, const bool killed = false );
     void _structureDestroyed( EnemyStructure& unit );
   public:
     Intelligence( Bot* bot );

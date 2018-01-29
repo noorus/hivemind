@@ -131,7 +131,8 @@ int runMain( hivemind::Bot::Options& options )
 
   coordinator.SetParticipants( {
     CreateParticipant( sc2::Zerg, &hivemindBot ),
-    CreateComputer( sc2::Terran, sc2::Difficulty::VeryHard )
+    CreateComputer( sc2::Terran, sc2::Difficulty::VeryHard ),
+    CreateComputer( sc2::Protoss, sc2::Difficulty::VeryHard )
     } );
 
   coordinator.LaunchStarcraft();

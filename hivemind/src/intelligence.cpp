@@ -3,8 +3,11 @@
 #include "utilities.h"
 #include "bot.h"
 #include "intelligence.h"
+#include "database.h"
 
 namespace hivemind {
+
+  HIVE_DECLARE_CONVAR( threats_debug, "Whether to draw threat intel debug information.", 1 );
 
   Intelligence::Intelligence( Bot* bot ): Subsystem( bot ), influence_( bot )
   {
@@ -77,12 +80,27 @@ namespace hivemind {
 
   void Intelligence::_seeUnit( EnemyIntelligence& enemy, UnitRef unit )
   {
-    //
+    auto& data = units_[unit];
+    data.lastSeen_ = bot_->time();
+    data.lastPosition_ = unit->pos;
   }
 
-  void Intelligence::_updateUnit( UnitRef unit )
+  void Intelligence::_updateUnit( UnitRef unit, const bool killed )
   {
-    //
+    auto& data = units_[unit];
+    if ( !data.id_ )
+    {
+      // initialize new entry
+      data.id_ = unit;
+      data.player_ = unit->owner;
+    }
+    if ( ( killed || !unit->is_alive ) && !data.died_ )
+    {
+      data.died_ = bot_->time();
+      return;
+    }
+    data.lastSeen_ = bot_->time();
+    data.lastPosition_ = unit->pos;
   }
 
   void Intelligence::_structureDestroyed( EnemyStructure& unit )
@@ -143,18 +161,44 @@ namespace hivemind {
     influence_.update( regions_ );
   }
 
-  void Intelligence::draw()
+  bool EnemyIntelligence::canUnitHit( UnitTypeID src, UnitTypeID dest, EnemyWeaponThreatVector& threats_out ) const
   {
-    Point2D screenPosition = Point2D( 0.85f, 0.5f );
-    const Point2D increment( 0.0f, 0.011f );
-    for ( auto& build : structures_ )
+    auto& enemy = Database::unit( src );
+    auto& home = Database::unit( dest );
+
+    EnemyWeaponThreatVector vec;
+
+    for ( auto weapon : enemy.resolvedWeapons_ )
     {
-      char text[128];
-      sprintf_s( text, 128, "%s%s", sc2::UnitTypeToName( build.second.id_->unit_type ), build.second.destroyed_ ? " (destroyed)" : "" );
-      bot_->debug().drawText( text, screenPosition, sc2::Colors::Red );
-      screenPosition += increment;
+      // these are totally fucking broken. WTF?
+      //if ( home.structure && !weapon->hitsStructures )
+      //  continue;
+      //if ( !home.structure && !weapon->hitsUnits )
+      //  continue;
+      //if ( home.flying && !weapon->hitsAir )
+      //  continue;
+      //if ( !home.flying && !weapon->hitsGround )
+      //  continue;
+
+      EnemyWeaponThreat threat;
+      threat.range = weapon->range;
+      threat.outrunRange = weapon->range + weapon->rangeSlop;
+      Real damageTime;
+      int armor = 0; // dunno real armor level, no data kept yet
+      Real splashRange = 0.0f;
+      // calculateDamageAgainst gives us the time a periodic effect cycle lasts;
+      // add to that the actual weapon usage period to get total time to go with total damage
+      Real damage = weapon->calculateDamageAgainst( home, damageTime, splashRange, armor );
+      damageTime += weapon->damagePoint + weapon->period;
+      threat.dps = ( damageTime > 0.0f ? ( damage / damageTime ) : damage );
+      threat.splashRange = splashRange;
+
+      vec.push_back( threat );
     }
-    influence_.draw();
+
+    std::swap( threats_out, vec );
+
+    return ( !threats_out.empty() );
   }
 
   // ---
@@ -216,6 +260,57 @@ namespace hivemind {
 
   // ---
 
+  void Intelligence::draw()
+  {
+    Point2D screenPosition = Point2D( 0.85f, 0.5f );
+    const Point2D increment( 0.0f, 0.011f );
+    for ( auto& build : structures_ )
+    {
+      char text[128];
+      sprintf_s( text, 128, "%s%s", sc2::UnitTypeToName( build.second.id_->unit_type ), build.second.destroyed_ ? " (destroyed)" : "" );
+      bot_->debug().drawText( text, screenPosition, sc2::Colors::Red );
+      screenPosition += increment;
+    }
+
+    // influence_.draw();
+
+    if ( g_CVar_threats_debug.as_i() > 0 )
+    {
+      for ( auto& it : units_ )
+      {
+        auto& unit = it.second;
+        if ( !unit.id_ || unit.died_ )
+          continue;
+        EnemyWeaponThreatVector threats;
+        if ( enemies_[unit.player_].canUnitHit( unit.id_->unit_type, UNIT_TYPEID::ZERG_ZERGLING, threats ) )
+        {
+          Real zadd = 0.0f;
+          for ( auto& threat : threats )
+          {
+            zadd += 0.2f;
+            Real range = threat.range > 0.4f ? threat.range : 0.4f;
+            Real outrunRange = threat.outrunRange > 0.4f ? threat.outrunRange : 0.4f;
+            auto x = math::floor( unit.lastPosition_.x );
+            auto y = math::floor( unit.lastPosition_.y );
+            auto pos = unit.lastPosition_.to3( bot_->map().heightMap_[x][y] + zadd );
+            // bot_->debug().drawCircle( pos, outrunRange, Colors::Yellow );
+            pos.z += 0.05f;
+            bot_->debug().drawCircle( pos, range, Colors::Red );
+            if ( threat.splashRange > 0.0f )
+            {
+              pos.z += 0.1f;
+              bot_->debug().drawCircle( pos, threat.splashRange, Colors::Purple );
+            }
+            pos.z += 0.15f;
+            char asd[128];
+            sprintf_s( asd, 128, "%.1f dps\r\n%.1f range", threat.dps, threat.range );
+            bot_->debug().drawText( asd, pos, Colors::Yellow, 8 );
+          }
+        }
+      }
+    }
+  }
+
   void Intelligence::onMessage( const Message& msg )
   {
     if ( msg.code == M_Global_UnitEnterVision && utils::isEnemy( msg.unit() ) )
@@ -246,6 +341,10 @@ namespace hivemind {
       if ( utils::isStructure( msg.unit() ) )
       {
         _updateStructure( msg.unit(), true );
+      }
+      else
+      {
+        _updateUnit( msg.unit(), true );
       }
     }
   }

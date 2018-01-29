@@ -17,6 +17,7 @@ namespace hivemind {
     bool hitsAir_;
     bool hitsStructures_;
     bool hitsUnits_;
+    bool isPersistent_;
     enum Kind {
       Unknown = 0,
       Melee,
@@ -29,13 +30,17 @@ namespace hivemind {
     vector<WeaponEffectSplashData> splash_;
     bool dummy_;
     int persistentHitCount_;
+    vector<Real> persistentPeriods_;
     WeaponEffectData(): kind_( Unknown ),
       hitsGround_( true ), hitsAir_( true ), hitsStructures_( true ), hitsUnits_( true ),
-      damage_( 0.0f ), armorReduction_( 1.0f ), dummy_( true ), persistentHitCount_( 1 )
+      damage_( 0.0f ), armorReduction_( 1.0f ), dummy_( true ), persistentHitCount_( 1 ),
+      isPersistent_( false )
     {
       attributeBonuses_.resize( (size_t)Attribute::Invalid, 0.0f );
     }
   };
+
+  struct UnitData;
 
   struct WeaponData {
   public:
@@ -43,12 +48,12 @@ namespace hivemind {
     Real arc;
     Real arcSlop;
     Real damagePoint; // Attack animation time point (in seconds) at which damage is applied to the target. Unit stands still while shooting.
-    Real backSwing; // Attack animation duration (in seconds) after the shooting, that the unit stands reloading i.e. the initial value of weapon_cooldown. Unit is still movable during this.
+    Real backSwing; // Attack animation duration (in seconds) after the shooting, that the unit stands reloading i.e. the initial value of weapon_cooldown. Can be canceled by issuing another order, but will not do that automatically (?)
     bool melee;
     Real minScanRange;
-    Real period;
-    Real randomDelayMax;
-    Real randomDelayMin;
+    Real period; // Cycle period between firings.
+    Real randomDelayMax; // Minimum additional random delay between shots
+    Real randomDelayMin; // Maximum additional random delay between shots
     Real range; // Range at which the attack animation can start.
     Real rangeSlop; // Extra distance the target can move beyond range, without the attack animation getting canceled.
     bool suicide; // If this weapon kills the casting unit.
@@ -58,7 +63,8 @@ namespace hivemind {
     bool hitsUnits;
     WeaponEffectData fx;
     WeaponData(): suicide( false ), hitsGround( false ), hitsAir( false ), hitsStructures( false ), hitsUnits( false ) {}
-    Real calculateBasicDamage() const;
+    // Returns damage & damgeTime_out (= time attack lasts.) Does not check for "can hit x" qualifiers.
+    Real calculateDamageAgainst( const UnitData& against, Real& damageTime_out, Real& splashRange_out, int armor = 0 ) const;
     Real calculateAttributeBonuses( Attribute attrib ) const;
   };
 
@@ -116,8 +122,8 @@ namespace hivemind {
     Array2<Footprint> footprint; //!< Note: footprint has x & y flipped, otherwise there's a heap corruption on data load. (wtf?)
     Point2DI footprintOffset;
     vector<string> weapons;
+    vector<WeaponData*> resolvedWeapons_;
     ResourceType resource;
-
     inline operator UnitTypeID() const
     {
       UnitTypeID ret( (uint32_t)id );

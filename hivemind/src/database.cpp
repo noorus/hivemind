@@ -66,8 +66,18 @@ namespace hivemind {
         if ( !tmp.dummy_ ) // Don't bother adding effects we were unable to identify
           fx.sub_.push_back( tmp );
       }
-      if ( effect.isMember( "persistentCount" ) )
-        fx.persistentHitCount_ = effect["persistentCount"].asInt();
+      if ( boost::iequals( type, "persistent" ) )
+      {
+        fx.isPersistent_ = true;
+        for ( auto& period : effect["persistentPeriods"] )
+          fx.persistentPeriods_.push_back( period.asFloat() );
+        if ( fx.persistentPeriods_.empty() )
+          fx.persistentPeriods_.push_back( 0.0f );
+        if ( effect.isMember( "persistentCount" ) )
+          fx.persistentHitCount_ = effect["persistentCount"].asInt();
+        if ( fx.persistentHitCount_ < 1 )
+          fx.persistentHitCount_ = fx.persistentPeriods_.size();
+      }
     }
     else if ( boost::iequals( type, "suicide" ) )
     {
@@ -550,11 +560,31 @@ namespace hivemind {
     return buildAbilities_.at( std::make_pair( building, from ) );
   }
 
+  void resolveWeapons( UnitDataMap& units, WeaponDataMap& weapons )
+  {
+    for ( auto& unit : units )
+    {
+      for ( auto& name : unit.second.weapons )
+      {
+        if ( name.empty() )
+          continue;
+        if ( weapons.find( name ) == weapons.end() )
+        {
+          // HIVE_EXCEPT( "Weapon not found: " + name );
+          continue;
+        }
+        auto& weapon = weapons[name];
+        unit.second.resolvedWeapons_.push_back( &weapon );
+      }
+    }
+  }
+
   void Database::load( const string& dataPath )
   {
     loadWeaponData( dataPath + R"(\weapons.json)", weaponData_ );
     loadUnitData( dataPath + R"(\units.json)", unitData_ );
     techTree_.load( dataPath + R"(\techtree.json)" );
+    resolveWeapons( unitData_, weaponData_ );
   }
 
   static const char* attribNames[(size_t)Attribute::Invalid] = {
@@ -613,22 +643,116 @@ namespace hivemind {
     system( "pause" );
   }
 
-  Real weaponFxSimpleDamage( const WeaponEffectData& fx )
+  inline Real fxAttributeBonusesAgainst( const WeaponEffectData& fx, const UnitData& unit )
   {
-    Real damage = fx.damage_;
-    Real subs = 0.0f;
-    for ( auto& sub : fx.sub_ )
-      subs += weaponFxSimpleDamage( sub );
-    // This is a shitty simplification because the subs might have different damages, but I dunno how SC2 does it for display.
-    if ( fx.sub_.size() > 1 )
-      subs /= (Real)fx.sub_.size();
-    damage += subs;
+    Real damage = 0.0f;
+    if ( unit.light )
+      damage += fx.attributeBonuses_[(size_t)Attribute::Light];
+    if ( unit.armored )
+      damage += fx.attributeBonuses_[(size_t)Attribute::Armored];
+    if ( unit.biological )
+      damage += fx.attributeBonuses_[(size_t)Attribute::Biological];
+    if ( unit.mechanical )
+      damage += fx.attributeBonuses_[(size_t)Attribute::Mechanical];
+    // missing: robotic!
+    if ( unit.psionic )
+      damage += fx.attributeBonuses_[(size_t)Attribute::Psionic];
+    if ( unit.massive )
+      damage += fx.attributeBonuses_[(size_t)Attribute::Massive];
+    if ( unit.structure )
+      damage += fx.attributeBonuses_[(size_t)Attribute::Structure];
+    // missing: hover!
+    // missing: heroic!
+    // missing: summoned!
     return damage;
   }
 
-  Real WeaponData::calculateBasicDamage() const
+  Real weaponFxSimpleSplash( const Real baseDamage, const vector<WeaponEffectSplashData>& data, Real& radius_out )
   {
-    return weaponFxSimpleDamage( fx );
+    if ( data.empty() )
+    {
+      radius_out = 0.0f;
+      return 0.0f;
+    }
+
+    Real cumulative = 0.0f;
+    Real maxRadius = 0.0f;
+    for ( auto& splash : data )
+    {
+      cumulative += ( baseDamage * splash.fraction_ );
+      if ( splash.radius_ > maxRadius )
+        maxRadius = splash.radius_;
+    }
+    return ( cumulative / (Real)data.size() ); // Return average damage
+  }
+
+  Real weaponFxSimpleDamage( const WeaponEffectData& fx, const UnitData& against, Real& damageTime_out, Real& splashRange_out, int armor = 0 )
+  {
+    // Time taken per attack
+    Real time = 0.0f;
+    // Max splash radius
+    Real splashRadius = 0.0f;
+    // Take base damage
+    Real damage = fx.damage_;
+    // Recurse through sub-effects
+    Real subs = 0.0f;
+    if ( !fx.isPersistent_ )
+    {
+      // Normal sub-effects: add all, divide by count (?)
+      for ( auto& sub : fx.sub_ )
+      {
+        Real timeTemp = 0.0f;
+        Real splashRangeTemp = 0.0f;
+        subs += weaponFxSimpleDamage( sub, against, timeTemp, splashRangeTemp, armor );
+        time += timeTemp;
+        if ( splashRangeTemp > splashRadius )
+          splashRadius = splashRangeTemp;
+      }
+      // I have no idea if this is correct, but it's an unusual situation anyway
+      if ( fx.sub_.size() > 1 )
+        subs /= (Real)fx.sub_.size();
+    }
+    else
+    {
+      // Still lacking: InitialEffect, ExpireEffect
+      // Persistent effects: count time + hits
+      int hitCount = std::max( 1, fx.persistentHitCount_ );
+      size_t periodIndex = 0;
+      for ( int i = 0; i < hitCount; i++ )
+      {
+        if ( periodIndex == fx.persistentPeriods_.size() - 1 )
+          periodIndex = 0;
+        time += fx.persistentPeriods_[periodIndex];
+        for ( auto& sub : fx.sub_ )
+        {
+          Real timeTemp = 0.0f;
+          Real splashRangeTemp = 0.0f;
+          subs += weaponFxSimpleDamage( sub, against, timeTemp, splashRangeTemp, armor );
+          time += timeTemp;
+          if ( splashRangeTemp > splashRadius )
+            splashRadius = splashRangeTemp;
+        }
+      }
+    }
+    // Add all sub-damage
+    damage += subs;
+    // Plus attribute bonuses against each attribute of unit
+    damage += fxAttributeBonusesAgainst( fx, against );
+    // Minus armor reduction times armor level
+    damage -= ( fx.armorReduction_ * (Real)armor );
+    // Add average splash damage, if any, and get maximum splash radius
+    Real splashAverageDamage = weaponFxSimpleSplash( damage, fx.splash_, splashRadius );
+    damage += splashAverageDamage;
+    // Set attack time return value
+    damageTime_out = time;
+    // Set splash range return value
+    splashRange_out = splashRadius;
+    return damage;
+  }
+
+  Real WeaponData::calculateDamageAgainst( const UnitData& against, Real& damageTime_out, Real& splashRange_out, int armor ) const
+  {
+    return weaponFxSimpleDamage( fx, against, damageTime_out, splashRange_out, armor );
   }
 
   Real weaponFxSimpleBonuses( const WeaponEffectData& fx, Attribute attrib )
