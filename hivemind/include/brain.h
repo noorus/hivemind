@@ -76,6 +76,7 @@ namespace hivemind {
       virtual void terminate() final;
 
       void saturate(Base& base);
+      void saturate(Base& from, Base& to);
       GameTime lastSaturateTime_;
     };
 

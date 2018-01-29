@@ -32,9 +32,19 @@ namespace hivemind {
       {
         lastSaturateTime_ = time;
 
-        for ( auto& base : bot_->bases().bases() )
+        auto& bases = bot_->bases().bases();
+        for(auto& base : bases)
         {
           saturate(base);
+        }
+
+        for (size_t i = 1, e = bases.size(); i < e; ++i)
+        {
+          for (size_t j = 0; j < i; ++j)
+          {
+            saturate(bases[i], bases[j]);
+            saturate(bases[j], bases[i]);
+          }
         }
       }
 
@@ -143,18 +153,41 @@ namespace hivemind {
       {
         if(worker->orders.empty())
         {
-          auto location = base.location();
-          auto& minerals = location->minerals_;
+          auto position = base.location()->position_;
 
-          if(!minerals.empty())
+          auto minerals = bot_->observation().GetUnits( Unit::Alliance::Neutral, []( auto unit ) { return utils::isMineral( unit ); } );
+          auto mineral = utils::findClosestUnit(minerals, position);
+
+          if(mineral)
           {
-            auto mineral = *minerals.begin();
             action->UnitCommand(worker, sc2::ABILITY_ID::HARVEST_GATHER, mineral);
           }
         }
       }
+    }
+    
+    void Brain_UpdateHarvesters::saturate(Base& from, Base& to)
+    {
+      auto action = &bot_->action();
 
+      from.refresh();
+      to.refresh();
+
+      int have1 = int(from.workers().size());
+      int want1 = int(from.wantWorkers().miners_);
+
+      int have2 = int(to.workers().size());
+      int want2 = int(to.wantWorkers().miners_);
+
+      int transfer = std::max(std::min(have1 - want1, want2 - have2), 0);
+
+      for(int i = 0; i < transfer; ++i)
+      {
+        UnitRef worker = from.releaseWorker();
+        to.addWorker(worker);
+
+        action->UnitCommand(worker, sc2::ABILITY_ID::STOP);
+      }
     }
   }
-
 }

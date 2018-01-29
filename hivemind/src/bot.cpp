@@ -19,6 +19,9 @@ namespace hivemind {
 
   HIVE_DECLARE_CONVAR( map_always_hash, "Always hash the map file to obtain an identifier instead of recognizing Battle.net cache files.", false );
 
+  HIVE_DECLARE_CONVAR( draw_units, "Whether to show debug information about the selected units.", true );
+
+
   bool callbackCVARGodmode( ConVar* variable, ConVar::Value oldValue )
   {
     if ( !g_Bot )
@@ -262,22 +265,26 @@ namespace hivemind {
     map_.draw();
     baseManager_.draw();
 
-    for ( auto unit : observation_->GetUnits() )
+    if(g_CVar_draw_units.as_b())
     {
-      if ( unit->is_selected && utils::isMine( unit ) )
+      for(auto unit : observation_->GetUnits())
       {
-        char hex[16];
-        sprintf_s( hex, 16, "%x", id( unit ) );
-        string txt = string( hex ) + " " + sc2::UnitTypeToName( unit->unit_type );
-        txt.append( " (" + std::to_string( unit->unit_type ) + ")\n" );
-        for ( auto& order : unit->orders )
-          txt.append( string( sc2::AbilityTypeToName( order.ability_id ) ) + "\n" );
-        debug_.drawText( txt, Vector3( unit->pos ), sc2::Colors::Green );
-        MapPoint2 coord( unit->pos );
-        auto regIndex = map_.regionMap_[coord.x][coord.y];
-        string nrg = "region: " + std::to_string( regIndex );
-        Vector3 nrgpos( unit->pos.x, unit->pos.y, unit->pos.z + 1.0f );
-        debug_.drawText( nrg, nrgpos, sc2::Colors::Teal );
+        if(unit->is_selected && utils::isMine(unit))
+        {
+          char hex[16];
+          sprintf_s(hex, 16, "%x", id(unit));
+          string txt = string(hex) + " " + sc2::UnitTypeToName(unit->unit_type);
+          txt.append(" (" + std::to_string(unit->unit_type) + ")\n");
+          for(auto& order : unit->orders)
+            txt.append(string(sc2::AbilityTypeToName(order.ability_id)) + "\n");
+          debug_.drawText(txt, Vector3(unit->pos), sc2::Colors::Green);
+
+          MapPoint2 coord(unit->pos);
+          auto regIndex = map_.regionMap_[coord.x][coord.y];
+          string nrg = "region: " + std::to_string(regIndex);
+          Vector3 nrgpos(unit->pos.x, unit->pos.y, unit->pos.z + 1.0f);
+          debug_.drawText(nrg, nrgpos, sc2::Colors::Teal);
+        }
       }
     }
 
