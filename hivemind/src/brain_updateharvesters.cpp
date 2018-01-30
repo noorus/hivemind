@@ -91,8 +91,8 @@ namespace hivemind {
           for(auto worker : refinery.workers_)
           {
             base.addWorker(worker);
-            refinery.workers_.clear();
           }
+          refinery.workers_.clear();
           continue;
         }
 
@@ -165,7 +165,7 @@ namespace hivemind {
         }
       }
     }
-    
+
     void Brain_UpdateHarvesters::saturate(Base& from, Base& to)
     {
       auto action = &bot_->action();
