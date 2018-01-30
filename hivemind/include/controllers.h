@@ -60,7 +60,7 @@ namespace hivemind {
     CONTROLLER_CONSTRUCTOR( Larva ) {}
     Larva& morph( UnitTypeID to )
     {
-      auto ability = Database::techTree().getBuildAbility( to, unit_->unit_type );
+      auto ability = Database::techTree().getBuildAbility( to, unit_->unit_type ).ability;
       actions_->UnitCommand( unit_, ability );
       return *this;
     }

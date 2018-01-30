@@ -119,6 +119,12 @@ int runMain( hivemind::Bot::Options& options )
 
   Database::load( g_CVar_data_path.as_s() );
 
+#if 0
+  Database::techTree().dump( &console );
+  Sleep( 100000 );
+  return 0;
+#endif
+
   coordinator.SetRealtime( true );
   coordinator.SetMultithreaded( false );
 

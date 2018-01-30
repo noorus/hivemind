@@ -198,7 +198,7 @@ namespace hivemind {
 
     inline const bool isSupplyProvider( const UnitTypeID& type )
     {
-      return ( Database::unit( type ).food > 0 );
+      return ( Database::unit( type ).supplyProvided > 0.0f );
     }
 
     inline const bool isSupplyProvider( const Unit& unit ) { return isSupplyProvider( unit.unit_type ); }

@@ -94,7 +94,8 @@ namespace hivemind {
     bool armored;
     bool biological;
     int cargoSize;
-    int food;
+    Real supplyCost;
+    Real supplyProvided;
     int lifeArmor;
     int lifeMax;
     Real lifeRegenRate;
@@ -124,6 +125,7 @@ namespace hivemind {
     vector<string> weapons;
     vector<WeaponData*> resolvedWeapons_;
     ResourceType resource;
+    UnitData(): supplyCost( 0.0f ), supplyProvided( 0.0f ) {}
     inline operator UnitTypeID() const
     {
       UnitTypeID ret( (uint32_t)id );
@@ -149,6 +151,8 @@ namespace hivemind {
     AbilityID ability; //!< Using which ability.
     Real time; //!< In how long a time.
     bool isMorph; //!< Is this a morph, i.e. consumes source unit.
+    int unitCount;
+    bool morphCancellable;
     TechTreeUnitRequirements unitRequirements; //!< Additional unit requirements.
   };
 
@@ -169,7 +173,18 @@ namespace hivemind {
   // Maps a upgrade type id to the description on how to research the upgrade type.
   using UpgradeMap = std::unordered_multimap<uint32_t, UpgradeInfo>;
 
-  using BuildAbilityMap = std::map<std::pair<UnitTypeID, UnitTypeID>, AbilityID>;
+  struct BuildAbility {
+    AbilityID ability;
+    int unitCount;
+    bool consumesSource;
+    int mineralCost;
+    int vespeneCost;
+    int supplyCost;
+  };
+
+  using BuildAbilityMap = std::map<std::pair<UnitTypeID, UnitTypeID>, BuildAbility>;
+
+  class Console;
 
   class TechTree {
   protected:
@@ -178,12 +193,16 @@ namespace hivemind {
     BuildAbilityMap buildAbilities_;
   public:
 
+    void dump( Console* console ) const;
     void load( const string& filename );
 
     void findTechChain( UnitTypeID target, vector<UnitTypeID>& chain) const;
 
     UpgradeInfo findTechChain( UpgradeID target, vector<UnitTypeID>& chain ) const;
-    AbilityID getBuildAbility( UnitTypeID building, UnitTypeID from ) const;
+    inline const BuildAbility& getBuildAbility( UnitTypeID dest, UnitTypeID source ) const
+    {
+      return buildAbilities_.at( std::make_pair( dest, source ) );
+    }
   };
 
   class Database {

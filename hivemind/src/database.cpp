@@ -251,7 +251,17 @@ namespace hivemind {
       entry.structure = unit["structure"].asBool();
 
       entry.cargoSize = unit["cargoSize"].asInt();
-      entry.food = unit["food"].asInt();
+
+      auto food = unit["food"].asFloat();
+      if ( food < 0.0f )
+      {
+        entry.supplyCost = std::abs( food );
+      }
+      else if ( food > 0.0f )
+      {
+        entry.supplyProvided = food;
+      }
+
       entry.lifeArmor = unit["lifeArmor"].asInt();
       entry.lifeMax = unit["lifeMax"].asInt();
       entry.lifeStart = unit["lifeStart"].asInt();
@@ -320,10 +330,6 @@ namespace hivemind {
 
       unitMap[id] = entry;
     }
-
-    // Fix bad values.
-    unitMap[(UnitType64)sc2::UNIT_TYPEID::ZERG_ZERGLING].mineralCost = 50;
-    unitMap[(UnitType64)sc2::UNIT_TYPEID::ZERG_SPAWNINGPOOL].mineralCost = 200;
   }
 
   static void parseUpgradeRequirements(UpgradeInfo& upgrade, const Json::Value& value)
@@ -348,6 +354,31 @@ namespace hivemind {
       }
     }
   };
+
+  BuildAbility translateBuildAbility( UnitTypeID src, UnitTypeID dst, TechTreeRelationship& parsed )
+  {
+    auto& srcUnit = Database::unit( src );
+    auto& dstUnit = Database::unit( dst );
+
+    BuildAbility ret;
+    ret.ability = parsed.ability;
+    ret.unitCount = parsed.unitCount;
+    ret.consumesSource = parsed.isMorph;
+    if ( ret.consumesSource )
+    {
+      ret.mineralCost = std::max( 0, dstUnit.mineralCost - srcUnit.mineralCost ) * ret.unitCount;
+      ret.vespeneCost = std::max( 0, dstUnit.vespeneCost - srcUnit.vespeneCost ) * ret.unitCount;
+      ret.supplyCost = (int)( ( dstUnit.supplyCost * (Real)ret.unitCount ) - srcUnit.supplyCost );
+    }
+    else
+    {
+      ret.mineralCost = dstUnit.mineralCost * ret.unitCount;
+      ret.vespeneCost = dstUnit.vespeneCost * ret.unitCount;
+      ret.supplyCost = (int)( dstUnit.supplyCost * (Real)ret.unitCount );
+    }
+
+    return ret;
+  }
 
   void TechTree::load( const string& filename )
   {
@@ -381,10 +412,24 @@ namespace hivemind {
             relationship.time = build["time"].asFloat();
             relationship.isMorph = isMorph;
             relationship.name = build["unitName"].asCString();
+            relationship.unitCount = 1;
+            if ( build.isMember( "unitCount" ) && build["unitCount"].asInt() > 1 )
+              relationship.unitCount = build["unitCount"].asInt();
+            if ( build.isMember( "finishKillsWorker" ) && build["finishKillsWorker"].asBool() )
+            {
+              relationship.isMorph = true;
+              relationship.morphCancellable = true;
+            }
+            if ( build.isMember( "finishKillsSource" ) && build["finishKillsWorker"].asBool() )
+              relationship.isMorph = true;
+            if ( build.isMember( "cancelKillsSource" ) && build["cancelKillsSource"].asBool() )
+              relationship.morphCancellable = false;
 
             uint32_t target = build["unit"].asUInt();
 
-            buildAbilities_[std::make_pair(target,id)] = relationship.ability;
+            // only call this AFTER relationship has been otherwise filled
+            // also, Database::unit() data has to exist
+            buildAbilities_[std::make_pair( target, id )] = translateBuildAbility( id, target, relationship );
 
             for(auto& require : build["requires"])
             {
@@ -442,6 +487,24 @@ namespace hivemind {
         parseBuild("morphs", true);
         parseResearch("researches");
       }
+    }
+  }
+
+  void TechTree::dump( Console* console ) const
+  {
+    console->printf( "Dumping buildAbilities_:" );
+    for ( auto& it : buildAbilities_ )
+    {
+      auto src = it.first.second;
+      auto dst = it.first.first;
+      console->printf( "%s from %s:", sc2::UnitTypeToName( dst ), sc2::UnitTypeToName( src ) );
+      auto& data = ( it.second );
+      console->printf( "- ability: %d", data.ability );
+      console->printf( "- unitCount: %d", data.unitCount );
+      console->printf( "- consumesSource: %s", data.consumesSource ? "true" : "false" );
+      console->printf( "- mineralCost: %d", data.mineralCost );
+      console->printf( "- vespeneCost: %d", data.vespeneCost );
+      console->printf( "- supplyCost: %d", data.supplyCost );
     }
   }
 
@@ -555,11 +618,6 @@ namespace hivemind {
     return UpgradeInfo();
   }
 
-  AbilityID TechTree::getBuildAbility( UnitTypeID building, UnitTypeID from ) const
-  {
-    return buildAbilities_.at( std::make_pair( building, from ) );
-  }
-
   void resolveWeapons( UnitDataMap& units, WeaponDataMap& weapons )
   {
     for ( auto& unit : units )
@@ -583,8 +641,9 @@ namespace hivemind {
   {
     loadWeaponData( dataPath + R"(\weapons.json)", weaponData_ );
     loadUnitData( dataPath + R"(\units.json)", unitData_ );
-    techTree_.load( dataPath + R"(\techtree.json)" );
     resolveWeapons( unitData_, weaponData_ );
+    // load techtree AFTER all other data!
+    techTree_.load( dataPath + R"(\techtree.json)" );
   }
 
   static const char* attribNames[(size_t)Attribute::Invalid] = {

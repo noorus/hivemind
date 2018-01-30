@@ -29,7 +29,7 @@ namespace hivemind {
 
   bool Builder::build( UnitTypeID structureType, const Base& base, BuildingPlacement placement, BuildProjectID& idOut )
   {
-    auto ability = Database::techTree().getBuildAbility( structureType, sc2::UNIT_TYPEID::ZERG_DRONE );
+    auto ability = Database::techTree().getBuildAbility( structureType, sc2::UNIT_TYPEID::ZERG_DRONE ).ability;
 
     Vector2 pos;
     UnitRef target = nullptr;
