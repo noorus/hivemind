@@ -31,6 +31,7 @@ namespace hivemind {
     struct State {
       bool inGame_;
       Action action_;
+      bool brainInitialized_;
     };
     std::map<UnitRef, std::string> unitDebugMsgs_;
   protected:

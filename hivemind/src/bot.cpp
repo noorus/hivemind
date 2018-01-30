@@ -21,6 +21,8 @@ namespace hivemind {
 
   HIVE_DECLARE_CONVAR( draw_units, "Whether to show debug information about the selected units.", true );
 
+  HIVE_DECLARE_CONVAR( brain_enable, "Whether the brain is enabled and updated or not.", true );
+
 
   bool callbackCVARGodmode( ConVar* variable, ConVar::Value oldValue )
   {
@@ -90,6 +92,7 @@ namespace hivemind {
 
     state_.inGame_ = false;
     state_.action_ = Bot_GameOver;
+    state_.brainInitialized_ = false;
   }
 
   void Bot::requestEndGame()
@@ -152,7 +155,12 @@ namespace hivemind {
     workers_.gameBegin();
 
     players_.gameBegin();
-    brain_.gameBegin();
+
+    if ( g_CVar_brain_enable.as_b() )
+    {
+      brain_.gameBegin();
+      state_.brainInitialized_ = true;
+    }
 
     baseManager_.gameBegin();
 
@@ -250,13 +258,21 @@ namespace hivemind {
     baseManager_.update( time_, delta );
     messaging_.update( time_ );
     workers_.update( time_ );
-    brain_.update( time_, delta );
+
+    bool doBrain = ( state_.brainInitialized_ && g_CVar_brain_enable.as_b() );
+
+    if ( doBrain )
+      brain_.update( time_, delta );
+
     strategy_.update( time_, delta );
 
     action_->SendActions();
 
     players_.draw();
-    brain_.draw();
+
+    if ( doBrain )
+      brain_.draw();
+
     strategy_.draw();
     workers_.draw();
     builder_.draw();
@@ -294,7 +310,13 @@ namespace hivemind {
   void Bot::OnGameEnd()
   {
     strategy_.gameEnd();
-    brain_.gameEnd();
+
+    if ( state_.brainInitialized_ )
+    {
+      brain_.gameEnd();
+      state_.brainInitialized_ = false;
+    }
+
     builder_.gameEnd();
     players_.gameEnd();
     workers_.gameEnd();
