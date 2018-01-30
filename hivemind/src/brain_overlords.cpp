@@ -71,12 +71,18 @@ namespace hivemind {
 
     AI::Goal::Status Brain_ManageOverlords::process()
     {
-      for ( auto overlord : overlords_ )
+      bool reloop = true;
+      while ( reloop )
       {
-        if ( !isOverlord( overlord ) )
+        reloop = false;
+        for ( auto overlord : overlords_ )
         {
-          _remove( overlord );
-          continue;
+          if ( !isOverlord( overlord ) )
+          {
+            _remove( overlord );
+            reloop = true;
+            break;
+          }
         }
       }
       if ( lastTime <= bot_->time() )
