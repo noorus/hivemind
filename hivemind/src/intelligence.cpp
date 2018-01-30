@@ -181,8 +181,8 @@ namespace hivemind {
       //  continue;
 
       EnemyWeaponThreat threat;
-      threat.range = weapon->range;
-      threat.outrunRange = weapon->range + weapon->rangeSlop;
+      threat.range = enemy.radius + weapon->range;
+      threat.outrunRange = threat.range + weapon->rangeSlop;
       Real damageTime;
       int armor = 0; // dunno real armor level, no data kept yet
       Real splashRange = 0.0f;
@@ -287,13 +287,13 @@ namespace hivemind {
           Real zadd = 0.0f;
           for ( auto& threat : threats )
           {
-            zadd += 0.2f;
-            Real range = threat.range > 0.4f ? threat.range : 0.4f;
-            Real outrunRange = threat.outrunRange > 0.4f ? threat.outrunRange : 0.4f;
+            zadd += 0.1f;
+            Real range = threat.range;
+            Real outrunRange = threat.outrunRange;
             auto x = math::floor( unit.lastPosition_.x );
             auto y = math::floor( unit.lastPosition_.y );
             auto pos = unit.lastPosition_.to3( bot_->map().heightMap_[x][y] + zadd );
-            // bot_->debug().drawCircle( pos, outrunRange, Colors::Yellow );
+            bot_->debug().drawCircle( pos, outrunRange, Colors::Yellow );
             pos.z += 0.05f;
             bot_->debug().drawCircle( pos, range, Colors::Red );
             if ( threat.splashRange > 0.0f )
