@@ -273,6 +273,31 @@ namespace hivemind {
     }
 
     // influence_.draw();
+    auto& fxdata = bot_->observation().GetEffectData();
+    for ( auto& fx : bot_->observation().GetEffects() )
+    {
+      for ( auto& pos : fx.positions )
+      {
+        string name = "";
+        float radius = 1.5f;
+        for ( auto& data : fxdata )
+        {
+          if ( data.effect_id == fx.effect_id )
+          {
+            name = data.name;
+            radius = data.radius;
+          }
+        }
+        auto x = math::floor( pos.x );
+        auto y = math::floor( pos.y );
+        auto p = Vector3( pos.x, pos.y, bot_->map().heightMap_[x][y] + 0.25f );
+        bot_->debug().drawSphere( p, radius, Colors::Green );
+        p.z += 0.15f;
+        char asd[128];
+        sprintf_s( asd, 128, "effect %d (%s)", fx.effect_id, name.c_str() );
+        bot_->debug().drawText( asd, p, Colors::Teal, 8 );
+      }
+    }
 
     if ( g_CVar_threats_debug.as_i() > 0 )
     {
