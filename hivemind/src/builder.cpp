@@ -117,12 +117,13 @@ namespace hivemind {
     if ( msg.code == M_Global_UnitCreated )
     {
       UnitRef unit = msg.unit();
-      auto& stats = unitStats_[unit->unit_type];
 
       if ( !utils::isMine( unit ) )
         return;
       if ( !utils::isStructure(unit) )
         return;
+
+      auto& stats = unitStats_[unit->unit_type];
 
       if(unit->build_progress == 1.0f) // The initial hatchery is created without construction.
       {
@@ -151,12 +152,14 @@ namespace hivemind {
     else if ( msg.code == M_Global_ConstructionCompleted )
     {
       UnitRef unit = msg.unit();
-      auto& stats = unitStats_[unit->unit_type];
 
       if ( !utils::isMine( msg.unit() ) )
         return;
       if ( !Database::unit( msg.unit()->unit_type ).structure )
         return;
+
+      auto& stats = unitStats_[unit->unit_type];
+
       for ( auto& build : buildProjects_ )
       {
         if ( build.building == msg.unit() )
@@ -278,7 +281,7 @@ namespace hivemind {
             }
           }
 
-          if ( !hasOrder || ( build.lastOrderTime + cBuildReorderDelta < time ) )
+          if ( !hasOrder && ( build.lastOrderTime + cBuildReorderDelta < time ) )
           {
             if ( build.orderTries >= cBuildMaxOrders )
             {

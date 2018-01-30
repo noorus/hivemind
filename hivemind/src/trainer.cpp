@@ -121,7 +121,6 @@ namespace hivemind {
     if ( msg.code == M_Global_UnitCreated )
     {
       UnitRef unit = msg.unit();
-      auto& stats = unitStats_[unit->unit_type];
 
       if ( !utils::isMine( unit ) )
         return;
@@ -129,6 +128,7 @@ namespace hivemind {
       if(utils::isStructure(unit))
         return;
 
+      auto& stats = unitStats_[unit->unit_type];
       stats.units.insert(unit);
 
       for(auto it = trainingProjects_.begin(); it != trainingProjects_.end(); ++it)
@@ -150,12 +150,13 @@ namespace hivemind {
     else if(msg.code == M_Global_UnitDestroyed)
     {
       UnitRef unit = msg.unit();
-      auto& stats = unitStats_[unit->unit_type];
 
       if(!utils::isMine(unit))
       {
         return;
       }
+
+      auto& stats = unitStats_[unit->unit_type];
 
       for(auto it = trainingProjects_.begin(); it != trainingProjects_.end(); ++it)
       {
