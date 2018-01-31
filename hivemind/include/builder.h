@@ -47,6 +47,7 @@ namespace hivemind {
 
   struct Building {
     BuildProjectID id;
+    Base* base;
     UnitTypeID type;
     UnitRef building;
     UnitRef builder;
@@ -63,8 +64,9 @@ namespace hivemind {
     size_t orderTries;
     AbilityID buildAbility;
 
-    Building(BuildProjectID id_, UnitTypeID type_, AbilityID abil_) :
+    Building(BuildProjectID id_, Base* base_, UnitTypeID type_, AbilityID abil_) :
         id(id_),
+        base(base_),
         type(type_),
         building(nullptr),
         builder(nullptr),
@@ -79,7 +81,7 @@ namespace hivemind {
         completed(false),
         moneyAllocated(false),
         lastOrderTime(0),
-      target( nullptr )
+        target( nullptr )
     {
     }
   };
@@ -97,12 +99,14 @@ namespace hivemind {
   private:
     std::unordered_map<sc2::UNIT_TYPEID, UnitStats> unitStats_;
 
+    UnitRef acquireBuilder(Base& base);
+
   public:
     Builder( Bot* bot );
     void gameBegin() final;
 
-    bool build( UnitTypeID structureType, const Base& base, BuildingPlacement placement, BuildProjectID& idOut );
-    bool train( UnitTypeID unitType, Base& base, UnitTypeID trainerType, BuildProjectID& idOut );
+    bool build( UnitTypeID structureType, Base* base, BuildingPlacement placement, BuildProjectID& idOut );
+    bool train( UnitTypeID unitType, Base* base, UnitTypeID trainerType, BuildProjectID& idOut );
 
     void remove( BuildProjectID id );
     void update( const GameTime time, const GameTime delta );

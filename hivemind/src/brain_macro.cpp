@@ -93,7 +93,7 @@ namespace hivemind {
         if(minerals >= 300)
         {
           for(auto& base : baseManager.bases())
-            if(builder.build(sc2::UNIT_TYPEID::ZERG_HATCHERY, base, BuildPlacement_MainBuilding, id))
+            if(builder.build(sc2::UNIT_TYPEID::ZERG_HATCHERY, &base, BuildPlacement_MainBuilding, id))
               return;
         }
       }
@@ -102,7 +102,7 @@ namespace hivemind {
         if(minerals >= 200)
         {
           for(auto& base : baseManager.bases())
-            if(builder.build(sc2::UNIT_TYPEID::ZERG_SPAWNINGPOOL, base, BuildPlacement_Generic, id))
+            if(builder.build(sc2::UNIT_TYPEID::ZERG_SPAWNINGPOOL, &base, BuildPlacement_Generic, id))
               return;
         }
       }
@@ -111,7 +111,7 @@ namespace hivemind {
         if(minerals >= 100)
         {
           for(auto& base : baseManager.bases())
-            if(builder.train(sc2::UNIT_TYPEID::ZERG_OVERLORD, base, sc2::UNIT_TYPEID::ZERG_LARVA, id))
+            if(builder.train(sc2::UNIT_TYPEID::ZERG_OVERLORD, &base, sc2::UNIT_TYPEID::ZERG_LARVA, id))
               return;
         }
       }
@@ -120,7 +120,7 @@ namespace hivemind {
         if(minerals >= 150 && usedSupply + 1 < supplyLimit)
         {
           for(auto& base : baseManager.bases())
-            if(builder.train(sc2::UNIT_TYPEID::ZERG_QUEEN, base, sc2::UNIT_TYPEID::ZERG_HATCHERY, id))
+            if(builder.train(sc2::UNIT_TYPEID::ZERG_QUEEN, &base, sc2::UNIT_TYPEID::ZERG_HATCHERY, id))
               return;
         }
       }
@@ -129,7 +129,7 @@ namespace hivemind {
         if(minerals >= 50)
         {
           for(auto& base : baseManager.bases())
-            if(builder.build(sc2::UNIT_TYPEID::ZERG_EXTRACTOR, base, BuildPlacement_Extractor, id))
+            if(builder.build(sc2::UNIT_TYPEID::ZERG_EXTRACTOR, &base, BuildPlacement_Extractor, id))
               return;
         }
       }
@@ -138,14 +138,14 @@ namespace hivemind {
         if(minerals >= 50 && usedSupply < supplyLimit)
         {
           for(auto& base : baseManager.bases())
-            if(builder.train(sc2::UNIT_TYPEID::ZERG_DRONE, base, sc2::UNIT_TYPEID::ZERG_LARVA, id))
+            if(builder.train(sc2::UNIT_TYPEID::ZERG_DRONE, &base, sc2::UNIT_TYPEID::ZERG_LARVA, id))
               return;
         }
       }
       else if(minerals >= 50 && usedSupply < supplyLimit && poolState.unitCount() > 0)
       {
         for(auto& base : baseManager.bases())
-            if(builder.train(sc2::UNIT_TYPEID::ZERG_ZERGLING, base, sc2::UNIT_TYPEID::ZERG_LARVA, id))
+            if(builder.train(sc2::UNIT_TYPEID::ZERG_ZERGLING, &base, sc2::UNIT_TYPEID::ZERG_LARVA, id))
               return;
       }
     }

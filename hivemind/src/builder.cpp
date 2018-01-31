@@ -27,16 +27,16 @@ namespace hivemind {
     trainer_.gameBegin();
   }
 
-  bool Builder::build( UnitTypeID structureType, const Base& base, BuildingPlacement placement, BuildProjectID& idOut )
+  bool Builder::build( UnitTypeID structureType, Base* base, BuildingPlacement placement, BuildProjectID& idOut )
   {
     auto ability = Database::techTree().getBuildAbility( structureType, sc2::UNIT_TYPEID::ZERG_DRONE ).ability;
 
     Vector2 pos;
     UnitRef target = nullptr;
-    if ( !findPlacement( structureType, base, placement, ability, pos, target ) )
+    if ( !findPlacement( structureType, *base, placement, ability, pos, target ) )
       return false;
 
-    Building build( idPool_++, structureType, ability );
+    Building build( idPool_++, base, structureType, ability );
     build.position = pos;
     build.target = target;
     bot_->map().reserveFootprint( build.position, structureType );
@@ -51,7 +51,7 @@ namespace hivemind {
     return true;
   }
 
-  bool Builder::train(UnitTypeID unitType, Base& base, UnitTypeID trainerType, BuildProjectID& idOut)
+  bool Builder::train(UnitTypeID unitType, Base* base, UnitTypeID trainerType, BuildProjectID& idOut)
   {
     return trainer_.train(unitType, base, trainerType, idOut);
   }
@@ -187,6 +187,11 @@ namespace hivemind {
     }
   }
 
+  UnitRef Builder::acquireBuilder(Base& base)
+  {
+    return base.releaseWorker();
+  }
+
   const GameTime cBuildRecheckDelta = 50;
   const GameTime cBuildReorderDelta = 100;
   const size_t cBuildMaxWorkers = 3;
@@ -210,13 +215,12 @@ namespace hivemind {
         if ( verbose )
           bot_->console().printf( "Builder: Removing BuildOp %d (%s)", build.id, build.completed ? "completed" : "canceled" );
 
-        // there's a bug in the current API where drones which became buildings are still marked as alive.
-        if ( build.builder && build.builder->is_alive && build.cancel )
+        if ( build.builder && build.builder->is_alive )
         {
           if ( verbose )
             bot_->console().printf( "Builder: Returning worker %x", id( build.builder ) );
 
-          bot_->workers().addBack( build.builder );
+          build.base->addWorker(build.builder);
         }
         bot_->map().clearFootprint( build.position );
         it = buildProjects_.erase( it );
@@ -252,7 +256,9 @@ namespace hivemind {
             build.cancel = true;
             continue;
           }
-          build.builder = bot_->workers().releaseClosest( build.position );
+
+          build.builder = acquireBuilder(*build.base);
+
           if ( !build.builder )
           {
             if ( verbose )

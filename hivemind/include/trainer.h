@@ -65,7 +65,7 @@ namespace hivemind {
   public:
     Trainer( Bot* bot, BuildProjectID& idPool, std::unordered_map<sc2::UNIT_TYPEID, UnitStats>& );
     void gameBegin() final;
-    bool train( UnitTypeID unitType, Base& base, UnitTypeID trainerType, BuildProjectID& idOut );
+    bool train( UnitTypeID unitType, Base* base, UnitTypeID trainerType, BuildProjectID& idOut );
     void remove( BuildProjectID id );
     void update( const GameTime time, const GameTime delta );
     void gameEnd() final;

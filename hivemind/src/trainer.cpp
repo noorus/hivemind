@@ -58,9 +58,9 @@ namespace hivemind {
     return nullptr;
   }
 
-  bool Trainer::train( UnitTypeID unitType, Base& base, UnitTypeID trainerType, BuildProjectID& idOut )
+  bool Trainer::train( UnitTypeID unitType, Base* base, UnitTypeID trainerType, BuildProjectID& idOut )
   {
-    auto trainer = getTrainer(base, trainerType);
+    auto trainer = getTrainer(*base, trainerType);
 
     if(!trainer)
     {
