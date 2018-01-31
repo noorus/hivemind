@@ -85,6 +85,31 @@ namespace hivemind {
       }
       return math::abs( a / 2.0f );
     }
+    //! \fn const Vector2 Polygon::centroid() const
+    //! \brief Calculates the centroid of this polygon.
+    //! \return Centroid of the polygon.
+    const Vector2 centroid() const
+    {
+      Vector2 ctrd;
+      Real signedArea = 0.0f;
+      Vector2 xy0;
+      Vector2 xy1;
+      Real a = 0.0f;
+
+      for ( size_t i = 0; i < size(); ++i )
+      {
+        xy0 = this->at( i );
+        xy1 = this->at( ( i + 1 ) % size() );
+        a = xy0.crossProduct( xy1 );
+        signedArea += a;
+        ctrd += ( xy0 + xy1 ) * a;
+      }
+
+      signedArea *= 0.5f;
+      ctrd /= ( 6.0f * signedArea );
+
+      return ctrd;
+    }
     //! \fn inline bool Polygon::contains( const Vector2& pt )
     //! \brief Check if a given point is inside this polygon.
     //!    Points on boundary are treated as being inside.

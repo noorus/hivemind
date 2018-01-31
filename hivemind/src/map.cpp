@@ -297,6 +297,8 @@ namespace hivemind {
     if ( dumpImages )
       bot_->debug().mapDumpBaseLocations( flagsMap_, resourceClusters, info, baseLocations_ );
 
+    Analysis::Map_CalculateRegionHeights( flagsMap_, regions_, regionMap_, heightMap_ );
+
     bot_->console().printf( "Map: Rebuild done" );
   }
 
@@ -331,7 +333,12 @@ namespace hivemind {
     size_t i = 0;
     for ( auto& regptr : regions_ )
     {
-      bot_->debug().drawMapPolygon( *this, regptr->polygon_, utils::prettyColor( i ) );
+      auto color = utils::prettyColor( i );
+      bot_->debug().drawMapPolygon( *this, regptr->polygon_, color );
+      char asd[32];
+      sprintf_s( asd, 32, "region %d\r\nheight %.3f", regptr->label_, regptr->height_ );
+      auto mid = regptr->polygon_.centroid();
+      bot_->debug().drawText( asd, Vector3( mid.x, mid.y, regptr->height_ + 0.5f ), color );
       i++;
     }
     /*for ( auto& asd : chokepointSides_ )

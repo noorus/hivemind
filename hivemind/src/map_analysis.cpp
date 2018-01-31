@@ -985,6 +985,8 @@ namespace hivemind {
         auto region = new Region();
         region->label_ = (int)regions.size();
         region->polygon_ = regionPoly;
+        region->height_ = 0.0f;
+        region->tileCount_ = 0;
         regions.push_back( region );
       }
 
@@ -1158,6 +1160,32 @@ namespace hivemind {
             if ( aroundORed & MapFlag_StartLocation )
               flags_out[x][y] |= MapFlag_NearStartLocation;
           }
+    }
+
+    void Map_CalculateRegionHeights( Array2<uint64_t>& flagsmap, RegionVector& regions, Array2<int>& regionMap, Array2<Real>& heightmap )
+    {
+      auto width = regionMap.width();
+      auto height = regionMap.height();
+
+      for ( int x = 0; x < width; x++ )
+        for ( int y = 0; y < height; y++ )
+        {
+          if ( ( flagsmap[x][y] & MapFlag_Ramp ) || !( flagsmap[x][y] & MapFlag_Buildable ) )
+            continue;
+
+          auto regionLabel = regionMap[x][y];
+          if ( regionLabel < 0 || regionLabel > regions.size() )
+            continue;
+
+          auto region = regions[regionLabel];
+          region->tileCount_++;
+          region->height_ += heightmap[x][y];
+        }
+
+      for ( auto region : regions )
+      {
+        region->height_ = ( region->height_ / (Real)region->tileCount_ );
+      }
     }
 
   }

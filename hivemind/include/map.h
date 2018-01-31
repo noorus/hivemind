@@ -74,6 +74,8 @@ namespace hivemind {
     RegionSet reachableRegions_;
     Real opennessDistance_;
     Vector2 opennessPoint_;*/
+    Real height_;
+    int tileCount_;
   };
 
   struct MapData {
