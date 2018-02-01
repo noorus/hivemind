@@ -16,6 +16,9 @@ HIVE_DECLARE_CONVAR( analysis_verbose, "Print verbose status messages on map ana
 HIVE_DECLARE_CONVAR( analysis_use_cache, "Whether to cache expensive map analysis data.", true );
 
 HIVE_DECLARE_CONVAR( draw_map, "Whether to draw map analysis debug features.", true );
+HIVE_DECLARE_CONVAR( draw_baselocations, "Whether to draw base location debug information.", true );
+
+HIVE_DECLARE_CONVAR( creep_debug, "Whether to draw creep debug features.", false );
 
 #ifdef HIVE_SUPPORT_MAP_DUMPS
 HIVE_DECLARE_CONVAR( analysis_dump_maps, "Dump out images of generated map layers upon analysis.", false );
@@ -304,46 +307,47 @@ namespace hivemind {
 
   void Map::draw()
   {
-    if ( !g_CVar_draw_map.as_b() )
-      return;
-
-    Point2D camera = bot_->observation().GetCameraPos();
-    for ( float x = camera.x - 16.0f; x < camera.x + 16.0f; ++x )
+    // draw map tile flags and region polygons if draw_map is enabled
+    if ( g_CVar_draw_map.as_b() )
     {
-      for ( float y = camera.y - 16.0f; y < camera.y + 16.0f; ++y )
+      Point2D camera = bot_->observation().GetCameraPos();
+      for ( float x = camera.x - 16.0f; x < camera.x + 16.0f; ++x )
       {
-        auto ix = (int)x;
-        auto iy = (int)y;
+        for ( float y = camera.y - 16.0f; y < camera.y + 16.0f; ++y )
+        {
+          auto ix = (int)x;
+          auto iy = (int)y;
 
-        sc2::Point3D pos( (Real)ix + 0.5f, (Real)iy + 0.5f, heightMap_[ix][iy] + 0.25f );
-        auto tile = flagsMap_[ix][iy];
-        if ( tile & MapFlag_StartLocation )
-          bot_->debug().drawSphere( pos, 0.1f, sc2::Colors::Green );
-        else if ( tile & MapFlag_NearStartLocation )
-          bot_->debug().drawSphere( pos, 0.1f, sc2::Colors::Teal );
-        else if ( tile & MapFlag_Ramp )
-          bot_->debug().drawSphere( pos, 0.1f, sc2::Colors::Purple );
-        else if ( tile & MapFlag_NearRamp )
-          bot_->debug().drawSphere( pos, 0.1f, sc2::Colors::Yellow );
-        else if ( tile & MapFlag_VespeneGeyser)
-          bot_->debug().drawSphere( pos, 0.1f, sc2::Colors::Green );
-        else if ( tile & MapFlag_VisionBlocker )
-          bot_->debug().drawSphere( pos, 0.1f, sc2::Colors::Blue );
-        else if ( tile & MapFlag_NearVisionBlocker )
-          bot_->debug().drawSphere( pos, 0.1f, sc2::Colors::Gray );
+          sc2::Point3D pos( (Real)ix + 0.5f, (Real)iy + 0.5f, heightMap_[ix][iy] + 0.25f );
+          auto tile = flagsMap_[ix][iy];
+          if ( tile & MapFlag_StartLocation )
+            bot_->debug().drawSphere( pos, 0.1f, sc2::Colors::Green );
+          else if ( tile & MapFlag_NearStartLocation )
+            bot_->debug().drawSphere( pos, 0.1f, sc2::Colors::Teal );
+          else if ( tile & MapFlag_Ramp )
+            bot_->debug().drawSphere( pos, 0.1f, sc2::Colors::Purple );
+          else if ( tile & MapFlag_NearRamp )
+            bot_->debug().drawSphere( pos, 0.1f, sc2::Colors::Yellow );
+          else if ( tile & MapFlag_VespeneGeyser )
+            bot_->debug().drawSphere( pos, 0.1f, sc2::Colors::Green );
+          else if ( tile & MapFlag_VisionBlocker )
+            bot_->debug().drawSphere( pos, 0.1f, sc2::Colors::Blue );
+          else if ( tile & MapFlag_NearVisionBlocker )
+            bot_->debug().drawSphere( pos, 0.1f, sc2::Colors::Gray );
+        }
       }
-    }
 
-    size_t i = 0;
-    for ( auto& regptr : regions_ )
-    {
-      auto color = utils::prettyColor( i );
-      bot_->debug().drawMapPolygon( *this, regptr->polygon_, color );
-      char asd[64];
-      sprintf_s( asd, 64, "region %d\r\nheight %.3f\r\nHEIGHTLEVEL %d", regptr->label_, regptr->height_, regptr->heightLevel_ );
-      auto mid = regptr->polygon_.centroid();
-      bot_->debug().drawText( asd, Vector3( mid.x, mid.y, regptr->height_ + 0.5f ), color, 12 );
-      i++;
+      size_t i = 0;
+      for ( auto& regptr : regions_ )
+      {
+        auto color = utils::prettyColor( i );
+        bot_->debug().drawMapPolygon( *this, regptr->polygon_, color );
+        char asd[64];
+        sprintf_s( asd, 64, "region %d\r\nheight %.3f\r\nHEIGHTLEVEL %d", regptr->label_, regptr->height_, regptr->heightLevel_ );
+        auto mid = regptr->polygon_.centroid();
+        bot_->debug().drawText( asd, Vector3( mid.x, mid.y, regptr->height_ + 0.5f ), color, 12 );
+        i++;
+      }
     }
     /*for ( auto& asd : chokepointSides_ )
     {
@@ -367,36 +371,36 @@ namespace hivemind {
         bot_->debug().drawLine( p0, p1, sc2::Colors::Teal );
       }
     }*/
-    /*for ( auto& cluster : resourceClusters_ )
+    // draw baselocation info if draw_baselocations is enabled
+    if ( g_CVar_draw_baselocations.as_b() )
     {
-      for ( auto res : cluster )
-        bot_->debug().DebugSphereOut( res->pos, 1.0f, sc2::Colors::Yellow );
-    }*/
-    for ( auto& location : baseLocations_ )
-    {
-      char msg[64];
-      sprintf_s( msg, 64, "Base location %zd (region %d)", location.baseID_, location.region_ );
-      bot_->debug().drawText( msg, Vector3( location.position_.x, location.position_.y, maxZ_ ), sc2::Colors::White );
-      Real height = heightMap_[math::floor( location.position_.x )][math::floor( location.position_.y )];
-      bot_->debug().drawBox(
-        Vector3( location.left_, location.top_, height ),
-        Vector3( location.right_, location.bottom_, height + 1.0f ), sc2::Colors::White );
-      bot_->debug().drawSphere( Point3D( location.position_.x, location.position_.y, height ), 1.0f, sc2::Colors::White );
-      bot_->debug().drawSphere( Point3D( location.position_.x, location.position_.y, height ), 2.0f, sc2::Colors::White );
-      bot_->debug().drawSphere( Point3D( location.position_.x, location.position_.y, height ), 3.0f, sc2::Colors::White );
-    }
-    /*for ( auto& creep : creeps_ )
-      for ( size_t i = 0; i < creep.fronts.size(); i++ )
+      for ( auto& location : baseLocations_ )
       {
-        rgb tmp;
-        sc2::Color colorContour;
-        utils::hsl2rgb( (uint16_t)i * 120, 230, 200, (uint8_t*)&tmp );
-        colorContour.r = tmp.r;
-        colorContour.g = tmp.g;
-        colorContour.b = tmp.b;
-        for ( auto& pt : creep.fronts[i] )
-          bot_->debug().DebugSphereOut( sc2::Point3D( (Real)pt.x + 0.5f, (Real)pt.y + 0.5f, heightMap_[pt.x][pt.y] + 0.5f ), 0.1f, colorContour );
-      }*/
+        char msg[64];
+        sprintf_s( msg, 64, "Base location %zd (region %d)", location.baseID_, location.region_ );
+        bot_->debug().drawText( msg, Vector3( location.position_.x, location.position_.y, maxZ_ ), sc2::Colors::White );
+        Real height = heightMap_[math::floor( location.position_.x )][math::floor( location.position_.y )];
+        bot_->debug().drawBox(
+          Vector3( location.left_, location.top_, height ),
+          Vector3( location.right_, location.bottom_, height + 1.0f ), sc2::Colors::White );
+        auto pos = Vector3( location.position_.x, location.position_.y, height );
+        bot_->debug().drawSphere( pos, 1.0f, sc2::Colors::White );
+        bot_->debug().drawSphere( pos, 2.0f, sc2::Colors::White );
+        bot_->debug().drawSphere( pos, 3.0f, sc2::Colors::White );
+      }
+    }
+
+    // draw creep fronts if creep_debug is enabled
+    if ( g_CVar_creep_debug.as_b() )
+    {
+      for ( auto& creep : creeps_ )
+        for ( size_t i = 0; i < creep.fronts.size(); i++ )
+        {
+          auto color = utils::prettyColor( i, 40 );
+          for ( auto& pt : creep.fronts[i] )
+            bot_->debug().drawSphere( Vector3( (Real)pt.x + 0.5f, (Real)pt.y + 0.5f, heightMap_[pt.x][pt.y] + 0.5f ), 0.1f, color );
+        }
+    }
   }
 
   bool Map::updateCreep()
