@@ -867,7 +867,7 @@ namespace hivemind {
     /*
     * 10) Project the chokepoints from the graph
     **/
-    void Map_GetChokepointSides( const RegionGraph& graph, const bgi::rtree<BoostSegmentI, bgi::quadratic<16>>& rtree, std::map<RegionNodeID, Chokepoint>& chokepointSides )
+    void Map_GetChokepointSides( const RegionGraph& graph, const bgi::rtree<BoostSegmentI, bgi::quadratic<16>>& rtree, RegionChokesMap& chokepointSides )
     {
       for ( const auto& id : graph.chokeNodes )
       {
@@ -887,7 +887,7 @@ namespace hivemind {
             break;
           }
         }
-        chokepointSides.emplace( id, Chokepoint( side1, side2 ) );
+        chokepointSides.emplace( id, ChokeSides( side1, side2 ) );
       }
     }
 
@@ -1027,29 +1027,6 @@ namespace hivemind {
               break;
             }
         }
-
-      /*std::map<RegionNodeID, Region*> nodeToRegion;
-      for ( const auto& id : graph.regionNodes )
-      {
-        auto label = regionLabelMap[(int)graph.nodes[id].x][(int)graph.nodes[id].y];
-        if ( label < 0 || label > regions.size() )
-          HIVE_EXCEPT( "Label for region node out of bounds" );
-        auto region = regions[label];
-        region->opennessDistance_ = graph.minDistToObstacle[id];
-        region->opennessPoint_ = graph.nodes[id];
-        nodeToRegion.emplace( id, region );
-      }
-
-      std::map<RegionNodeID, ChokeSides*> nodeToChoke;
-      for ( const auto& id : graph.chokeNodes )
-      {
-        auto it = graph.adjacencyList[id].begin();
-        auto region1 = nodeToRegion[*it];
-        it++;
-        auto region2 = nodeToRegion[*it];
-        // auto side1 = chokepointSides[id].side1;
-        // auto side2 = chokepointSides[id].side2;
-      }*/
     }
 
     /*
@@ -1235,6 +1212,41 @@ namespace hivemind {
           if ( math::abs( heightLevels[i] - region->height_ ) < 0.1f )
             region->heightLevel_ = (int)i;
         }
+      }
+    }
+
+    void Map_ConnectChokepoints( const RegionChokesMap& chokepointSides, RegionVector& regions, Array2<int>& closestRegionMap, const RegionGraph& graph, ChokeVector& chokes_out_for_real )
+    {
+      std::map<RegionNodeID, Region*> nodeToRegion;
+      for ( const auto& id : graph.regionNodes )
+      {
+        auto label = closestRegionMap[(int)graph.nodes[id].x][(int)graph.nodes[id].y];
+        if ( label < 0 || label > regions.size() )
+          HIVE_EXCEPT( "Label for region node out of bounds" );
+        auto region = regions[label];
+        region->opennessDistance_ = (Real)graph.minDistToObstacle[id];
+        region->opennessPoint_ = graph.nodes[id];
+        nodeToRegion.emplace( id, region );
+      }
+
+      std::map<RegionNodeID, Chokepoint*> nodeToChoke;
+      for ( const auto& id : graph.chokeNodes )
+      {
+        auto it = graph.adjacencyList[id].begin();
+        if ( it == graph.adjacencyList[id].end() )
+          continue;
+        auto region1 = nodeToRegion[*it];
+        it++;
+        if ( it == graph.adjacencyList[id].end() )
+          continue;
+        auto region2 = nodeToRegion[*it];
+        auto side1 = chokepointSides.at( id ).side1;
+        auto side2 = chokepointSides.at( id ).side2;
+        chokes_out_for_real.emplace_back( (int)chokes_out_for_real.size(), side1, side2, region1, region2 );
+        auto chokeptr = &chokes_out_for_real.back();
+        nodeToChoke.insert( std::make_pair( id, chokeptr ) );
+        region1->chokepoints_.insert( chokeptr->id_ );
+        region2->chokepoints_.insert( chokeptr->id_ );
       }
     }
 

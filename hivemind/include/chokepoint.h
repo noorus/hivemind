@@ -7,18 +7,24 @@
 
 namespace hivemind {
 
-  namespace Analysis {
+  class Region;
 
-    struct Chokepoint {
-      Vector2 side1;
-      Vector2 side2;
-      Chokepoint( Vector2 s1, Vector2 s2 ): side1( s1 ), side2( s2 ) {}
-      inline const Vector2 middle() const
-      {
-        return ( side1 + ( ( side1 - side2 ) * 0.5f ) );
-      }
-    };
+  using ChokepointID = int;
 
-  }
+  struct Chokepoint {
+    ChokepointID id_;
+    Vector2 side1;
+    Vector2 side2;
+    Region* region1;
+    Region* region2;
+    Chokepoint( const ChokepointID id, Vector2 s1, Vector2 s2, Region* r1 = nullptr, Region* r2 = nullptr ): id_( id ), side1( s1 ), side2( s2 ), region1( r1 ), region2( r2 ) {}
+    inline const Vector2 middle() const
+    {
+      return ( side1 + ( ( side2 - side1 ) * 0.5f ) );
+    }
+  };
+
+  using ChokeVector = vector<Chokepoint>;
+  using ChokeSet = set<ChokepointID>;
 
 }

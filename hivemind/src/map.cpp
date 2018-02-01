@@ -180,6 +180,9 @@ namespace hivemind {
       } );
     }
 
+    Analysis::RegionChokesMap tempChokeSides;
+    Analysis::RegionGraph simplifiedGraph;
+
     // All of the stuff inside here is only needed if we couldn't load complete regions from the cache.
     if ( !gotRegions )
     {
@@ -197,8 +200,6 @@ namespace hivemind {
 
       // Graph processing ---
 
-      Analysis::RegionGraph simplifiedGraph;
-
       util_verbosePerfSection( bot_, "Map: Processing graph", [&]
       {
         Analysis::Map_DetectNodes( graph, obstacles_ );
@@ -208,8 +209,6 @@ namespace hivemind {
       } );
 
       // Chokepoints ---
-
-      Analysis::RegionChokesMap tempChokeSides;
 
       util_verbosePerfSection( bot_, "Map: Figuring out chokepoints", [&]
       {
@@ -309,6 +308,8 @@ namespace hivemind {
       } );
     }
 
+    Analysis::Map_ConnectChokepoints( tempChokeSides, regions_, closestRegionMap_, simplifiedGraph, chokepoints_ );
+
     bot_->console().printf( "Map: Rebuild done" );
   }
 
@@ -350,32 +351,43 @@ namespace hivemind {
         auto color = utils::prettyColor( i );
         bot_->debug().drawMapPolygon( *this, regptr->polygon_, color );
         char asd[64];
-        sprintf_s( asd, 64, "region %d\r\nheight %.3f\r\nHEIGHTLEVEL %d", regptr->label_, regptr->height_, regptr->heightLevel_ );
+        sprintf_s( asd, 64, "region %d\r\nheight %.3f\r\nlevel %d", regptr->label_, regptr->height_, regptr->heightLevel_ );
         auto mid = regptr->polygon_.centroid();
-        bot_->debug().drawText( asd, Vector3( mid.x, mid.y, regptr->height_ + 0.5f ), color, 12 );
+        string str = asd;
+        for ( auto choke : regptr->chokepoints_ )
+          str.append( "\r\nchoke: " + std::to_string( choke ) );
+        bot_->debug().drawText( str, Vector3( mid.x, mid.y, regptr->height_ + 0.5f ), Colors::White, 12 );
         i++;
       }
     }
-    /*for ( auto& asd : chokepointSides_ )
+
+    for ( auto& choke : chokepoints_ )
     {
-      Point3D p0 = util_tileToMarker( asd.second.side1, heightMap_, 0.5f, maxZ_ );
-      Point3D p1 = util_tileToMarker( asd.second.side2, heightMap_, 0.5f, maxZ_ );
-      bot_->debug().drawLine( p0, p1, sc2::Colors::Green );
-    }*/
+      auto p0 = choke.side1.to3( maxZ_ );
+      auto p1 = choke.side2.to3( maxZ_ );
+      auto pmid = choke.middle().to3( maxZ_ );
+      bot_->debug().drawLine( p0, p1, Colors::Green );
+      bot_->debug().drawSphere( p0, 0.25f, Colors::Green );
+      bot_->debug().drawSphere( p1, 0.25f, Colors::Green );
+      bot_->debug().drawSphere( pmid, 0.25f, Colors::Green );
+      char sdf[64];
+      sprintf_s( sdf, 64, "chokepoint %d\r\nregions %d & %d", choke.id_, choke.region1->label_, choke.region2->label_ );
+      auto mid = choke.middle().to3( maxZ_ );
+      bot_->debug().drawText( sdf, mid, sc2::Colors::Green, 12 );
+    }
     /*for ( auto& node : graphSimplified_.nodes )
     {
       auto pt = util_tileToMarker( node, heightMap_, 1.0f, maxZ_ );
       bot_->debug().drawSphere( pt, 0.25f, sc2::Colors::Teal );
     }
-    for ( size_t id = 0; id < graphSimplified_.adjacencyList.size(); id++ )
+
+    for ( size_t id = 0; id < simplifiedGraph.adjacencyList.size(); id++ )
     {
-      for ( auto adj : graphSimplified_.adjacencyList[id] )
+      for ( auto adj : simplifiedGraph.adjacencyList[id] )
       {
-        auto v0 = graphSimplified_.nodes[id];
-        auto v1 = graphSimplified_.nodes[adj];
-        Vector3 p0 = util_tileToMarker( v0, heightMap_, 1.0f, maxZ_ );
-        Vector3 p1 = util_tileToMarker( v1, heightMap_, 1.0f, maxZ_ );
-        bot_->debug().drawLine( p0, p1, sc2::Colors::Teal );
+        auto v0 = simplifiedGraph.nodes[id].to3( maxZ_ );
+        auto v1 = simplifiedGraph.nodes[adj].to3( maxZ_ );
+        bot_->debug().drawLine( v0, v1, sc2::Colors::Teal );
       }
     }*/
     // draw baselocation info if draw_baselocations is enabled
@@ -816,6 +828,14 @@ namespace hivemind {
   {
     return ( ( (uint64_t)pt.x ) << 32 ) | ( (uint64_t)pt.y );
   };
+
+  Chokepoint* Map::chokepoint( ChokepointID index )
+  {
+    if ( index < 0 || index >= chokepoints_.size() )
+      return nullptr;
+
+    return &chokepoints_[index];
+  }
 
   void Map::reserveFootprint( const Point2DI& position, UnitTypeID type )
   {

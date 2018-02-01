@@ -4,15 +4,12 @@
 #include "hive_array2.h"
 #include "hive_polygon.h"
 #include "hive_geometry.h"
-#include "chokepoint.h"
 
 namespace hivemind {
 
   namespace Analysis {
 
     using RegionNodeID = size_t;
-
-    using RegionChokesMap = std::map<RegionNodeID, Chokepoint>;
 
     class RegionGraph {
     public:

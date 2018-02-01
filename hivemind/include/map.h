@@ -6,6 +6,7 @@
 #include "distancemap.h"
 #include "regiongraph.h"
 #include "baselocation.h"
+#include "chokepoint.h"
 
 namespace hivemind {
 
@@ -72,14 +73,14 @@ namespace hivemind {
   public:
     int label_;
     Polygon polygon_;
-    /*Analysis::ChokeSidesSet chokepoints_;
     RegionSet reachableRegions_;
     Real opennessDistance_;
-    Vector2 opennessPoint_;*/
+    Vector2 opennessPoint_;
     Real height_;
     int tileCount_;
     int heightLevel_; //!< AKA cliff level or whatever, 0 being lowest on map
     bool dubious_; //!< If this region has no real area or tiles, and probably lacks known height value
+    ChokeSet chokepoints_;
   };
 
   struct MapData {
@@ -115,6 +116,7 @@ namespace hivemind {
     CreepVector creeps_;
     vector<MapPoint2> creepTumors_;
     MapData info_;
+    ChokeVector chokepoints_;
     int maxHeightLevel_; //!< Maximum height (cliff) level, 0 being the lowest on the playable map
   private:
     Bot* bot_;
@@ -162,6 +164,7 @@ namespace hivemind {
     inline int closestRegionId( const Vector2& position ) { return closestRegionId( (size_t)position.x, (size_t)position.y ); }
     inline Region* closestRegion( size_t x, size_t y ) { return region( closestRegionMap_[x][y] ); }
     inline Region* closestRegion( const Vector2& position ) { return closestRegion( (size_t)position.x, (size_t)position.y ); }
+    Chokepoint* chokepoint( ChokepointID index );
     void reserveFootprint( const Point2DI& position, UnitTypeID type );
     void clearFootprint( const Point2DI& position );
     bool isValid( size_t x, size_t y ) const;
