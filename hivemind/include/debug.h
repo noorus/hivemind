@@ -5,6 +5,7 @@
 #include "hive_vector3.h"
 #include "hive_array2.h"
 #include "map.h"
+#include "map_analysis.h"
 
 namespace hivemind {
 
@@ -81,6 +82,7 @@ namespace hivemind {
     }
     void send() { debug_->SendDebug(); }
     void drawMapPolygon( Map& map, Polygon& poly, Color color );
+    void drawMapLine( Map& map, const Vector2& p0, const Vector2& p1, Color color );
 
   #ifdef HIVE_SUPPORT_MAP_DUMPS
     void mapDumpBasicMaps( Array2<uint64_t>& flagmap, Array2<Real>& heightmap, const GameInfo& info );

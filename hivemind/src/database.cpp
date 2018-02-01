@@ -76,7 +76,7 @@ namespace hivemind {
         if ( effect.isMember( "persistentCount" ) )
           fx.persistentHitCount_ = effect["persistentCount"].asInt();
         if ( fx.persistentHitCount_ < 1 )
-          fx.persistentHitCount_ = fx.persistentPeriods_.size();
+          fx.persistentHitCount_ = (int)fx.persistentPeriods_.size();
       }
     }
     else if ( boost::iequals( type, "suicide" ) )
