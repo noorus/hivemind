@@ -327,6 +327,10 @@ namespace hivemind {
           bot_->debug().drawSphere( pos, 0.1f, sc2::Colors::Yellow );
         else if ( tile & MapFlag_VespeneGeyser)
           bot_->debug().drawSphere( pos, 0.1f, sc2::Colors::Green );
+        else if ( tile & MapFlag_VisionBlocker )
+          bot_->debug().drawSphere( pos, 0.1f, sc2::Colors::Blue );
+        else if ( tile & MapFlag_NearVisionBlocker )
+          bot_->debug().drawSphere( pos, 0.1f, sc2::Colors::Gray );
       }
     }
 

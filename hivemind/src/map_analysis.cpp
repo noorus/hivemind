@@ -10,6 +10,8 @@ namespace hivemind {
 
   namespace Analysis {
 
+    const Real c_minRampHeightDiff = 0.175f;
+
     /*
      * 1) Extract from gameinfo: dimensions, buildability, pathability, heightmap
      **/
@@ -26,19 +28,37 @@ namespace hivemind {
       for ( size_t x = 0; x < width_out; x++ )
         for ( size_t y = 0; y < height_out; y++ )
         {
+          auto tileZ = utils::terrainHeight( info, x, y );
+          heightmap_out[x][y] = tileZ;
+
           uint64_t flags = 0;
           if ( utils::placement( info, x, y ) )
             flags |= MapFlag_Buildable;
           if ( ( flags & MapFlag_Buildable ) || utils::pathable( info, x, y ) )
             flags |= MapFlag_Walkable;
 
-          // naive; works for now but maybe improve later
-          if ( ( flags & MapFlag_Walkable ) && !( flags & MapFlag_Buildable ) )
-            flags |= ( MapFlag_Ramp | MapFlag_NearRamp );
+          if ( ( flags & MapFlag_Walkable ) && !( flags & MapFlag_Buildable ) && x > 3 && y > 3 && x <= ( width_out - 2 ) && y <= ( height_out - 2 ) )
+          {
+            bool heightDiff = false;
+            for ( size_t dx = ( x - 3 ); dx < ( x + 4 ); ++dx )
+            {
+              for ( size_t dy = ( y - 3 ); dy < ( y + 4 ); ++dy )
+              {
+                if ( utils::pathable( info, dx, dy ) && math::abs( utils::terrainHeight( info, dx, dy ) - tileZ ) > c_minRampHeightDiff )
+                {
+                  heightDiff = true;
+                  goto foundDiff;
+                }
+              }
+            }
+          foundDiff:
+            if ( heightDiff )
+              flags |= ( MapFlag_Ramp | MapFlag_NearRamp );
+            else
+              flags |= ( MapFlag_VisionBlocker | MapFlag_NearVisionBlocker );
+          }
 
           flags_out[x][y] = flags;
-
-          heightmap_out[x][y] = utils::terrainHeight( info, x, y );
         }
 
       // second pass to mark inner walkables
@@ -61,6 +81,8 @@ namespace hivemind {
               flags_out[x][y] |= MapFlag_InnerWalkable;
             if ( aroundORed & MapFlag_Ramp )
               flags_out[x][y] |= MapFlag_NearRamp;
+            if ( aroundORed & MapFlag_VisionBlocker )
+              flags_out[x][y] |= MapFlag_NearVisionBlocker;
           }
 
       // Mark vespene geysers.
