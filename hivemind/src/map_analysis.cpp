@@ -1010,6 +1010,7 @@ namespace hivemind {
         region->height_ = 0.0f;
         region->tileCount_ = 0;
         region->heightLevel_ = 0;
+        region->dubious_ = false;
         regions.push_back( region );
       }
 
@@ -1207,7 +1208,10 @@ namespace hivemind {
 
       for ( auto region : regions )
       {
-        region->height_ = ( region->height_ / (Real)region->tileCount_ );
+        if ( region->tileCount_ > 0 )
+          region->height_ = ( region->height_ / (Real)region->tileCount_ );
+        else
+          region->dubious_ = true;
       }
 
       vector<Real> heightLevels;

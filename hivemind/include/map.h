@@ -79,6 +79,7 @@ namespace hivemind {
     Real height_;
     int tileCount_;
     int heightLevel_; //!< AKA cliff level or whatever, 0 being lowest on map
+    bool dubious_; //!< If this region has no real area or tiles, and probably lacks known height value
   };
 
   struct MapData {
