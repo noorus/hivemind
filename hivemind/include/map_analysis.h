@@ -44,7 +44,7 @@ namespace hivemind {
 
     void Map_MarkBaseTiles( Array2<uint64_t>& flagsmap, const BaseLocationVector& locations );
 
-    void Map_CalculateRegionHeights( Array2<uint64_t>& flagsmap, RegionVector& regions, Array2<int>& regionMap, Array2<Real>& heightmap );
+    void Map_CalculateRegionHeights( Array2<uint64_t>& flagsmap, RegionVector& regions_out, Array2<int>& regionMap, Array2<Real>& heightmap );
 
   }
 

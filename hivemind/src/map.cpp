@@ -225,13 +225,6 @@ namespace hivemind {
       util_verbosePerfSection( bot_, "Map: Splitting region polygons", [&]
       {
         Analysis::Map_MakeRegions( polygons, tempChokeSides, flagsMap_, width_, height_, regions_, regionMap_, simplifiedGraph );
-
-        if ( writeCache )
-        {
-          Cache::mapWriteRegionVector( data, regions_, cRegionVectorCacheName );
-          Cache::mapWriteIntArray2( data, regionMap_, cRegionLabelMapCacheName );
-        }
-
         return true;
       } );
     }
@@ -300,7 +293,21 @@ namespace hivemind {
     if ( dumpImages )
       bot_->debug().mapDumpBaseLocations( flagsMap_, resourceClusters, info, baseLocations_ );
 
-    Analysis::Map_CalculateRegionHeights( flagsMap_, regions_, regionMap_, heightMap_ );
+    if ( !gotRegions )
+    {
+      util_verbosePerfSection( bot_, "Map: Calculating region heights", [&]
+      {
+        Analysis::Map_CalculateRegionHeights( flagsMap_, regions_, regionMap_, heightMap_ );
+
+        if ( writeCache )
+        {
+          Cache::mapWriteRegionVector( data, regions_, cRegionVectorCacheName );
+          Cache::mapWriteIntArray2( data, regionMap_, cRegionLabelMapCacheName );
+        }
+
+        return true;
+      } );
+    }
 
     bot_->console().printf( "Map: Rebuild done" );
   }

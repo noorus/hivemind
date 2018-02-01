@@ -1186,7 +1186,7 @@ namespace hivemind {
           }
     }
 
-    void Map_CalculateRegionHeights( Array2<uint64_t>& flagsmap, RegionVector& regions, Array2<int>& regionMap, Array2<Real>& heightmap )
+    void Map_CalculateRegionHeights( Array2<uint64_t>& flagsmap, RegionVector& regions_out, Array2<int>& regionMap, Array2<Real>& heightmap )
     {
       auto width = regionMap.width();
       auto height = regionMap.height();
@@ -1198,15 +1198,15 @@ namespace hivemind {
             continue;
 
           auto regionLabel = regionMap[x][y];
-          if ( regionLabel < 0 || regionLabel > regions.size() )
+          if ( regionLabel < 0 || regionLabel > regions_out.size() )
             continue;
 
-          auto region = regions[regionLabel];
+          auto region = regions_out[regionLabel];
           region->tileCount_++;
           region->height_ += heightmap[x][y];
         }
 
-      for ( auto region : regions )
+      for ( auto region : regions_out )
       {
         if ( region->tileCount_ > 0 )
           region->height_ = ( region->height_ / (Real)region->tileCount_ );
@@ -1215,7 +1215,7 @@ namespace hivemind {
       }
 
       vector<Real> heightLevels;
-      for ( auto region : regions )
+      for ( auto region : regions_out )
       {
         auto it = std::find_if( heightLevels.begin(), heightLevels.end(), [&region]( const Real b ) {
           return ( math::abs( region->height_ - b ) < 0.1f );
@@ -1230,7 +1230,7 @@ namespace hivemind {
 
       for ( size_t i = 0; i < heightLevels.size(); ++i )
       {
-        for ( auto region : regions )
+        for ( auto region : regions_out )
         {
           if ( math::abs( heightLevels[i] - region->height_ ) < 0.1f )
             region->heightLevel_ = (int)i;

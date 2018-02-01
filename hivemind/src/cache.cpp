@@ -12,7 +12,7 @@ namespace hivemind {
 
   HIVE_DECLARE_CONVAR( cache_path, "Path to a directory where the bot can cache stuff.", R"(..\cache)" );
 
-  const uint32_t cMapCacheVersion = 2;
+  const uint32_t cMapCacheVersion = 3;
 
   string makeCacheFilePath( const Sha256& hash, const string& name )
   {
@@ -165,6 +165,10 @@ namespace hivemind {
       auto region = new Region();
       region->label_ = reader->readInt();
       region->polygon_ = unserializePolygon( reader );
+      region->tileCount_ = reader->readInt();
+      region->height_ = reader->readReal();
+      region->heightLevel_ = reader->readInt();
+      region->dubious_ = reader->readBool();
       regions.push_back( region );
     }
 
@@ -199,6 +203,10 @@ namespace hivemind {
     {
       writer->writeInt( region->label_ );
       serializePolygon( region->polygon_, writer );
+      writer->writeInt( region->tileCount_ );
+      writer->writeReal( region->height_ );
+      writer->writeInt( region->heightLevel_ );
+      writer->writeBool( region->dubious_ );
     }
   }
 

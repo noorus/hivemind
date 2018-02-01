@@ -155,6 +155,14 @@ namespace hivemind {
           HIVE_EXCEPT( "File read failed or length mismatch" );
         return ret;
       }
+      bool readBool()
+      {
+        uint8_t ret;
+        DWORD read = 0;
+        if ( ReadFile( file_, &ret, sizeof( uint8_t ), &read, nullptr ) != TRUE || read < sizeof( uint8_t ) )
+          HIVE_EXCEPT( "File read failed or length mismatch" );
+        return ( ret != 0 );
+      }
       Real readReal()
       {
         Real ret;
@@ -234,6 +242,14 @@ namespace hivemind {
         DWORD written = 0;
         auto ret = WriteFile( file_, buffer, length, &written, nullptr );
         if ( !ret || written != length )
+          HIVE_EXCEPT( "Failed to write data" );
+      }
+      void writeBool( bool value )
+      {
+        uint8_t val = ( value ? 1 : 0 );
+        DWORD written = 0;
+        auto ret = WriteFile( file_, &val, sizeof( uint8_t ), &written, nullptr );
+        if ( !ret || written != sizeof( uint8_t ) )
           HIVE_EXCEPT( "Failed to write data" );
       }
     };
