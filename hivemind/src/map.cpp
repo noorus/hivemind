@@ -462,13 +462,13 @@ namespace hivemind {
 
       for ( size_t y = 0; y < dbUnit.footprint.height(); y++ )
         for ( size_t x = 0; x < dbUnit.footprint.width(); x++ )
-          if ( dbUnit.footprint[y][x] == UnitData::Footprint_Reserved )
+          if ( dbUnit.footprint[x][y] == UnitData::Footprint_Reserved )
           {
             auto& pixel = zergBuildable_[topleft.x + x][topleft.y + y];
             pixel = ( pixel > CreepTile_No ? CreepTile_Walkable : CreepTile_No );
             reservedMap_[topleft.x + x][topleft.y + y] = Reserved_Reserved;
           }
-          else if ( dbUnit.footprint[y][x] == UnitData::Footprint_NearResource && reservedMap_[topleft.x + x][topleft.y + y] != Reserved_Reserved )
+          else if ( dbUnit.footprint[x][y] == UnitData::Footprint_NearResource && reservedMap_[topleft.x + x][topleft.y + y] != Reserved_Reserved )
           {
             reservedMap_[topleft.x + x][topleft.y + y] = Reserved_NearResource;
           }
@@ -629,7 +629,7 @@ namespace hivemind {
         auto mx = ( topleft.x + x );
         auto my = ( topleft.y + y );
 
-        if ( dbUnit.footprint[y][x] == UnitData::Footprint_Reserved )
+        if ( dbUnit.footprint[x][y] == UnitData::Footprint_Reserved )
         {
           if ( !( flagsMap_[mx][my] & MapFlag_Buildable ) || reservedMap_[mx][my] == Reserved_Reserved || ( !nearResources && reservedMap_[mx][my] == Reserved_NearResource ) )
             return false;

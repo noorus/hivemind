@@ -314,7 +314,7 @@ namespace hivemind {
             for ( size_t x = 0; x < width; x++ )
             {
               auto idx = y * width + x;
-              entry.footprint[y][x] = (
+              entry.footprint[x][y] = (
                 data[idx] == 'x' ? UnitData::Footprint_Reserved :
                 data[idx] == 'n' ? UnitData::Footprint_NearResource :
                 data[idx] == 'o' ? UnitData::Footprint_Creep :

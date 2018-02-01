@@ -64,7 +64,7 @@ namespace hivemind {
       // second pass to mark inner walkables
       for ( size_t x = 0; x < width_out; x++ )
         for ( size_t y = 0; y < height_out; y++ )
-          if ( ( flags_out[x][y] & MapFlag_Walkable ) && x > 2 && y > 2 && x <= ( width_out - 1 ) && y <= ( height_out - 1 ) )
+          if ( ( flags_out[x][y] & MapFlag_Walkable ) && x >= 2 && y >= 2 && x <= ( width_out - 3 ) && y <= ( height_out - 3 ) )
           {
             // up to 2 tiles around me
             uint64_t aroundANDed = (
