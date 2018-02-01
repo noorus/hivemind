@@ -335,10 +335,10 @@ namespace hivemind {
     {
       auto color = utils::prettyColor( i );
       bot_->debug().drawMapPolygon( *this, regptr->polygon_, color );
-      char asd[32];
-      sprintf_s( asd, 32, "region %d\r\nheight %.3f", regptr->label_, regptr->height_ );
+      char asd[64];
+      sprintf_s( asd, 64, "region %d\r\nheight %.3f\r\nHEIGHTLEVEL %d", regptr->label_, regptr->height_, regptr->heightLevel_ );
       auto mid = regptr->polygon_.centroid();
-      bot_->debug().drawText( asd, Vector3( mid.x, mid.y, regptr->height_ + 0.5f ), color );
+      bot_->debug().drawText( asd, Vector3( mid.x, mid.y, regptr->height_ + 0.5f ), color, 12 );
       i++;
     }
     /*for ( auto& asd : chokepointSides_ )

@@ -76,6 +76,7 @@ namespace hivemind {
     Vector2 opennessPoint_;*/
     Real height_;
     int tileCount_;
+    int heightLevel_; //!< AKA cliff level or whatever, 0 being lowest on map
   };
 
   struct MapData {
@@ -111,6 +112,7 @@ namespace hivemind {
     CreepVector creeps_;
     vector<MapPoint2> creepTumors_;
     MapData info_;
+    int maxHeightLevel_; //!< Maximum height (cliff) level, 0 being the lowest on the playable map
   private:
     Bot* bot_;
     uint8_t* contourTraceImageBuffer_;

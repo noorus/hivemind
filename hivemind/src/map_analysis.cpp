@@ -987,6 +987,7 @@ namespace hivemind {
         region->polygon_ = regionPoly;
         region->height_ = 0.0f;
         region->tileCount_ = 0;
+        region->heightLevel_ = 0;
         regions.push_back( region );
       }
 
@@ -1185,6 +1186,29 @@ namespace hivemind {
       for ( auto region : regions )
       {
         region->height_ = ( region->height_ / (Real)region->tileCount_ );
+      }
+
+      vector<Real> heightLevels;
+      for ( auto region : regions )
+      {
+        auto it = std::find_if( heightLevels.begin(), heightLevels.end(), [&region]( const Real b ) {
+          return ( math::abs( region->height_ - b ) < 0.1f );
+        } );
+        if ( it == heightLevels.end() )
+        {
+          heightLevels.push_back( region->height_ );
+        }
+      }
+
+      std::sort( heightLevels.begin(), heightLevels.end() );
+
+      for ( size_t i = 0; i < heightLevels.size(); ++i )
+      {
+        for ( auto region : regions )
+        {
+          if ( math::abs( heightLevels[i] - region->height_ ) < 0.1f )
+            region->heightLevel_ = (int)i;
+        }
       }
     }
 
