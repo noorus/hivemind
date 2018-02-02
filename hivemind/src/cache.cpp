@@ -12,7 +12,7 @@ namespace hivemind {
 
   HIVE_DECLARE_CONVAR( cache_path, "Path to a directory where the bot can cache stuff.", R"(..\cache)" );
 
-  const uint32_t cMapCacheVersion = 3;
+  const uint32_t cMapCacheVersion = 4;
 
   string makeCacheFilePath( const Sha256& hash, const string& name )
   {
@@ -207,6 +207,85 @@ namespace hivemind {
       writer->writeReal( region->height_ );
       writer->writeInt( region->heightLevel_ );
       writer->writeBool( region->dubious_ );
+    }
+  }
+
+  inline Region* regionByLabel( const RegionVector& regs, int label )
+  {
+    for ( auto reg : regs )
+      if ( reg->label_ == label )
+        return reg;
+
+    return nullptr;
+  }
+
+  inline Vector2 unserializeVector2( FileReaderPtr reader )
+  {
+    Vector2 ret;
+    ret.x = reader->readReal();
+    ret.y = reader->readReal();
+    return ret;
+  }
+
+  bool Cache::mapReadChokeVector( const MapData& map, ChokeVector& chokes, RegionVector& regions, const string& name )
+  {
+    auto reader = openCacheFile( map.hash, name );
+
+    if ( !reader )
+      return false;
+
+    assert( chokes.empty() );
+    assert( !regions.empty() );
+
+    auto version = reader->readUint32();
+    if ( version != cMapCacheVersion )
+    {
+      bot_->console().printf( "Cache: Error; Cache file version mismatch: v%d, expected v%d", version, cMapCacheVersion );
+      return false;
+    }
+
+    size_t size = reader->readUint64();
+    for ( size_t i = 0; i < size; ++i )
+    {
+      Chokepoint choke;
+      choke.id_ = reader->readInt();
+      choke.region1 = regionByLabel( regions, reader->readInt() );
+      choke.region2 = regionByLabel( regions, reader->readInt() );
+
+      if ( !choke.region1 || !choke.region2 )
+        return false;
+
+      choke.side1 = unserializeVector2( reader );
+      choke.side2 = unserializeVector2( reader );
+      chokes.push_back( choke );
+    }
+
+    return true;
+  }
+
+  void serializeVector2( const Vector2& vec, FileWriterPtr writer )
+  {
+    writer->writeReal( vec.x );
+    writer->writeReal( vec.y );
+  }
+
+  void Cache::mapWriteChokeVector( const MapData& map, ChokeVector& chokes, const string& name )
+  {
+    auto writer = createCacheFile( map.hash, name );
+
+    if ( !writer )
+      HIVE_EXCEPT( "Cache file creation failed" );
+
+    writer->writeUint32( cMapCacheVersion );
+
+    writer->writeUint64( chokes.size() );
+    for ( const auto& choke : chokes )
+    {
+      writer->writeInt( choke.id_ );
+      writer->writeInt( choke.region1->label_ );
+      writer->writeInt( choke.region2->label_ );
+      serializeVector2( choke.side1, writer );
+      serializeVector2( choke.side2, writer );
     }
   }
 

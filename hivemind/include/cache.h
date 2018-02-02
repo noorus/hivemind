@@ -22,6 +22,8 @@ namespace hivemind {
     static void mapWriteUint64Array2( const MapData& map, Array2<uint64_t>& data, const string& name );
     static bool mapReadRegionVector( const MapData& map, RegionVector& regions, const string& name );
     static void mapWriteRegionVector( const MapData& map, RegionVector& regions, const string& name );
+    static bool mapReadChokeVector( const MapData& map, ChokeVector& chokes, RegionVector& regions, const string& name );
+    static void mapWriteChokeVector( const MapData& map, ChokeVector& chokes, const string& name );
   };
 
 }

@@ -34,6 +34,7 @@ namespace hivemind {
   const char cRegionLabelMapCacheName[] = "regionlabels";
   const char cRegionVectorCacheName[] = "regions";
   const char cFlagsMapCacheName[] = "flagtiles";
+  const char cChokepointsCacheName[] = "chokes";
 
   Map::Map( Bot* bot ): bot_( bot ), width_( 0 ), height_( 0 ), contourTraceImageBuffer_( nullptr )
   {
@@ -176,7 +177,8 @@ namespace hivemind {
       gotRegions = util_verbosePerfSection( bot_, "Map: Loading regions (cached)", [&]
       {
         return ( Cache::mapReadRegionVector( data, regions_, cRegionVectorCacheName )
-          && Cache::mapReadIntArray2( data, regionMap_, cRegionLabelMapCacheName ) );
+          && Cache::mapReadIntArray2( data, regionMap_, cRegionLabelMapCacheName )
+          && Cache::mapReadChokeVector( data, chokepoints_, regions_, cChokepointsCacheName ) );
       } );
     }
 
@@ -298,17 +300,19 @@ namespace hivemind {
       {
         Analysis::Map_CalculateRegionHeights( flagsMap_, regions_, regionMap_, heightMap_ );
 
+        chokepoints_.clear();
+        Analysis::Map_ConnectChokepoints( tempChokeSides, regions_, closestRegionMap_, simplifiedGraph, chokepoints_ );
+
         if ( writeCache )
         {
           Cache::mapWriteRegionVector( data, regions_, cRegionVectorCacheName );
           Cache::mapWriteIntArray2( data, regionMap_, cRegionLabelMapCacheName );
+          Cache::mapWriteChokeVector( data, chokepoints_, cChokepointsCacheName );
         }
 
         return true;
       } );
     }
-
-    Analysis::Map_ConnectChokepoints( tempChokeSides, regions_, closestRegionMap_, simplifiedGraph, chokepoints_ );
 
     bot_->console().printf( "Map: Rebuild done" );
   }
