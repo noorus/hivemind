@@ -16,7 +16,8 @@ HIVE_DECLARE_CONVAR( analysis_verbose, "Print verbose status messages on map ana
 HIVE_DECLARE_CONVAR( analysis_use_cache, "Whether to cache expensive map analysis data.", true );
 
 HIVE_DECLARE_CONVAR( draw_map, "Whether to draw map analysis debug features.", true );
-HIVE_DECLARE_CONVAR( draw_baselocations, "Whether to draw base location debug information.", true );
+HIVE_DECLARE_CONVAR( draw_baselocations, "Whether to show base location debug information.", true );
+HIVE_DECLARE_CONVAR( draw_chokepoints, "Whether to draw chokepoint debug features.", true );
 
 HIVE_DECLARE_CONVAR( creep_debug, "Whether to draw creep debug features.", false );
 
@@ -365,19 +366,16 @@ namespace hivemind {
       }
     }
 
-    for ( auto& choke : chokepoints_ )
+    if ( g_CVar_draw_chokepoints.as_b() )
     {
-      auto p0 = choke.side1.to3( maxZ_ );
-      auto p1 = choke.side2.to3( maxZ_ );
-      auto pmid = choke.middle().to3( maxZ_ );
-      bot_->debug().drawLine( p0, p1, Colors::Green );
-      bot_->debug().drawSphere( p0, 0.25f, Colors::Green );
-      bot_->debug().drawSphere( p1, 0.25f, Colors::Green );
-      bot_->debug().drawSphere( pmid, 0.25f, Colors::Green );
-      char sdf[64];
-      sprintf_s( sdf, 64, "chokepoint %d\r\nregions %d & %d", choke.id_, choke.region1->label_, choke.region2->label_ );
-      auto mid = choke.middle().to3( maxZ_ );
-      bot_->debug().drawText( sdf, mid, sc2::Colors::Green, 12 );
+      for ( auto& choke : chokepoints_ )
+      {
+        bot_->debug().drawMapLine( *this, choke.side1, choke.side2, Colors::Green );
+        char str[64];
+        sprintf_s( str, 64, "chokepoint %d\r\nregions %d & %d", choke.id_, choke.region1->label_, choke.region2->label_ );
+        auto mid = choke.middle().to3( maxZ_ );
+        bot_->debug().drawText( str, mid, sc2::Colors::Green, 12 );
+      }
     }
     /*for ( auto& node : graphSimplified_.nodes )
     {

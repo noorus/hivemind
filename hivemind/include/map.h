@@ -73,7 +73,6 @@ namespace hivemind {
   public:
     int label_;
     Polygon polygon_;
-    RegionSet reachableRegions_;
     Real opennessDistance_;
     Vector2 opennessPoint_;
     Real height_;
@@ -81,6 +80,7 @@ namespace hivemind {
     int heightLevel_; //!< AKA cliff level or whatever, 0 being lowest on map
     bool dubious_; //!< If this region has no real area or tiles, and probably lacks known height value
     ChokeSet chokepoints_;
+    // RegionSet reachableRegions_;
   };
 
   struct MapData {
