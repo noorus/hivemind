@@ -12,9 +12,13 @@ namespace hivemind {
 
     const Real c_minRampHeightDiff = 0.175f;
 
-    /*
-     * 1) Extract from gameinfo: dimensions, buildability, pathability, heightmap
-     **/
+    const Real c_regionChokeDiffCoefficient = 0.21f; // 0.31f; // relative difference to consider a change between region<->chokepoint
+    const Real c_minNodeDistance = 6.0f; //0.25f; // 7; // minimum distance between nodes
+    const Real c_minRegionObstrDistance = 2.5f; // 2.5f; // 1 = 9.7; // minimum distance to object to be considered as a region
+
+    //
+    // 1) Extract from gameinfo: dimensions, heightmap, flagmap
+    //
     void Map_BuildBasics( const sc2::ObservationInterface& observation, size_t& width_out, size_t& height_out, Array2<uint64_t>& flags_out, Array2<Real>& heightmap_out )
     {
       const GameInfo& info = observation.GetGameInfo();
@@ -103,10 +107,10 @@ namespace hivemind {
       }
     }
 
-    /*
-     * 2) Extract from pathability map: contours and connected components
-     **/
-    void Map_ProcessContours( Array2<uint64_t>& flags_in, Array2<int>& labels_out, ComponentVector & components_out )
+    //
+    // 2) Extract from pathability information in flagmap: contours and connected components
+    //
+    void Map_ProcessContours( Array2<uint64_t>& flags_in, Array2<int>& labels_out, ComponentVector& components_out )
     {
       auto width = (int16_t)flags_in.width();
       auto height = (int16_t)flags_in.height();
@@ -123,7 +127,7 @@ namespace hivemind {
         for ( size_t x = 0; x < width; x++ )
         {
           auto idx = ( y * width ) + x;
-          image_input[idx] = ( ( flags_in[x][y] & MapFlag_Walkable ) ? 0xFF : 0x00 );
+          image_input[idx] = ( ( flags_in[x][y] & MapFlag_Walkable ) ? 0xff : 0x00 );
         }
 
       if ( blob_algo::find_blobs( 0, 0, width, height, image_input, width, height, &lbl_out, &lbl_w, &lbl_h, &blob_out, &blob_count, 1 ) != 1 )
@@ -138,22 +142,22 @@ namespace hivemind {
           labels_out[x][y] = lbl_out[idx];
         }
 
-      auto fnConvertContour = []( blob_algo::contour_t& in, Contour& out )
+      auto convertContour = []( blob_algo::contour_t& in, Contour& out )
       {
         for ( int i = 0; i < in.count; i++ )
-          out.emplace_back(  in.points[i * sizeof( int16_t )], in.points[( i * sizeof( int16_t ) ) + 1]  );
+          out.emplace_back( in.points[i * sizeof( int16_t )], in.points[( i * sizeof( int16_t ) ) + 1] );
       };
 
       for ( int i = 0; i < blob_count; i++ )
       {
         MapComponent comp;
         comp.label = blob_out[i].label;
-        fnConvertContour( blob_out[i].external, comp.contour );
+        convertContour( blob_out[i].external, comp.contour );
         for ( int j = 0; j < blob_out[i].internal_count; j++ )
         {
-          Contour cnt;
-          fnConvertContour( blob_out[i].internal[j], cnt );
-          comp.holes.push_back( cnt );
+          Contour cntr;
+          convertContour( blob_out[i].internal[j], cntr );
+          comp.holes.push_back( cntr );
         }
         components_out.push_back( comp );
       }
@@ -193,10 +197,10 @@ namespace hivemind {
       return util_boostPolygonToPolygon( simplified );
     }
 
-    /*
-     * 3) Turn contours and components into clean polygons
-     **/
-    void Map_ComponentPolygons( ComponentVector& components_in, PolygonComponentVector& polygons_out, bool simplify, double simplify_distance_cost, double simplify_stop_cost )
+    //
+    // 3) Turn contours and components into clean polygons
+    //
+    void Map_ComponentPolygons( ComponentVector& components_in, PolygonComponentVector& polygons_out )
     {
       for ( auto& component : components_in )
       {
@@ -222,17 +226,16 @@ namespace hivemind {
       }
     }
 
-    /*
-     * 4) Make an inverted copy of the polygons (i.e. walkables to non-walkables) for Voronoi diagram generation
-     **/
-    void Map_InvertPolygons( const PolygonComponentVector & walkable_in, PolygonComponentVector & obstacles_out, const Rect2& playableArea, const Vector2& dimensions )
+    //
+    // 4) Make an inverted copy of the polygons (i.e. walkables to non-walkables)
+    //
+    void Map_InvertPolygons( const PolygonComponentVector& walkable_in, PolygonComponentVector& obstacles_out, const Rect2& playableArea, const Vector2& dimensions )
     {
-      // contour = purple
-      // holes = red
       Real largestArea = 0.0f;
       const Polygon* largestPoly = nullptr;
       const PolygonComponent* largestComponent = nullptr;
       vector<const Polygon*> potential;
+
       for ( auto& comp : walkable_in )
       {
         if ( comp.contour.area() > largestArea )
@@ -255,16 +258,20 @@ namespace hivemind {
             potential.push_back( &comp.contour );
         }
       }
+
       if ( !largestPoly )
         return;
+
       PolygonComponent overall;
       overall.contour.push_back( Vector2( 0.0f, 0.0f ) );
       overall.contour.push_back( Vector2( dimensions.x, 0.0f ) );
       overall.contour.push_back( dimensions );
       overall.contour.push_back( Vector2( 0.0f, dimensions.y ) );
       overall.label = 0; // unwalkable
+
       Polygon largestCopy = ( *largestPoly );
       overall.contour.holes.push_back( largestCopy );
+
       obstacles_out.push_back( overall );
       for ( auto& hole : largestComponent->contour.holes )
       {
@@ -282,8 +289,7 @@ namespace hivemind {
       }
     }
 
-    void addVerticalBorder( std::vector<VoronoiSegment>& segments, std::vector<BoostSegmentI>& rtreeSegments, size_t& idPoint,
-      const std::set<int>& border, int x, int maxY )
+    void util_addVerticalBorder( std::vector<VoronoiSegment>& segments, std::vector<BoostSegmentI>& rtreeSegments, size_t& idPoint, const std::set<int>& border, int x, int maxY )
     {
       auto it = border.begin();
       {
@@ -291,27 +297,30 @@ namespace hivemind {
         VoronoiPoint point2( x, maxY );
         if ( it != border.end() )
         {
-          point2.y( *it ); ++it;
+          point2.y( *it );
+          ++it;
         }
         segments.emplace_back( point1, point2 );
         rtreeSegments.push_back( std::make_pair( BoostSegment( BoostPoint( point1.x(), point1.y() ), BoostPoint( point2.x(), point2.y() ) ), idPoint++ ) );
       }
       for ( it; it != border.end();)
       {
-        if ( *it == maxY ) break;
-        VoronoiPoint point1( x, *it ); ++it;
+        if ( *it == maxY )
+          break;
+        VoronoiPoint point1( x, *it );
+        ++it;
         VoronoiPoint point2( x, maxY );
         if ( it != border.end() )
         {
-          point2.y( *it ); ++it;
+          point2.y( *it );
+          ++it;
         }
         segments.emplace_back( point1, point2 );
         rtreeSegments.push_back( std::make_pair( BoostSegment( BoostPoint( point1.x(), point1.y() ), BoostPoint( point2.x(), point2.y() ) ), idPoint++ ) );
       }
     }
 
-    void addHorizontalBorder( std::vector<VoronoiSegment>& segments, std::vector<BoostSegmentI>& rtreeSegments, size_t& idPoint,
-      const std::set<int>& border, int y, int maxX )
+    void util_addHorizontalBorder( std::vector<VoronoiSegment>& segments, std::vector<BoostSegmentI>& rtreeSegments, size_t& idPoint, const std::set<int>& border, int y, int maxX )
     {
       auto it = border.begin();
       {
@@ -319,7 +328,8 @@ namespace hivemind {
         VoronoiPoint point2( maxX, y );
         if ( it != border.end() )
         {
-          point2.x( *it ); ++it;
+          point2.x( *it );
+          ++it;
         }
         segments.emplace_back( point1, point2 );
         rtreeSegments.push_back( std::make_pair( BoostSegment( BoostPoint( point1.x(), point1.y() ), BoostPoint( point2.x(), point2.y() ) ), idPoint++ ) );
@@ -328,7 +338,8 @@ namespace hivemind {
       {
         if ( *it == maxX )
           break;
-        VoronoiPoint point1( *it, y ); ++it;
+        VoronoiPoint point1( *it, y );
+        ++it;
         VoronoiPoint point2( maxX, y );
         if ( it != border.end() )
         {
@@ -340,14 +351,10 @@ namespace hivemind {
       }
     }
 
-    static const Real DIFF_COEFICIENT = 0.21f; // 0.31f; // relative difference to consider a change between region<->chokepoint
-    static const Real MIN_NODE_DIST = 6.0f; //0.25f; // 7; // minimum distance between nodes
-    static const Real MIN_REGION_OBST_DIST = 2.5f; // 2.5f; // 1 = 9.7; // minimum distance to object to be considered as a region
-
-    /*
-     * 5) Turn walkable areas (by way of non-walkable area polygons) to a Voronoi diagram
-     * See "Improving Terrain Analysis and Applications to RTS Game AI" (Uriarte, Ontañón, AIIDE 16) & BWTA2
-     **/
+    //
+    // 5) Turn walkable areas (by way of non-walkable polygons) to a Voronoi diagram
+    // See "Improving Terrain Analysis and Applications to RTS Game AI" (Uriarte, Ontañón, AIIDE 16) & BWTA2
+    //
     void Map_MakeVoronoi( const GameInfo & info, PolygonComponentVector & polygons_in, Array2<int>& labels_in, RegionGraph& graph, bgi::rtree<BoostSegmentI, bgi::quadratic<16> >& rtree )
     {
       std::vector<VoronoiSegment> segments;
@@ -370,21 +377,25 @@ namespace hivemind {
           {
             leftBorder.insert( (int)poly.contour[i].y );
             leftBorder.insert( (int)poly.contour[j].y );
-          } else if ( poly.contour[i].x == maxX && poly.contour[j].x == maxX )
+          }
+          else if ( poly.contour[i].x == maxX && poly.contour[j].x == maxX )
           {
             rightBorder.insert( (int)poly.contour[i].y );
             rightBorder.insert( (int)poly.contour[j].y );
           }
+
           if ( poly.contour[i].y == 0 && poly.contour[j].y == 0 )
           {
             topBorder.insert( (int)poly.contour[i].x );
             topBorder.insert( (int)poly.contour[j].x );
           }
+
           segments.emplace_back( VoronoiPoint( poly.contour[j].x, poly.contour[j].y ), VoronoiPoint( poly.contour[i].x, poly.contour[i].y ) );
 
           rtreeSegments.push_back( std::make_pair( BoostSegment( BoostPoint( poly.contour[j].x, poly.contour[j].y ),
             BoostPoint( poly.contour[i].x, poly.contour[i].y ) ), idPoint++ ) );
         }
+
         for ( auto& hole : poly.contour.holes )
         {
           size_t lastPoint = hole.size() - 1;
@@ -398,20 +409,21 @@ namespace hivemind {
         }
       }
 
-      addVerticalBorder( segments, rtreeSegments, idPoint, leftBorder, 0, maxY );
-      addVerticalBorder( segments, rtreeSegments, idPoint, rightBorder, maxX, maxY );
-      addHorizontalBorder( segments, rtreeSegments, idPoint, topBorder, 0, maxX );
+      util_addVerticalBorder( segments, rtreeSegments, idPoint, leftBorder, 0, maxY );
+      util_addVerticalBorder( segments, rtreeSegments, idPoint, rightBorder, maxX, maxY );
+      util_addHorizontalBorder( segments, rtreeSegments, idPoint, topBorder, 0, maxX );
 
       BoostVoronoi voronoi;
       boost::polygon::construct_voronoi( segments.begin(), segments.end(), &voronoi );
 
-      static const std::size_t VISITED_COLOR = 1;
+      const size_t visitedColor = 1;
+
       for ( const auto& edge : voronoi.edges() )
       {
-        if ( !edge.is_primary() || !edge.is_finite() || edge.color() == VISITED_COLOR )
+        if ( !edge.is_primary() || !edge.is_finite() || edge.color() == visitedColor )
           continue;
 
-        edge.twin()->color( VISITED_COLOR );
+        edge.twin()->color( visitedColor );
 
         const BoostVoronoi::vertex_type* v0 = edge.vertex0();
         const BoostVoronoi::vertex_type* v1 = edge.vertex1();
@@ -439,62 +451,62 @@ namespace hivemind {
 
       bgi::rtree<BoostSegmentI, bgi::quadratic<16> > rtreeConstruct( rtreeSegments );
       rtree = rtreeConstruct;
-      graph.minDistToObstacle.resize( graph.nodes.size() );
+      graph.minDistToObstacle_.resize( graph.nodes.size() );
       for ( size_t i = 0; i < graph.nodes.size(); ++i )
       {
         std::vector<BoostSegmentI> returnedValues;
         BoostPoint pt( graph.nodes[i].x, graph.nodes[i].y );
         rtree.query( bgi::nearest( pt, 1 ), std::back_inserter( returnedValues ) );
-        graph.minDistToObstacle[i] = boost::geometry::distance( returnedValues.front().first, pt );
+        graph.minDistToObstacle_[i] = boost::geometry::distance( returnedValues.front().first, pt );
       }
     }
 
-    /*
-     * 6) Prune down the messy Voronoi diagram to only the medial axes per every branch
-     * See "Improving Terrain Analysis and Applications to RTS Game AI" (Uriarte, Ontañón, AIIDE 16) & BWTA2
-     **/
+    //
+    // 6) Prune down the messy Voronoi diagram to only the medial axes per every branch
+    // See "Improving Terrain Analysis and Applications to RTS Game AI" (Uriarte, Ontañón, AIIDE 16) & BWTA2
+    //
     void Map_PruneVoronoi( RegionGraph & graph )
     {
-      // get the list of all leafs (nodes with only one element in the adjacent list)
       std::queue<RegionNodeID> leaves;
-      for ( size_t id = 0; id < graph.adjacencyList.size(); ++id )
-        if ( graph.adjacencyList[id].size() == 1 )
+      for ( size_t id = 0; id < graph.adjacencyList_.size(); ++id )
+        if ( graph.adjacencyList_[id].size() == 1 )
           leaves.push( id );
 
-      // using leafs as starting points, prune the RegionGraph
       while ( !leaves.empty() )
       {
-        // pop first element
-        RegionNodeID v0 = leaves.front();
+        auto v0 = leaves.front();
         leaves.pop();
 
-        if ( graph.adjacencyList[v0].empty() )
+        if ( graph.adjacencyList_[v0].empty() )
           continue;
 
-        RegionNodeID v1 = *graph.adjacencyList[v0].begin();
-        // remove node if it's too close to an obstacle, or parent is farther to an obstacle
-        if ( graph.minDistToObstacle[v0] < MIN_REGION_OBST_DIST
-          || graph.minDistToObstacle[v0] - 0.9 <= graph.minDistToObstacle[v1] )
-        {
-          graph.adjacencyList[v0].clear();
-          graph.adjacencyList[v1].erase( v0 );
+        auto v1 = *graph.adjacencyList_[v0].begin();
 
-          if ( graph.adjacencyList[v1].empty() && graph.minDistToObstacle[v1] > MIN_REGION_OBST_DIST )
+        // remove node if it's too close to an obstacle, or parent is farther to an obstacle
+        if ( graph.minDistToObstacle_[v0] < c_minRegionObstrDistance
+          || graph.minDistToObstacle_[v0] - 0.9 <= graph.minDistToObstacle_[v1] )
+        {
+          graph.adjacencyList_[v0].clear();
+          graph.adjacencyList_[v1].erase( v0 );
+
+          if ( graph.adjacencyList_[v1].empty() && graph.minDistToObstacle_[v1] > c_minRegionObstrDistance )
           {
             // isolated node
             graph.markNodeAsRegion( v1 );
-          } else if ( graph.adjacencyList[v1].size() == 1 )
-          { // keep pruning if only one child
+          }
+          else if ( graph.adjacencyList_[v1].size() == 1 )
+          {
+            // keep pruning if only one child
             leaves.push( v1 );
           }
         }
       }
     }
 
-    /*
-     * 7) DetectNodes
-     **/
-    void Map_DetectNodes( RegionGraph & graph, const PolygonComponentVector& polygons )
+    //
+    // 7)
+    //
+    void Map_DetectNodes( RegionGraph& graph )
     {
       struct ParentNode {
         RegionNodeID id;
@@ -503,29 +515,28 @@ namespace hivemind {
         ParentNode( RegionNodeID _id, bool _isMaximal ): id( _id ), isMaximal( _isMaximal ) {}
       };
 
-      // container to mark visited nodes, and parent list
       vector<bool> visited( graph.nodes.size() );
       vector<ParentNode> parentNodes( graph.nodes.size() );
       vector<RegionNodeID> lastValid( graph.nodes.size() );
 
-      auto fnEnoughDifference = []( const double& a, const double& b ) -> bool
+      auto enoughDifference = []( const double& a, const double& b ) -> bool
       {
         double diff = math::abs( a - b );
         double largest = std::max( a, b );
-        double minDiff = std::max( 2.0, largest * DIFF_COEFICIENT );
+        double minDiff = std::max( 2.0, largest * c_regionChokeDiffCoefficient );
         return ( diff > minDiff );
       };
 
       std::stack<RegionNodeID> nodeToVisit;
-      for ( size_t id = 0; id < graph.adjacencyList.size(); ++id )
+      for ( size_t id = 0; id < graph.adjacencyList_.size(); ++id )
       {
-        if ( graph.adjacencyList[id].size() == 1 )
+        if ( graph.adjacencyList_[id].size() == 1 )
         {
           graph.markNodeAsRegion( id );
           visited[id] = true;
           ParentNode parentNode( id, true );
           parentNodes[id] = parentNode;
-          for ( const auto& v1 : graph.adjacencyList[id] )
+          for ( const auto& v1 : graph.adjacencyList_[id] )
           {
             nodeToVisit.push( v1 );
             visited[1] = true;
@@ -541,28 +552,30 @@ namespace hivemind {
         nodeToVisit.pop();
 
         ParentNode parentNode = parentNodes[v0];
-        if ( graph.adjacencyList[v0].size() != 2 )
-        { // We found a leaf or intersection (region node)
-          // if parent chokepoint and too close, delete parent
-          if ( graph.nodeType[parentNode.id] == RegionGraph::NodeType_Chokepoint &&
-            graph.nodes[v0].distance( graph.nodes[parentNode.id] ) < MIN_NODE_DIST )
+        if ( graph.adjacencyList_[v0].size() != 2 )
+        {
+          // found a leaf or an intersection region.
+          // if parent is a chokepoint, delete the parent.
+          if ( graph.nodeType[parentNode.id] == RegionGraph::NodeType_Chokepoint
+            && graph.nodes[v0].distance( graph.nodes[parentNode.id] ) < c_minNodeDistance )
           {
             graph.unmarkChokeNode( parentNode.id );
           }
           graph.markNodeAsRegion( v0 );
           // don't update next parent if current parent is a bigger region
           if ( graph.nodeType[parentNode.id] == RegionGraph::NodeType_Chokepoint ||
-            graph.minDistToObstacle[v0] > graph.minDistToObstacle[parentNode.id] )
+            graph.minDistToObstacle_[v0] > graph.minDistToObstacle_[parentNode.id] )
           {
-            parentNode.id = v0; parentNode.isMaximal = true; // updating next parent
+            parentNode.id = v0;
+            parentNode.isMaximal = true; // updating next parent
           }
-
-        } else
+        }
+        else
         {
           // see if the node is a local minimal (chokepoint node)
           bool localMinimal = true;
-          for ( const auto& v1 : graph.adjacencyList[v0] )
-            if ( graph.minDistToObstacle[v0] > graph.minDistToObstacle[v1] )
+          for ( const auto& v1 : graph.adjacencyList_[v0] )
+            if ( graph.minDistToObstacle_[v0] > graph.minDistToObstacle_[v1] )
             {
               localMinimal = false;
               break;
@@ -573,7 +586,7 @@ namespace hivemind {
             if ( !parentNode.isMaximal )
             {
               // choke to choke
-              if ( graph.minDistToObstacle[v0] < graph.minDistToObstacle[parentNode.id] )
+              if ( graph.minDistToObstacle_[v0] < graph.minDistToObstacle_[parentNode.id] )
               {
                 lastValid[v0] = parentNode.id;
                 graph.unmarkChokeNode( parentNode.id );
@@ -586,8 +599,8 @@ namespace hivemind {
             {
               // region to choke
               auto approxDistance = graph.nodes[v0].distance( graph.nodes[parentNode.id] );
-              bool enoughDistance = approxDistance >= MIN_NODE_DIST && approxDistance > graph.minDistToObstacle[parentNode.id];
-              if ( fnEnoughDifference( graph.minDistToObstacle[v0], graph.minDistToObstacle[parentNode.id] ) || enoughDistance )
+              bool enoughDistance = approxDistance >= c_minNodeDistance && approxDistance > graph.minDistToObstacle_[parentNode.id];
+              if ( enoughDifference( graph.minDistToObstacle_[v0], graph.minDistToObstacle_[parentNode.id] ) || enoughDistance )
               {
                 graph.markNodeAsChoke( v0 );
                 parentNode.id = v0;
@@ -599,8 +612,8 @@ namespace hivemind {
           {
             // see if the node is a local maximal (region node)
             bool localMaximal = true;
-            for ( const auto& v1 : graph.adjacencyList[v0] )
-              if ( graph.minDistToObstacle[v0] < graph.minDistToObstacle[v1] )
+            for ( const auto& v1 : graph.adjacencyList_[v0] )
+              if ( graph.minDistToObstacle_[v0] < graph.minDistToObstacle_[v1] )
               {
                 localMaximal = false;
                 break;
@@ -608,17 +621,17 @@ namespace hivemind {
 
             if ( localMaximal )
             {
-              if ( graph.minDistToObstacle[v0] < MIN_REGION_OBST_DIST )
+              if ( graph.minDistToObstacle_[v0] < c_minRegionObstrDistance )
               {
 
               }
               else if ( parentNode.isMaximal )
               {
                 // region to region
-                if ( graph.minDistToObstacle[v0] > graph.minDistToObstacle[parentNode.id] )
+                if ( graph.minDistToObstacle_[v0] > graph.minDistToObstacle_[parentNode.id] )
                 {
                   // only delete parent if it isn't an intersection
-                  if ( graph.adjacencyList[parentNode.id].size() == 2 )
+                  if ( graph.adjacencyList_[parentNode.id].size() == 2 )
                     graph.unmarkRegionNode( parentNode.id );
                   graph.markNodeAsRegion( v0 );
                   parentNode.id = v0;
@@ -628,7 +641,7 @@ namespace hivemind {
               else
               {
                 // choke to region
-                if ( fnEnoughDifference( graph.minDistToObstacle[v0], graph.minDistToObstacle[parentNode.id] ) )
+                if ( enoughDifference( graph.minDistToObstacle_[v0], graph.minDistToObstacle_[parentNode.id] ) )
                 {
                   graph.markNodeAsRegion( v0 );
                   parentNode.id = v0;
@@ -640,7 +653,7 @@ namespace hivemind {
         }
 
         // keep exploring unvisited neighbors
-        for ( const auto& v1 : graph.adjacencyList[v0] )
+        for ( const auto& v1 : graph.adjacencyList_[v0] )
         {
           if ( !visited[v1] )
           {
@@ -648,9 +661,10 @@ namespace hivemind {
             visited[v1] = true;
             parentNodes[v1] = parentNode;
           }
-          else // we reached a connection between visited paths
+          else // reached a connection between visited paths
           {
-            RegionNodeID v0Parent, v1Parent;
+            RegionNodeID v0Parent;
+            RegionNodeID v1Parent;
 
             // get right parent of v0
             if ( graph.nodeType[v0] == RegionGraph::NodeType_Region || graph.nodeType[v0] == RegionGraph::NodeType_Chokepoint )
@@ -664,13 +678,11 @@ namespace hivemind {
             else
               v1Parent = parentNodes[v1].id;
 
-            RegionNodeID isMaximal0 = false;
-            if ( graph.nodeType[v0Parent] == RegionGraph::NodeType_Region ) isMaximal0 = true;
-            RegionNodeID isMaximal1 = false;
-            if ( graph.nodeType[v1Parent] == RegionGraph::NodeType_Region ) isMaximal1 = true;
+            bool isMaximal0 = ( graph.nodeType[v0Parent] == RegionGraph::NodeType_Region );
+            bool isMaximal1 = ( graph.nodeType[v1Parent] == RegionGraph::NodeType_Region );
 
             // if the connected path between choke-region nodes is too close, remove choke
-            if ( isMaximal0 != isMaximal1 && graph.nodes[v0Parent].distance( graph.nodes[v1Parent] ) < MIN_NODE_DIST )
+            if ( isMaximal0 != isMaximal1 && graph.nodes[v0Parent].distance( graph.nodes[v1Parent] ) < c_minNodeDistance )
             {
               RegionNodeID nodeToDelete = v0Parent;
               if ( isMaximal0 )  nodeToDelete = v1Parent;
@@ -679,161 +691,159 @@ namespace hivemind {
               {
                 graph.markNodeAsChoke( lastValid[nodeToDelete] );
               }
-            } else
-              // if two consecutive minimals, keep the min
-              if ( !isMaximal0 && isMaximal0 == isMaximal1 && v0Parent != v1Parent )
+            }
+            // if two consecutive minimals, keep the min
+            else if ( !isMaximal0 && isMaximal0 == isMaximal1 && v0Parent != v1Parent )
+            {
+              RegionNodeID nodeToDelete = v0Parent;
+              if ( graph.minDistToObstacle_[v0Parent] < graph.minDistToObstacle_[v1Parent] )
               {
-                RegionNodeID nodeToDelete = v0Parent;
-                if ( graph.minDistToObstacle[v0Parent] < graph.minDistToObstacle[v1Parent] )
-                {
-                  nodeToDelete = v1Parent;
-                }
-                graph.unmarkChokeNode( nodeToDelete );
+                nodeToDelete = v1Parent;
               }
+              graph.unmarkChokeNode( nodeToDelete );
+            }
           }
         }
       }
     }
 
-    /*
-    * 8) x
-    **/
-    void Map_SimplifyGraph( const RegionGraph & graph, RegionGraph & graphSimplified )
+    //
+    // 8)
+    //
+    void Map_SimplifyGraph( const RegionGraph& graph_in, RegionGraph& simplified_out )
     {
-      std::vector<bool> visited;
-      visited.resize( graph.nodes.size() );
-      std::vector<RegionNodeID> parentID;
-      parentID.resize( graph.nodes.size() );
+      vector<bool> visited;
+      visited.resize( graph_in.nodes.size() );
+      vector<RegionNodeID> parentIds;
+      parentIds.resize( graph_in.nodes.size() );
 
       RegionNodeID leafRegionId = 99;
       RegionNodeID newleafRegionId;
-      for ( const auto& regionId : graph.regionNodes )
+      for ( const auto& regionId : graph_in.regionNodes )
       {
-        if ( leafRegionId == 99 && graph.adjacencyList[regionId].size() == 1 )
+        if ( leafRegionId == 99 && graph_in.adjacencyList_[regionId].size() == 1 )
         {
           leafRegionId = regionId;
           visited[regionId] = true;
-          newleafRegionId = graphSimplified.addNode( graph.nodes[regionId], graph.minDistToObstacle[regionId] );
-          graphSimplified.markNodeAsRegion( newleafRegionId );
+          newleafRegionId = simplified_out.addNode( graph_in.nodes[regionId], graph_in.minDistToObstacle_[regionId] );
+          simplified_out.markNodeAsRegion( newleafRegionId );
         }
-        if ( graph.adjacencyList[regionId].empty() )
+        if ( graph_in.adjacencyList_[regionId].empty() )
         {
-          RegionNodeID newId = graphSimplified.addNode( graph.nodes[regionId], graph.minDistToObstacle[regionId] );
-          graphSimplified.markNodeAsRegion( newId );
+          RegionNodeID newId = simplified_out.addNode( graph_in.nodes[regionId], graph_in.minDistToObstacle_[regionId] );
+          simplified_out.markNodeAsRegion( newId );
         }
       }
 
       std::stack<RegionNodeID> nodeToVisit;
       if ( leafRegionId != 99 )
-        for ( const auto& v1 : graph.adjacencyList[leafRegionId] )
+        for ( const auto& v1 : graph_in.adjacencyList_[leafRegionId] )
         {
           nodeToVisit.emplace( v1 );
           visited[v1] = true;
-          parentID[v1] = newleafRegionId;
+          parentIds[v1] = newleafRegionId;
         }
 
       while ( !nodeToVisit.empty() )
       {
         RegionNodeID nodeId = nodeToVisit.top();
         nodeToVisit.pop();
-        RegionNodeID parentId = parentID[nodeId];
+        RegionNodeID parentId = parentIds[nodeId];
 
-        if ( graph.nodeType[nodeId] == RegionGraph::NodeType_Chokepoint )
+        if ( graph_in.nodeType[nodeId] != RegionGraph::NodeType_None )
         {
-          RegionNodeID newId = graphSimplified.addNode( graph.nodes[nodeId], graph.minDistToObstacle[nodeId] );
+          RegionNodeID newId = simplified_out.addNode( graph_in.nodes[nodeId], graph_in.minDistToObstacle_[nodeId] );
           if ( newId != parentId )
           {
-            graphSimplified.markNodeAsChoke( newId );
-            graphSimplified.addEdge( newId, parentId );
-            parentId = newId;
-          }
-        } else if ( graph.nodeType[nodeId] == RegionGraph::NodeType_Region )
-        {
-          RegionNodeID newId = graphSimplified.addNode( graph.nodes[nodeId], graph.minDistToObstacle[nodeId] );
-          if ( newId != parentId )
-          {
-            graphSimplified.markNodeAsRegion( newId );
-            graphSimplified.addEdge( newId, parentId );
+            if ( graph_in.nodeType[nodeId] == RegionGraph::NodeType_Chokepoint )
+              simplified_out.markNodeAsChoke( newId );
+            else if ( graph_in.nodeType[nodeId] == RegionGraph::NodeType_Region )
+              simplified_out.markNodeAsRegion( newId );
+            simplified_out.addEdge( newId, parentId );
             parentId = newId;
           }
         }
-        for ( const auto& v1 : graph.adjacencyList[nodeId] )
+
+        for ( const auto& v1 : graph_in.adjacencyList_[nodeId] )
         {
           if ( !visited[v1] )
           {
             nodeToVisit.emplace( v1 );
-            parentID[v1] = parentId;
+            parentIds[v1] = parentId;
             visited[v1] = true;
-          } else if ( parentID[v1] != parentID[nodeId] )
+          }
+          else if ( parentIds[v1] != parentIds[nodeId] )
           {
-            RegionNodeID n1 = parentID[v1];
-            if ( graph.nodeType[v1] != RegionGraph::NodeType_None )
+            RegionNodeID n1 = parentIds[v1];
+            if ( graph_in.nodeType[v1] != RegionGraph::NodeType_None )
             {
-              n1 = graphSimplified.addNode( graph.nodes[v1], graph.minDistToObstacle[v1] );
+              n1 = simplified_out.addNode( graph_in.nodes[v1], graph_in.minDistToObstacle_[v1] );
             }
-            RegionNodeID n2 = parentID[nodeId];
-            if ( graph.nodeType[nodeId] != RegionGraph::NodeType_None )
+            RegionNodeID n2 = parentIds[nodeId];
+            if ( graph_in.nodeType[nodeId] != RegionGraph::NodeType_None )
             {
-              n2 = graphSimplified.addNode( graph.nodes[nodeId], graph.minDistToObstacle[nodeId] );
+              n2 = simplified_out.addNode( graph_in.nodes[nodeId], graph_in.minDistToObstacle_[nodeId] );
             }
-            if ( n1 != n2 && graphSimplified.nodeType[n1] != RegionGraph::NodeType_None
-              && graphSimplified.nodeType[n2] != RegionGraph::NodeType_None )
+            if ( n1 != n2 && simplified_out.nodeType[n1] != RegionGraph::NodeType_None
+              && simplified_out.nodeType[n2] != RegionGraph::NodeType_None )
             {
-              graphSimplified.addEdge( n1, n2 );
+              simplified_out.addEdge( n1, n2 );
             }
           }
         }
       }
     }
 
-    /*
-    * 9) x
-    **/
-    void Map_MergeRegionNodes( RegionGraph & graph )
+    //
+    // 9)
+    //
+    void Map_MergeRegionNodes( RegionGraph& graph )
     {
-      std::set<RegionNodeID> mergeRegions( graph.regionNodes );
+      RegionNodeIDSet mergeRegions( graph.regionNodes );
 
       while ( !mergeRegions.empty() )
       {
-        // pop first element
         RegionNodeID parent = *mergeRegions.begin();
         mergeRegions.erase( mergeRegions.begin() );
 
-        for ( auto it = graph.adjacencyList[parent].begin(); it != graph.adjacencyList[parent].end();)
+        for ( auto it = graph.adjacencyList_[parent].begin(); it != graph.adjacencyList_[parent].end();)
         {
           RegionNodeID child = *it;
+
+          // remove self-loops
           if ( parent == child )
-          { // This is a self-loop, remove it
-            it = graph.adjacencyList[parent].erase( it );
+          {
+            it = graph.adjacencyList_[parent].erase( it );
             continue;
           }
+
           if ( graph.nodeType[parent] == RegionGraph::NodeType_Region && graph.nodeType[child] == RegionGraph::NodeType_Region )
           {
-            if ( graph.minDistToObstacle[parent] > graph.minDistToObstacle[child] )
+            if ( graph.minDistToObstacle_[parent] > graph.minDistToObstacle_[child] )
             {
-              graph.adjacencyList[parent].insert( graph.adjacencyList[child].begin(),
-                graph.adjacencyList[child].end() );
-              for ( const auto& v2 : graph.adjacencyList[child] )
+              graph.adjacencyList_[parent].insert( graph.adjacencyList_[child].begin(),
+                graph.adjacencyList_[child].end() );
+              for ( const auto& v2 : graph.adjacencyList_[child] )
               {
-                graph.adjacencyList[v2].erase( child );
-                if ( v2 == parent ) graph.adjacencyList[parent].erase( parent );
-                else graph.adjacencyList[v2].insert( parent );
+                graph.adjacencyList_[v2].erase( child );
+                if ( v2 == parent ) graph.adjacencyList_[parent].erase( parent );
+                else graph.adjacencyList_[v2].insert( parent );
               }
-              graph.adjacencyList[child].clear();
+              graph.adjacencyList_[child].clear();
               graph.regionNodes.erase( child );
-              it = graph.adjacencyList[parent].begin();
+              it = graph.adjacencyList_[parent].begin();
             } else
             {
-              graph.adjacencyList[child].insert(
-                graph.adjacencyList[parent].begin(),
-                graph.adjacencyList[parent].end() );
-              for ( const auto& v2 : graph.adjacencyList[parent] )
+              graph.adjacencyList_[child].insert(
+                graph.adjacencyList_[parent].begin(),
+                graph.adjacencyList_[parent].end() );
+              for ( const auto& v2 : graph.adjacencyList_[parent] )
               {
-                graph.adjacencyList[v2].erase( parent );
-                if ( v2 == child ) graph.adjacencyList[child].erase( child );
-                else graph.adjacencyList[v2].insert( child );
+                graph.adjacencyList_[v2].erase( parent );
+                if ( v2 == child ) graph.adjacencyList_[child].erase( child );
+                else graph.adjacencyList_[v2].insert( child );
               }
-              graph.adjacencyList[parent].clear();
+              graph.adjacencyList_[parent].clear();
               graph.regionNodes.erase( parent );
               mergeRegions.insert( child );
               break;
@@ -846,41 +856,42 @@ namespace hivemind {
       }
     }
 
-    Vector2 util_getProjectedPoint( const BoostPoint &p, const BoostSegment &s )
-    {
-      double dx = s.second.x() - s.first.x();
-      double dy = s.second.y() - s.first.y();
-      if ( dx != 0 || dy != 0 )
-      {
-        double t = ( ( p.x() - s.first.x() ) * dx + ( p.y() - s.first.y() ) * dy ) / ( dx * dx + dy * dy );
-        if ( t > 1 )
-        {
-          return Vector2( static_cast<Real>( s.second.x() ), static_cast<Real>( s.second.y() ) );
-        } else if ( t > 0 )
-        {
-          return Vector2( static_cast<Real>( s.first.x() + dx * t ), static_cast<Real>( s.first.y() + dy * t ) );
-        }
-      }
-      return Vector2( static_cast<Real>( s.first.x() ), static_cast<Real>( s.first.y() ) );
-    }
-
-    /*
-    * 10) Project the chokepoints from the graph
-    **/
+    //
+    // 10) Project the chokepoints from the graph
+    //
     void Map_GetChokepointSides( const RegionGraph& graph, const bgi::rtree<BoostSegmentI, bgi::quadratic<16>>& rtree, RegionChokesMap& chokepointSides )
     {
+      auto projectPoint = []( const BoostPoint &p, const BoostSegment &s ) -> Vector2
+      {
+        double dx = s.second.x() - s.first.x();
+        double dy = s.second.y() - s.first.y();
+        if ( dx != 0 || dy != 0 )
+        {
+          double t = ( ( p.x() - s.first.x() ) * dx + ( p.y() - s.first.y() ) * dy ) / ( dx * dx + dy * dy );
+          if ( t > 1 )
+          {
+            return Vector2( static_cast<Real>( s.second.x() ), static_cast<Real>( s.second.y() ) );
+          }
+          else if ( t > 0 )
+          {
+            return Vector2( static_cast<Real>( s.first.x() + dx * t ), static_cast<Real>( s.first.y() + dy * t ) );
+          }
+        }
+        return Vector2( static_cast<Real>( s.first.x() ), static_cast<Real>( s.first.y() ) );
+      };
+
       for ( const auto& id : graph.chokeNodes )
       {
         BoostPoint pt( graph.nodes[id].x, graph.nodes[id].y );
         Vector2 side1, side2;
 
         auto it = rtree.qbegin( bgi::nearest( pt, 10 ) );
-        side1 = util_getProjectedPoint( pt, it->first );
+        side1 = projectPoint( pt, it->first );
         ++it;
 
         for ( it; it != rtree.qend(); ++it )
         {
-          side2 = util_getProjectedPoint( pt, it->first );
+          side2 = projectPoint( pt, it->first );
           if ( ( ( side1.x <= pt.x() && side2.x >= pt.x() ) || ( side1.x >= pt.x() && side2.x <= pt.x() ) ) &&
             ( ( side1.y <= pt.y() && side2.y >= pt.y() ) || ( side1.y >= pt.y() && side2.y <= pt.y() ) ) )
           {
@@ -945,6 +956,9 @@ namespace hivemind {
       }
     }
 
+    //
+    // 11)
+    //
     void Map_MakeRegions( const PolygonComponentVector& polygons, const RegionChokesMap& chokepointSides, Array2<uint64_t>& flagsmap, size_t width, size_t height, RegionVector& regions, Array2<int>& regionLabelMap, const RegionGraph& graph )
     {
       PolygonVector regionPolygons;
@@ -1029,9 +1043,9 @@ namespace hivemind {
         }
     }
 
-    /*
-    * 11) Find resource clusters to make base locations
-    **/
+    //
+    // 12) Find resource clusters to make base locations
+    //
     void Map_FindResourceClusters( const sc2::ObservationInterface& observation, vector<UnitVector>& clusters_out, size_t minClusterSize, Real maxResourceDistance )
     {
       vector<UnitVector> tempClusters;
@@ -1094,6 +1108,9 @@ namespace hivemind {
       }
     }
 
+    //
+    // 13)
+    //
     void Map_CacheClosestRegions( RegionVector& regions, Array2<int>& regionMap, Array2<int>& closest_out )
     {
       auto width = closest_out.width();
@@ -1127,9 +1144,9 @@ namespace hivemind {
         }
     }
 
-    /*
-    * xx) Add tile flags based on processed base locations
-    **/
+    //
+    // 14) Add tile flags based on processed base locations
+    //
     void Map_MarkBaseTiles( Array2<uint64_t>& flags_out, const BaseLocationVector & locations )
     {
       auto width = flags_out.width();
@@ -1163,6 +1180,9 @@ namespace hivemind {
           }
     }
 
+    //
+    // 15)
+    //
     void Map_CalculateRegionHeights( Array2<uint64_t>& flagsmap, RegionVector& regions_out, Array2<int>& regionMap, Array2<Real>& heightmap )
     {
       auto width = regionMap.width();
@@ -1215,6 +1235,9 @@ namespace hivemind {
       }
     }
 
+    //
+    // 16)
+    //
     void Map_ConnectChokepoints( const RegionChokesMap& chokepointSides, RegionVector& regions, Array2<int>& closestRegionMap, const RegionGraph& graph, ChokeVector& chokes_out_for_real )
     {
       std::map<RegionNodeID, Region*> nodeToRegion;
@@ -1224,7 +1247,7 @@ namespace hivemind {
         if ( label < 0 || label > regions.size() )
           HIVE_EXCEPT( "Label for region node out of bounds" );
         auto region = regions[label];
-        region->opennessDistance_ = (Real)graph.minDistToObstacle[id];
+        region->opennessDistance_ = (Real)graph.minDistToObstacle_[id];
         region->opennessPoint_ = graph.nodes[id];
         nodeToRegion.emplace( id, region );
       }
@@ -1232,12 +1255,12 @@ namespace hivemind {
       std::map<RegionNodeID, Chokepoint*> nodeToChoke;
       for ( const auto& id : graph.chokeNodes )
       {
-        auto it = graph.adjacencyList[id].begin();
-        if ( it == graph.adjacencyList[id].end() )
+        auto it = graph.adjacencyList_[id].begin();
+        if ( it == graph.adjacencyList_[id].end() )
           continue;
         auto region1 = nodeToRegion[*it];
         it++;
-        if ( it == graph.adjacencyList[id].end() )
+        if ( it == graph.adjacencyList_[id].end() )
           continue;
         auto region2 = nodeToRegion[*it];
         auto side1 = chokepointSides.at( id ).side1;

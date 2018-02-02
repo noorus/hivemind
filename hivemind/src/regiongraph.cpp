@@ -37,7 +37,7 @@ namespace hivemind {
         vID = nodes.size();
         nodes.push_back( pos );
         nodeType.push_back( NodeType_None );
-        minDistToObstacle.push_back( minDist );
+        minDistToObstacle_.push_back( minDist );
       } else
         vID = it - nodes.begin();
 
@@ -46,14 +46,13 @@ namespace hivemind {
 
     void RegionGraph::addEdge( const RegionNodeID& v0, const RegionNodeID& v1 )
     {
-      // extend adjacency list if needed
       size_t maxId = std::max( v0, v1 );
 
-      if ( adjacencyList.size() < maxId + 1 )
-        adjacencyList.resize( maxId + 1 );
+      if ( adjacencyList_.size() < maxId + 1 )
+        adjacencyList_.resize( maxId + 1 );
 
-      adjacencyList[v0].insert( v1 );
-      adjacencyList[v1].insert( v0 );
+      adjacencyList_[v0].insert( v1 );
+      adjacencyList_[v1].insert( v0 );
     }
 
     void RegionGraph::markNodeAsRegion( const RegionNodeID& v0 )

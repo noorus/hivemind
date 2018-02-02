@@ -11,29 +11,26 @@ namespace hivemind {
 
     using RegionNodeID = size_t;
 
+    using RegionNodeIDSet = set<RegionNodeID>;
+
     class RegionGraph {
     public:
       enum NodeType {
         NodeType_None,
         NodeType_Region,
-        NodeType_Chokepoint,
-        NodeType_ChokeGateA,
-        NodeType_ChokeGateB
+        NodeType_Chokepoint
       };
     private:
       std::map<const BoostVoronoi::vertex_type*, RegionNodeID> voronoiVertexToNode_;
     public:
       // TODO, create struct
-      std::vector<Vector2> nodes;
-      std::vector<std::set<RegionNodeID>> adjacencyList;
-      std::vector<double> minDistToObstacle;
-      std::vector<NodeType> nodeType;
+      vector<Vector2> nodes;
+      vector<RegionNodeIDSet> adjacencyList_;
+      vector<double> minDistToObstacle_;
+      vector<NodeType> nodeType;
 
-      std::set<RegionNodeID> regionNodes;
-      std::set<RegionNodeID> chokeNodes;
-      // std::set<RegionNodeID> gateNodesA;
-      // std::set<RegionNodeID> gateNodesB;
-
+      RegionNodeIDSet regionNodes;
+      RegionNodeIDSet chokeNodes;
       RegionNodeID addNode( const BoostVoronoi::vertex_type* vertex, const Vector2& pos );
       RegionNodeID addNode( const Vector2& pos, const double& minDist );
       void addEdge( const RegionNodeID& v0, const RegionNodeID& v1 );

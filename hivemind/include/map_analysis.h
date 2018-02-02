@@ -30,7 +30,7 @@ namespace hivemind {
     // Label values: 0 = unwalkable, -1 = contour, > 0 = object number
     void Map_ProcessContours( Array2<uint64_t>& flags_in, Array2<int>& labels_out, ComponentVector& components_out );
 
-    void Map_ComponentPolygons( ComponentVector& components_in, PolygonComponentVector& polygons_out, bool simplify = true, double simplify_distance_cost = 0.5, double simplify_stop_cost = 1.4 );
+    void Map_ComponentPolygons( ComponentVector& components_in, PolygonComponentVector& polygons_out );
 
     void Map_InvertPolygons( const PolygonComponentVector& walkable_in, PolygonComponentVector& obstacles_out, const Rect2& playableArea, const Vector2& dimensions );
 
@@ -38,7 +38,7 @@ namespace hivemind {
 
     void Map_PruneVoronoi( RegionGraph& graph );
 
-    void Map_DetectNodes( RegionGraph& graph, const PolygonComponentVector& polygons );
+    void Map_DetectNodes( RegionGraph& graph );
 
     void Map_SimplifyGraph( const RegionGraph& graph, RegionGraph& graphSimplified );
 

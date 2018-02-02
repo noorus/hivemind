@@ -205,7 +205,7 @@ namespace hivemind {
 
       util_verbosePerfSection( bot_, "Map: Processing graph", [&]
       {
-        Analysis::Map_DetectNodes( graph, obstacles_ );
+        Analysis::Map_DetectNodes( graph );
         Analysis::Map_SimplifyGraph( graph, simplifiedGraph );
         Analysis::Map_MergeRegionNodes( simplifiedGraph );
         return true;
