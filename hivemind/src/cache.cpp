@@ -12,7 +12,7 @@ namespace hivemind {
 
   HIVE_DECLARE_CONVAR( cache_path, "Path to a directory where the bot can cache stuff.", R"(..\cache)" );
 
-  const uint32_t cMapCacheVersion = 4;
+  const uint32_t cMapCacheVersion = 5;
 
   string makeCacheFilePath( const Sha256& hash, const string& name )
   {
@@ -42,6 +42,29 @@ namespace hivemind {
     auto path = makeCacheFilePath( hash, name );
 
     return std::make_shared<platform::FileWriter>( path );
+  }
+
+  inline Region* regionByLabel( const RegionVector& regs, int label )
+  {
+    for ( auto reg : regs )
+      if ( reg->label_ == label )
+        return reg;
+
+    return nullptr;
+  }
+
+  inline Vector2 unserializeVector2( FileReaderPtr reader )
+  {
+    Vector2 ret;
+    ret.x = reader->readReal();
+    ret.y = reader->readReal();
+    return ret;
+  }
+
+  inline void serializeVector2( const Vector2& vec, FileWriterPtr writer )
+  {
+    writer->writeReal( vec.x );
+    writer->writeReal( vec.y );
   }
 
   void Cache::setBot( Bot* bot )
@@ -169,6 +192,8 @@ namespace hivemind {
       region->height_ = reader->readReal();
       region->heightLevel_ = reader->readInt();
       region->dubious_ = reader->readBool();
+      region->opennessDistance_ = reader->readReal();
+      region->opennessPoint_ = unserializeVector2( reader );
       regions.push_back( region );
     }
 
@@ -207,24 +232,9 @@ namespace hivemind {
       writer->writeReal( region->height_ );
       writer->writeInt( region->heightLevel_ );
       writer->writeBool( region->dubious_ );
+      writer->writeReal( region->opennessDistance_ );
+      serializeVector2( region->opennessPoint_, writer );
     }
-  }
-
-  inline Region* regionByLabel( const RegionVector& regs, int label )
-  {
-    for ( auto reg : regs )
-      if ( reg->label_ == label )
-        return reg;
-
-    return nullptr;
-  }
-
-  inline Vector2 unserializeVector2( FileReaderPtr reader )
-  {
-    Vector2 ret;
-    ret.x = reader->readReal();
-    ret.y = reader->readReal();
-    return ret;
   }
 
   bool Cache::mapReadChokeVector( const MapData& map, ChokeVector& chokes, RegionVector& regions, const string& name )
@@ -261,12 +271,6 @@ namespace hivemind {
     }
 
     return true;
-  }
-
-  void serializeVector2( const Vector2& vec, FileWriterPtr writer )
-  {
-    writer->writeReal( vec.x );
-    writer->writeReal( vec.y );
   }
 
   void Cache::mapWriteChokeVector( const MapData& map, ChokeVector& chokes, const string& name )
