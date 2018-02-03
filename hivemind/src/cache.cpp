@@ -12,7 +12,7 @@ namespace hivemind {
 
   HIVE_DECLARE_CONVAR( cache_path, "Path to a directory where the bot can cache stuff.", R"(..\cache)" );
 
-  const uint32_t cMapCacheVersion = 5;
+  const uint32_t cMapCacheVersion = 6;
 
   string makeCacheFilePath( const Sha256& hash, const string& name )
   {
@@ -197,6 +197,17 @@ namespace hivemind {
       regions.push_back( region );
     }
 
+    for ( size_t i = 0; i < size; ++i )
+    {
+      size_t reachable = reader->readUint64();
+      for ( size_t j = 0; j < reachable; j++ )
+      {
+        size_t index = reader->readUint64();
+        auto reachReg = regions[index];
+        regions[i]->reachableRegions_.insert( reachReg );
+      }
+    }
+
     return true;
   }
 
@@ -234,6 +245,15 @@ namespace hivemind {
       writer->writeBool( region->dubious_ );
       writer->writeReal( region->opennessDistance_ );
       serializeVector2( region->opennessPoint_, writer );
+    }
+
+    for ( auto region : regions )
+    {
+      writer->writeUint64( region->reachableRegions_.size() );
+      for ( auto reach : region->reachableRegions_ )
+      {
+        writer->writeUint64( reach->label_ );
+      }
     }
   }
 

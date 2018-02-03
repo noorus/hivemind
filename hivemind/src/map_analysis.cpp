@@ -1235,6 +1235,17 @@ namespace hivemind {
       }
     }
 
+    template <typename T>
+    T get_set2( std::map<T, T> &a, T i )
+    {
+      if ( a.find( i ) == a.end() )
+        a[i] = i;
+      if ( i == a[i] )
+        return i;
+      a[i] = get_set2( a, a[i] );
+      return a[i];
+    }
+
     //
     // 16)
     //
@@ -1270,6 +1281,32 @@ namespace hivemind {
         nodeToChoke.insert( std::make_pair( id, chokeptr ) );
         region1->chokepoints_.insert( chokeptr->id_ );
         region2->chokepoints_.insert( chokeptr->id_ );
+      }
+
+      std::map<Region*, Region*> regionGroup;
+      for ( auto region1 : regions )
+      {
+        for ( auto cid : region1->chokepoints_ )
+        {
+          auto& choke = chokes_out_for_real[cid];
+          auto region2 = ( choke.region1 == region1 ? choke.region2 : choke.region1 );
+          regionGroup[get_set2( regionGroup, region2 )] = get_set2( regionGroup, region1 );
+        }
+      }
+
+      for ( auto region1 : regions )
+      {
+        region1->reachableRegions_.insert( region1 );
+        for ( auto region2 : regions )
+        {
+          if ( region1 == region2 )
+            continue;
+          if ( get_set2( regionGroup, region1 ) == get_set2( regionGroup, region2 ) )
+          {
+            region1->reachableRegions_.insert( region2 );
+            region2->reachableRegions_.insert( region1 );
+          }
+        }
       }
     }
 
