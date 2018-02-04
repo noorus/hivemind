@@ -167,6 +167,7 @@
     <ClInclude Include="include\map_analysis.h" />
     <ClInclude Include="include\messaging.h" />
     <ClInclude Include="include\pathfinding.h" />
+    <ClInclude Include="include\pathing.h" />
     <ClInclude Include="include\platform_windows.h" />
     <ClInclude Include="include\player.h" />
     <ClInclude Include="include\regiongraph.h" />
@@ -215,6 +216,7 @@
     <ClCompile Include="src\map_analysis.cpp" />
     <ClCompile Include="src\messaging.cpp" />
     <ClCompile Include="src\pathfinding.cpp" />
+    <ClCompile Include="src\pathing.cpp" />
     <ClCompile Include="src\platform_windows.cpp" />
     <ClCompile Include="src\player.cpp" />
     <ClCompile Include="src\playermanager.cpp" />

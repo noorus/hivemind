@@ -13,6 +13,7 @@
 #include "builder.h"
 #include "debug.h"
 #include "vision.h"
+#include "pathing.h"
 
 namespace hivemind {
 
@@ -52,6 +53,7 @@ namespace hivemind {
     Strategy strategy_;
     Builder builder_;
     Vision vision_;
+    Pathing pathing_;
     Options options_;
     State state_;
     bool cheatGodmode_;
@@ -75,6 +77,7 @@ namespace hivemind {
     inline Strategy& strategy() { return strategy_; }
     inline Builder& builder() { return builder_; }
     inline Vision& vision() { return vision_; }
+    inline Pathing& pathing() { return pathing_; }
     inline const State& state() const { return state_; }
     void initialize( const Options& opts );
     void enableGodmodeCheat(); //!< This cannot be toggled back in the same game

@@ -44,9 +44,10 @@ namespace hivemind {
   class GridGraph {
   public:
     Array2<GridGraphNode> grid;
+    Map & map_;
     int width_;
     int height_;
-    Map& map_;
+    bool useCreep_;
   public:
     GridGraph( Map& map );
     bool valid( const GridGraphNode& node ) const;

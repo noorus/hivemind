@@ -71,6 +71,7 @@ namespace hivemind {
     strategy_( this ),
     builder_( this ),
     vision_( this ),
+    pathing_( this ),
     cheatCostIgnore_( false ),
     cheatGodmode_( false ),
     cheatShowMap_( false )
@@ -172,6 +173,8 @@ namespace hivemind {
     strategy_.gameBegin();
 
     builder_.gameBegin();
+
+    pathing_.gameBegin();
 
     console_.printf( "AI initialization took %.5fms", timer.stop() );
 
@@ -284,18 +287,17 @@ namespace hivemind {
 
     if(g_CVar_draw_units.as_b())
     {
-      UnitRef first = nullptr;
-      UnitRef second = nullptr;
       for(auto unit : observation_->GetUnits())
       {
-        if(unit->is_selected && utils::isMine(unit))
+        if(unit->is_selected)
         {
           char hex[16];
           sprintf_s(hex, 16, "%x", id(unit));
           string txt = string(hex) + " " + sc2::UnitTypeToName(unit->unit_type);
           txt.append(" (" + std::to_string(unit->unit_type) + ")\n");
-          for(auto& order : unit->orders)
-            txt.append(string(sc2::AbilityTypeToName(order.ability_id)) + "\n");
+          if (utils::isMine(unit))
+            for ( auto& order : unit->orders )
+              txt.append( string( sc2::AbilityTypeToName( order.ability_id ) ) + "\n" );
           debug_.drawText(txt, Vector3(unit->pos), sc2::Colors::Green);
 
           MapPoint2 coord(unit->pos);
@@ -303,22 +305,6 @@ namespace hivemind {
           string nrg = "region: " + std::to_string(regIndex);
           Vector3 nrgpos(unit->pos.x, unit->pos.y, unit->pos.z + 1.0f);
           debug_.drawText(nrg, nrgpos, sc2::Colors::Teal);
-          if ( !first )
-            first = unit;
-          else if ( !second )
-            second = unit;
-        }
-      }
-      if ( first && second )
-      {
-        MapPoint2 start = first->pos;
-        MapPoint2 stop = second->pos;
-        GridGraph graph( map_ );
-        auto path = pathAStarSearch( graph, start, stop );
-        for ( auto& p : path )
-        {
-          auto z = map_.heightMap_[p.x][p.y] + 0.5f;
-          debug_.drawSphere( Vector3( (Real)p.x + 0.5f, (Real)p.y + 0.5f, z ), 0.25f, Colors::Green );
         }
       }
     }
@@ -336,6 +322,7 @@ namespace hivemind {
       state_.brainInitialized_ = false;
     }
 
+    pathing_.gameEnd();
     builder_.gameEnd();
     players_.gameEnd();
     workers_.gameEnd();
