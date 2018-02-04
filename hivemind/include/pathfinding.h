@@ -19,6 +19,10 @@ namespace hivemind {
   public:
     GridGraphNode(): MapPoint2( 0, 0 ), valid( false ), closed( false ) {}
     GridGraphNode( int x, int y ): MapPoint2( x, y ) {}
+    inline void reset()
+    {
+      closed = false;
+    }
     inline bool operator == ( const GridGraphNode& rhs ) const
     {
       return ( x == rhs.x && y == rhs.y );
@@ -40,11 +44,14 @@ namespace hivemind {
   class GridGraph {
   public:
     Array2<GridGraphNode> grid;
-    int width;
-    int height;
+    int width_;
+    int height_;
+    Map& map_;
   public:
     GridGraph( Map& map );
+    bool valid( const GridGraphNode& node ) const;
     Real cost( const GridGraphNode& from, const GridGraphNode& to ) const;
+    void reset();
   };
 
   MapPath pathAStarSearch( GridGraph& graph, const MapPoint2& start, const MapPoint2& end );

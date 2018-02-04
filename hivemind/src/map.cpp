@@ -460,7 +460,7 @@ namespace hivemind {
     reservedMap_.reset( Reserved_None );
     creepTumors_.clear();
 
-    auto fnSetFootprint = [this]( const Point2DI& pt, UnitTypeID ut )
+    auto applyFootprint = [this]( const Point2DI& pt, UnitTypeID ut )
     {
       auto& dbUnit = Database::unit( ut );
 
@@ -489,7 +489,8 @@ namespace hivemind {
     };
 
     // get blocking units (i.e. structures)
-    auto blockingUnits = bot_->observation().GetUnits( []( const Unit& unit ) -> bool {
+    auto blockingUnits = bot_->observation().GetUnits( []( const Unit& unit ) -> bool
+    {
       if ( !unit.is_alive )
         return false;
 
@@ -511,13 +512,13 @@ namespace hivemind {
         math::floor( unit->pos.y )
       );
 
-      fnSetFootprint( pos, unit->unit_type );
+      applyFootprint( pos, unit->unit_type );
     }
 
     // loop through reservations (footprints of where we're going to build)
     for ( auto& r : buildingReservations_ )
     {
-      fnSetFootprint( r.second.position_, r.second.type_ );
+      applyFootprint( r.second.position_, r.second.type_ );
     }
   }
 

@@ -14,19 +14,39 @@
 
 namespace hivemind {
 
+  const Real c_sqrt2f = 1.41421f; // sqrt(2) == diagonal multiplier
+
   GridGraph::GridGraph( Map& map ):
-    width( (int)map.width() ),
-    height( (int)map.height() )
+    map_( map ),
+    width_( (int)map.width() ),
+    height_( (int)map.height() )
   {
-    grid.resize( width, height );
-    for ( int x = 0; x < width; ++x )
-      for ( int y = 0; y < height; ++y )
+    grid.resize( width_, height_ );
+    for ( int x = 0; x < width_; ++x )
+      for ( int y = 0; y < height_; ++y )
       {
         GridGraphNode node( x, y );
-        node.valid = ( map.flagsMap_[x][y] & MapFlag_Walkable );
+        node.valid = ( map_.flagsMap_[x][y] & MapFlag_Walkable );
         node.closed = false;
         grid[x][y] = node;
       }
+  }
+
+  void GridGraph::reset()
+  {
+    for ( int x = 0; x < width_; ++x )
+      for ( int y = 0; y < height_; ++y )
+      {
+        grid[x][y].reset();
+      }
+  }
+
+  bool GridGraph::valid( const GridGraphNode& node ) const
+  {
+    if ( !node.valid || map_.isBlocked( node.x, node.y ) )
+      return false;
+
+    return true;
   }
 
   Real GridGraph::cost( const GridGraphNode& from, const GridGraphNode& to ) const
@@ -34,7 +54,7 @@ namespace hivemind {
     Real weight = 1.0f;
 
     if ( to.x != from.x && to.y != from.y )
-      return ( weight * 1.41421f );
+      return ( weight * c_sqrt2f );
     else
       return weight;
   }
@@ -49,8 +69,7 @@ namespace hivemind {
     auto dx = (Real)math::abs( b.x - a.x );
     auto dy = (Real)math::abs( b.y - a.y );
     Real D = 1.0f;
-    Real D2 = math::sqrt( 2.0f );
-    return ( D * ( dx + dy ) ) + ( ( D2 - ( 2.0f * D ) ) * std::min( dx, dy ) );
+    return ( D * ( dx + dy ) ) + ( ( c_sqrt2f - ( 2.0f * D ) ) * std::min( dx, dy ) );
   }
 
   inline GridGraphNode& util_decodeToGraphNode( uint64_t pt, GridGraph& graph )
@@ -89,9 +108,9 @@ namespace hivemind {
       current.closed = true;
 
       auto minx = std::max( current.x - 1, 0 );
-      auto maxx = std::min( current.x + 1, graph.width - 1 );
+      auto maxx = std::min( current.x + 1, graph.width_ - 1 );
       auto miny = std::max( current.y - 1, 0 );
-      auto maxy = std::min( current.y + 1, graph.height - 1 );
+      auto maxy = std::min( current.y + 1, graph.height_ - 1 );
 
       for ( auto x = minx; x <= maxx; ++x )
       {
@@ -100,7 +119,7 @@ namespace hivemind {
           auto& neighbour = graph.grid[x][y];
           auto neighPt = util_encodePoint( neighbour );
 
-          if ( !neighbour.valid || neighbour.closed )
+          if ( !neighbour.valid || neighbour.closed || !graph.valid( neighbour ) )
             continue;
 
           auto g = gmap[curPt] + graph.cost( current, neighbour );
