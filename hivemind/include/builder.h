@@ -5,6 +5,7 @@
 #include "hive_rect2.h"
 #include "base.h"
 #include "trainer.h"
+#include "researcher.h"
 
 namespace hivemind {
 
@@ -43,6 +44,13 @@ namespace hivemind {
     {
       return static_cast<int>(units.size());
     }
+  };
+
+  enum class UpgradeStatus
+  {
+    NotStarted,
+    inProgress,
+    Researched
   };
 
   struct Building {
@@ -95,9 +103,11 @@ namespace hivemind {
     virtual void onMessage( const Message& msg ) final;
 
     Trainer trainer_;
+    Researcher researcher_;
 
   private:
     std::unordered_map<sc2::UNIT_TYPEID, UnitStats> unitStats_;
+    std::unordered_map<sc2::UPGRADE_ID, UpgradeStatus> upgradeStats_;
 
     UnitRef acquireBuilder(Base& base);
 
@@ -107,6 +117,7 @@ namespace hivemind {
 
     bool build( UnitTypeID structureType, Base* base, BuildingPlacement placement, BuildProjectID& idOut );
     bool train( UnitTypeID unitType, Base* base, UnitTypeID trainerType, BuildProjectID& idOut );
+    bool research( UpgradeID upgradeType, Base* base, UnitTypeID researcherType, BuildProjectID& idOut );
 
     void remove( BuildProjectID id );
     void update( const GameTime time, const GameTime delta );
@@ -120,6 +131,11 @@ namespace hivemind {
     UnitStats& getUnitStats(sc2::UNIT_TYPEID unitType)
     {
       return unitStats_[unitType];
+    }
+
+    UpgradeStatus getUpgradeStatus(sc2::UPGRADE_ID upgradeType)
+    {
+      return upgradeStats_[upgradeType];
     }
   };
 

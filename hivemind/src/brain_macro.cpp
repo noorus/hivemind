@@ -67,6 +67,7 @@ namespace hivemind {
       auto& hatcheryState = builder.getUnitStats(sc2::UNIT_TYPEID::ZERG_HATCHERY);
       auto& droneState = builder.getUnitStats(sc2::UNIT_TYPEID::ZERG_DRONE);
       auto& queenState = builder.getUnitStats(sc2::UNIT_TYPEID::ZERG_QUEEN);
+      auto& evolutionChamberState = builder.getUnitStats(sc2::UNIT_TYPEID::ZERG_EVOLUTIONCHAMBER);
 
       int futureSupplyLimit = std::min(200, supplyLimit + overlordState.inProgressCount() * 8);
       int overlordNeed = (usedSupply >= futureSupplyLimit - 1 ? 1 : 0);
@@ -83,6 +84,15 @@ namespace hivemind {
       int queenNeed = poolState.unitCount() > 0 && queenState.futureCount() < hatcheryState.unitCount() && queenState.inProgressCount() < hatcheryState.unitCount();
 
       int hatcheryNeed = droneState.futureCount() >= 17 * hatcheryState.futureCount();
+
+
+      auto lingSpeed = builder.getUpgradeStatus(sc2::UPGRADE_ID::ZERGLINGMOVEMENTSPEED);
+      int lingSpeedNeed = poolState.unitCount() > 0 && lingSpeed == UpgradeStatus::NotStarted;
+
+      int evolutionChamberNeed = evolutionChamberState.futureCount() == 0 && poolState.unitCount() > 0 && extractorState.unitCount() > 0 && queenState.futureCount() > 0;
+
+      auto meleeAttack1 = builder.getUpgradeStatus(sc2::UPGRADE_ID::ZERGMELEEWEAPONSLEVEL1);
+      int meleeAttack1Need = evolutionChamberState.unitCount() > 0 && meleeAttack1 == UpgradeStatus::NotStarted;
 
       //bot_->console().printf( "minerals left: %d, allocated minerals %d", minerals, allocatedResources.first );
 
@@ -103,6 +113,33 @@ namespace hivemind {
         {
           for(auto& base : baseManager.bases())
             if(builder.build(sc2::UNIT_TYPEID::ZERG_SPAWNINGPOOL, &base, BuildPlacement_Generic, id))
+              return;
+        }
+      }
+      else if(lingSpeedNeed > 0)
+      {
+        if(minerals >= 100 && vespene > 100)
+        {
+          for(auto& base : baseManager.bases())
+            if(builder.research(sc2::UPGRADE_ID::ZERGLINGMOVEMENTSPEED, &base, sc2::UNIT_TYPEID::ZERG_SPAWNINGPOOL, id))
+              return;
+        }
+      }
+      else if(evolutionChamberNeed > 0)
+      {
+        if(minerals >= 75)
+        {
+          for(auto& base : baseManager.bases())
+            if(builder.build(sc2::UNIT_TYPEID::ZERG_EVOLUTIONCHAMBER, &base, BuildPlacement_Generic, id))
+              return;
+        }
+      }
+      else if(meleeAttack1Need > 0)
+      {
+        if(minerals >= 100 && vespene > 100)
+        {
+          for(auto& base : baseManager.bases())
+            if(builder.research(sc2::UPGRADE_ID::ZERGMELEEWEAPONSLEVEL1, &base, sc2::UNIT_TYPEID::ZERG_EVOLUTIONCHAMBER, id))
               return;
         }
       }

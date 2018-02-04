@@ -14,7 +14,8 @@ namespace hivemind {
   Builder::Builder( Bot* bot ):
     Subsystem( bot ),
     idPool_( 0 ),
-    trainer_( bot, idPool_, unitStats_ )
+    trainer_( bot, idPool_, unitStats_ ),
+    researcher_( bot, idPool_, upgradeStats_ )
   {
   }
 
@@ -25,6 +26,7 @@ namespace hivemind {
     bot_->messaging().listen( Listen_Global, this );
 
     trainer_.gameBegin();
+    researcher_.gameBegin();
   }
 
   bool Builder::build( UnitTypeID structureType, Base* base, BuildingPlacement placement, BuildProjectID& idOut )
@@ -56,6 +58,11 @@ namespace hivemind {
     return trainer_.train(unitType, base, trainerType, idOut);
   }
 
+  bool Builder::research(UpgradeID upgradeType, Base* base, UnitTypeID researcherType, BuildProjectID& idOut)
+  {
+    return researcher_.research(upgradeType, base, researcherType, idOut);
+  }
+
   void Builder::remove( BuildProjectID id )
   {
     for ( auto& building : buildProjects_ )
@@ -63,11 +70,13 @@ namespace hivemind {
         building.cancel = true;
 
     trainer_.remove(id);
+    researcher_.remove(id);
   }
 
   void Builder::gameEnd()
   {
     trainer_.gameEnd();
+    researcher_.gameEnd();
 
     bot_->messaging().remove( this );
   }
@@ -92,8 +101,6 @@ namespace hivemind {
       }
     }
 
-    trainer_.draw();
-
     Point2D screenPosition = Point2D(0.03f, 0.5f);
     const Point2D increment( 0.0f, 0.011f );
     for(auto& stats : unitStats_)
@@ -104,7 +111,20 @@ namespace hivemind {
         continue;
 
       char text[128];
-      sprintf_s( text, 128, "%s: %d (+%d)", sc2::UnitTypeToName(stats.first), stats.second.unitCount(), stats.second.inProgressCount() );
+      if(stats.second.inProgressCount() > 0)
+        sprintf_s( text, 128, "%s: %d (+%d)", sc2::UnitTypeToName(stats.first), stats.second.unitCount(), stats.second.inProgressCount() );
+      else
+        sprintf_s( text, 128, "%s: %d", sc2::UnitTypeToName(stats.first), stats.second.unitCount() );
+      debug.drawText( text, screenPosition, sc2::Colors::Yellow );
+      screenPosition += increment;
+    }
+    screenPosition += increment;
+
+    for(auto& stats : upgradeStats_)
+    {
+      char text[128];
+      const char* progress = stats.second == UpgradeStatus::NotStarted ? "0" : stats.second == UpgradeStatus::inProgress ? "0 (+1)" : "1";
+      sprintf_s( text, 128, "%s: %s", sc2::UpgradeIDToName(stats.first), progress );
       debug.drawText( text, screenPosition, sc2::Colors::Yellow );
       screenPosition += increment;
     }
@@ -313,6 +333,7 @@ namespace hivemind {
     }
 
     trainer_.update(time, delta);
+    researcher_.update(time, delta);
   }
 
   bool Builder::findPlacement( UnitTypeID structure, const Base& base, BuildingPlacement type, AbilityID ability, Vector2& placementOut, UnitRef& targetOut )
@@ -418,7 +439,9 @@ namespace hivemind {
       vespeneSum += data.vespeneCost;
     }
 
-    auto s = trainer_.getAllocatedResources();
-    return { s.first + mineralSum, s.second + vespeneSum };
+    auto s1 = trainer_.getAllocatedResources();
+    auto s2 = researcher_.getAllocatedResources();
+
+    return { s1.first + s2.first + mineralSum, s1.second + s2.second + vespeneSum };
   }
 }
