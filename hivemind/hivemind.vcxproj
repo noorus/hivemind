@@ -156,6 +156,7 @@
     <ClInclude Include="include\hive_config.h" />
     <ClInclude Include="include\hive_geometry.h" />
     <ClInclude Include="include\hive_math.h" />
+    <ClInclude Include="include\hive_minheap.h" />
     <ClInclude Include="include\hive_polygon.h" />
     <ClInclude Include="include\hive_rect2.h" />
     <ClInclude Include="include\hive_types.h" />
@@ -165,6 +166,7 @@
     <ClInclude Include="include\map.h" />
     <ClInclude Include="include\map_analysis.h" />
     <ClInclude Include="include\messaging.h" />
+    <ClInclude Include="include\pathfinding.h" />
     <ClInclude Include="include\platform_windows.h" />
     <ClInclude Include="include\player.h" />
     <ClInclude Include="include\regiongraph.h" />
@@ -212,6 +214,7 @@
     <ClCompile Include="src\map.cpp" />
     <ClCompile Include="src\map_analysis.cpp" />
     <ClCompile Include="src\messaging.cpp" />
+    <ClCompile Include="src\pathfinding.cpp" />
     <ClCompile Include="src\platform_windows.cpp" />
     <ClCompile Include="src\player.cpp" />
     <ClCompile Include="src\playermanager.cpp" />

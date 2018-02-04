@@ -11,6 +11,7 @@ namespace hivemind {
   struct MapPoint2 {
     int x;
     int y;
+    MapPoint2(): x( 0 ), y( 0 ) {}
     MapPoint2( int x_, int y_ ): x( x_ ), y( y_ )
     {
     }
@@ -34,6 +35,22 @@ namespace hivemind {
       x = math::floor( rhs.x );
       y = math::floor( rhs.y );
       return *this;
+    }
+    inline bool operator == ( const MapPoint2& rhs ) const
+    {
+      return ( x == rhs.x && y == rhs.y );
+    }
+    inline bool operator != ( const MapPoint2& rhs ) const
+    {
+      return !( *this == rhs );
+    }
+    inline bool operator < ( const MapPoint2& rhs ) const
+    {
+      return ( x < rhs.x && y < rhs.y );
+    }
+    inline bool operator > ( const MapPoint2& rhs ) const
+    {
+      return ( x > rhs.x && y > rhs.y );
     }
     inline operator sc2::Point2DI() const
     {

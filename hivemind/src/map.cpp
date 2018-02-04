@@ -826,7 +826,7 @@ namespace hivemind {
     return retval;
   }
 
-  inline uint64_t encodePoint( const Point2DI& pt )
+  inline uint64_t util_encodePoint( const Point2DI& pt )
   {
     return ( ( (uint64_t)pt.x ) << 32 ) | ( (uint64_t)pt.y );
   };
@@ -841,12 +841,12 @@ namespace hivemind {
 
   void Map::reserveFootprint( const Point2DI& position, UnitTypeID type )
   {
-    buildingReservations_[encodePoint( position )] = BuildingReservation( position, type );
+    buildingReservations_[util_encodePoint( position )] = BuildingReservation( position, type );
   }
 
   void Map::clearFootprint( const Point2DI& position )
   {
-    buildingReservations_.erase( encodePoint( position ) );
+    buildingReservations_.erase( util_encodePoint( position ) );
   }
 
   bool Map::isValid( size_t x, size_t y ) const

@@ -48,6 +48,7 @@
 #include <algorithm>
 #include <random>
 #include <filesystem>
+#include <queue>
 
 #include <boost/algorithm/string/trim.hpp>
 #include <boost/algorithm/string/find.hpp>

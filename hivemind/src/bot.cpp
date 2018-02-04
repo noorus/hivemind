@@ -4,6 +4,7 @@
 #include "database.h"
 #include "controllers.h"
 #include "utilities.h"
+#include "pathfinding.h"
 
 namespace hivemind {
 
@@ -283,6 +284,8 @@ namespace hivemind {
 
     if(g_CVar_draw_units.as_b())
     {
+      UnitRef first = nullptr;
+      UnitRef second = nullptr;
       for(auto unit : observation_->GetUnits())
       {
         if(unit->is_selected && utils::isMine(unit))
@@ -300,6 +303,22 @@ namespace hivemind {
           string nrg = "region: " + std::to_string(regIndex);
           Vector3 nrgpos(unit->pos.x, unit->pos.y, unit->pos.z + 1.0f);
           debug_.drawText(nrg, nrgpos, sc2::Colors::Teal);
+          if ( !first )
+            first = unit;
+          else if ( !second )
+            second = unit;
+        }
+      }
+      if ( first && second )
+      {
+        MapPoint2 start = first->pos;
+        MapPoint2 stop = second->pos;
+        GridGraph graph( map_ );
+        auto path = pathAStarSearch( graph, start, stop );
+        for ( auto& p : path )
+        {
+          auto z = map_.heightMap_[p.x][p.y] + 0.5f;
+          debug_.drawSphere( Vector3( (Real)p.x + 0.5f, (Real)p.y + 0.5f, z ), 0.25f, Colors::Green );
         }
       }
     }

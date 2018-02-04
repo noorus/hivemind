@@ -273,6 +273,12 @@
     <ClInclude Include="include\brain_creep.h">
       <Filter>Header Files\Systems</Filter>
     </ClInclude>
+    <ClInclude Include="include\pathfinding.h">
+      <Filter>Header Files\Map</Filter>
+    </ClInclude>
+    <ClInclude Include="include\hive_minheap.h">
+      <Filter>Header Files\Primitives</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\stdafx.cpp">
@@ -403,6 +409,9 @@
     </ClCompile>
     <ClCompile Include="src\brain_queen.cpp">
       <Filter>Source Files\Brain</Filter>
+    </ClCompile>
+    <ClCompile Include="src\pathfinding.cpp">
+      <Filter>Source Files\Brain\Map</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
