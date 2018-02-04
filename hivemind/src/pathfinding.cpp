@@ -14,7 +14,37 @@
 
 namespace hivemind {
 
-  Real util_diagonalDistanceHeuristic( const GridGraphNode& a, const MapPoint2& b )
+  GridGraph::GridGraph( Map& map ):
+    width( (int)map.width() ),
+    height( (int)map.height() )
+  {
+    grid.resize( width, height );
+    for ( int x = 0; x < width; ++x )
+      for ( int y = 0; y < height; ++y )
+      {
+        GridGraphNode node( x, y );
+        node.valid = ( map.flagsMap_[x][y] & MapFlag_Walkable );
+        node.closed = false;
+        grid[x][y] = node;
+      }
+  }
+
+  Real GridGraph::cost( const GridGraphNode& from, const GridGraphNode& to ) const
+  {
+    Real weight = 1.0f;
+
+    if ( to.x != from.x && to.y != from.y )
+      return ( weight * 1.41421f );
+    else
+      return weight;
+  }
+
+  inline uint64_t util_encodePoint( const Point2DI& pt )
+  {
+    return ( ( (uint64_t)pt.x ) << 32 ) | ( (uint64_t)pt.y );
+  };
+
+  inline Real util_diagonalDistanceHeuristic( const GridGraphNode& a, const MapPoint2& b )
   {
     auto dx = (Real)math::abs( b.x - a.x );
     auto dy = (Real)math::abs( b.y - a.y );
@@ -40,51 +70,48 @@ namespace hivemind {
 
     while ( !openTiles.empty() )
     {
-      auto pid = openTiles.top().first;
-      auto& p = util_decodeToGraphNode( pid, graph );
-      if ( pid == util_encodePoint( end ) )
+      auto curPt = openTiles.top().first;
+      auto& current = util_decodeToGraphNode( curPt, graph );
+      if ( curPt == util_encodePoint( end ) )
       {
         MapPath reversePath;
-        while ( pid != parent[pid] )
+        while ( curPt != parent[curPt] )
         {
-          reversePath.push_back( util_decodeToGraphNode( pid, graph ) );
-          pid = parent[pid];
+          reversePath.push_back( util_decodeToGraphNode( curPt, graph ) );
+          curPt = parent[curPt];
         }
         reversePath.push_back( start );
         std::reverse( reversePath.begin(), reversePath.end() );
         return reversePath;
       }
 
-      //auto fvalue = openTiles.top().second;
-      //auto gvalue = gmap[pid];
-
       openTiles.pop();
-      p.closed = true;
+      current.closed = true;
 
-      auto minx = std::max( p.x - 1, 0 );
-      auto maxx = std::min( p.x + 1, graph.width - 1 );
-      auto miny = std::max( p.y - 1, 0 );
-      auto maxy = std::min( p.y + 1, graph.height - 1 );
+      auto minx = std::max( current.x - 1, 0 );
+      auto maxx = std::min( current.x + 1, graph.width - 1 );
+      auto miny = std::max( current.y - 1, 0 );
+      auto maxy = std::min( current.y + 1, graph.height - 1 );
 
       for ( auto x = minx; x <= maxx; ++x )
       {
         for ( auto y = miny; y <= maxy; ++y )
         {
-          auto& current = graph.grid[x][y];
-          auto idCurrent = util_encodePoint( current );
+          auto& neighbour = graph.grid[x][y];
+          auto neighPt = util_encodePoint( neighbour );
 
-          if ( !current.valid || current.closed )
+          if ( !neighbour.valid || neighbour.closed )
             continue;
 
-          auto g = gmap[pid] + current.cost( p );
-          auto h = util_diagonalDistanceHeuristic( current, end );
+          auto g = gmap[curPt] + graph.cost( current, neighbour );
+          auto h = util_diagonalDistanceHeuristic( neighbour, end );
           auto f = g + h;
 
-          if ( gmap.find( idCurrent ) == gmap.end() || gmap[idCurrent] > g )
+          if ( gmap.find( neighPt ) == gmap.end() || gmap[neighPt] > g )
           {
-            gmap[idCurrent] = g;
-            openTiles.set( idCurrent, f );
-            parent[idCurrent] = pid;
+            gmap[neighPt] = g;
+            openTiles.set( neighPt, f );
+            parent[neighPt] = curPt;
           }
         }
       }
