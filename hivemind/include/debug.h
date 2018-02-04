@@ -36,6 +36,14 @@ namespace hivemind {
     {
       debug_->DebugShowMap();
     }
+    void cheatFastBuild()
+    {
+      debug_->DebugFastBuild();
+    }
+    void cheatMoney()
+    {
+      debug_->DebugGiveAllResources();
+    }
     void drawText( const string& text, Color color = Colors::White )
     {
       debug_->DebugTextOut( text, color );

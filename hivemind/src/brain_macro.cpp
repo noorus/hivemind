@@ -65,6 +65,7 @@ namespace hivemind {
       auto& overlordState = builder.getUnitStats(sc2::UNIT_TYPEID::ZERG_OVERLORD);
       auto& extractorState = builder.getUnitStats(sc2::UNIT_TYPEID::ZERG_EXTRACTOR);
       auto& hatcheryState = builder.getUnitStats(sc2::UNIT_TYPEID::ZERG_HATCHERY);
+      auto& lairState = builder.getUnitStats(sc2::UNIT_TYPEID::ZERG_LAIR);
       auto& droneState = builder.getUnitStats(sc2::UNIT_TYPEID::ZERG_DRONE);
       auto& queenState = builder.getUnitStats(sc2::UNIT_TYPEID::ZERG_QUEEN);
       auto& evolutionChamberState = builder.getUnitStats(sc2::UNIT_TYPEID::ZERG_EVOLUTIONCHAMBER);
@@ -94,6 +95,8 @@ namespace hivemind {
       auto meleeAttack1 = builder.getUpgradeStatus(sc2::UPGRADE_ID::ZERGMELEEWEAPONSLEVEL1);
       int meleeAttack1Need = evolutionChamberState.unitCount() > 0 && meleeAttack1 == UpgradeStatus::NotStarted;
 
+      int lairNeed = lairState.futureCount() == 0 && poolState.unitCount() > 0;
+
       //bot_->console().printf( "minerals left: %d, allocated minerals %d", minerals, allocatedResources.first );
 
       BuildProjectID id;
@@ -104,6 +107,15 @@ namespace hivemind {
         {
           for(auto& base : baseManager.bases())
             if(builder.build(sc2::UNIT_TYPEID::ZERG_HATCHERY, &base, BuildPlacement_MainBuilding, id))
+              return;
+        }
+      }
+      else if(lairNeed > 0)
+      {
+        if(minerals >= 150 && vespene >= 100)
+        {
+          for(auto& base : baseManager.bases())
+            if(builder.train(sc2::UNIT_TYPEID::ZERG_LAIR, &base, sc2::UNIT_TYPEID::ZERG_HATCHERY, id))
               return;
         }
       }

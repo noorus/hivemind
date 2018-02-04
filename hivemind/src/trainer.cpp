@@ -23,6 +23,13 @@ namespace hivemind {
     bot_->messaging().listen(Listen_Global, this);
   }
 
+  static bool isHatcheryType(sc2::UnitTypeID unitType)
+  {
+    return unitType == sc2::UNIT_TYPEID::ZERG_HATCHERY ||
+      unitType == sc2::UNIT_TYPEID::ZERG_LAIR ||
+      unitType == sc2::UNIT_TYPEID::ZERG_HIVE;
+  }
+
   UnitRef Trainer::getTrainer(Base& base, UnitTypeID trainerType) const
   {
     if(trainerType == sc2::UNIT_TYPEID::ZERG_LARVA)
@@ -42,8 +49,10 @@ namespace hivemind {
     {
       for(auto building : base.depots())
       {
-        if(building->unit_type != trainerType)
+        if(!isHatcheryType(building->unit_type))
+        {
           continue;
+        }
         if(building->build_progress < 1.0f)
           continue;
 
@@ -98,26 +107,23 @@ namespace hivemind {
     bot_->messaging().remove( this );
   }
 
+  void Trainer::onTrainingComplete(const Training& training)
+  {
+    if ( g_CVar_trainer_debug.as_i() > 1 )
+      bot_->console().printf( "Trainer: Removing TrainOp %d (%s)", training.id, training.completed ? "completed" : "canceled" );
+
+    if ( training.completed )
+      bot_->messaging().sendGlobal( M_Training_Finished, training.id );
+    else
+      bot_->messaging().sendGlobal( M_Training_Canceled, training.id );
+
+    trainers_.erase(training.trainer);
+    auto& stats = unitStats_[training.type];
+    stats.inProgress.erase(training.id);
+  }
+
   void Trainer::onMessage( const Message& msg )
   {
-    auto trainingComplete = [this](auto it)
-    {
-      auto training = *it;
-
-      if ( g_CVar_trainer_debug.as_i() > 1 )
-        bot_->console().printf( "Trainer: Removing TrainOp %d (%s)", training.id, training.completed ? "completed" : "canceled" );
-
-      if ( training.completed )
-        bot_->messaging().sendGlobal( M_Training_Finished, training.id );
-      else
-        bot_->messaging().sendGlobal( M_Training_Canceled, training.id );
-
-      trainers_.erase(training.trainer);
-      auto& stats = unitStats_[training.type];
-      stats.inProgress.erase(training.id);
-      trainingProjects_.erase(it);
-    };
-
     if ( msg.code == M_Global_UnitCreated )
     {
       UnitRef unit = msg.unit();
@@ -141,7 +147,7 @@ namespace hivemind {
             // Hatchery produced a queen.
             training.completed = true;
 
-            trainingComplete(it);
+            onTrainingComplete(*it);
             break;
           }
         }
@@ -165,21 +171,44 @@ namespace hivemind {
         {
           if(unit->health > 0.0f)
           {
-            // Egg hatched.
+            // Egg or cocoon hatched.
             training.completed = true;
           }
           else
           {
-            // Egg or hatchery got destroyed.
+            // Egg, cocoon or hatchery got destroyed.
             training.cancel = true;
           }
 
-          trainingComplete(it);
+          onTrainingComplete(*it);
           break;
         }
       }
 
       stats.units.erase(unit);
+    }
+    else if(msg.code == M_Global_ConstructionCompleted)
+    {
+      UnitRef unit = msg.unit();
+
+      if ( !utils::isMine( unit ) )
+        return;
+
+      for(auto it = trainingProjects_.begin(); it != trainingProjects_.end(); ++it)
+      {
+        auto& training = *it;
+        if(training.type == unit->unit_type && training.trainer == unit)
+        {
+          if(training.trainer->orders.empty())
+          {
+            // Hatchery was upgraded to a lair.
+            training.completed = true;
+
+            onTrainingComplete(*it);
+            break;
+          }
+        }
+      }
     }
   }
 
@@ -222,6 +251,8 @@ namespace hivemind {
         }
       }
     }
+
+    erase_if(trainingProjects_, [](const auto& training) {return training.completed || training.cancel; });
   }
 
   std::pair<int,int> Trainer::getAllocatedResources() const

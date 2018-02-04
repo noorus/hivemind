@@ -179,6 +179,7 @@ namespace hivemind {
         return;
 
       auto& stats = unitStats_[unit->unit_type];
+      stats.units.insert(unit);
 
       for ( auto& build : buildProjects_ )
       {
@@ -190,7 +191,6 @@ namespace hivemind {
           if ( g_CVar_builder_debug.as_i() > 1 )
             bot_->console().printf( "BuildOp %d: Completed in time %d", build.id, build.buildCompleteTime - build.buildStartTime );
 
-          stats.units.insert(unit);
           stats.inProgress.erase(build.id);
         }
       }

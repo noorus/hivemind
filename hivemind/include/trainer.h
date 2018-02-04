@@ -62,6 +62,8 @@ namespace hivemind {
 
     UnitRef getTrainer(Base& base, UnitTypeID trainerType) const;
 
+    void onTrainingComplete(const Training& training);
+
   public:
     Trainer( Bot* bot, BuildProjectID& idPool, std::unordered_map<sc2::UNIT_TYPEID, UnitStats>& );
     void gameBegin() final;

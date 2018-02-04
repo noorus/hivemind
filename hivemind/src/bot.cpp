@@ -12,10 +12,14 @@ namespace hivemind {
   static bool callbackCVARGodmode( ConVar* variable, ConVar::Value oldValue );
   static bool callbackCVARCostIgnore( ConVar* variable, ConVar::Value oldValue );
   static bool callbackCVARShowMap ( ConVar* variable, ConVar::Value oldValue );
+  static bool callbackCVARFastBuild( ConVar* variable, ConVar::Value oldValue );
+  static void concmdGetMoney( Console* console, ConCmd* command, StringVector& arguments );
 
   HIVE_DECLARE_CONVAR_WITH_CB( cheat_godmode, "Cheat: Invulnerability.", false, callbackCVARGodmode );
   HIVE_DECLARE_CONVAR_WITH_CB( cheat_ignorecost, "Cheat: Ignore all resource cost checks.", false, callbackCVARCostIgnore );
   HIVE_DECLARE_CONVAR_WITH_CB( cheat_showmap, "Cheat: Reveal entire map and remove fog of war.", false, callbackCVARShowMap );
+  HIVE_DECLARE_CONVAR_WITH_CB( cheat_fastbuild, "Cheat: Everything builds fast.", false, callbackCVARFastBuild);
+  HIVE_DECLARE_CONCMD( cheat_getmoney, "Cheat: Get 5000 minerals and 5000 vespene.", concmdGetMoney);
 
   HIVE_DECLARE_CONVAR( map_always_hash, "Always hash the map file to obtain an identifier instead of recognizing Battle.net cache files.", false );
 
@@ -57,6 +61,25 @@ namespace hivemind {
     return true;
   }
 
+  bool callbackCVARFastBuild( ConVar* variable, ConVar::Value oldValue )
+  {
+    if ( !g_Bot )
+      return true;
+
+    if ( variable->as_b() && !oldValue.i )
+      g_Bot->enableFastBuildCheat();
+
+    return true;
+  }
+
+  void concmdGetMoney( Console* console, ConCmd* command, StringVector& arguments )
+  {
+    if(!g_Bot)
+      return;
+
+    g_Bot->getMoneyCheat();
+  }
+
   Bot::Bot( Console& console ):
     time_( 0 ),
     console_( console ),
@@ -72,7 +95,8 @@ namespace hivemind {
     vision_( this ),
     cheatCostIgnore_( false ),
     cheatGodmode_( false ),
-    cheatShowMap_( false )
+    cheatShowMap_( false ),
+    cheatFastBuild_( false )
   {
     console_.setBot( this );
   }
@@ -177,6 +201,7 @@ namespace hivemind {
     cheatCostIgnore_ = false;
     cheatGodmode_ = false;
     cheatShowMap_ = false;
+    cheatFastBuild_ = false;
 
     if ( g_CVar_cheat_godmode.as_b() )
       enableGodmodeCheat();
@@ -184,6 +209,8 @@ namespace hivemind {
       enableCostIgnoreCheat();
     if ( g_CVar_cheat_showmap.as_b() )
       enableShowMapCheat();
+    if ( g_CVar_cheat_fastbuild.as_b() )
+      enableFastBuildCheat();
   }
 
   void Bot::enableGodmodeCheat()
@@ -214,6 +241,25 @@ namespace hivemind {
     console_.printf( "Cheat: Removing fog of war" );
     debug_.cheatShowMap();
     cheatShowMap_ = true;
+  }
+
+  void Bot::enableFastBuildCheat()
+  {
+    if ( cheatFastBuild_ || !debug_.get() )
+      return;
+
+    console_.printf( "Cheat: Fast build" );
+    debug_.cheatFastBuild();
+    cheatFastBuild_ = true;
+  }
+
+  void Bot::getMoneyCheat()
+  {
+    if ( !debug_.get() )
+      return;
+
+    console_.printf( "Cheat: Get money" );
+    debug_.cheatMoney();
   }
 
   void Bot::OnStep()

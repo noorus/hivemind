@@ -57,6 +57,7 @@ namespace hivemind {
     bool cheatGodmode_;
     bool cheatCostIgnore_;
     bool cheatShowMap_;
+    bool cheatFastBuild_;
   public:
     inline const GameTime time() const { return time_; } //!< Game time in ticks
     inline const RealTime timeSeconds() const { return utils::ticksToTime( time_ ); } //!< Game time in ingame seconds
@@ -80,6 +81,8 @@ namespace hivemind {
     void enableGodmodeCheat(); //!< This cannot be toggled back in the same game
     void enableCostIgnoreCheat(); //!< This cannot be toggled back in the same game
     void enableShowMapCheat(); //!< This cannot be toggled back in the same game
+    void enableFastBuildCheat(); //!< This cannot be toggled back in the same game
+    void getMoneyCheat();
     void requestEndGame();
   public:
     //! Callbacks
