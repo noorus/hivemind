@@ -44,6 +44,10 @@ namespace hivemind {
     {
       debug_->DebugGiveAllResources();
     }
+    void cheatKillUnit( UnitRef unit )
+    {
+      debug_->DebugKillUnit( unit );
+    }
     void drawText( const string& text, Color color = Colors::White )
     {
       debug_->DebugTextOut( text, color );

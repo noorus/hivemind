@@ -15,12 +15,14 @@ namespace hivemind {
   static bool callbackCVARShowMap ( ConVar* variable, ConVar::Value oldValue );
   static bool callbackCVARFastBuild( ConVar* variable, ConVar::Value oldValue );
   static void concmdGetMoney( Console* console, ConCmd* command, StringVector& arguments );
+  static void concmdKill( Console* console, ConCmd* command, StringVector& arguments );
 
   HIVE_DECLARE_CONVAR_WITH_CB( cheat_godmode, "Cheat: Invulnerability.", false, callbackCVARGodmode );
   HIVE_DECLARE_CONVAR_WITH_CB( cheat_ignorecost, "Cheat: Ignore all resource cost checks.", false, callbackCVARCostIgnore );
   HIVE_DECLARE_CONVAR_WITH_CB( cheat_showmap, "Cheat: Reveal entire map and remove fog of war.", false, callbackCVARShowMap );
   HIVE_DECLARE_CONVAR_WITH_CB( cheat_fastbuild, "Cheat: Everything builds fast.", false, callbackCVARFastBuild);
-  HIVE_DECLARE_CONCMD( cheat_getmoney, "Cheat: Get 5000 minerals and 5000 vespene.", concmdGetMoney);
+  HIVE_DECLARE_CONCMD( cheat_getmoney, "Cheat: Get 5000 minerals and 5000 vespene.", concmdGetMoney );
+  HIVE_DECLARE_CONCMD( kill, "Cheat: Kill selected units.", concmdKill );
 
   HIVE_DECLARE_CONVAR( map_always_hash, "Always hash the map file to obtain an identifier instead of recognizing Battle.net cache files.", false );
 
@@ -79,6 +81,20 @@ namespace hivemind {
       return;
 
     g_Bot->getMoneyCheat();
+  }
+
+  void concmdKill( Console* console, ConCmd* command, StringVector& arguments )
+  {
+    if ( !g_Bot || !g_Bot->state().inGame_ )
+      return;
+
+    for ( auto unit : g_Bot->observation().GetUnits() )
+    {
+      if ( unit->is_selected )
+      {
+        g_Bot->debug().cheatKillUnit( unit );
+      }
+    }
   }
 
   Bot::Bot( Console& console ):
