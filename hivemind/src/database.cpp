@@ -618,6 +618,19 @@ namespace hivemind {
     return UpgradeInfo();
   }
 
+  UpgradeInfo TechTree::getUpgradeInfo(UpgradeID upgradeType, UnitTypeID techBuildingType) const
+  {
+    auto iteratorPair = upgrades_.equal_range(upgradeType);
+    for(auto it = iteratorPair.first; it != iteratorPair.second; ++it)
+    {
+      if(it->second.techBuilding == techBuildingType)
+        return it->second;
+    }
+
+    assert(false && "Upgrade not found");
+    return UpgradeInfo();
+  }
+
   void resolveWeapons( UnitDataMap& units, WeaponDataMap& weapons )
   {
     for ( auto& unit : units )

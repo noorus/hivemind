@@ -203,6 +203,8 @@ namespace hivemind {
     {
       return buildAbilities_.at( std::make_pair( dest, source ) );
     }
+
+    UpgradeInfo getUpgradeInfo(UpgradeID upgradeType, UnitTypeID techBuildingType) const;
   };
 
   class Database {
