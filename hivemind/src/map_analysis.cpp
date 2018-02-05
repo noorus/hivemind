@@ -29,19 +29,47 @@ namespace hivemind {
       flags_out.resize( width_out, height_out );
       heightmap_out.resize( width_out, height_out );
 
+      flags_out.reset( 0 );
+
+      for ( auto unit : observation.GetUnits( Unit::Alliance::Neutral ) )
+      {
+        auto& dbUnit = Database::unit( unit->unit_type );
+        if ( !dbUnit.structure || dbUnit.flying || dbUnit.footprint.empty() )
+          continue;
+
+        Point2DI topleft(
+          math::floor( unit->pos.x ) + dbUnit.footprintOffset.x,
+          math::floor( unit->pos.y ) + dbUnit.footprintOffset.y
+        );
+
+        if ( topleft.x < 0 || topleft.y < 0
+          || ( topleft.x + dbUnit.footprint.width() ) >= width_out
+          || ( topleft.y + dbUnit.footprint.height() ) >= height_out )
+          return;
+
+        for ( size_t y = 0; y < dbUnit.footprint.height(); y++ )
+          for ( size_t x = 0; x < dbUnit.footprint.width(); x++ )
+            if ( dbUnit.footprint[x][y] == UnitData::Footprint_Reserved )
+            {
+              flags_out[topleft.x + x][topleft.y + y] = MapFlag_INTERNAL_AnalysisTemp;
+            }
+      }
+
       for ( size_t x = 0; x < width_out; x++ )
         for ( size_t y = 0; y < height_out; y++ )
         {
           auto tileZ = utils::terrainHeight( info, x, y );
           heightmap_out[x][y] = tileZ;
 
+          bool hasNeutralUnitFootprint = ( flags_out[x][y] & MapFlag_INTERNAL_AnalysisTemp );
+
           uint64_t flags = 0;
           if ( utils::placement( info, x, y ) )
             flags |= MapFlag_Buildable;
-          if ( ( flags & MapFlag_Buildable ) || utils::pathable( info, x, y ) )
+          if ( ( flags & MapFlag_Buildable ) || utils::pathable( info, x, y ) || hasNeutralUnitFootprint )
             flags |= MapFlag_Walkable;
 
-          if ( ( flags & MapFlag_Walkable ) && !( flags & MapFlag_Buildable ) && x > 3 && y > 3 && x <= ( width_out - 2 ) && y <= ( height_out - 2 ) )
+          if ( ( flags & MapFlag_Walkable ) && !( flags & MapFlag_Buildable ) && x > 3 && y > 3 && x < ( width_out - 3 ) && y < ( height_out - 3 ) )
           {
             bool heightDiff = false;
             for ( size_t dx = ( x - 3 ); dx < ( x + 4 ); ++dx )
@@ -806,7 +834,10 @@ namespace hivemind {
         RegionNodeID parent = *mergeRegions.begin();
         mergeRegions.erase( mergeRegions.begin() );
 
-        for ( auto it = graph.adjacencyList_[parent].begin(); it != graph.adjacencyList_[parent].end();)
+        if ( parent < 0 || parent >= graph.adjacencyList_.size() )
+          continue;
+
+        for ( auto it = graph.adjacencyList_[parent].begin(); it != graph.adjacencyList_[parent].end(); )
         {
           RegionNodeID child = *it;
 
@@ -1165,9 +1196,9 @@ namespace hivemind {
         }
 
       // second pass to mark "near"-tiles
-      for ( int x = 0; x < width; x++ )
-        for ( int y = 0; y < height; y++ )
-          if ( ( flags_out[x][y] & MapFlag_Walkable ) && x > 2 && y > 2 && x <= ( width - 1 ) && y <= ( height - 1 ) )
+      for ( int x = 2; x < ( width - 2 ); x++ )
+        for ( int y = 2; y < ( height - 2 ); y++ )
+          if ( flags_out[x][y] & MapFlag_Walkable )
           {
             // up to 2 tiles around me
             uint64_t aroundORed = (

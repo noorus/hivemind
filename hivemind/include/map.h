@@ -24,7 +24,8 @@ namespace hivemind {
     MapFlag_NearStartLocation = 128, //!< A tile that is at most 2 tiles away from a base location footprint tile
     MapFlag_VespeneGeyser = 256, //!< A tile that is part of a vespene geyser
     MapFlag_VisionBlocker = 512,
-    MapFlag_NearVisionBlocker = 1024
+    MapFlag_NearVisionBlocker = 1024,
+    MapFlag_INTERNAL_AnalysisTemp = 2048
   };
 
   struct MapComponent {
