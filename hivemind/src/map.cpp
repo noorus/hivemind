@@ -328,8 +328,11 @@ namespace hivemind {
       {
         for ( float y = camera.y - 16.0f; y < camera.y + 16.0f; ++y )
         {
-          auto ix = (int)x;
-          auto iy = (int)y;
+          auto ix = math::floor( x );
+          auto iy = math::floor( y );
+
+          if ( ix < 0 || iy < 0 || ix >= width_ || iy >= height_ )
+            continue;
 
           sc2::Point3D pos( (Real)ix + 0.5f, (Real)iy + 0.5f, heightMap_[ix][iy] + 0.25f );
           auto tile = flagsMap_[ix][iy];
