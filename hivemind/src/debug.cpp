@@ -46,20 +46,21 @@ namespace hivemind {
 
   void DebugExtended::mapDumpBasicMaps( Array2<uint64_t>& flagmap, Array2<Real>& heightmap, const GameInfo& info )
   {
-    Array2<uint8_t> height8( info.width, info.height );
-    Array2<uint8_t> build8( info.width, info.height );
-    Array2<uint8_t> path8( info.width, info.height );
+    Array2<uint8_t> height8( info.height, info.width );
+    Array2<uint8_t> build8( info.height, info.width );
+    Array2<uint8_t> path8( info.height, info.width );
 
-    for ( size_t y = 0; y < info.height; y++ )
-      for ( size_t x = 0; x < info.width; x++ )
+    for ( size_t x = 0; x < info.width; x++ )
+      for ( size_t y = 0; y < info.height; y++ )
       {
+        size_t xcoord = ( info.width - x - 1 );
         uint8_t val;
         val = (uint8_t)( ( ( heightmap[x][y] + 200.0f ) / 400.0f ) * 255.0f );
-        height8[y][x] = val;
+        height8[y][xcoord] = val;
         val = ( flagmap[x][y] & MapFlag_Buildable ) ? 0xFF : 0x00;
-        build8[y][x] = val;
+        build8[y][xcoord] = val;
         val = ( flagmap[x][y] & MapFlag_Walkable ) ? 0xFF : 0x00;
-        path8[y][x] = val;
+        path8[y][xcoord] = val;
       }
 
     stbi_write_png( "debug_map_height.png", info.width, info.height, 1, height8.data(), info.width );
@@ -72,28 +73,29 @@ namespace hivemind {
     const rgb background = { 0, 0, 0 };
     const rgb contour = { 255, 255, 255 };
 
-    Array2<rgb> rgb8( map.width(), map.height() );
+    Array2<rgb> rgb8( map.height(), map.width() );
 
-    for ( size_t y = 0; y < map.height(); y++ )
-      for ( size_t x = 0; x < map.width(); x++ )
+    for ( size_t x = 0; x < map.width(); x++ )
+      for ( size_t y = 0; y < map.height(); y++ )
       {
+        size_t xcoord = ( map.width() - x - 1 );
         if ( contoured )
         {
           if ( map[x][y] == -1 )
-            rgb8[y][x] = contour;
+            rgb8[y][xcoord] = contour;
           else if ( map[x][y] == 0 )
-            rgb8[y][x] = background;
+            rgb8[y][xcoord] = background;
           else
           {
             rgb tmp;
             utils::hsl2rgb( ( (uint16_t)map[x][y] - 1 ) * 120, 230, 200, (uint8_t*)&tmp );
-            rgb8[y][x] = tmp;
+            rgb8[y][xcoord] = tmp;
           }
         } else
         {
           rgb tmp;
           utils::hsl2rgb( ( (uint16_t)map[x][y] ) * 120, 230, 200, (uint8_t*)&tmp );
-          rgb8[y][x] = tmp;
+          rgb8[y][xcoord] = tmp;
         }
       }
 
@@ -111,37 +113,38 @@ namespace hivemind {
     const rgb startloc = { 228, 255, 0 };
     const rgb startpoint = { 255, 0, 0 };
 
-    Array2<rgb> rgb8( info.width, info.height );
+    Array2<rgb> rgb8( info.height, info.width );
     rgb8.reset( empty );
 
-    for ( size_t y = 0; y < info.height; y++ )
-      for ( size_t x = 0; x < info.width; x++ )
+    for ( size_t x = 0; x < info.width; x++ )
+      for ( size_t y = 0; y < info.height; y++ )
       {
+        size_t xcoord = ( info.width - x - 1 );
         Vector2 pos( (Real)x, (Real)y );
         for ( auto& cluster : clusters )
         {
           bool gotit = false;
           if ( flagmap[x][y] & MapFlag_StartLocation )
           {
-            rgb8[y][x] = startloc;
+            rgb8[y][xcoord] = startloc;
             gotit = true;
           }
           if ( !gotit )
             for ( auto unit : cluster )
               if ( pos.distance( unit->pos ) <= unit->radius )
               {
-                rgb8[y][x] = ( utils::isMineral( unit ) ? mineral : gas );
+                rgb8[y][xcoord] = ( utils::isMineral( unit ) ? mineral : gas );
                 gotit = true;
                 break;
               }
           if ( !gotit && pos.distance( cluster.center() ) <= 14.0f ) // shouldn't be hardcoded
-            rgb8[y][x] = field;
+            rgb8[y][xcoord] = field;
         }
       }
 
     for ( auto& base : bases )
     {
-      rgb8[(int)base.position().y][(int)base.position().x] = startpoint;
+      rgb8[(int)base.position().y][info.width - (int)base.position().x - 1] = startpoint;
     }
 
     stbi_write_png( "debug_map_bases.png", (int)info.width, (int)info.height, 3, rgb8.data(), (int)info.width * 3 );
@@ -150,7 +153,7 @@ namespace hivemind {
   void DebugExtended::mapDumpPolygons( size_t width, size_t height, PolygonComponentVector& polys, Analysis::RegionChokesMap& chokes )
   {
     svg::Dimensions dim( (double)width * 16.0, (double)height * 16.0 );
-    svg::Document doc( "debug_map_polygons_invert.svg", svg::Layout( dim, svg::Layout::TopLeft ) );
+    svg::Document doc( "debug_map_polygons.svg", svg::Layout( dim, svg::Layout::TopRight ) );
     for ( auto& poly : polys )
     {
       svg::Polygon svgPoly( svg::Stroke( 2.0, svg::Color::Purple ) );
