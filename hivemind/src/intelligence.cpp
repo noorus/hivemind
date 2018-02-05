@@ -350,7 +350,7 @@ namespace hivemind {
         _seeUnit( enemy, msg.unit() );
       }
       // the following is old temp junk only left over for WorkerScout to function
-      if ( enemy.lastSeen_ == 0 )
+      /*if ( enemy.lastSeen_ == 0 )
       {
         // this should be safe, closestLocation could only return false if the map's base location vector is empty
         if ( utils::isMainStructure( msg.unit() ) || bot_->map().closestLocation( msg.unit()->pos )->isStartLocation() )
@@ -359,7 +359,7 @@ namespace hivemind {
           // TODO separate baseSeen value etc.
           enemy.lastSeen_ = bot_->time();
         }
-      }
+      }*/
     }
     else if ( msg.code == M_Global_UnitDestroyed && utils::isEnemy( msg.unit() ) )
     {

@@ -10,7 +10,7 @@ namespace hivemind {
 
     /* Brain: Worker Scout goal */
 
-    size_t Brain_WorkerScout::lostScouts_ = 0;
+    /*size_t Brain_WorkerScout::lostScouts_ = 0;
     GameTime Brain_WorkerScout::lostScoutTime_ = 0;
 
     Brain_WorkerScout::Brain_WorkerScout( AI::Agent* agent ):
@@ -179,11 +179,11 @@ namespace hivemind {
         bot_->workers().add( worker_ );
         worker_ = nullptr;
       }
-    }
+    }*/
 
     /* Brain: Scout Enemy goal */
 
-    class WorkerScoutEvaluator: public AI::GoalEvaluator {
+    /*class WorkerScoutEvaluator: public AI::GoalEvaluator {
     public:
       const Real calculateDesirability( AI::Agent* agent ) final
       {
@@ -193,12 +193,12 @@ namespace hivemind {
       {
         to->addSubgoal( new Brain_WorkerScout( agent ) );
       }
-    };
+    };*/
 
     Brain_ScoutEnemy::Brain_ScoutEnemy( AI::Agent* agent ):
     AI::ThinkGoal( agent )
     {
-      evaluators_.push_back( new WorkerScoutEvaluator() );
+      // evaluators_.push_back( new WorkerScoutEvaluator() );
     }
 
     void Brain_ScoutEnemy::activate()

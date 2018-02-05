@@ -13,7 +13,7 @@ namespace hivemind {
 
   namespace Goals {
 
-    class Brain_WorkerScout: public AI::CompositeGoal, public hivemind::Listener {
+    /*class Brain_WorkerScout: public AI::CompositeGoal, public hivemind::Listener {
     private:
       UnitRef worker_;
       Path route_;
@@ -38,7 +38,7 @@ namespace hivemind {
       virtual void activate() final;
       virtual Status process() final;
       virtual void terminate() final;
-    };
+    };*/
 
     class Brain_ManageOverlords: public AI::CompositeGoal, public hivemind::Listener {
     private:

@@ -153,7 +153,7 @@ namespace hivemind {
     BaseLocation* closestLocation( const Vector2& position );
     const BaseLocationVector& getBaseLocations() const { return baseLocations_; }
     Vector2 closestByGround( const Vector2& from, const list<Vector2>& to );
-    Path shortestScoutPath( const Vector2& start, vector<Vector2>& locations );
+    // Path shortestScoutPath( const Vector2& start, vector<Vector2>& locations );
     inline Region* region( int index )
     {
       if ( index < 0 )

@@ -814,7 +814,7 @@ namespace hivemind {
     return retval;
   }
 
-  Path Map::shortestScoutPath( const Vector2& start, vector<Vector2>& locations )
+  /*Path Map::shortestScoutPath( const Vector2& start, vector<Vector2>& locations )
   {
     Path retval;
     list<Vector2> loclist( locations.begin(), locations.end() );
@@ -828,7 +828,7 @@ namespace hivemind {
     };
     recurse( start, retval, loclist );
     return retval;
-  }
+  }*/
 
   inline uint64_t util_encodePoint( const Point2DI& pt )
   {

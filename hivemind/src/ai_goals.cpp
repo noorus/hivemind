@@ -119,9 +119,8 @@ namespace hivemind {
           mostDesirable = evaluator;
         }
       }
-      if ( !mostDesirable )
-        HIVE_EXCEPT( "No evaluator selected" );
-      mostDesirable->apply( this, owner_ );
+      if ( mostDesirable )
+        mostDesirable->apply( this, owner_ );
     }
 
     void ThinkGoal::activate()
