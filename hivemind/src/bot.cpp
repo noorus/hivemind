@@ -347,6 +347,19 @@ namespace hivemind {
     map_.draw();
     baseManager_.draw();
 
+    static bool pathtest = false;
+    if ( !pathtest )
+    {
+      pathtest = true;
+      for ( int i = 0; i < 3; i++ )
+      {
+        auto idx = utils::randomBetween( 0, map_.getBaseLocations().size() - 2 );
+        auto path = pathing_.createPath( map_.getBaseLocations()[idx].position(), map_.getBaseLocations()[idx + 1].position() );
+      }
+    }
+
+    pathing_.draw();
+
     if(g_CVar_draw_units.as_b())
     {
       for(auto unit : observation_->GetUnits())

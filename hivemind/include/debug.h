@@ -95,6 +95,7 @@ namespace hivemind {
     void send() { debug_->SendDebug(); }
     void drawMapPolygon( Map& map, Polygon& poly, Color color );
     void drawMapLine( Map& map, const Vector2& p0, const Vector2& p1, Color color );
+    void drawMapSphere( Map& map, const Vector2& pos, Real radius, Color color );
 
   #ifdef HIVE_SUPPORT_MAP_DUMPS
     void mapDumpBasicMaps( Array2<uint64_t>& flagmap, Array2<Real>& heightmap, const GameInfo& info );

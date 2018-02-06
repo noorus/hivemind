@@ -42,6 +42,12 @@ namespace hivemind {
     drawLine( p30, p31, color );
   }
 
+  void DebugExtended::drawMapSphere( Map & map, const Vector2 & pos, Real radius, Color color )
+  {
+    Point3D pt = mapTileToMarker( pos, map.heightMap_, 0.5f, map.maxZ_ );
+    drawSphere( pt, radius, color );
+  }
+
 #ifdef HIVE_SUPPORT_MAP_DUMPS
 
   void DebugExtended::mapDumpBasicMaps( Array2<uint64_t>& flagmap, Array2<Real>& heightmap, const GameInfo& info )
