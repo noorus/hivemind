@@ -8,7 +8,10 @@
 namespace hivemind {
 
   class Pathing;
-  class GridGraph;
+
+  namespace pathfinding {
+    class GridGraph;
+  }
 
   class Path {
   private:
@@ -28,7 +31,7 @@ namespace hivemind {
   class Pathing: public Subsystem, Listener {
   private:
     PathList paths_;
-    std::unique_ptr<GridGraph> graph_;
+    std::unique_ptr<pathfinding::GridGraph> graph_;
   public:
     Pathing( Bot* bot );
     PathPtr createPath( const Vector2& from, const Vector2& to );

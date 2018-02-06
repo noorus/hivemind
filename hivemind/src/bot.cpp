@@ -353,7 +353,7 @@ namespace hivemind {
       pathtest = true;
       for ( int i = 0; i < 3; i++ )
       {
-        auto idx = utils::randomBetween( 0, map_.getBaseLocations().size() - 2 );
+        auto idx = utils::randomBetween( 0, (int)map_.getBaseLocations().size() - 2 );
         auto path = pathing_.createPath( map_.getBaseLocations()[idx].position(), map_.getBaseLocations()[idx + 1].position() );
       }
     }

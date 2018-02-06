@@ -28,15 +28,29 @@ namespace hivemind {
 
   PathPtr Pathing::createPath( const Vector2 & from, const Vector2 & to )
   {
+    pathfinding::Dstar dstar;
+    list<pathfinding::state> mypath;
+
+    dstar.init( from.x, from.y, to.x, to.y );
+
     PathPtr path = std::make_shared<Path>( this );
     graph_->reset();
-    auto mapPath = pathAStarSearch( *(graph_.get()), from, to );
+
+    graph_->applyTo( &dstar );
+    dstar.replan();
+    mypath = dstar.getPath();
+
+    vector<Vector2> verts;
+    for ( auto& pt : mypath )
+      verts.push_back( Vector2( pt.x, pt.y ) );
+
+    //auto mapPath = pathfinding::pathAStarSearch( *(graph_.get()), from, to );
     //auto clipperPath = util_contourToClipperPath( mapPath );
     //ClipperLib::CleanPolygon( clipperPath );
     //auto poly = util_clipperPathToPolygon( clipperPath );
-    vector<Vector2> verts;
-    for ( auto& pt : mapPath )
-      verts.push_back( pt );
+    //vector<Vector2> verts;
+    //for ( auto& pt : mapPath )
+    //  verts.push_back( pt );
     path->assignVertices( verts );
     paths_.push_back( path );
     return path;
@@ -50,7 +64,7 @@ namespace hivemind {
   void Pathing::gameBegin()
   {
     bot_->messaging().listen( Listen_Global, this );
-    graph_ = std::make_unique<GridGraph>( bot_->map() );
+    graph_ = std::make_unique<pathfinding::GridGraph>( bot_->map() );
   }
 
   void Pathing::update( const GameTime time, const GameTime delta )

@@ -49,6 +49,8 @@
 #include <random>
 #include <filesystem>
 #include <queue>
+#include <unordered_map>
+#include <utility>
 
 #include <boost/algorithm/string/trim.hpp>
 #include <boost/algorithm/string/find.hpp>

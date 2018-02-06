@@ -6,6 +6,7 @@
 #include <map>
 #include <string>
 #include <set>
+#include <utility>
 
 namespace hivemind {
 
@@ -15,6 +16,10 @@ namespace hivemind {
   using std::vector;
   using std::list;
   using std::set;
+  using std::map;
+  using std::pair;
+  using std::priority_queue;
+  using std::unordered_map;
 
   //! \typedef GameTime
   //! \brief Local type definition for game time counted in engine logic ticks.
