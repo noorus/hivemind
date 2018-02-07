@@ -69,70 +69,71 @@ namespace hivemind {
 
     // D* lite
 
-    class state {
+    class DStarState {
     public:
       int x;
       int y;
       std::pair<double, double> k;
-
-      bool operator == ( const state &s2 ) const
+      bool operator == ( const DStarState &s2 ) const
       {
         return ((x == s2.x) && (y == s2.y));
       }
-
-      bool operator != ( const state &s2 ) const
+      bool operator != ( const DStarState &s2 ) const
       {
         return ((x != s2.x) || (y != s2.y));
       }
-
-      bool operator > ( const state &s2 ) const
+      bool operator > ( const DStarState &s2 ) const
       {
         if ( k.first - 0.00001 > s2.k.first ) return true;
         else if ( k.first < s2.k.first - 0.00001 ) return false;
         return k.second > s2.k.second;
       }
-
-      bool operator <= ( const state &s2 ) const
+      bool operator <= ( const DStarState &s2 ) const
       {
         if ( k.first < s2.k.first ) return true;
         else if ( k.first > s2.k.first ) return false;
         return k.second < s2.k.second + 0.00001;
       }
-
-
-      bool operator < ( const state &s2 ) const
+      bool operator < ( const DStarState &s2 ) const
       {
         if ( k.first + 0.000001 < s2.k.first ) return true;
         else if ( k.first - 0.000001 > s2.k.first ) return false;
         return k.second < s2.k.second;
       }
-
     };
 
-    struct cellInfo {
-
+    struct DStarCell
+    {
       double g;
       double rhs;
       double cost;
-
     };
 
-    class state_hash {
+    class DStarHash {
     public:
-      size_t operator()( const state &s ) const
+      size_t operator()( const DStarState &s ) const
       {
         return s.x + 34245 * s.y;
       }
     };
 
+    using DStarPath = list<DStarState>;
 
-    typedef priority_queue<state, vector<state>, std::greater<state> > ds_pq;
-    typedef unordered_map<state, cellInfo, state_hash, std::equal_to<> > ds_ch;
-    typedef unordered_map<state, float, state_hash, std::equal_to<> > ds_oh;
+    typedef priority_queue<DStarState, vector<DStarState>, std::greater<DStarState> > ds_pq;
+    using DStarCellHashMap = unordered_map<DStarState, DStarCell, DStarHash, std::equal_to<> >;
+    using DStarOpenHashMap = unordered_map<DStarState, float, DStarHash, std::equal_to<> >;
 
     class Dstar {
+    private:
+      DStarPath path;
+      double C1;
+      double k_m;
+      DStarState s_start, s_goal, s_last;
+      int maxSteps;
+      ds_pq openList;
+      DStarCellHashMap cellHash;
+      DStarOpenHashMap openHash;
     public:
-
       Dstar()
       {
         maxSteps = 80000;  // node expansions before we give up
@@ -143,47 +144,28 @@ namespace hivemind {
       void   updateStart( int x, int y );
       void   updateGoal( int x, int y );
       bool   replan();
-      void   draw();
-      void   drawCell( state s, float z );
-
-      list<state> getPath()
-      {
-        return path;
-      }
-
+      inline const DStarPath& getPath() { return path; }
     private:
-
-      list<state> path;
-
-      double C1;
-      double k_m;
-      state s_start, s_goal, s_last;
-      int maxSteps;
-
-      ds_pq openList;
-      ds_ch cellHash;
-      ds_oh openHash;
-
       bool   close( double x, double y );
-      void   makeNewCell( state u );
-      double getG( state u );
-      double getRHS( state u );
-      void   setG( state u, double g );
-      double setRHS( state u, double rhs );
-      double eightCondist( state a, state b );
+      void   makeNewCell( DStarState u );
+      double getG( DStarState u );
+      double getRHS( DStarState u );
+      void   setG( DStarState u, double g );
+      double setRHS( DStarState u, double rhs );
+      double eightCondist( DStarState a, DStarState b );
       int    computeShortestPath();
-      void   updateVertex( state u );
-      void   insert( state u );
-      void   remove( state u );
-      double trueDist( state a, state b );
-      double heuristic( state a, state b );
-      state  calculateKey( state u );
-      void   getSucc( state u, list<state> &s );
-      void   getPred( state u, list<state> &s );
-      double cost( state a, state b );
-      bool   occupied( state u );
-      bool   isValid( state u );
-      float  keyHashCode( state u )
+      void   updateVertex( DStarState u );
+      void   insert( DStarState u );
+      void   remove( DStarState u );
+      double trueDist( DStarState a, DStarState b );
+      double heuristic( DStarState a, DStarState b );
+      DStarState  calculateKey( DStarState u );
+      void   getSucc( DStarState u, list<DStarState> &s );
+      void   getPred( DStarState u, list<DStarState> &s );
+      double cost( DStarState a, DStarState b );
+      bool   occupied( DStarState u );
+      bool   isValid( DStarState u );
+      float  keyHashCode( DStarState u )
       {
         return (float)(u.k.first + 1193 * u.k.second);
       }

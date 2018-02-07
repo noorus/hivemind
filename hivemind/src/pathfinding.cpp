@@ -152,22 +152,22 @@ namespace hivemind {
 
     // D* lite
 
-    bool Dstar::isValid( state u )
+    bool Dstar::isValid( DStarState u )
     {
-      ds_oh::iterator cur = openHash.find( u );
-      if ( cur == openHash.end() )
+      auto it = openHash.find( u );
+      if ( it == openHash.end() )
         return false;
-      if ( !close( keyHashCode( u ), cur->second ) )
+      if ( !close( keyHashCode( u ), it->second ) )
         return false;
       return true;
     }
 
-    bool Dstar::occupied( state u )
+    bool Dstar::occupied( DStarState u )
     {
-      ds_ch::iterator cur = cellHash.find( u );
-      if ( cur == cellHash.end() )
+      auto it = cellHash.find( u );
+      if ( it == cellHash.end() )
         return false;
-      return (cur->second.cost < 0);
+      return (it->second.cost < 0);
     }
 
     void Dstar::init( int sX, int sY, int gX, int gY )
@@ -185,7 +185,7 @@ namespace hivemind {
       s_goal.x = gX;
       s_goal.y = gY;
 
-      cellInfo tmp;
+      DStarCell tmp;
       tmp.g = tmp.rhs = 0;
       tmp.cost = C1;
 
@@ -199,25 +199,25 @@ namespace hivemind {
       s_last = s_start;
     }
 
-    void Dstar::makeNewCell( state u )
+    void Dstar::makeNewCell( DStarState u )
     {
       if ( cellHash.find( u ) != cellHash.end() )
         return;
 
-      cellInfo tmp;
+      DStarCell tmp;
       tmp.g = tmp.rhs = heuristic( u, s_goal );
       tmp.cost = C1;
       cellHash[u] = tmp;
     }
 
-    double Dstar::getG( state u )
+    double Dstar::getG( DStarState u )
     {
       if ( cellHash.find( u ) == cellHash.end() )
         return heuristic( u, s_goal );
       return cellHash[u].g;
     }
 
-    double Dstar::getRHS( state u )
+    double Dstar::getRHS( DStarState u )
     {
       if ( u == s_goal )
         return 0;
@@ -227,20 +227,20 @@ namespace hivemind {
       return cellHash[u].rhs;
     }
 
-    void Dstar::setG( state u, double g )
+    void Dstar::setG( DStarState u, double g )
     {
       makeNewCell( u );
       cellHash[u].g = g;
     }
 
-    double Dstar::setRHS( state u, double rhs )
+    double Dstar::setRHS( DStarState u, double rhs )
     {
       makeNewCell( u );
       cellHash[u].rhs = rhs;
       return rhs;
     }
 
-    double Dstar::eightCondist( state a, state b )
+    double Dstar::eightCondist( DStarState a, DStarState b )
     {
       double min = fabs( a.x - b.x );
       double max = fabs( a.y - b.y );
@@ -265,8 +265,8 @@ namespace hivemind {
     int Dstar::computeShortestPath()
     {
 
-      list<state> s;
-      list<state>::iterator i;
+      list<DStarState> s;
+      list<DStarState>::iterator i;
 
       if ( openList.empty() ) return 1;
 
@@ -283,7 +283,7 @@ namespace hivemind {
         }
 
 
-        state u;
+        DStarState u;
 
         bool test = (getRHS( s_start ) != getG( s_start ));
 
@@ -299,10 +299,10 @@ namespace hivemind {
           break;
         }
 
-        ds_oh::iterator cur = openHash.find( u );
+        DStarOpenHashMap::iterator cur = openHash.find( u );
         openHash.erase( cur );
 
-        state k_old = u;
+        DStarState k_old = u;
 
         if ( k_old < calculateKey( u ) )
         { // u is out of date
@@ -344,11 +344,11 @@ namespace hivemind {
     * --------------------------
     * As per [S. Koenig, 2002]
     */
-    void Dstar::updateVertex( state u )
+    void Dstar::updateVertex( DStarState u )
     {
 
-      list<state> s;
-      list<state>::iterator i;
+      list<DStarState> s;
+      list<DStarState>::iterator i;
 
       if ( u != s_goal )
       {
@@ -372,10 +372,10 @@ namespace hivemind {
     * --------------------------
     * Inserts state u into openList and openHash.
     */
-    void Dstar::insert( state u )
+    void Dstar::insert( DStarState u )
     {
 
-      ds_oh::iterator cur;
+      DStarOpenHashMap::iterator cur;
       float csum;
 
       u = calculateKey( u );
@@ -396,9 +396,9 @@ namespace hivemind {
     * Removes state u from openHash. The state is removed from the
     * openList lazilily (in replan) to save computation.
     */
-    void Dstar::remove( state u )
+    void Dstar::remove( DStarState u )
     {
-      ds_oh::iterator cur = openHash.find( u );
+      DStarOpenHashMap::iterator cur = openHash.find( u );
       if ( cur == openHash.end() ) return;
       openHash.erase( cur );
     }
@@ -408,7 +408,7 @@ namespace hivemind {
     * --------------------------
     * Euclidean cost between state a and state b.
     */
-    double Dstar::trueDist( state a, state b )
+    double Dstar::trueDist( DStarState a, DStarState b )
     {
 
       float x = a.x - b.x;
@@ -422,7 +422,7 @@ namespace hivemind {
     * Pretty self explanitory, the heristic we use is the 8-way distance
     * scaled by a constant C1 (should be set to <= min cost).
     */
-    double Dstar::heuristic( state a, state b )
+    double Dstar::heuristic( DStarState a, DStarState b )
     {
       return eightCondist( a, b )*C1;
     }
@@ -431,7 +431,7 @@ namespace hivemind {
     * --------------------------
     * As per [S. Koenig, 2002]
     */
-    state Dstar::calculateKey( state u )
+    DStarState Dstar::calculateKey( DStarState u )
     {
 
       double val = fmin( getRHS( u ), getG( u ) );
@@ -449,7 +449,7 @@ namespace hivemind {
     * either the cost of moving off state a or onto state b, we went with
     * the former. This is also the 8-way cost.
     */
-    double Dstar::cost( state a, state b )
+    double Dstar::cost( DStarState a, DStarState b )
     {
       int xd = fabs( a.x - b.x );
       int yd = fabs( a.y - b.y );
@@ -467,7 +467,7 @@ namespace hivemind {
     */
     void Dstar::updateCell( int x, int y, double val )
     {
-      state u;
+      DStarState u;
 
       u.x = x;
       u.y = y;
@@ -486,7 +486,7 @@ namespace hivemind {
     * 8-way graph this list contains all of a cells neighbours. Unless
     * the cell is occupied in which case it has no successors.
     */
-    void Dstar::getSucc( state u, list<state> &s )
+    void Dstar::getSucc( DStarState u, list<DStarState> &s )
     {
       s.clear();
       u.k.first = -1;
@@ -519,7 +519,7 @@ namespace hivemind {
     * neighbours for state u. Occupied neighbours are not added to the
     * list.
     */
-    void Dstar::getPred( state u, list<state> &s )
+    void Dstar::getPred( DStarState u, list<DStarState> &s )
     {
       s.clear();
       u.k.first = -1;
@@ -572,7 +572,7 @@ namespace hivemind {
       std::list< std::pair<ipoint2, double> > toAdd;
       std::pair<ipoint2, double> tp;
 
-      ds_ch::iterator i;
+      DStarCellHashMap::iterator i;
       std::list< std::pair<ipoint2, double> >::iterator kk;
 
       for ( i = cellHash.begin(); i != cellHash.end(); i++ )
@@ -597,7 +597,7 @@ namespace hivemind {
       s_goal.x = x;
       s_goal.y = y;
 
-      cellInfo tmp;
+      DStarCell tmp;
       tmp.g = tmp.rhs = 0;
       tmp.cost = C1;
 
@@ -636,10 +636,10 @@ namespace hivemind {
         fprintf( stderr, "NO PATH TO GOAL\n" );
         return false;
       }
-      list<state> n;
-      list<state>::iterator i;
+      list<DStarState> n;
+      list<DStarState>::iterator i;
 
-      state cur = s_start;
+      DStarState cur = s_start;
 
       if ( isinf( getG( s_start ) ) )
       {
@@ -661,7 +661,7 @@ namespace hivemind {
 
         double cmin = INFINITY;
         double tmin = INFINITY;
-        state smin;
+        DStarState smin;
 
         for ( i = n.begin(); i != n.end(); i++ )
         {

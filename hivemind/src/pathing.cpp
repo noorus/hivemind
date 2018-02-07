@@ -29,7 +29,7 @@ namespace hivemind {
   PathPtr Pathing::createPath( const Vector2 & from, const Vector2 & to )
   {
     pathfinding::Dstar dstar;
-    list<pathfinding::state> mypath;
+    list<pathfinding::DStarState> mypath;
 
     dstar.init( from.x, from.y, to.x, to.y );
 
