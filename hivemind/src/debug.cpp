@@ -175,7 +175,7 @@ namespace hivemind {
   void DebugExtended::mapDumpPolygons( size_t width, size_t height, PolygonComponentVector& polys, Analysis::RegionChokesMap& chokes )
   {
     svg::Dimensions dim( (double)width * 16.0, (double)height * 16.0 );
-    svg::Document doc( "debug_map_polygons.svg", svg::Layout( dim, svg::Layout::TopRight ) );
+    svg::Document doc( "debug_map_polygons.svg", svg::Layout( dim, svg::Layout::BottomLeft ) );
     for ( auto& poly : polys )
     {
       svg::Polygon svgPoly( svg::Stroke( 2.0, svg::Color::Purple ) );
