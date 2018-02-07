@@ -423,10 +423,9 @@ namespace hivemind {
     return false;
   }
 
-  std::pair<int,int> Builder::getAllocatedResources() const
+  AllocatedResources Builder::getAllocatedResources() const
   {
-    int mineralSum = 0;
-    int vespeneSum = 0;
+    AllocatedResources builderResources = { 0, 0, 0 };
     for(auto& building : buildProjects_)
     {
       if(building.moneyAllocated)
@@ -435,13 +434,18 @@ namespace hivemind {
       }
 
       const auto& data = Database::units().at(building.type);
-      mineralSum += data.mineralCost;
-      vespeneSum += data.vespeneCost;
+      builderResources.minerals += data.mineralCost;
+      builderResources.vespene += data.vespeneCost;
+      builderResources.food += 0;
     }
 
-    auto s1 = trainer_.getAllocatedResources();
-    auto s2 = researcher_.getAllocatedResources();
+    auto trainerResources = trainer_.getAllocatedResources();
+    auto researcherResources = researcher_.getAllocatedResources();
 
-    return { s1.first + s2.first + mineralSum, s1.second + s2.second + vespeneSum };
+    auto m = builderResources.minerals + trainerResources.minerals + researcherResources.minerals;
+    auto v = builderResources.vespene + trainerResources.vespene + researcherResources.vespene;
+    auto f = builderResources.food + trainerResources.food + researcherResources.food;
+
+    return { m, v, f };
   }
 }

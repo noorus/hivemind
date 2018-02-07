@@ -125,8 +125,8 @@ namespace hivemind {
     void gameEnd() final;
     bool findPlacement( UnitTypeID structure, const Base& base, BuildingPlacement type, AbilityID ability, Vector2& placementOut, UnitRef& targetOut );
 
-    // Returns the amount of {minerals,vespene} that the not-yet-paid-trainings will cost.
-    std::pair<int,int> getAllocatedResources() const;
+    // Returns the amount of resources that the not-yet-paid-trainings will cost.
+    AllocatedResources getAllocatedResources() const;
 
     UnitStats& getUnitStats(sc2::UNIT_TYPEID unitType)
     {

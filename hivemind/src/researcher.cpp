@@ -57,7 +57,7 @@ namespace hivemind {
     researchProjects_.push_back( research );
 
     if ( g_CVar_researcher_debug.as_i() > 1 )
-      bot_->console().printf( "Researcher: New ResearchOp %d for %s", research.id, sc2::UpgradeIDToName( upgradeType ) );
+      bot_->console().printf( "ResearchOp %d for %s: created with %x", research.id, sc2::UpgradeIDToName( upgradeType ), id(researcher) );
 
     researchers_.insert(researcher);
 
@@ -91,7 +91,7 @@ namespace hivemind {
       auto research = *it;
 
       if ( g_CVar_researcher_debug.as_i() > 1 )
-        bot_->console().printf( "Researcher: Removing ResearchOp %d (%s)", research.id, research.completed ? "completed" : "canceled" );
+        bot_->console().printf( "ResearchOp %d for %s: removed with %x (%s)", research.id, sc2::UpgradeIDToName( research.upgradeType ), id(research.researcher), research.completed ? "completed" : "canceled" );
 
       researchers_.erase(research.researcher);
       auto& stats = upgradeStats_[research.upgradeType];
@@ -156,7 +156,7 @@ namespace hivemind {
           research.moneyAllocated = true;
 
           if ( verbose )
-            bot_->console().printf( "ResearchOp %d: research started with %x", research.id, id( research.researcher ) );
+            bot_->console().printf( "ResearchOp %d for %s: started with %x", research.id, sc2::UpgradeIDToName( research.upgradeType ), id(research.researcher) );
         }
         else if ( research.nextUpdateTime <= time )
         {
@@ -164,10 +164,10 @@ namespace hivemind {
 
           if(research.researcher && research.researcher->is_alive && research.researcher->orders.empty())
           {
-            bot_->unitDebugMsgs_[research.researcher] = "Researcher, Op " + std::to_string(research.id);
+            bot_->unitDebugMsgs_[research.researcher] = "ResearchOp %d" + std::to_string(research.id);
 
             if ( verbose )
-              bot_->console().printf( "ResearchOp %d: Got Researcher %x for %s", research.id, id( research.researcher ), sc2::UpgradeIDToName( research.upgradeType ) );
+              bot_->console().printf( "ResearchOp %d for %s: starting with %x", research.id, sc2::UpgradeIDToName( research.upgradeType ), id(research.researcher) );
 
 
             auto ability = Database::techTree().getUpgradeInfo( research.upgradeType, research.researcher->unit_type ).ability;
@@ -184,7 +184,7 @@ namespace hivemind {
     }
   }
 
-  std::pair<int,int> Researcher::getAllocatedResources() const
+  AllocatedResources Researcher::getAllocatedResources() const
   {
     int mineralSum = 0;
     int vespeneSum = 0;
@@ -199,7 +199,7 @@ namespace hivemind {
       mineralSum += data.mineralCost;
       vespeneSum += data.vespeneCost;
     }
-    return { mineralSum, vespeneSum };
+    return { mineralSum, vespeneSum, 0 };
   }
 
 }

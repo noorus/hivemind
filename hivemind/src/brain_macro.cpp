@@ -52,9 +52,10 @@ namespace hivemind {
       auto& baseManager = bot_->bases();
       auto& builder = bot_->builder();
 
-      std::pair<int, int> allocatedResources = builder.getAllocatedResources();
-      minerals -= allocatedResources.first;
-      vespene -= allocatedResources.second;
+      auto allocatedResources = builder.getAllocatedResources();
+      minerals -= allocatedResources.minerals;
+      vespene -= allocatedResources.vespene;
+      usedSupply += allocatedResources.food;
 
       if(baseManager.bases().empty())
       {
@@ -66,25 +67,29 @@ namespace hivemind {
       auto& extractorState = builder.getUnitStats(sc2::UNIT_TYPEID::ZERG_EXTRACTOR);
       auto& hatcheryState = builder.getUnitStats(sc2::UNIT_TYPEID::ZERG_HATCHERY);
       auto& lairState = builder.getUnitStats(sc2::UNIT_TYPEID::ZERG_LAIR);
+      auto& hiveState = builder.getUnitStats(sc2::UNIT_TYPEID::ZERG_HIVE);
       auto& droneState = builder.getUnitStats(sc2::UNIT_TYPEID::ZERG_DRONE);
       auto& queenState = builder.getUnitStats(sc2::UNIT_TYPEID::ZERG_QUEEN);
       auto& evolutionChamberState = builder.getUnitStats(sc2::UNIT_TYPEID::ZERG_EVOLUTIONCHAMBER);
 
       int futureSupplyLimit = std::min(200, supplyLimit + overlordState.inProgressCount() * 8);
-      int overlordNeed = (usedSupply >= futureSupplyLimit - 1 ? 1 : 0);
+      int overlordNeed = futureSupplyLimit < 200 && (usedSupply >= futureSupplyLimit - 1 ? true : false);
+
+      int hatcheryCount = hatcheryState.unitCount() + lairState.unitCount() + hiveState.unitCount();
+      int hatcheryFutureCount = hatcheryState.futureCount() + lairState.unitCount() + hiveState.unitCount();
 
       int scoutDroneCount = 1;
       int futureDroneCount = droneState.futureCount();
-      int droneNeed = futureDroneCount < hatcheryState.unitCount() * (16 + 2 * 3) + scoutDroneCount && futureDroneCount <= 75;
+      int droneNeed = futureDroneCount < hatcheryCount * (16 + 2 * 3) + scoutDroneCount && futureDroneCount <= 75;
 
       int futureExtractorCount = extractorState.futureCount();
-      int extractorNeed = futureExtractorCount < hatcheryState.unitCount() && futureDroneCount > hatcheryState.unitCount() * 16 + futureExtractorCount * 3 + 1 + scoutDroneCount;
+      int extractorNeed = futureExtractorCount < hatcheryCount && futureDroneCount > hatcheryCount * 16 + futureExtractorCount * 3 + 1 + scoutDroneCount;
 
       int poolNeed = poolState.futureCount() == 0 && futureDroneCount >= 16 + 1 + scoutDroneCount;
 
-      int queenNeed = poolState.unitCount() > 0 && queenState.futureCount() < hatcheryState.unitCount() && queenState.inProgressCount() < hatcheryState.unitCount();
+      int queenNeed = poolState.unitCount() > 0 && queenState.futureCount() < hatcheryCount && queenState.inProgressCount() < hatcheryCount;
 
-      int hatcheryNeed = droneState.futureCount() >= 17 * hatcheryState.futureCount();
+      int hatcheryNeed = droneState.futureCount() >= 17 * hatcheryFutureCount;
 
 
       auto lingSpeed = builder.getUpgradeStatus(sc2::UPGRADE_ID::ZERGLINGMOVEMENTSPEED);
