@@ -45,11 +45,11 @@ namespace hivemind {
 
       return larva;
     }
-    else if(trainerType == sc2::UNIT_TYPEID::ZERG_HATCHERY)
+    else if(isHatcheryType(trainerType))
     {
       for(auto building : base.depots())
       {
-        if(!isHatcheryType(building->unit_type))
+        if(!building->unit_type == trainerType)
         {
           continue;
         }
@@ -233,8 +233,11 @@ namespace hivemind {
           // Hatchery was upgraded to a lair.
           assert(training.trainer->unit_type != training.trainerType);
 
-          auto& stats = unitStats_[training.trainerType];
-          stats.units.erase(training.trainer);
+          auto& statsOld = unitStats_[training.trainerType];
+          statsOld.units.erase(training.trainer);
+
+          auto& statsNew = unitStats_[training.trainer->unit_type];
+          statsNew.units.insert(training.trainer);
 
           training.completed = true;
           onTrainingComplete(training);

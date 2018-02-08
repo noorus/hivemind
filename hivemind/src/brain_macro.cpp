@@ -174,8 +174,14 @@ namespace hivemind {
         if(minerals >= 150 && usedSupply + 1 < supplyLimit)
         {
           for(auto& base : baseManager.bases())
+          {
             if(builder.train(sc2::UNIT_TYPEID::ZERG_QUEEN, &base, sc2::UNIT_TYPEID::ZERG_HATCHERY, id))
               return;
+            if(builder.train(sc2::UNIT_TYPEID::ZERG_QUEEN, &base, sc2::UNIT_TYPEID::ZERG_LAIR, id))
+              return;
+            if(builder.train(sc2::UNIT_TYPEID::ZERG_QUEEN, &base, sc2::UNIT_TYPEID::ZERG_HIVE, id))
+              return;
+          }
         }
       }
       else if(extractorNeed > 0)
