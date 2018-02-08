@@ -34,9 +34,14 @@ namespace hivemind {
 
   void Base::refresh()
   {
-    wantWorkers_.miners_ = ( location_->minerals_.size() * c_minersPerPatch );
     wantWorkers_.collectors_ = ( location_->geysers_.size() * c_collectorsPerGeyser );
     wantWorkers_.overhead_ = 0;
+
+    wantWorkers_.miners_ = 0;
+    for(auto depot : depots_)
+    {
+      wantWorkers_.miners_ += depot->ideal_harvesters;
+    }
   }
 
   void Base::draw( Bot* bot )
