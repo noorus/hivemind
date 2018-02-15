@@ -13,11 +13,17 @@ namespace hivemind {
 
   class UnitStats;
 
+  struct AllocatedResources
+  {
+    int minerals;
+    int vespene;
+    int food;
+  };
+
   struct Training {
     BuildProjectID id;
     UnitTypeID type;
     UnitTypeID trainerType;
-    UnitRef building;
     UnitRef trainer;
     MapPoint2 position;
     bool cancel;
@@ -34,7 +40,6 @@ namespace hivemind {
         id(id_),
         type(type_),
         trainerType(trainerType_),
-        building(nullptr),
         trainer(trainer_),
         cancel(false),
         position(0, 0),
@@ -72,8 +77,8 @@ namespace hivemind {
     void update( const GameTime time, const GameTime delta );
     void gameEnd() final;
 
-    // Returns the amount of {minerals,vespene} that the not-yet-paid-trainings will cost.
-    std::pair<int,int> getAllocatedResources() const;
+    // Returns the amount of resources that the not-yet-paid-trainings will cost.
+    AllocatedResources getAllocatedResources() const;
   };
 
 }

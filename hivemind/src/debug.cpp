@@ -59,14 +59,17 @@ namespace hivemind {
     for ( size_t x = 0; x < info.width; x++ )
       for ( size_t y = 0; y < info.height; y++ )
       {
-        size_t xcoord = ( info.width - x - 1 );
-        uint8_t val;
-        val = (uint8_t)( ( ( heightmap[x][y] + 200.0f ) / 400.0f ) * 255.0f );
-        height8[y][xcoord] = val;
-        val = ( flagmap[x][y] & MapFlag_Buildable ) ? 0xFF : 0x00;
-        build8[y][xcoord] = val;
-        val = ( flagmap[x][y] & MapFlag_Walkable ) ? 0xFF : 0x00;
-        path8[y][xcoord] = val;
+        size_t row = info.height - y - 1;
+        size_t column = x;
+
+        uint8_t h = (uint8_t)( ( ( heightmap[x][y] + 200.0f ) / 400.0f ) * 255.0f );
+        height8[row][column] = h;
+
+        uint8_t b = ( flagmap[x][y] & MapFlag_Buildable ) ? 0xFF : 0x00;
+        build8[row][column] = b;
+
+        uint8_t p = ( flagmap[x][y] & MapFlag_Walkable ) ? 0xFF : 0x00;
+        path8[row][column] = p;
       }
 
     stbi_write_png( "debug_map_height.png", info.width, info.height, 1, height8.data(), info.width );
@@ -84,25 +87,27 @@ namespace hivemind {
     for ( size_t x = 0; x < map.width(); x++ )
       for ( size_t y = 0; y < map.height(); y++ )
       {
-        size_t xcoord = ( map.width() - x - 1 );
+        size_t row = map.height() - y - 1;
+        size_t column = x;
+
+        rgb color;
         if ( contoured )
         {
           if ( map[x][y] == -1 )
-            rgb8[y][xcoord] = contour;
+            color = contour;
           else if ( map[x][y] == 0 )
-            rgb8[y][xcoord] = background;
+            color = background;
           else
           {
-            rgb tmp;
-            utils::hsl2rgb( ( (uint16_t)map[x][y] - 1 ) * 120, 230, 200, (uint8_t*)&tmp );
-            rgb8[y][xcoord] = tmp;
+            utils::hsl2rgb( ( (uint16_t)map[x][y] - 1 ) * 120, 230, 200, (uint8_t*)&color );
           }
-        } else
-        {
-          rgb tmp;
-          utils::hsl2rgb( ( (uint16_t)map[x][y] ) * 120, 230, 200, (uint8_t*)&tmp );
-          rgb8[y][xcoord] = tmp;
         }
+        else
+        {
+          utils::hsl2rgb( ( (uint16_t)map[x][y] ) * 120, 230, 200, (uint8_t*)&color );
+        }
+
+        rgb8[row][column] = color;
       }
 
     char filename[64];
@@ -120,37 +125,48 @@ namespace hivemind {
     const rgb startpoint = { 255, 0, 0 };
 
     Array2<rgb> rgb8( info.height, info.width );
-    rgb8.reset( empty );
 
     for ( size_t x = 0; x < info.width; x++ )
       for ( size_t y = 0; y < info.height; y++ )
       {
-        size_t xcoord = ( info.width - x - 1 );
+        size_t row = info.height - y - 1;
+        size_t column = x;
+
+        rgb color = empty;
+
         Vector2 pos( (Real)x, (Real)y );
         for ( auto& cluster : clusters )
         {
           bool gotit = false;
           if ( flagmap[x][y] & MapFlag_StartLocation )
           {
-            rgb8[y][xcoord] = startloc;
+            color = startloc;
             gotit = true;
           }
           if ( !gotit )
             for ( auto unit : cluster )
               if ( pos.distance( unit->pos ) <= unit->radius )
               {
-                rgb8[y][xcoord] = ( utils::isMineral( unit ) ? mineral : gas );
+                color = ( utils::isMineral( unit ) ? mineral : gas );
                 gotit = true;
                 break;
               }
           if ( !gotit && pos.distance( cluster.center() ) <= 14.0f ) // shouldn't be hardcoded
-            rgb8[y][xcoord] = field;
+            color = field;
         }
+
+        rgb8[row][column] = color;
       }
 
     for ( auto& base : bases )
     {
-      rgb8[(int)base.position().y][info.width - (int)base.position().x - 1] = startpoint;
+      size_t x = (int)base.position().x;
+      size_t y = (int)base.position().y;
+
+      size_t row = info.height - y - 1;
+      size_t column = x;
+
+      rgb8[row][column] = startpoint;
     }
 
     stbi_write_png( "debug_map_bases.png", (int)info.width, (int)info.height, 3, rgb8.data(), (int)info.width * 3 );
@@ -159,7 +175,7 @@ namespace hivemind {
   void DebugExtended::mapDumpPolygons( size_t width, size_t height, PolygonComponentVector& polys, Analysis::RegionChokesMap& chokes )
   {
     svg::Dimensions dim( (double)width * 16.0, (double)height * 16.0 );
-    svg::Document doc( "debug_map_polygons.svg", svg::Layout( dim, svg::Layout::TopRight ) );
+    svg::Document doc( "debug_map_polygons.svg", svg::Layout( dim, svg::Layout::BottomLeft ) );
     for ( auto& poly : polys )
     {
       svg::Polygon svgPoly( svg::Stroke( 2.0, svg::Color::Purple ) );

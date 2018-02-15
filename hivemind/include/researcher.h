@@ -4,6 +4,7 @@
 #include "distancemap.h"
 #include "hive_rect2.h"
 #include "base.h"
+#include "trainer.h"
 
 namespace hivemind {
 
@@ -71,8 +72,8 @@ namespace hivemind {
     void gameBegin() final;
     void gameEnd() final;
 
-    // Returns the amount of {minerals,vespene} that the not-yet-paid-upgrades will cost.
-    std::pair<int,int> getAllocatedResources() const;
+    // Returns the amount of resources that the not-yet-paid-upgrades will cost.
+    AllocatedResources getAllocatedResources() const;
   };
 
 }

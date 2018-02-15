@@ -45,11 +45,11 @@ namespace hivemind {
 
       return larva;
     }
-    else if(trainerType == sc2::UNIT_TYPEID::ZERG_HATCHERY)
+    else if(isHatcheryType(trainerType))
     {
       for(auto building : base.depots())
       {
-        if(!isHatcheryType(building->unit_type))
+        if(!building->unit_type == trainerType)
         {
           continue;
         }
@@ -76,18 +76,18 @@ namespace hivemind {
       return false;
     }
 
-    Training build( idPool_++, unitType, trainerType, trainer );
+    Training training( idPool_++, unitType, trainerType, trainer );
 
-    trainingProjects_.push_back( build );
+    trainingProjects_.push_back( training );
 
     if ( g_CVar_trainer_debug.as_i() > 1 )
-      bot_->console().printf( "Trainer: New TrainOp %d for %s", build.id, sc2::UnitTypeToName( unitType ) );
+      bot_->console().printf( "TrainOp %d for %s: created with %x", training.id, sc2::UnitTypeToName( training.type ), id( training.trainer ) );
 
     trainers_.insert(trainer);
 
-    unitStats_[unitType].inProgress.insert(build.id);
+    unitStats_[unitType].inProgress.insert(training.id);
 
-    idOut = build.id;
+    idOut = training.id;
     return true;
   }
 
@@ -110,7 +110,7 @@ namespace hivemind {
   void Trainer::onTrainingComplete(const Training& training)
   {
     if ( g_CVar_trainer_debug.as_i() > 1 )
-      bot_->console().printf( "Trainer: Removing TrainOp %d (%s)", training.id, training.completed ? "completed" : "canceled" );
+      bot_->console().printf( "TrainOp %d for %s: removed with %x (%s)", training.id, sc2::UnitTypeToName( training.type ), id( training.trainer ), training.completed ? "completed" : "canceled" );
 
     if ( training.completed )
       bot_->messaging().sendGlobal( M_Training_Finished, training.id );
@@ -142,7 +142,7 @@ namespace hivemind {
         auto& training = *it;
         if(training.type == unit->unit_type)
         {
-          if(training.trainer->orders.empty())
+          if(training.trainer->orders.empty() && training.moneyAllocated)
           {
             // Hatchery produced a queen.
             training.completed = true;
@@ -187,29 +187,6 @@ namespace hivemind {
 
       stats.units.erase(unit);
     }
-    else if(msg.code == M_Global_ConstructionCompleted)
-    {
-      UnitRef unit = msg.unit();
-
-      if ( !utils::isMine( unit ) )
-        return;
-
-      for(auto it = trainingProjects_.begin(); it != trainingProjects_.end(); ++it)
-      {
-        auto& training = *it;
-        if(training.type == unit->unit_type && training.trainer == unit)
-        {
-          if(training.trainer->orders.empty())
-          {
-            // Hatchery was upgraded to a lair.
-            training.completed = true;
-
-            onTrainingComplete(*it);
-            break;
-          }
-        }
-      }
-    }
   }
 
   void Trainer::update( const GameTime time, const GameTime delta )
@@ -220,15 +197,18 @@ namespace hivemind {
 
     for(auto& training : trainingProjects_)
     {
+      if(training.completed || training.cancel)
+        continue;
+
       if(!training.moneyAllocated)
       {
-        if(training.trainer && training.trainer->is_alive && !training.trainer->orders.empty())
+        if(!training.trainer->orders.empty())
         {
           training.moneyAllocated = true;
           bot_->messaging().sendGlobal( M_Training_Started, training.id );
 
           if ( verbose )
-            bot_->console().printf( "TrainOp %d: training started with %x", training.id, id( training.trainer ) );
+            bot_->console().printf( "TrainOp %d for %s: started with %x", training.id, sc2::UnitTypeToName( training.type ), id( training.trainer ) );
         }
         else if ( training.nextUpdateTime <= time )
         {
@@ -236,18 +216,31 @@ namespace hivemind {
 
           if(training.trainer && training.trainer->is_alive && training.trainer->orders.empty())
           {
-            bot_->unitDebugMsgs_[training.trainer] = "Trainer, Op " + std::to_string(training.id);
+            bot_->unitDebugMsgs_[training.trainer] = "TrainOp " + std::to_string(training.id);
 
             if ( verbose )
-              bot_->console().printf( "TrainOp %d: Got trainer %x for %s", training.id, id( training.trainer ), sc2::UnitTypeToName( training.type ) );
+              bot_->console().printf( "TrainOp %d for %s: starting with %x", training.id, sc2::UnitTypeToName( training.type ), id( training.trainer ) );
 
             Larva(training.trainer).morph(training.type);
             training.tries++;
           }
-          else
-          {
-            // TODO: Get new trainer?
-          }
+        }
+      }
+      else
+      {
+        if(training.trainer->orders.empty())
+        {
+          // Hatchery was upgraded to a lair.
+          assert(training.trainer->unit_type != training.trainerType);
+
+          auto& statsOld = unitStats_[training.trainerType];
+          statsOld.units.erase(training.trainer);
+
+          auto& statsNew = unitStats_[training.trainer->unit_type];
+          statsNew.units.insert(training.trainer);
+
+          training.completed = true;
+          onTrainingComplete(training);
         }
       }
     }
@@ -255,10 +248,11 @@ namespace hivemind {
     erase_if(trainingProjects_, [](const auto& training) {return training.completed || training.cancel; });
   }
 
-  std::pair<int,int> Trainer::getAllocatedResources() const
+  AllocatedResources Trainer::getAllocatedResources() const
   {
     int mineralSum = 0;
     int vespeneSum = 0;
+    int foodSum = 0;
     for(auto& training : trainingProjects_)
     {
       if(training.moneyAllocated)
@@ -266,11 +260,13 @@ namespace hivemind {
         continue;
       }
 
-      const auto& data = Database::units().at(training.type);
-      mineralSum += data.mineralCost;
-      vespeneSum += data.vespeneCost;
+      auto ability = Database::techTree().getBuildAbility( training.type, training.trainerType );
+
+      mineralSum += ability.mineralCost;
+      vespeneSum += ability.vespeneCost;
+      foodSum += ability.supplyCost;
     }
-    return { mineralSum, vespeneSum };
+    return { mineralSum, vespeneSum, foodSum };
   }
 
 }

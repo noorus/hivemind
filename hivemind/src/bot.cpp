@@ -319,11 +319,10 @@ namespace hivemind {
 
     ControllerBase::setActions( action_ );
 
-    builder_.update( time_, delta );
-
     baseManager_.update( time_, delta );
     messaging_.update( time_ );
     workers_.update( time_ );
+    builder_.update( time_, delta );
 
     bool doBrain = ( state_.brainInitialized_ && g_CVar_brain_enable.as_b() );
 
