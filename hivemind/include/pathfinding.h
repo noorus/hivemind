@@ -13,10 +13,6 @@ namespace hivemind {
 
   namespace pathfinding {
 
-    struct ipoint2 {
-      int x, y;
-    };
-
     using MapPath = vector<MapPoint2>;
 
     struct GridGraphNode: public MapPoint2 {
@@ -47,6 +43,8 @@ namespace hivemind {
         return !(*this == rhs);
       }
     };
+
+    // D* lite below ============================
 
     class Dstar;
 
@@ -100,6 +98,10 @@ namespace hivemind {
         else if ( k.first - 0.000001 > s2.k.first ) return false;
         return k.second < s2.k.second;
       }
+      inline operator MapPoint2() const
+      {
+        return MapPoint2( x, y );
+      }
     };
 
     struct DStarCell
@@ -126,49 +128,43 @@ namespace hivemind {
     class Dstar {
     private:
       DStarPath path;
-      double C1;
       double k_m;
       DStarState s_start, s_goal, s_last;
-      int maxSteps;
       ds_pq openList;
       DStarCellHashMap cellHash;
       DStarOpenHashMap openHash;
     public:
-      Dstar()
-      {
-        maxSteps = 80000;  // node expansions before we give up
-        C1 = 1;      // cost of an unseen cell
-      }
-      void   init( int sX, int sY, int gX, int gY );
-      void   updateCell( int x, int y, double val );
-      void   updateStart( int x, int y );
-      void   updateGoal( int x, int y );
-      bool   replan();
+      void init( int sX, int sY, int gX, int gY );
+      void updateCell( int x, int y, double val );
+      //! Update (set) start position, does not force a replanning
+      void updateStart( int x, int y );
+      //! Update (set) goal position
+      void updateGoal( int x, int y );
+      //! Replan the route, updating cost for all cells.
+      //! Returns true if a path is found.
+      //! Does greedy search over cost+g values in each cell.
+      //! Breaks ties based on euclidean(state,goal) + euclidean(state,start) metric.
+      bool replan();
       inline const DStarPath& getPath() { return path; }
     private:
-      bool   close( double x, double y );
-      void   makeNewCell( DStarState u );
+      void makeNewCell( DStarState u );
       double getG( DStarState u );
       double getRHS( DStarState u );
-      void   setG( DStarState u, double g );
+      void setG( DStarState u, double g );
       double setRHS( DStarState u, double rhs );
-      double eightCondist( DStarState a, DStarState b );
-      int    computeShortestPath();
-      void   updateVertex( DStarState u );
-      void   insert( DStarState u );
-      void   remove( DStarState u );
-      double trueDist( DStarState a, DStarState b );
+      int computeShortestPath( int maxSteps = 80000 );
+      void updateVertex( DStarState u );
+      void insert( DStarState u );
+      void remove( DStarState u );
       double heuristic( DStarState a, DStarState b );
       DStarState  calculateKey( DStarState u );
-      void   getSucc( DStarState u, list<DStarState> &s );
-      void   getPred( DStarState u, list<DStarState> &s );
+      //! Get 8 succeeding states for u (unless occupied)
+      void getSuccessors( DStarState u, list<DStarState> &s );
+      //! Get 8 preceding states for u
+      void getPredecessors( DStarState u, list<DStarState> &s );
       double cost( DStarState a, DStarState b );
-      bool   occupied( DStarState u );
-      bool   isValid( DStarState u );
-      float  keyHashCode( DStarState u )
-      {
-        return (float)(u.k.first + 1193 * u.k.second);
-      }
+      bool occupied( DStarState u );
+      bool isValid( DStarState u );
     };
 
   }
