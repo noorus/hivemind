@@ -11,6 +11,8 @@ namespace hivemind {
 
   namespace pathfinding {
     class GridGraph;
+    class DStarLite;
+    typedef std::unique_ptr<DStarLite> DStarLitePtr;
   }
 
   class Path {
@@ -18,10 +20,12 @@ namespace hivemind {
     Pathing* host_;
     vector<Vector2> verts_;
   public:
-    Path( Pathing* pathing );
+    explicit Path( Pathing* pathing );
     void assignVertices( const vector<Vector2>& path );
     inline const vector<Vector2>& verts() const { return verts_; }
     ~Path();
+
+    pathfinding::DStarLitePtr dstarResult;
   };
 
   using PathPtr = std::shared_ptr<Path>;
@@ -33,8 +37,12 @@ namespace hivemind {
     PathList paths_;
     std::unique_ptr<pathfinding::GridGraph> graph_;
   public:
-    Pathing( Bot* bot );
+    explicit Pathing( Bot* bot );
+
     PathPtr createPath( const Vector2& from, const Vector2& to );
+    void updatePaths(MapPoint2 obstacle);
+    void updatePath(PathPtr path, MapPoint2 obstacle);
+
     void clear();
     void gameBegin() final;
     void update( const GameTime time, const GameTime delta );

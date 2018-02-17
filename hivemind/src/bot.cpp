@@ -16,6 +16,8 @@ namespace hivemind {
   static bool callbackCVARFastBuild( ConVar* variable, ConVar::Value oldValue );
   static void concmdGetMoney( Console* console, ConCmd* command, StringVector& arguments );
   static void concmdKill( Console* console, ConCmd* command, StringVector& arguments );
+  static void concmdTestPath( Console* console, ConCmd* command, StringVector& arguments );
+  static void concmdTestPathBlock( Console* console, ConCmd* command, StringVector& arguments );
 
   HIVE_DECLARE_CONVAR_WITH_CB( cheat_godmode, "Cheat: Invulnerability.", false, callbackCVARGodmode );
   HIVE_DECLARE_CONVAR_WITH_CB( cheat_ignorecost, "Cheat: Ignore all resource cost checks.", false, callbackCVARCostIgnore );
@@ -23,6 +25,8 @@ namespace hivemind {
   HIVE_DECLARE_CONVAR_WITH_CB( cheat_fastbuild, "Cheat: Everything builds fast.", false, callbackCVARFastBuild);
   HIVE_DECLARE_CONCMD( cheat_getmoney, "Cheat: Get 5000 minerals and 5000 vespene.", concmdGetMoney );
   HIVE_DECLARE_CONCMD( kill, "Cheat: Kill selected units.", concmdKill );
+  HIVE_DECLARE_CONCMD( testPath, "Usage: testPath x1 y1 x2 y2. Creates a debug pathing from (x1,y1) to (x2,y2).", concmdTestPath );
+  HIVE_DECLARE_CONCMD( testPathBlock, "Usage: testPathBlock x y. Prevents use of (x,y) in pathing.", concmdTestPathBlock );
 
   HIVE_DECLARE_CONVAR( map_always_hash, "Always hash the map file to obtain an identifier instead of recognizing Battle.net cache files.", false );
 
@@ -95,6 +99,64 @@ namespace hivemind {
         g_Bot->debug().cheatKillUnit( unit );
       }
     }
+  }
+
+  void concmdTestPath( Console* console, ConCmd* command, StringVector& arguments )
+  {
+    if ( !g_Bot || !g_Bot->state().inGame_ )
+      return;
+
+    MapPoint2 start;
+    MapPoint2 end;
+
+    if(arguments.size() >= 5)
+    {
+      start.x = stoi(arguments.at(1));
+      start.y = stoi(arguments.at(2));
+      end.x = stoi(arguments.at(3));
+      end.y = stoi(arguments.at(4));
+    }
+    else
+    {
+      start.x = utils::randomBetween(0, (int)g_Bot->map().width() - 1);
+      start.y = utils::randomBetween(0, (int)g_Bot->map().height() - 1);
+      end.x = utils::randomBetween(0, (int)g_Bot->map().width() - 1);
+      end.y = utils::randomBetween(0, (int)g_Bot->map().height() - 1);
+    }
+
+    console->printf("Pathing from (%d, %d) to (%d, %d)", start.x, start.y, end.x, end.y);
+    platform::PerformanceTimer timer;
+    timer.start();
+    auto path = g_Bot->pathing().createPath( start, end );
+    auto time = timer.stop();
+    console->printf("Path length: %d, time: %f ms", path->verts().size(), time);
+  }
+
+  void concmdTestPathBlock( Console* console, ConCmd* command, StringVector& arguments )
+  {
+    if ( !g_Bot || !g_Bot->state().inGame_ )
+      return;
+
+    MapPoint2 obstacle;
+
+    if(arguments.size() >= 3)
+    {
+      obstacle.x = stoi(arguments.at(1));
+      obstacle.y = stoi(arguments.at(2));
+    }
+    else
+    {
+      obstacle.x = utils::randomBetween(0, (int)g_Bot->map().width() - 1);
+      obstacle.y = utils::randomBetween(0, (int)g_Bot->map().height() - 1);
+    }
+
+    //g_Bot->map().flagsMap_[obstacle.x][obstacle.y] &= ~MapFlag_Walkable;
+
+    console->printf("Blocking path at (%d, %d). Recalculating paths", obstacle.x, obstacle.y);
+    platform::PerformanceTimer timer;
+    timer.start();
+    g_Bot->pathing().updatePaths(obstacle);
+    auto time = timer.stop();
   }
 
   Bot::Bot( Console& console ):
@@ -351,16 +413,18 @@ namespace hivemind {
     {
       pathtest = true;
 
+      /*
       for ( int i = 0; i < 5; i++ )
       {
         auto idx = utils::randomBetween( 0, (int)map_.getBaseLocations().size() - 2 );
         auto path = pathing_.createPath( map_.getBaseLocations()[idx].position(), map_.getBaseLocations()[idx + 1].position() );
         console_.printf( "Pathing: Path from %d to %d - %d vertices%s", idx, idx + 1, path->verts().size(), path->verts().empty() ? " (NOT FOUND)" : "" );
       }
+      */
 
       //auto path = pathing_.createPath( {53, 100}, {73, 55});
-      //auto path = pathing_.createPath( {53, 100}, {55, 100});
-      //console_.printf( "Pathing: Path from {53, 100} to {73, 55} - %d vertices%s", path->verts().size(), path->verts().empty() ? " (NOT FOUND)" : "" );
+      auto path = pathing_.createPath( {53, 100}, {55, 100});
+      console_.printf( "Pathing: Path from {53, 100} to {73, 55} - %d vertices%s", path->verts().size(), path->verts().empty() ? " (NOT FOUND)" : "" );
     }
 
     pathing_.draw();

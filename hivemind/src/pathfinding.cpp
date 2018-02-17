@@ -62,6 +62,9 @@ namespace hivemind {
     {
       Real weight = 1.0f;
 
+      if(!to.valid)
+        return 10000.0f;
+
       if ( to.x != from.x && to.y != from.y )
         return (weight * c_sqrt2f);
       else
@@ -142,7 +145,7 @@ namespace hivemind {
 
     // TODO ensure validity of this -
     // predecessors are all neighbors that are walkable
-    vector<NodeIndex> DStarLite::predecessors( GridGraphNode& s )
+    vector<NodeIndex> DStarLite::predecessors( GridGraphNode& s ) const
     {
       vector<NodeIndex> vec;
       auto minx = std::max( s.x - 1, 0 );
@@ -165,8 +168,10 @@ namespace hivemind {
     // TODO ensure validity of this -
     // successors are all neighbors regardless of walkability,
     // but empty if current node is not walkable
-    vector<NodeIndex> DStarLite::successors( GridGraphNode& s )
+    vector<NodeIndex> DStarLite::successors( GridGraphNode& s ) const
     {
+      return predecessors(s);
+      /*
       vector<NodeIndex> vec;
       if ( !s.valid )
         return vec;
@@ -185,6 +190,7 @@ namespace hivemind {
         }
       }
       return vec;
+      */
     }
 
     void DStarLite::computeShortestPath()
@@ -192,7 +198,7 @@ namespace hivemind {
       auto& start = getNode( start_, graph_ );
       auto& goal = getNode( goal_, graph_ );
 
-      while(U.topKey() < calculateKey(start_, k_m) || start.rhs > start.g)
+      while(!U.empty() && (U.topKey() < calculateKey(start_, k_m) || !dstarEquals(start.rhs, start.g)))
       {
         auto& uv = U.top();
         auto& u = getNode(uv.first, graph_);
@@ -202,6 +208,8 @@ namespace hivemind {
 
         if(k_old < k_new)
         {
+          graph_.bot_->console().printf("Node u=(%d, %d) visited with k_old = %f < k_new = %f", u.x, u.y, k_old, k_new);
+
           U.set(uv.first, k_new);
         }
         else if ( u.g > u.rhs )
@@ -250,46 +258,94 @@ namespace hivemind {
       }
     }
 
-    MapPath pathDStarLiteSearch(GridGraph& graph, const MapPoint2& start, const MapPoint2& end)
+    NodeIndex DStarLite::getNext(NodeIndex current) const
     {
-      DStarLite path(graph);
-      path.initialize(start, end);
-      path.computeShortestPath();
+      auto& node = graph_.node(current);
 
+      Real bestValue = c_inf;
+      MapPoint2 bestSucc;
+
+      auto succs = successors(node);
+      for(auto& succid : succs)
+      {
+        auto& subsucc = getNode(succid, graph_);
+
+        auto value = subsucc.g + graph_.cost(node, subsucc);
+
+        if(value < bestValue)
+        {
+          bestSucc = succid;
+          bestValue = value;
+        }
+      }
+
+      return bestSucc;
+    }
+
+    MapPath DStarLite::getMapPath() const
+    {
       MapPath mapPath;
 
-      auto startNode = graph.node(start);
+      auto startNode = graph_.node(start_);
       if(startNode.rhs < c_inf)
       {
-        auto s = start;
-        while(s != end)
+        auto s = start_;
+        while(s != goal_)
         {
-          auto& node = graph.node(s);
-
-          Real bestValue = c_inf;
-          MapPoint2 bestSucc;
-
-          auto succs = path.successors(node);
-          for(auto& succid : succs)
-          {
-            auto& subsucc = getNode(succid, graph);
-
-            auto value = subsucc.g + graph.cost(node, subsucc);
-
-            if(value < bestValue)
-            {
-              bestSucc = succid;
-              bestValue = value;
-            }
-          }
-
           mapPath.push_back(s);
-          s = bestSucc;
+          s = getNext(s);
         }
-        mapPath.push_back(end);
+        mapPath.push_back(goal_);
       }
 
       return mapPath;
+    }
+
+    DStarLite::DStarLite(GridGraph& graph, const MapPoint2& start, const MapPoint2& goal) :
+      graph_(graph)
+    {
+      initialize(start, goal);
+      computeShortestPath();
+    }
+
+    DStarLitePtr DStarLite::search(GridGraph& graph, const MapPoint2& start, const MapPoint2& goal)
+    {
+      return DStarLitePtr(new DStarLite(graph, start, goal));
+    }
+
+    void DStarLite::update(MapPoint2 obstacle)
+    {
+      auto& v = graph_.node(obstacle);
+      v.valid = false;
+      v.g = c_inf;
+      v.rhs = c_inf;
+
+      for(auto uu : predecessors(v))
+      {
+        if(uu == goal_)
+          continue;
+
+        auto& u = graph_.node(uu);
+        
+        // TODO: the removed-obstacle-case: c_old > c(u,v) is not implemented.
+
+        //auto c_old = graph_.cost(u, v);
+
+        //if(dstarEquals(u.rhs, c_old + v.g))
+        {
+          auto min_rhs = std::numeric_limits<Real>::max();
+          auto succs = successors( u );
+          for ( auto succid : succs )
+          {
+            auto& subsucc = getNode( succid, graph_ );
+            min_rhs = std::min( min_rhs, subsucc.g + graph_.cost( u, subsucc ) );
+          }
+          u.rhs = min_rhs;
+        }
+
+        updateVertex(uu);
+      }
+      computeShortestPath();
     }
 
     // basic A* implementation below

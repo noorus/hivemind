@@ -32,7 +32,8 @@ namespace hivemind {
 
     //auto mapPath = pathfinding::pathAStarSearch( *(graph_.get()), from, to );
 
-    auto mapPath = pathfinding::pathDStarLiteSearch( *(graph_.get()), from, to );
+    auto dstarResult = pathfinding::DStarLite::search( *(graph_.get()), from, to );
+    auto mapPath = dstarResult->getMapPath();
 
     auto clipperPath = util_contourToClipperPath( mapPath );
     ClipperLib::CleanPolygon( clipperPath );
@@ -41,8 +42,35 @@ namespace hivemind {
     for ( auto& pt : mapPath )
       verts.push_back( pt );
     path->assignVertices( verts );
+
+    path->dstarResult = std::move(dstarResult);
+
     paths_.push_back( path );
     return path;
+  }
+
+  void Pathing::updatePaths(MapPoint2 obstacle)
+  {
+    for(auto& path : paths_)
+    {
+      updatePath(path, obstacle);
+    }
+  }
+
+  void Pathing::updatePath(PathPtr path, MapPoint2 obstacle)
+  {
+    path->dstarResult->update(obstacle);
+
+ //   return;
+
+    auto mapPath = path->dstarResult->getMapPath();
+    auto clipperPath = util_contourToClipperPath( mapPath );
+    ClipperLib::CleanPolygon( clipperPath );
+    auto poly = util_clipperPathToPolygon( clipperPath );
+    vector<Vector2> verts;
+    for ( auto& pt : mapPath )
+      verts.push_back( pt );
+    path->assignVertices( verts );
   }
 
   void Pathing::clear()
@@ -68,8 +96,10 @@ namespace hivemind {
     {
       auto color = utils::prettyColor( i, 25 );
       Vector2 previous;
-      for ( const auto& v : path->verts() )
+      for ( auto v : path->verts() )
       {
+        v -= sc2::Point3D(0.5f, 0.5f, 0.0f); // Prevent double adjust: there is one in conversion from MapPoint2 and one in the drawing function.
+
         if ( previous.x > 0.0f && previous.y > 0.0f )
         {
           bot_->debug().drawMapLine( bot_->map(), previous, v, color );
@@ -78,6 +108,30 @@ namespace hivemind {
         previous = v;
       }
       ++i;
+    }
+
+    for ( int y = 0; y < graph_->height_; ++y )
+    {
+      for ( int x = 0; x < graph_->width_; ++x )
+      {
+        const auto& node = graph_->node({ x, y });
+
+        if(node.rhs < 1000.0f || node.g < 1000.0f)
+        {
+          auto color = Colors::White;
+
+          auto pos = sc2::Point3D( float( x ), float( y ), 0.0f );
+          pos.z = bot_->map().heightMap_[x][y] + 0.2f;
+
+          bot_->debug().drawBox( pos, pos + sc2::Point3D( 1.0f, 1.0f, 0.0f ), color );
+
+          stringstream ss;
+          ss << std::fixed << std::setprecision(1) << node.rhs << "/" << node.g;
+
+          pos.x -= 0.25f;
+          bot_->debug().drawText( ss.str(), Vector3( pos + sc2::Point3D( 0.5f, 0.5f, 0.0f ) ), color );
+        }
+      }
     }
   }
 

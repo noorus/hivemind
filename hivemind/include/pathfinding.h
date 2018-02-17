@@ -102,6 +102,10 @@ namespace hivemind {
 
     typedef MapPoint2 NodeIndex;
 
+
+    class DStarLite;
+    typedef std::unique_ptr<DStarLite> DStarLitePtr;
+
     class DStarLite {
     private:
       GridGraph& graph_;
@@ -110,22 +114,29 @@ namespace hivemind {
       Heap<NodeIndex, DStarLiteKey> U;
       Real k_m;
 
-    public:
-      vector<NodeIndex> predecessors( GridGraphNode& s );
-      vector<NodeIndex> successors( GridGraphNode& s );
+      vector<NodeIndex> predecessors( GridGraphNode& s ) const;
+      vector<NodeIndex> successors( GridGraphNode& s ) const;
 
-      void initialize( const MapPoint2& start, const MapPoint2& goal );
       DStarLiteKey calculateKey( NodeIndex s, Real km );
       void updateVertex( NodeIndex u );
       void computeShortestPath();
 
-      DStarLite(GridGraph& graph) :
-        graph_(graph)
-      {
-      }
+      void initialize( const MapPoint2& start, const MapPoint2& goal );
+
+      explicit DStarLite(GridGraph& graph, const MapPoint2& start, const MapPoint2& goal);
+
+    public:
+
+      static DStarLitePtr search(GridGraph& graph, const MapPoint2& start, const MapPoint2& goal);
+
+      void update(MapPoint2 changedNode);
+
+
+      NodeIndex getNext(NodeIndex current) const;
+      MapPath getMapPath() const;
+
     };
 
-    MapPath pathDStarLiteSearch(GridGraph& graph, const MapPoint2& start, const MapPoint2& end);
     MapPath pathAStarSearch( GridGraph& graph, const MapPoint2& start, const MapPoint2& goal );
   }
 
