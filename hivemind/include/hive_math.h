@@ -85,13 +85,6 @@ namespace hivemind {
       return ( abs( x2 - x1 ) + abs( y2 - y1 ) );
     }
 
-    inline bool equals( double x, double y )
-    {
-      if ( isinf( x ) && isinf( y ) )
-        return true;
-      return ( abs( x - y ) < 0.00001 );
-    }
-
   }
 
 }

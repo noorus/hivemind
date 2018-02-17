@@ -7,7 +7,6 @@ namespace hivemind {
   private:
     vector<std::pair<IndexType, ValueType>> data_;
     std::map<IndexType, int> mapping_;
-    bool minHeap_;
   private:
     int percolate_up( int index )
     {
@@ -16,9 +15,7 @@ namespace hivemind {
 
       unsigned int parent = ( index - 1 ) / 2;
 
-      int m = ( minHeap_ ? -1 : 1 );
-
-      while ( index > 0 && m * data_[parent].second < m * data_[index].second )
+      while ( index > 0 && data_[parent].second > data_[index].second )
       {
         auto temp = data_[parent];
         data_[parent] = data_[index];
@@ -41,13 +38,11 @@ namespace hivemind {
       auto rchild = index * 2 + 2;
       unsigned int mchild;
 
-      int m = ( minHeap_ ? -1 : 1 );
-
-      while ( ( data_.size() > lchild && m*data_[index].second < m * data_[lchild].second )
-        || ( data_.size() > rchild && m*data_[index].second < m * data_[rchild].second ) )
+      while ( ( data_.size() > lchild && data_[index].second > data_[lchild].second )
+        || ( data_.size() > rchild && data_[index].second > data_[rchild].second ) )
       {
         mchild = lchild;
-        if ( data_.size() > rchild && m * data_[rchild].second > m * data_[lchild].second )
+        if ( data_.size() > rchild && data_[rchild].second < data_[lchild].second )
           mchild = rchild;
 
         auto temp = data_[mchild];
@@ -67,11 +62,13 @@ namespace hivemind {
       return index;
     }
   public:
-    Heap( bool minheap = true ): minHeap_( minheap ) {}
+    Heap() {}
     ~Heap() {}
     inline bool empty() const { return data_.empty(); }
     inline size_t size() const { return data_.size(); }
+    inline std::pair<IndexType, ValueType>& top() { return data_.front(); }
     inline const std::pair<IndexType, ValueType>& top() const { return data_.front(); }
+    inline const ValueType topKey() const { return data_.front().second; }
     void push( std::pair< IndexType, ValueType > x )
     {
       int index = (int)data_.size();
