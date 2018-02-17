@@ -54,23 +54,28 @@ namespace hivemind {
     public:
       Array2<GridGraphNode> grid;
       Map& map_;
+      Bot* bot_;
       int width_;
       int height_;
       bool useCreep_;
       void process( Real initial_g = 0.0f, Real initial_rhs = 0.0f );
     public:
-      GridGraph( Map& map );
+
+      explicit GridGraph( Bot* bot, Map& map );
       bool valid( const GridGraphNode& node ) const;
       Real cost( const GridGraphNode& from, const GridGraphNode& to ) const;
+
       inline GridGraphNode& node( int x, int y )
       {
         assert( x >= 0 && y >= 0 && x < width_ && y < height_ );
         return grid[x][y];
       }
+
       inline GridGraphNode& node( const MapPoint2& coord )
       {
         return node( coord.x, coord.y );
       }
+
       void reset();
     };
 
@@ -87,40 +92,41 @@ namespace hivemind {
       }
       inline bool operator < ( const DStarLiteKey& rhs ) const
       {
-        if ( first + c_dstarEpsilon < rhs.first )
-          return true;
-        else if ( first - c_dstarEpsilon > rhs.first )
-          return false;
-        return ( second < rhs.second );
+        return std::tie(first, second) < std::tie(rhs.first, rhs.second);
       }
       inline bool operator > ( const DStarLiteKey& rhs ) const
       {
-        if ( first - c_dstarEpsilon > rhs.first )
-          return true;
-        else if ( first + c_dstarEpsilon < rhs.first )
-          return false;
-        return ( second > rhs.second );
+        return rhs < *this;
       }
     };
 
+    typedef MapPoint2 NodeIndex;
+
     class DStarLite {
     private:
-      GridGraph graph_;
-      uint64_t start_;
-      uint64_t goal_;
-      Heap<uint64_t, DStarLiteKey> U;
+      GridGraph& graph_;
+      NodeIndex start_;
+      NodeIndex goal_;
+      Heap<NodeIndex, DStarLiteKey> U;
       Real k_m;
-      vector<uint64_t> predecessors( GridGraphNode& s );
-      vector<uint64_t> successors( GridGraphNode& s );
+
     public:
-      void initialize( const MapPoint2& from, const MapPoint2& to );
-      DStarLiteKey calculateKey( uint64_t s, Real km );
-      void updateVertex( uint64_t u );
+      vector<NodeIndex> predecessors( GridGraphNode& s );
+      vector<NodeIndex> successors( GridGraphNode& s );
+
+      void initialize( const MapPoint2& start, const MapPoint2& goal );
+      DStarLiteKey calculateKey( NodeIndex s, Real km );
+      void updateVertex( NodeIndex u );
       void computeShortestPath();
+
+      DStarLite(GridGraph& graph) :
+        graph_(graph)
+      {
+      }
     };
 
-    MapPath pathAStarSearch( GridGraph& graph, const MapPoint2& start, const MapPoint2& end );
-
+    MapPath pathDStarLiteSearch(GridGraph& graph, const MapPoint2& start, const MapPoint2& end);
+    MapPath pathAStarSearch( GridGraph& graph, const MapPoint2& start, const MapPoint2& goal );
   }
 
 }

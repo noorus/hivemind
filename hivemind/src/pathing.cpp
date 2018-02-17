@@ -30,7 +30,10 @@ namespace hivemind {
   {
     PathPtr path = std::make_shared<Path>( this );
 
-    auto mapPath = pathfinding::pathAStarSearch( *(graph_.get()), from, to );
+    //auto mapPath = pathfinding::pathAStarSearch( *(graph_.get()), from, to );
+
+    auto mapPath = pathfinding::pathDStarLiteSearch( *(graph_.get()), from, to );
+
     auto clipperPath = util_contourToClipperPath( mapPath );
     ClipperLib::CleanPolygon( clipperPath );
     auto poly = util_clipperPathToPolygon( clipperPath );
@@ -50,7 +53,7 @@ namespace hivemind {
   void Pathing::gameBegin()
   {
     bot_->messaging().listen( Listen_Global, this );
-    graph_ = std::make_unique<pathfinding::GridGraph>( bot_->map() );
+    graph_ = std::make_unique<pathfinding::GridGraph>( bot_, bot_->map() );
     graph_->process();
   }
 

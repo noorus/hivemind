@@ -46,11 +46,11 @@ namespace hivemind {
     }
     inline bool operator < ( const MapPoint2& rhs ) const
     {
-      return ( x < rhs.x && y < rhs.y );
+      return std::tie(x, y) < std::tie(rhs.x, rhs.y); 
     }
     inline bool operator > ( const MapPoint2& rhs ) const
     {
-      return ( x > rhs.x && y > rhs.y );
+      return rhs < *this;
     }
     inline operator sc2::Point2DI() const
     {
