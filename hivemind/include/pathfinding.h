@@ -7,6 +7,7 @@
 #include "hive_geometry.h"
 #include "regiongraph.h"
 #include "hive_rect2.h"
+#include "hive_minheap.h"
 #include "map.h"
 
 namespace hivemind {
@@ -19,6 +20,11 @@ namespace hivemind {
     public:
       bool valid;
       bool closed;
+      // id
+      // parents
+      // children
+      Real g;
+      Real rhs;
     public:
       GridGraphNode(): MapPoint2( 0, 0 ), valid( false ), closed( false ) {}
       GridGraphNode( int x, int y ): MapPoint2( x, y ) {}
@@ -44,128 +50,76 @@ namespace hivemind {
       }
     };
 
-    // D* lite below ============================
-
-    class Dstar;
-
     class GridGraph {
     public:
       Array2<GridGraphNode> grid;
-      Map & map_;
+      Map& map_;
       int width_;
       int height_;
       bool useCreep_;
+      void process( Real initial_g = 0.0f, Real initial_rhs = 0.0f );
     public:
       GridGraph( Map& map );
       bool valid( const GridGraphNode& node ) const;
-      void applyTo( Dstar* dstar );
       Real cost( const GridGraphNode& from, const GridGraphNode& to ) const;
+      inline GridGraphNode& node( int x, int y )
+      {
+        assert( x >= 0 && y >= 0 && x < width_ && y < height_ );
+        return grid[x][y];
+      }
+      inline GridGraphNode& node( const MapPoint2& coord )
+      {
+        return node( coord.x, coord.y );
+      }
       void reset();
     };
 
+    const Real c_dstarEpsilon = 0.00001f;
+
+    struct DStarLiteKey {
+      Real first; // min(g(s), rhs(s)) + h(s_start, s) + k_m
+      Real second; // min(g(s), rhs(s))
+      DStarLiteKey(): first( 0.0f ), second( 0.0f )
+      {
+      }
+      DStarLiteKey( Real first_, Real second_ ): first( first_ ), second( second_ )
+      {
+      }
+      inline bool operator < ( const DStarLiteKey& rhs ) const
+      {
+        if ( first + c_dstarEpsilon < rhs.first )
+          return true;
+        else if ( first - c_dstarEpsilon > rhs.first )
+          return false;
+        return ( second < rhs.second );
+      }
+      inline bool operator > ( const DStarLiteKey& rhs ) const
+      {
+        if ( first - c_dstarEpsilon > rhs.first )
+          return true;
+        else if ( first + c_dstarEpsilon < rhs.first )
+          return false;
+        return ( second > rhs.second );
+      }
+    };
+
+    class DStarLite {
+    private:
+      GridGraph graph_;
+      uint64_t start_;
+      uint64_t goal_;
+      Heap<uint64_t, DStarLiteKey> U;
+      Real k_m;
+      vector<uint64_t> predecessors( GridGraphNode& s );
+      vector<uint64_t> successors( GridGraphNode& s );
+    public:
+      void initialize( const MapPoint2& from, const MapPoint2& to );
+      DStarLiteKey calculateKey( uint64_t s, Real km );
+      void updateVertex( uint64_t u );
+      void computeShortestPath();
+    };
+
     MapPath pathAStarSearch( GridGraph& graph, const MapPoint2& start, const MapPoint2& end );
-
-    // D* lite
-
-    class DStarState {
-    public:
-      int x;
-      int y;
-      std::pair<double, double> k;
-      bool operator == ( const DStarState &s2 ) const
-      {
-        return ((x == s2.x) && (y == s2.y));
-      }
-      bool operator != ( const DStarState &s2 ) const
-      {
-        return ((x != s2.x) || (y != s2.y));
-      }
-      bool operator > ( const DStarState &s2 ) const
-      {
-        if ( k.first - 0.00001 > s2.k.first ) return true;
-        else if ( k.first < s2.k.first - 0.00001 ) return false;
-        return k.second > s2.k.second;
-      }
-      bool operator <= ( const DStarState &s2 ) const
-      {
-        if ( k.first < s2.k.first ) return true;
-        else if ( k.first > s2.k.first ) return false;
-        return k.second < s2.k.second + 0.00001;
-      }
-      bool operator < ( const DStarState &s2 ) const
-      {
-        if ( k.first + 0.000001 < s2.k.first ) return true;
-        else if ( k.first - 0.000001 > s2.k.first ) return false;
-        return k.second < s2.k.second;
-      }
-      inline operator MapPoint2() const
-      {
-        return MapPoint2( x, y );
-      }
-    };
-
-    struct DStarCell
-    {
-      double g;
-      double rhs;
-      double cost;
-    };
-
-    class DStarHash {
-    public:
-      size_t operator()( const DStarState &s ) const
-      {
-        return s.x + 34245 * s.y;
-      }
-    };
-
-    using DStarPath = list<DStarState>;
-
-    typedef priority_queue<DStarState, vector<DStarState>, std::greater<DStarState> > ds_pq;
-    using DStarCellHashMap = unordered_map<DStarState, DStarCell, DStarHash, std::equal_to<> >;
-    using DStarOpenHashMap = unordered_map<DStarState, float, DStarHash, std::equal_to<> >;
-
-    class Dstar {
-    private:
-      DStarPath path;
-      double k_m;
-      DStarState s_start, s_goal, s_last;
-      ds_pq openList;
-      DStarCellHashMap cellHash;
-      DStarOpenHashMap openHash;
-    public:
-      void init( int sX, int sY, int gX, int gY );
-      void updateCell( int x, int y, double val );
-      //! Update (set) start position, does not force a replanning
-      void updateStart( int x, int y );
-      //! Update (set) goal position
-      void updateGoal( int x, int y );
-      //! Replan the route, updating cost for all cells.
-      //! Returns true if a path is found.
-      //! Does greedy search over cost+g values in each cell.
-      //! Breaks ties based on euclidean(state,goal) + euclidean(state,start) metric.
-      bool replan();
-      inline const DStarPath& getPath() { return path; }
-    private:
-      void makeNewCell( DStarState u );
-      double getG( DStarState u );
-      double getRHS( DStarState u );
-      void setG( DStarState u, double g );
-      double setRHS( DStarState u, double rhs );
-      int computeShortestPath( int maxSteps = 80000 );
-      void updateVertex( DStarState u );
-      void insert( DStarState u );
-      void remove( DStarState u );
-      double heuristic( DStarState a, DStarState b );
-      DStarState  calculateKey( DStarState u );
-      //! Get 8 succeeding states for u (unless occupied)
-      void getSuccessors( DStarState u, list<DStarState> &s );
-      //! Get 8 preceding states for u
-      void getPredecessors( DStarState u, list<DStarState> &s );
-      double cost( DStarState a, DStarState b );
-      bool occupied( DStarState u );
-      bool isValid( DStarState u );
-    };
 
   }
 

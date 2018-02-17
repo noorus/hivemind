@@ -350,10 +350,11 @@ namespace hivemind {
     if ( !pathtest )
     {
       pathtest = true;
-      for ( int i = 0; i < 3; i++ )
+      for ( int i = 0; i < 5; i++ )
       {
         auto idx = utils::randomBetween( 0, (int)map_.getBaseLocations().size() - 2 );
         auto path = pathing_.createPath( map_.getBaseLocations()[idx].position(), map_.getBaseLocations()[idx + 1].position() );
+        console_.printf( "Pathing: Path from %d to %d - %d vertices%s", idx, idx + 1, path->verts().size(), path->verts().empty() ? " (NOT FOUND)" : "" );
       }
     }
 
