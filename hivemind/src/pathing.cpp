@@ -9,7 +9,8 @@
 
 namespace hivemind {
 
-  Path::Path( Pathing* pathing ): host_( pathing )
+  Path::Path( Pathing* pathing ):
+    host_( pathing )
   {
   }
 
@@ -60,8 +61,6 @@ namespace hivemind {
   void Pathing::updatePath(PathPtr path, MapPoint2 obstacle)
   {
     path->dstarResult->update(obstacle);
-
- //   return;
 
     auto mapPath = path->dstarResult->getMapPath();
     auto clipperPath = util_contourToClipperPath( mapPath );

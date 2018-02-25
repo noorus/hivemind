@@ -16,8 +16,10 @@ namespace hivemind {
 
     using MapPath = vector<MapPoint2>;
 
-    struct GridGraphNode: public MapPoint2 {
+    struct GridGraphNode {
     public:
+      MapPoint2 location;
+
       bool valid;
       bool closed;
       // id
@@ -25,16 +27,31 @@ namespace hivemind {
       // children
       Real g;
       Real rhs;
+
+      bool hasObstacle;
+
     public:
-      GridGraphNode(): MapPoint2( 0, 0 ), valid( false ), closed( false ) {}
-      GridGraphNode( int x, int y ): MapPoint2( x, y ) {}
+      GridGraphNode():
+        location( 0, 0 ),
+        valid( false ),
+        closed( false ),
+        hasObstacle( false )
+      {
+      }
+      GridGraphNode( int x, int y ):
+        location( x, y ),
+        valid( false ),
+        closed( false ),
+        hasObstacle( false )
+      {
+      }
       inline void reset()
       {
         closed = false;
       }
       inline bool operator == ( const GridGraphNode& rhs ) const
       {
-        return (x == rhs.x && y == rhs.y);
+        return location == rhs.location;
       }
       inline bool operator != ( const GridGraphNode& rhs ) const
       {
@@ -42,7 +59,7 @@ namespace hivemind {
       }
       inline bool operator == ( const MapPoint2& rhs ) const
       {
-        return (x == rhs.x && y == rhs.y);
+        return location == rhs;
       }
       inline bool operator != ( const MapPoint2& rhs ) const
       {
@@ -84,10 +101,15 @@ namespace hivemind {
     struct DStarLiteKey {
       Real first; // min(g(s), rhs(s)) + h(s_start, s) + k_m
       Real second; // min(g(s), rhs(s))
-      DStarLiteKey(): first( 0.0f ), second( 0.0f )
+
+      DStarLiteKey():
+        first( 0.0f ),
+        second( 0.0f )
       {
       }
-      DStarLiteKey( Real first_, Real second_ ): first( first_ ), second( second_ )
+      DStarLiteKey( Real first_, Real second_ ):
+        first( first_ ),
+        second( second_ )
       {
       }
       inline bool operator < ( const DStarLiteKey& rhs ) const
@@ -131,10 +153,10 @@ namespace hivemind {
 
       void update(MapPoint2 changedNode);
 
-
-      NodeIndex getNext(NodeIndex current) const;
+      pair<Real, NodeIndex> getNext(NodeIndex current) const;
+      Real getNextValue(NodeIndex current) const;
+      NodeIndex getNextNode(NodeIndex current) const;
       MapPath getMapPath() const;
-
     };
 
     MapPath pathAStarSearch( GridGraph& graph, const MapPoint2& start, const MapPoint2& goal );
