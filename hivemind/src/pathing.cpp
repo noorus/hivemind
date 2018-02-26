@@ -9,6 +9,8 @@
 
 namespace hivemind {
 
+  HIVE_DECLARE_CONVAR( draw_paths, "Whether to draw debug information about pathfinding. 0 = none, 1 = basic, 2 = verbose", 1 );
+
   Path::Path( Pathing* pathing ):
     host_( pathing )
   {
@@ -33,7 +35,7 @@ namespace hivemind {
 
     //auto mapPath = pathfinding::pathAStarSearch( *(graph_.get()), from, to );
 
-    auto dstarResult = pathfinding::DStarLite::search( *(graph_.get()), from, to );
+    auto dstarResult = pathfinding::DStarLite::search( bot_, from, to );
     auto mapPath = dstarResult->getMapPath();
 
     auto clipperPath = util_contourToClipperPath( mapPath );
@@ -90,6 +92,9 @@ namespace hivemind {
 
   void Pathing::draw()
   {
+    if(g_CVar_draw_paths.as_i() < 1)
+      return;
+
     int i = 1;
     for ( auto& path : paths_ )
     {
@@ -107,28 +112,31 @@ namespace hivemind {
         previous = v;
       }
       ++i;
-    }
 
-    for ( int y = 0; y < graph_->height_; ++y )
-    {
-      for ( int x = 0; x < graph_->width_; ++x )
+      if(g_CVar_draw_paths.as_i() < 2)
+        continue;
+
+      for ( int y = 0; y < path->dstarResult->graph_->height_; ++y )
       {
-        const auto& node = graph_->node({ x, y });
-
-        if(node.rhs < 1000.0f || node.g < 1000.0f)
+        for ( int x = 0; x < path->dstarResult->graph_->width_; ++x )
         {
-          auto color = Colors::White;
+          const auto& node = path->dstarResult->graph_->node({ x, y });
 
-          auto pos = sc2::Point3D( float( x ), float( y ), 0.0f );
-          pos.z = bot_->map().heightMap_[x][y] + 0.2f;
+          if(node.rhs < 1000.0f || node.g < 1000.0f)
+          {
+            auto color = Colors::White;
 
-          bot_->debug().drawBox( pos, pos + sc2::Point3D( 1.0f, 1.0f, 0.0f ), color );
+            auto pos = sc2::Point3D( float( x ), float( y ), 0.0f );
+            pos.z = bot_->map().heightMap_[x][y] + 0.21f;
 
-          stringstream ss;
-          ss << std::fixed << std::setprecision(1) << node.rhs << "/" << node.g;
+            bot_->debug().drawBox( pos, pos + sc2::Point3D( 1.0f, 1.0f, 0.0f ), color );
 
-          pos.x -= 0.25f;
-          bot_->debug().drawText( ss.str(), Vector3( pos + sc2::Point3D( 0.5f, 0.5f, 0.0f ) ), color );
+            stringstream ss;
+            ss << std::fixed << std::setprecision(1) << node.rhs << "/" << node.g;
+
+            pos.x -= 0.25f;
+            bot_->debug().drawText( ss.str(), Vector3( pos + sc2::Point3D( 0.5f, 0.5f, 0.0f ) ), color );
+          }
         }
       }
     }

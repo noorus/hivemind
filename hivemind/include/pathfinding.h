@@ -93,6 +93,17 @@ namespace hivemind {
         return node( coord.x, coord.y );
       }
 
+      inline const GridGraphNode& node( int x, int y ) const
+      {
+        assert( x >= 0 && y >= 0 && x < width_ && y < height_ );
+        return grid[x][y];
+      }
+
+      inline const GridGraphNode& node( const MapPoint2& coord ) const
+      {
+        return node( coord.x, coord.y );
+      }
+
       void reset();
     };
 
@@ -129,15 +140,16 @@ namespace hivemind {
     typedef std::unique_ptr<DStarLite> DStarLitePtr;
 
     class DStarLite {
+    public:
+      std::unique_ptr<pathfinding::GridGraph> graph_;
     private:
-      GridGraph& graph_;
       NodeIndex start_;
       NodeIndex goal_;
       Heap<NodeIndex, DStarLiteKey> U;
       Real k_m;
 
-      vector<NodeIndex> predecessors( GridGraphNode& s ) const;
-      vector<NodeIndex> successors( GridGraphNode& s ) const;
+      vector<NodeIndex> predecessors( const GridGraphNode& s ) const;
+      vector<NodeIndex> successors( const GridGraphNode& s ) const;
 
       DStarLiteKey calculateKey( NodeIndex s, Real km );
       void updateVertex( NodeIndex u );
@@ -145,11 +157,11 @@ namespace hivemind {
 
       void initialize( const MapPoint2& start, const MapPoint2& goal );
 
-      explicit DStarLite(GridGraph& graph, const MapPoint2& start, const MapPoint2& goal);
+      explicit DStarLite(Bot* bot, const MapPoint2& start, const MapPoint2& goal);
 
     public:
 
-      static DStarLitePtr search(GridGraph& graph, const MapPoint2& start, const MapPoint2& goal);
+      static DStarLitePtr search(Bot* bot, const MapPoint2& start, const MapPoint2& goal);
 
       void update(MapPoint2 changedNode);
 
