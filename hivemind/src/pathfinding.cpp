@@ -311,6 +311,12 @@ namespace hivemind {
         {
           mapPath.push_back(s);
           s = getNextNode(s);
+
+          if(mapPath.size() > 1000)
+          {
+            graph_->bot_->console().printf("BUG: failed get path from (%d, %d) to (%d, %d)", start_.x, start_.y, goal_.x, goal_.y);
+            break;
+          }
         }
         mapPath.push_back(goal_);
       }
@@ -332,10 +338,10 @@ namespace hivemind {
       return DStarLitePtr(new DStarLite(bot, start, goal));
     }
 
-    void DStarLite::update(MapPoint2 obstacle)
+    void DStarLite::updateWalkability(MapPoint2 obstacle, bool hasObstacle)
     {
       auto& v = graph_->node(obstacle);
-      v.hasObstacle = true;
+      v.hasObstacle = hasObstacle;
       v.g = c_inf;
       v.rhs = c_inf;
 

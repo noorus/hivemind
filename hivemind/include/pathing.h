@@ -36,12 +36,14 @@ namespace hivemind {
   private:
     PathList paths_;
     std::unique_ptr<pathfinding::GridGraph> graph_;
+
+    void updatePathWalkability(PathPtr path, MapPoint2 changedNode, bool hasObstacle);
+    void updatePathWalkability(MapPoint2 changedNode, bool hasObstacle);
+
   public:
     explicit Pathing( Bot* bot );
 
     PathPtr createPath( const Vector2& from, const Vector2& to );
-    void updatePaths(MapPoint2 obstacle);
-    void updatePath(PathPtr path, MapPoint2 obstacle);
 
     void clear();
     void gameBegin() final;

@@ -163,7 +163,7 @@ namespace hivemind {
 
       static DStarLitePtr search(Bot* bot, const MapPoint2& start, const MapPoint2& goal);
 
-      void update(MapPoint2 changedNode);
+      void updateWalkability(MapPoint2 changedNode, bool hasObstacle);
 
       pair<Real, NodeIndex> getNext(NodeIndex current) const;
       Real getNextValue(NodeIndex current) const;

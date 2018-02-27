@@ -17,7 +17,6 @@ namespace hivemind {
   static void concmdGetMoney( Console* console, ConCmd* command, StringVector& arguments );
   static void concmdKill( Console* console, ConCmd* command, StringVector& arguments );
   static void concmdTestPath( Console* console, ConCmd* command, StringVector& arguments );
-  static void concmdTestPathBlock( Console* console, ConCmd* command, StringVector& arguments );
 
   HIVE_DECLARE_CONVAR_WITH_CB( cheat_godmode, "Cheat: Invulnerability.", false, callbackCVARGodmode );
   HIVE_DECLARE_CONVAR_WITH_CB( cheat_ignorecost, "Cheat: Ignore all resource cost checks.", false, callbackCVARCostIgnore );
@@ -26,7 +25,6 @@ namespace hivemind {
   HIVE_DECLARE_CONCMD( cheat_getmoney, "Cheat: Get 5000 minerals and 5000 vespene.", concmdGetMoney );
   HIVE_DECLARE_CONCMD( kill, "Cheat: Kill selected units.", concmdKill );
   HIVE_DECLARE_CONCMD( testPath, "Usage: testPath x1 y1 x2 y2. Creates a debug pathing from (x1,y1) to (x2,y2).", concmdTestPath );
-  HIVE_DECLARE_CONCMD( testPathBlock, "Usage: testPathBlock x y. Prevents use of (x,y) in pathing.", concmdTestPathBlock );
 
   HIVE_DECLARE_CONVAR( map_always_hash, "Always hash the map file to obtain an identifier instead of recognizing Battle.net cache files.", false );
 
@@ -130,33 +128,6 @@ namespace hivemind {
     auto path = g_Bot->pathing().createPath( start, end );
     auto time = timer.stop();
     console->printf("Path length: %d, time: %f ms", path->verts().size(), time);
-  }
-
-  void concmdTestPathBlock( Console* console, ConCmd* command, StringVector& arguments )
-  {
-    if ( !g_Bot || !g_Bot->state().inGame_ )
-      return;
-
-    MapPoint2 obstacle;
-
-    if(arguments.size() >= 3)
-    {
-      obstacle.x = stoi(arguments.at(1));
-      obstacle.y = stoi(arguments.at(2));
-    }
-    else
-    {
-      obstacle.x = utils::randomBetween(0, (int)g_Bot->map().width() - 1);
-      obstacle.y = utils::randomBetween(0, (int)g_Bot->map().height() - 1);
-    }
-
-    //g_Bot->map().flagsMap_[obstacle.x][obstacle.y] &= ~MapFlag_Walkable;
-
-    console->printf("Blocking path at (%d, %d). Recalculating paths", obstacle.x, obstacle.y);
-    platform::PerformanceTimer timer;
-    timer.start();
-    g_Bot->pathing().updatePaths(obstacle);
-    auto time = timer.stop();
   }
 
   Bot::Bot( Console& console ):
@@ -378,6 +349,7 @@ namespace hivemind {
     vision_.update( time_, delta );
 
     intelligence_.update( time_, delta );
+    pathing_.update(time_, delta);
 
     ControllerBase::setActions( action_ );
 

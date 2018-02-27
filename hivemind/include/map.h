@@ -147,7 +147,10 @@ namespace hivemind {
     inline bool isBlocked( size_t x, size_t y ) const { return ( reservedMap_[x][y] == Reserved_Reserved ); }
     inline bool isBlocked( const Vector2& position ) const { return isBlocked( (size_t)position.x, (size_t)position.y ); }
     bool findClosestBuildablePosition( MapPoint2& position, UnitTypeID structure, bool nearResources = true );
-    inline bool canZergBuild( UnitTypeID structure, const Vector2& pos, int padding = 0, bool nearResources = true, bool noMainOverlap = true, bool notNearMain = true, bool notNearRamp = true ) { return canZergBuild( structure, (size_t)pos.x, (size_t)pos.y, padding, nearResources, noMainOverlap, notNearMain, notNearRamp ); }
+    inline bool canZergBuild( UnitTypeID structure, const Vector2& pos, int padding = 0, bool nearResources = true, bool noMainOverlap = true, bool notNearMain = true, bool notNearRamp = true )
+    {
+      return canZergBuild( structure, (size_t)pos.x, (size_t)pos.y, padding, nearResources, noMainOverlap, notNearMain, notNearRamp );
+    }
     const size_t width() const { return width_; }
     const size_t height() const { return height_; }
     BaseLocation* closestLocation( const Vector2& position );

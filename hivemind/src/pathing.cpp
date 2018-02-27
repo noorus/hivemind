@@ -52,17 +52,19 @@ namespace hivemind {
     return path;
   }
 
-  void Pathing::updatePaths(MapPoint2 obstacle)
+  void Pathing::updatePathWalkability(MapPoint2 changedNode, bool hasObstacle)
   {
+    //bot_->console().printf("Marking pathing obstacle=%d at (%d, %d)", hasObstacle, changedNode.x, changedNode.y);
+
     for(auto& path : paths_)
     {
-      updatePath(path, obstacle);
+      updatePathWalkability(path, changedNode, hasObstacle);
     }
   }
 
-  void Pathing::updatePath(PathPtr path, MapPoint2 obstacle)
+  void Pathing::updatePathWalkability(PathPtr path, MapPoint2 changedNode, bool hasObstacle)
   {
-    path->dstarResult->update(obstacle);
+    path->dstarResult->updateWalkability(changedNode, hasObstacle);
 
     auto mapPath = path->dstarResult->getMapPath();
     auto clipperPath = util_contourToClipperPath( mapPath );
@@ -88,6 +90,21 @@ namespace hivemind {
 
   void Pathing::update( const GameTime time, const GameTime delta )
   {
+    auto& map = graph_->map_;
+    for(int x = 0; x < map.width(); ++x)
+    {
+      for(int y = 0; y < map.height(); ++y)
+      {
+        bool blockStatus = graph_->map_.isBlocked(x, y);
+        auto& node = graph_->node(x, y);
+        if(blockStatus != node.hasObstacle)
+        {
+          node.hasObstacle = blockStatus;
+
+          updatePathWalkability({ x, y }, blockStatus);
+        }
+      }
+    }
   }
 
   void Pathing::draw()

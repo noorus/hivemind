@@ -78,33 +78,36 @@ namespace hivemind {
 
     if ( msg.code == M_Global_UnitCreated && utils::isMine( msg.unit() ) )
     {
-      // Hack to avoid double events in the beginning.
-      if ( assignedUnits_.find( msg.unit() ) != assignedUnits_.end() )
-        return;
-      assignedUnits_.insert( msg.unit() );
+      auto unit = msg.unit();
 
-      if ( utils::isStructure( msg.unit() ) )
+      // Hack to avoid double events in the beginning.
+      if ( assignedUnits_.find( unit ) != assignedUnits_.end() )
+        return;
+      assignedUnits_.insert( unit );
+
+      if ( utils::isStructure( unit ) )
       {
-        bot_->console().printf( "Building created: %s", sc2::UnitTypeToName( msg.unit()->unit_type ) );
-        addBuilding( msg.unit() );
+        MapPoint2 pos = Vector2(unit->pos);
+        bot_->console().printf( "Building created: %s at (%d, %d)", sc2::UnitTypeToName( unit->unit_type ), pos.x, pos.y );
+        addBuilding( unit );
       }
       else
       {
         // Workers are added through separate AddWorker message from WorkerManager
-        auto base = findClosest( msg.unit()->pos );
-        if ( msg.unit()->unit_type.ToType() == sc2::UNIT_TYPEID::ZERG_LARVA && base )
+        auto base = findClosest( unit->pos );
+        if ( unit->unit_type.ToType() == sc2::UNIT_TYPEID::ZERG_LARVA && base )
         {
           if ( verbose )
-            bot_->console().printf( "Base %llu: Adding larva %x", base->id(), id( msg.unit() ) );
+            bot_->console().printf( "Base %llu: Adding larva %x", base->id(), id( unit ) );
 
-          base->addLarva( msg.unit() );
+          base->addLarva( unit );
         }
-        else if ( msg.unit()->unit_type.ToType() == sc2::UNIT_TYPEID::ZERG_QUEEN && base )
+        else if ( unit->unit_type.ToType() == sc2::UNIT_TYPEID::ZERG_QUEEN && base )
         {
           if ( verbose )
-            bot_->console().printf( "Base %llu: Adding queen %x", base->id(), id( msg.unit() ) );
+            bot_->console().printf( "Base %llu: Adding queen %x", base->id(), id( unit ) );
 
-          base->addQueen( msg.unit() );
+          base->addQueen( unit );
         }
       }
     }
