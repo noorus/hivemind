@@ -6,6 +6,7 @@
 #include "console.h"
 #include "consolewindow_windows.h"
 #include "cache.h"
+#include "test_pathfinding.h"
 
 using namespace hivemind;
 
@@ -93,6 +94,8 @@ int runMain( hivemind::Bot::Options& options )
     window.messageLoop( wantStop );
     return true;
   }, &console );
+
+  pathfinding::testPathfinding(&console);
 
   sc2::Coordinator coordinator;
 

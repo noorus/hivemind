@@ -285,6 +285,9 @@
     <ClInclude Include="include\pathing.h">
       <Filter>Header Files\Systems</Filter>
     </ClInclude>
+    <ClInclude Include="include\test_pathfinding.h">
+      <Filter>Header Files\Map</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\stdafx.cpp">
@@ -424,6 +427,9 @@
     </ClCompile>
     <ClCompile Include="src\pathing.cpp">
       <Filter>Source Files\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="src\test_pathfinding.cpp">
+      <Filter>Source Files\Brain\Map</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

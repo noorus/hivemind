@@ -33,9 +33,7 @@ namespace hivemind {
   {
     PathPtr path = std::make_shared<Path>( this );
 
-    //auto mapPath = pathfinding::pathAStarSearch( *(graph_.get()), from, to );
-
-    auto dstarResult = pathfinding::DStarLite::search( bot_, from, to );
+    auto dstarResult = pathfinding::DStarLite::search( &bot_->console(), std::make_unique<pathfinding::GridMapAdaptor>( &bot_->map() ), from, to );
     auto mapPath = dstarResult->getMapPath();
 
     auto clipperPath = util_contourToClipperPath( mapPath );
@@ -84,18 +82,18 @@ namespace hivemind {
   void Pathing::gameBegin()
   {
     bot_->messaging().listen( Listen_Global, this );
-    graph_ = std::make_unique<pathfinding::GridGraph>( bot_, bot_->map() );
-    graph_->process();
+    graph_ = std::make_unique<pathfinding::GridGraph>(&bot_->console(), std::make_unique<pathfinding::GridMapAdaptor>( &bot_->map() ));
+    graph_->initialize();
   }
 
   void Pathing::update( const GameTime time, const GameTime delta )
   {
-    auto& map = graph_->map_;
+    auto& map = bot_->map();
     for(int x = 0; x < map.width(); ++x)
     {
       for(int y = 0; y < map.height(); ++y)
       {
-        bool blockStatus = graph_->map_.isBlocked(x, y);
+        bool blockStatus = map.isBlocked(x, y);
         auto& node = graph_->node(x, y);
         if(blockStatus != node.hasObstacle)
         {

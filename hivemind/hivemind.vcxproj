@@ -177,6 +177,7 @@
     <ClInclude Include="include\strategy.h" />
     <ClInclude Include="include\subsystem.h" />
     <ClInclude Include="include\targetver.h" />
+    <ClInclude Include="include\test_pathfinding.h" />
     <ClInclude Include="include\trainer.h" />
     <ClInclude Include="include\utilities.h" />
     <ClInclude Include="include\vision.h" />
@@ -228,6 +229,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="src\strategy.cpp" />
+    <ClCompile Include="src\test_pathfinding.cpp" />
     <ClCompile Include="src\trainer.cpp" />
     <ClCompile Include="src\utilities_internal.cpp" />
     <ClCompile Include="src\vision.cpp" />

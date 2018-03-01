@@ -17,52 +17,35 @@ namespace hivemind {
 
     const Real c_sqrt2f = 1.41421f; // sqrt(2) == diagonal multiplier
     const Real c_inf = std::numeric_limits<Real>::infinity();
+    const Real c_dstarEpsilon = 0.01f;
 
-    GridGraph::GridGraph( Bot* bot, Map& map ):
-      map_( map ),
-      bot_(bot),
-      width_( (int)map.width() ),
-      height_( (int)map.height() )
+    GridGraph::GridGraph( Console* console,  std::unique_ptr<GridMap> map ):
+      map_( std::move(map) ),
+      console_(console),
+      width_( map_->width() ),
+      height_( map_->height() )
     {
       grid.resize( width_, height_ );
     }
 
-    void GridGraph::process( Real initial_g, Real initial_rhs )
+    void GridGraph::initialize()
     {
       for ( int x = 0; x < width_; ++x )
         for ( int y = 0; y < height_; ++y )
         {
           GridGraphNode node( x, y );
-          node.valid = ( map_.flagsMap_[x][y] & MapFlag_Walkable );
-          node.closed = false;
-          node.rhs = initial_rhs;
-          node.g = initial_g;
+          node.valid = map_->isWalkable(x, y);
+          node.rhs = c_inf;
+          node.g = c_inf;
           grid[x][y] = node;
         }
-    }
-
-    void GridGraph::reset()
-    {
-      for ( int x = 0; x < width_; ++x )
-        for ( int y = 0; y < height_; ++y )
-        {
-          grid[x][y].reset();
-        }
-    }
-
-    bool GridGraph::valid( const GridGraphNode& node ) const
-    {
-      if ( !node.valid || map_.isBlocked( node.location.x, node.location.y ) )
-        return false;
-
-      return true;
     }
 
     Real GridGraph::cost( const GridGraphNode& from, const GridGraphNode& to ) const
     {
       Real weight = 1.0f;
 
-      if(to.hasObstacle)
+      if(to.hasObstacle || from.hasObstacle)
         return 10000.0f;
 
       if ( to.location.x != from.location.x && to.location.y != from.location.y )
@@ -91,6 +74,14 @@ namespace hivemind {
       return graph.grid[pt.x][pt.y];
     }
 
+    inline bool dstarLess( DStarLiteKey a, DStarLiteKey b )
+    {
+      DStarLiteKey aa = a;
+      aa.first -= c_dstarEpsilon;
+      aa.second -= c_dstarEpsilon;
+      return aa < b;
+    }
+
     inline bool dstarEquals( Real a, Real b )
     {
       if ( isinf( a ) && isinf( b ) )
@@ -110,7 +101,7 @@ namespace hivemind {
       auto& start = getNode( start_, *graph_ );
 
       DStarLiteKey key(
-        ( std::min( s.g, s.rhs ) + heuristic( start.location, s.location ) + k_m ),
+        ( std::min( s.g, s.rhs ) + heuristic( s.location, start.location ) + k_m ),
         ( std::min( s.g, s.rhs ) )
       );
 
@@ -124,27 +115,30 @@ namespace hivemind {
 
       U.clear(); // U = null
       k_m = 0.0f; // k_m = 0
-      graph_->process( c_inf, c_inf ); // rhs(s) = g(s) = inf
+      graph_->initialize(); // rhs(s) = g(s) = inf
       graph_->node( goal ).rhs = 0.0f; // rhs(s_goal) = 0
-      U.push( std::make_pair( goal_, calculateKey(goal_, 0.0f) ) ); // U.Insert(s_goal, [h(s_start, s_goal); 0])
+      U.push( {goal_, calculateKey(goal_, k_m)} ); // U.Insert(s_goal, [h(s_start, s_goal); 0])
     }
 
     void DStarLite::updateVertex(NodeIndex uid)
     {
-      if(uid == goal_)
-        return;
-
       auto& u = getNode(uid, *graph_);
-      u.rhs = getNextValue(uid);
+
+      if(uid != goal_)
+      {
+        u.rhs = getNextValue(uid);
+      }
 
       if(dstarEquals(u.g, u.rhs))
       {
+        //graph_->console_->printf("u=(%d, %d) saturated with u.g=u.rhs=%f", uid.x, uid.y, u.g);
+
         U.erase(uid);
       }
       else
       {
-        // set does Update or Insert accordingly.
-        U.set(uid, calculateKey(uid, k_m));
+        auto key = calculateKey(uid, k_m);
+        U.set(uid, key);
       }
     }
 
@@ -177,20 +171,29 @@ namespace hivemind {
 
     void DStarLite::computeShortestPath()
     {
-      auto& start = getNode( start_, *graph_ );
-      auto& goal = getNode( goal_, *graph_ );
+      auto& start = getNode(start_, *graph_);
+      auto& goal = getNode(goal_, *graph_);
 
-      while(!U.empty() && (U.topKey() < calculateKey(start_, k_m) || !dstarEquals(start.rhs, start.g)))
+      while(!U.empty())
       {
+        auto topKey = U.topKey();
+
+        if(!dstarLess(topKey, calculateKey(start_, k_m)) && dstarEquals(start.rhs, start.g))
+        {
+          // Found the shortest path. The remaining elements in U are off-path.
+          break;
+        }
+
         auto& uv = U.top();
         auto& u = getNode(uv.first, *graph_);
 
-        //graph_->bot_->console().printf("Node u=(%d, %d) visited with g(u) = %f, rhs(u) = %f", u.location.x, u.location.y, u.g, u.rhs);
+        //graph_->console_->printf("Node u=(%d, %d) visited with g(u) = %f, rhs(u) = %f, key={%f, %f}, h(u,start)=%f", u.location.x, u.location.y, u.g, u.rhs, topKey.first, topKey.second, heuristic( u.location, start.location ));
 
         // LPA*
 #if 1
         {
-          U.erase(uv.first);
+          U.pop();
+
           if(u.g > u.rhs)
           {
             u.g = u.rhs;
@@ -218,22 +221,22 @@ namespace hivemind {
 
             U.set(uv.first, k_new);
           }
-          else if ( u.g > u.rhs )
+          else if(u.g > u.rhs)
           {
             u.g = u.rhs;
 
             graph_.bot_->console().printf("Node u=(%d, %d) visited with g(u) = %f", u.location.x, u.location.y, u.g);
 
-            U.erase( uv.first );
-            auto preds = predecessors( u );
-            for ( auto sid : preds )
+            U.erase(uv.first);
+            auto preds = predecessors(u);
+            for(auto sid : preds)
             {
-              if ( sid != goal_ )
+              if(sid != goal_)
               {
-                auto& s = getNode( sid, graph_ );
-                s.rhs = std::min( s.rhs, graph_.cost( s, u ) + u.g );
+                auto& s = getNode(sid, graph_);
+                s.rhs = std::min(s.rhs, graph_.cost(s, u) + u.g);
               }
-              updateVertex( sid );
+              updateVertex(sid);
             }
           }
           else
@@ -243,26 +246,31 @@ namespace hivemind {
 
             graph_.bot_->console().printf("Node u=(%d, %d) expanded with g(u)=%f", u.location.x, u.location.y, g_old);
 
-            auto preds = predecessors( u );
-            preds.push_back( uv.first ); // Pred(u) union {u}
-            for ( auto sid : preds )
+            auto preds = predecessors(u);
+            preds.push_back(uv.first); // Pred(u) union {u}
+            for(auto sid : preds)
             {
-              auto& s = getNode( sid, graph_ );
-              if ( dstarEquals( s.rhs, graph_.cost( s, u ) + g_old ) && sid != goal_ )
+              auto& s = getNode(sid, graph_);
+              if(dstarEquals(s.rhs, graph_.cost(s, u) + g_old) && sid != goal_)
               {
                 auto min_rhs = std::numeric_limits<Real>::max();
-                auto succs = successors( s );
-                for ( auto succid : succs )
+                auto succs = successors(s);
+                for(auto succid : succs)
                 {
-                  auto& subsucc = getNode( succid, graph_ );
-                  min_rhs = std::min( min_rhs, subsucc.g + graph_.cost( s, subsucc ) );
+                  auto& subsucc = getNode(succid, graph_);
+                  min_rhs = std::min(min_rhs, subsucc.g + graph_.cost(s, subsucc));
                 }
               }
-              updateVertex( sid );
+              updateVertex(sid);
             }
           }
         }
 #endif
+      }
+
+      {
+        //auto topKey = (!U.empty() ? U.topKey() : DStarLiteKey{ c_inf, c_inf });
+        //graph_->console_->printf("Ending search with U.size=%d, U.topKey={%f,%f}, start.rhs=%f, start.g=%f", U.size(), topKey.first, topKey.second, start.rhs, start.g );
       }
     }
 
@@ -314,7 +322,7 @@ namespace hivemind {
 
           if(mapPath.size() > 1000)
           {
-            graph_->bot_->console().printf("BUG: failed get path from (%d, %d) to (%d, %d)", start_.x, start_.y, goal_.x, goal_.y);
+            graph_->console_->printf("BUG: failed get path from (%d, %d) to (%d, %d)", start_.x, start_.y, goal_.x, goal_.y);
             break;
           }
         }
@@ -324,18 +332,16 @@ namespace hivemind {
       return mapPath;
     }
 
-    DStarLite::DStarLite(Bot* bot, const MapPoint2& start, const MapPoint2& goal)
+    DStarLite::DStarLite(Console* console, std::unique_ptr<GridMap> map, const MapPoint2& start, const MapPoint2& goal)
     {
-      graph_ = std::make_unique<pathfinding::GridGraph>( bot, bot->map() );
-      graph_->process();
-
+      graph_ = std::make_unique<pathfinding::GridGraph>( console, std::move(map) );
       initialize(start, goal);
       computeShortestPath();
     }
 
-    DStarLitePtr DStarLite::search(Bot* bot, const MapPoint2& start, const MapPoint2& goal)
+    DStarLitePtr DStarLite::search(Console* console, std::unique_ptr<GridMap> map, const MapPoint2& start, const MapPoint2& goal)
     {
-      return DStarLitePtr(new DStarLite(bot, start, goal));
+      return DStarLitePtr(new DStarLite(console, std::move(map), start, goal));
     }
 
     void DStarLite::updateWalkability(MapPoint2 obstacle, bool hasObstacle)
@@ -354,72 +360,7 @@ namespace hivemind {
       computeShortestPath();
     }
 
-    // basic A* implementation below
-    MapPath pathAStarSearch( GridGraph& graph, const MapPoint2& start, const MapPoint2& goal )
-    {
-      Heap<NodeIndex, Real> openTiles;
-      std::map<NodeIndex, NodeIndex> parent;
-      std::map<NodeIndex, Real> gmap;
-
-      openTiles.push( std::make_pair( start , 0.0f ) );
-
-      NodeIndex curPt;
-
-      while ( !openTiles.empty() )
-      {
-        curPt = openTiles.top().first;
-        auto& current = getNode( curPt, graph );
-        if ( curPt == goal )
-        {
-          goto returnCurrent;
-        }
-
-        openTiles.pop();
-        current.closed = true;
-
-        auto minx = std::max( current.location.x - 1, 0 );
-        auto maxx = std::min( current.location.x + 1, graph.width_ - 1 );
-        auto miny = std::max( current.location.y - 1, 0 );
-        auto maxy = std::min( current.location.y + 1, graph.height_ - 1 );
-
-        for ( auto x = minx; x <= maxx; ++x )
-        {
-          for ( auto y = miny; y <= maxy; ++y )
-          {
-            auto& neighbour = graph.grid[x][y];
-            auto neighPt = neighbour;
-
-            if ( !neighbour.valid || neighbour.closed || !graph.valid( neighbour ) )
-              continue;
-
-            auto g = gmap[curPt] + graph.cost( current, neighbour );
-            auto h = util_diagonalDistanceHeuristic( neighbour.location, goal );
-            auto f = g + h;
-
-            if ( gmap.find( neighPt.location ) == gmap.end() || gmap[neighPt.location] > g )
-            {
-              gmap[neighPt.location] = g;
-              openTiles.set( neighPt.location, f );
-              parent[neighPt.location] = curPt;
-            }
-          }
-        }
-      }
-
-      // unwind from current position to start and return path, regardless of whether we found the goal
-      returnCurrent:
-
-      MapPath reversePath;
-      while ( curPt != parent[curPt] )
-      {
-        reversePath.push_back( curPt );
-        curPt = parent[curPt];
-      }
-      reversePath.push_back( start );
-      std::reverse( reversePath.begin(), reversePath.end() );
-      return reversePath;
-    }
 
   }
-
 }
+

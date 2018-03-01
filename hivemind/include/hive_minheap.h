@@ -7,6 +7,7 @@ namespace hivemind {
   private:
     vector<std::pair<IndexType, ValueType>> data_;
     std::map<IndexType, int> mapping_;
+
   private:
     int percolate_up( int index )
     {
@@ -29,6 +30,7 @@ namespace hivemind {
 
       return index;
     }
+
     int percolate_down( int index )
     {
       if ( index < 0 || index >= (int)data_.size() )
@@ -64,11 +66,28 @@ namespace hivemind {
   public:
     Heap() {}
     ~Heap() {}
+
     inline bool empty() const { return data_.empty(); }
     inline size_t size() const { return data_.size(); }
-    inline std::pair<IndexType, ValueType>& top() { return data_.front(); }
-    inline const std::pair<IndexType, ValueType>& top() const { return data_.front(); }
-    inline const ValueType topKey() const { return data_.front().second; }
+
+    inline std::pair<IndexType, ValueType>& top()
+    {
+      assert(!empty());
+      return data_.front();
+    }
+
+    inline const std::pair<IndexType, ValueType>& top() const
+    {
+      assert(!empty());
+      return data_.front();
+    }
+
+    inline const ValueType topKey() const
+    {
+      assert(!empty());
+      return data_.front().second;
+    }
+
     void push( std::pair< IndexType, ValueType > x )
     {
       int index = (int)data_.size();
@@ -79,6 +98,7 @@ namespace hivemind {
         percolate_up( index );
       }
     }
+
     void pop()
     {
       if ( data_.empty() )
@@ -98,6 +118,7 @@ namespace hivemind {
         percolate_down( 0 );
       }
     }
+
     bool set( IndexType& x, ValueType& v )
     {
       auto iter = mapping_.find( x );
@@ -119,21 +140,25 @@ namespace hivemind {
       }
       return false;
     }
+
     const ValueType& get( IndexType& x ) const
     {
       auto iter = mapping_.find( x );
       int index = ( *iter ).second;
       return data_[index].second;
     }
+
     bool contains( IndexType& x ) const
     {
       return ( mapping_.find( x ) != mapping_.end() );
     }
+
     void clear()
     {
       data_.clear();
       mapping_.clear();
     }
+
     bool erase( IndexType& x )
     {
       auto iter = mapping_.find( x );

@@ -21,33 +21,22 @@ namespace hivemind {
       MapPoint2 location;
 
       bool valid;
-      bool closed;
-      // id
-      // parents
-      // children
       Real g;
       Real rhs;
-
       bool hasObstacle;
 
     public:
       GridGraphNode():
         location( 0, 0 ),
         valid( false ),
-        closed( false ),
         hasObstacle( false )
       {
       }
       GridGraphNode( int x, int y ):
         location( x, y ),
         valid( false ),
-        closed( false ),
         hasObstacle( false )
       {
-      }
-      inline void reset()
-      {
-        closed = false;
       }
       inline bool operator == ( const GridGraphNode& rhs ) const
       {
@@ -67,22 +56,61 @@ namespace hivemind {
       }
     };
 
+    class GridMap
+    {
+    public:
+      virtual ~GridMap() = default;
+      virtual int width() const = 0;
+      virtual int height() const = 0;
+      virtual bool isWalkable(int x, int y) const = 0;
+    };
+
+    class GridMapAdaptor: public pathfinding::GridMap
+    {
+    public:
+      Map* map_;
+
+      explicit GridMapAdaptor(Map* map):
+        map_(map)
+      {
+      }
+
+      virtual int width() const override
+      {
+        return (int)map_->width();
+      }
+      virtual int height() const override
+      {
+        return (int)map_->height();
+      }
+      virtual bool isWalkable(int x, int y) const
+      {
+         return map_->flagsMap_[x][y] & MapFlag_Walkable;
+      }
+    };
+
     class GridGraph {
     public:
       Array2<GridGraphNode> grid;
-      Map& map_;
-      Bot* bot_;
+      std::unique_ptr<GridMap> map_;
+      Console* console_;
       int width_;
       int height_;
-      bool useCreep_;
-      void process( Real initial_g = 0.0f, Real initial_rhs = 0.0f );
+
+      void initialize();
+
     public:
 
-      explicit GridGraph( Bot* bot, Map& map );
-      bool valid( const GridGraphNode& node ) const;
+      explicit GridGraph( Console* console, std::unique_ptr<GridMap> map );
+
       Real cost( const GridGraphNode& from, const GridGraphNode& to ) const;
 
       inline GridGraphNode& node( int x, int y )
+      {
+        assert( x >= 0 && y >= 0 && x < width_ && y < height_ );
+        return grid[x][y];
+      }
+      inline const GridGraphNode& node( int x, int y ) const
       {
         assert( x >= 0 && y >= 0 && x < width_ && y < height_ );
         return grid[x][y];
@@ -92,22 +120,11 @@ namespace hivemind {
       {
         return node( coord.x, coord.y );
       }
-
-      inline const GridGraphNode& node( int x, int y ) const
-      {
-        assert( x >= 0 && y >= 0 && x < width_ && y < height_ );
-        return grid[x][y];
-      }
-
       inline const GridGraphNode& node( const MapPoint2& coord ) const
       {
         return node( coord.x, coord.y );
       }
-
-      void reset();
     };
-
-    const Real c_dstarEpsilon = 0.00001f;
 
     struct DStarLiteKey {
       Real first; // min(g(s), rhs(s)) + h(s_start, s) + k_m
@@ -123,11 +140,11 @@ namespace hivemind {
         second( second_ )
       {
       }
-      inline bool operator < ( const DStarLiteKey& rhs ) const
+      bool operator < ( const DStarLiteKey& rhs ) const
       {
         return std::tie(first, second) < std::tie(rhs.first, rhs.second);
       }
-      inline bool operator > ( const DStarLiteKey& rhs ) const
+      bool operator > ( const DStarLiteKey& rhs ) const
       {
         return rhs < *this;
       }
@@ -157,21 +174,20 @@ namespace hivemind {
 
       void initialize( const MapPoint2& start, const MapPoint2& goal );
 
-      explicit DStarLite(Bot* bot, const MapPoint2& start, const MapPoint2& goal);
+      explicit DStarLite(Console* console, std::unique_ptr<GridMap> map, const MapPoint2& start, const MapPoint2& goal);
 
     public:
 
-      static DStarLitePtr search(Bot* bot, const MapPoint2& start, const MapPoint2& goal);
+      static DStarLitePtr search(Console* console, std::unique_ptr<GridMap> map, const MapPoint2& start, const MapPoint2& goal);
 
       void updateWalkability(MapPoint2 changedNode, bool hasObstacle);
 
       pair<Real, NodeIndex> getNext(NodeIndex current) const;
       Real getNextValue(NodeIndex current) const;
       NodeIndex getNextNode(NodeIndex current) const;
+
       MapPath getMapPath() const;
     };
-
-    MapPath pathAStarSearch( GridGraph& graph, const MapPoint2& start, const MapPoint2& goal );
   }
 
 }
