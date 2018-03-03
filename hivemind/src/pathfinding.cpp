@@ -142,26 +142,31 @@ namespace hivemind {
       }
     }
 
-    // Predecessors are all neighbors that are walkable.
-    vector<NodeIndex> DStarLite::neighbours(const GridGraphNode& s) const
+    static bool isValidNeighbour(NodeIndex neighbour, const GridGraph& graph)
     {
-      vector<NodeIndex> vec;
-      auto minx = std::max( s.location.x - 1, 0 );
-      auto maxx = std::min( s.location.x + 1, graph_->width_ - 1 );
-      auto miny = std::max( s.location.y - 1, 0 );
-      auto maxy = std::min( s.location.y + 1, graph_->height_ - 1 );
-      for ( auto x = minx; x <= maxx; ++x )
-      {
-        for ( auto y = miny; y <= maxy; ++y )
-        {
-          MapPoint2 neighbour = { x, y };
-          if ( s.location == neighbour )
-            continue;
-          if ( graph_->node( neighbour ).valid )
-            vec.push_back( neighbour );
-        }
-      }
-      return vec;
+      if(neighbour.x < 0 || neighbour.x >= graph.width_)
+        return false;
+      if(neighbour.y < 0 || neighbour.y >= graph.height_)
+        return false;
+
+      return graph.node(neighbour).valid;
+    }
+
+    static const NodeIndex neighbourDeltas[] =
+    {
+      {-1,-1 },
+      { 0,-1 },
+      { 1,-1 },
+      {-1, 0 },
+      { 1, 0 },
+      {-1, 1 },
+      { 0, 1 },
+      { 1, 1 },
+    };
+
+    static NodeIndex add(NodeIndex location, NodeIndex delta)
+    {
+      return { location.x + delta.x, location.y + delta.y };
     }
 
     void DStarLite::computeShortestPath()
@@ -199,9 +204,13 @@ namespace hivemind {
             updateVertex(uv.first);
           }
 
-          for(auto s : neighbours(u))
+          for(auto delta : neighbourDeltas)
           {
-            updateVertex(s);
+            MapPoint2 neighbour = add(u.location, delta);
+            if(!isValidNeighbour(neighbour, *graph_))
+              continue;
+
+            updateVertex(neighbour);
           }
         }
 #else
@@ -276,15 +285,19 @@ namespace hivemind {
       Real bestValue = c_inf;
       MapPoint2 bestSucc;
 
-      for(auto& s : neighbours(node))
+      for(auto delta : neighbourDeltas)
       {
-        auto& ss = getNode(s, *graph_);
+        MapPoint2 neighbour = add(node.location, delta);
+        if(!isValidNeighbour(neighbour, *graph_))
+          continue;
+
+        auto& ss = getNode(neighbour, *graph_);
 
         auto value = ss.g + graph_->cost(node, ss);
 
         if(value < bestValue)
         {
-          bestSucc = s;
+          bestSucc = neighbour;
           bestValue = value;
         }
       }
@@ -348,9 +361,13 @@ namespace hivemind {
 
       updateVertex(obstacle);
 
-      for(auto uu : neighbours(v))
+      for(auto delta : neighbourDeltas)
       {
-        updateVertex(uu);
+        MapPoint2 neighbour = add(v.location, delta);
+        if(!isValidNeighbour(neighbour, *graph_))
+          continue;
+
+        updateVertex(neighbour);
       }
     }
   }

@@ -165,8 +165,6 @@ namespace hivemind {
       Heap<NodeIndex, DStarLiteKey> U;
       Real k_m;
 
-      vector<NodeIndex> neighbours( const GridGraphNode& s ) const;
-
       DStarLiteKey calculateKey( NodeIndex s, Real km );
       void updateVertex( NodeIndex u );
 
