@@ -98,17 +98,22 @@ namespace hivemind {
       auto plant = [&g, rawM](int w, int h, int x, int y)
       {
         for(int i = 0; i < w; ++i)
+        {
           for(int j = 0; j < h; ++j)
           {
-            auto z = MapPoint2{x,y};
+            auto z = MapPoint2{ x, y };
             z.x += i;
             z.y += j;
             g->updateWalkability(z, true);
             rawM->grid_.at(z.y).at(z.x) |= TestGridMap::Blocked;
           }
+        }
+
+        g->computeShortestPath();
       };
 
-      plant(2, 1, 13, 4);
+      plant(1, 1, 13, 4);
+      plant(1, 1, 14, 4);
 
       //rawM->print(console);
 

@@ -165,12 +165,10 @@ namespace hivemind {
       Heap<NodeIndex, DStarLiteKey> U;
       Real k_m;
 
-      vector<NodeIndex> predecessors( const GridGraphNode& s ) const;
-      vector<NodeIndex> successors( const GridGraphNode& s ) const;
+      vector<NodeIndex> neighbours( const GridGraphNode& s ) const;
 
       DStarLiteKey calculateKey( NodeIndex s, Real km );
       void updateVertex( NodeIndex u );
-      void computeShortestPath();
 
       void initialize( const MapPoint2& start, const MapPoint2& goal );
 
@@ -181,6 +179,7 @@ namespace hivemind {
       static DStarLitePtr search(Console* console, std::unique_ptr<GridMap> map, const MapPoint2& start, const MapPoint2& goal);
 
       void updateWalkability(MapPoint2 changedNode, bool hasObstacle);
+      void computeShortestPath();
 
       pair<Real, NodeIndex> getNext(NodeIndex current) const;
       Real getNextValue(NodeIndex current) const;

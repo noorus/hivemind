@@ -143,7 +143,7 @@ namespace hivemind {
     }
 
     // Predecessors are all neighbors that are walkable.
-    vector<NodeIndex> DStarLite::predecessors( const GridGraphNode& s ) const
+    vector<NodeIndex> DStarLite::neighbours(const GridGraphNode& s) const
     {
       vector<NodeIndex> vec;
       auto minx = std::max( s.location.x - 1, 0 );
@@ -162,11 +162,6 @@ namespace hivemind {
         }
       }
       return vec;
-    }
-
-    vector<NodeIndex> DStarLite::successors( const GridGraphNode& s ) const
-    {
-      return predecessors(s);
     }
 
     void DStarLite::computeShortestPath()
@@ -204,7 +199,7 @@ namespace hivemind {
             updateVertex(uv.first);
           }
 
-          for(auto s : successors(u))
+          for(auto s : neighbours(u))
           {
             updateVertex(s);
           }
@@ -281,7 +276,7 @@ namespace hivemind {
       Real bestValue = c_inf;
       MapPoint2 bestSucc;
 
-      for(auto& s : successors(node))
+      for(auto& s : neighbours(node))
       {
         auto& ss = getNode(s, *graph_);
 
@@ -353,14 +348,11 @@ namespace hivemind {
 
       updateVertex(obstacle);
 
-      for(auto uu : predecessors(v))
+      for(auto uu : neighbours(v))
       {
         updateVertex(uu);
       }
-      computeShortestPath();
     }
-
-
   }
 }
 

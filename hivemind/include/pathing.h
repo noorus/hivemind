@@ -37,7 +37,7 @@ namespace hivemind {
     PathList paths_;
     std::unique_ptr<pathfinding::GridGraph> graph_;
 
-    void updatePathWalkability(PathPtr path, MapPoint2 changedNode, bool hasObstacle);
+    void updatePaths();
     void updatePathWalkability(MapPoint2 changedNode, bool hasObstacle);
 
   public:

@@ -56,22 +56,25 @@ namespace hivemind {
 
     for(auto& path : paths_)
     {
-      updatePathWalkability(path, changedNode, hasObstacle);
+      path->dstarResult->updateWalkability(changedNode, hasObstacle);
     }
   }
 
-  void Pathing::updatePathWalkability(PathPtr path, MapPoint2 changedNode, bool hasObstacle)
+  void Pathing::updatePaths()
   {
-    path->dstarResult->updateWalkability(changedNode, hasObstacle);
+    for(auto& path : paths_)
+    {
+      path->dstarResult->computeShortestPath();
 
-    auto mapPath = path->dstarResult->getMapPath();
-    auto clipperPath = util_contourToClipperPath( mapPath );
-    ClipperLib::CleanPolygon( clipperPath );
-    auto poly = util_clipperPathToPolygon( clipperPath );
-    vector<Vector2> verts;
-    for ( auto& pt : mapPath )
-      verts.push_back( pt );
-    path->assignVertices( verts );
+      auto mapPath = path->dstarResult->getMapPath();
+      auto clipperPath = util_contourToClipperPath( mapPath );
+      ClipperLib::CleanPolygon( clipperPath );
+      auto poly = util_clipperPathToPolygon( clipperPath );
+      vector<Vector2> verts;
+      for ( auto& pt : mapPath )
+        verts.push_back( pt );
+      path->assignVertices( verts );
+    }
   }
 
   void Pathing::clear()
@@ -86,8 +89,13 @@ namespace hivemind {
     graph_->initialize();
   }
 
-  void Pathing::update( const GameTime time, const GameTime delta )
+  void Pathing::update(const GameTime time, const GameTime delta)
   {
+    platform::PerformanceTimer timer;
+    timer.start();
+
+    bool hasChanges = false;
+
     auto& map = bot_->map();
     for(int x = 0; x < map.width(); ++x)
     {
@@ -100,8 +108,21 @@ namespace hivemind {
           node.hasObstacle = blockStatus;
 
           updatePathWalkability({ x, y }, blockStatus);
+
+          hasChanges = true;
         }
       }
+    }
+
+    if(hasChanges)
+    {
+      updatePaths();
+    }
+
+    double updateDuration = timer.stop();
+    if(hasChanges)
+    {
+      bot_->console().printf("Pathing update took %f ms", updateDuration);
     }
   }
 
