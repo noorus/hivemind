@@ -15,9 +15,24 @@ namespace hivemind {
 
   namespace pathfinding {
 
-    const Real c_sqrt2f = 1.41421f; // sqrt(2) == diagonal multiplier
-    const Real c_inf = std::numeric_limits<Real>::infinity();
-    const Real c_dstarEpsilon = 0.01f;
+#if HIVE_PATHING_USE_FIXED_POINT
+    const PathCost DiagonalStepWeight = 1414; // sqrt(2) == diagonal multiplier
+    const PathCost NormalStepWeight = 1000;
+    const PathCost ObstacleStepWeight = 10000000;
+    const PathCost c_inf = std::numeric_limits<int>::max();
+    const PathCost c_dstarEpsilon = 0;
+#else
+    const PathCost DiagonalStepWeight = 1.41421f; // sqrt(2) == diagonal multiplier
+    const PathCost NormalStepWeight = 1.0f;
+    const PathCost ObstacleStepWeight = 10000.0f;
+    const PathCost c_inf = std::numeric_limits<Real>::infinity();
+    const PathCost c_dstarEpsilon = 0.01f;
+#endif
+    
+    static bool isInfinity(PathCost cost)
+    {
+      return cost == c_inf;
+    }
 
     GridGraph::GridGraph( Console* console,  std::unique_ptr<GridMap> map ):
       map_( std::move(map) ),
@@ -41,32 +56,29 @@ namespace hivemind {
         }
     }
 
-    Real GridGraph::cost( const GridGraphNode& from, const GridGraphNode& to ) const
+    PathCost GridGraph::cost( const GridGraphNode& from, const GridGraphNode& to ) const
     {
-      Real weight = 1.0f;
-
       if(to.hasObstacle || from.hasObstacle)
-        return 10000.0f;
+        return ObstacleStepWeight;
 
       if ( to.location.x != from.location.x && to.location.y != from.location.y )
-        return (weight * c_sqrt2f);
+        return DiagonalStepWeight;
       else
-        return weight;
+        return NormalStepWeight;
     }
 
-    inline Real util_diagonalDistanceHeuristic( const MapPoint2& a, const MapPoint2& b )
+    inline PathCost util_diagonalDistanceHeuristic( const MapPoint2& a, const MapPoint2& b )
     {
-      auto dx = (Real)math::abs( b.x - a.x );
-      auto dy = (Real)math::abs( b.y - a.y );
-      Real D = 1.0f;
-      return (D * (dx + dy)) + ((c_sqrt2f - (2.0f * D)) * std::min( dx, dy ));
+      auto dx = math::abs( b.x - a.x );
+      auto dy = math::abs( b.y - a.y );
+      return (NormalStepWeight * (dx + dy)) + ((DiagonalStepWeight - (2 * NormalStepWeight)) * std::min( dx, dy ));
     }
 
-    inline Real util_chebyshevDistanceHeuristic( const MapPoint2& a, const MapPoint2& b )
+    inline PathCost util_chebyshevDistanceHeuristic( const MapPoint2& a, const MapPoint2& b )
     {
-      auto dx = (Real)math::abs( b.x - a.x );
-      auto dy = (Real)math::abs( b.y - a.y );
-      return std::max( dx, dy );
+      auto dx = math::abs( b.x - a.x );
+      auto dy = math::abs( b.y - a.y );
+      return NormalStepWeight * std::max( dx, dy );
     }
 
     inline GridGraphNode& getNode( NodeIndex pt, GridGraph& graph )
@@ -76,33 +88,43 @@ namespace hivemind {
 
     inline bool dstarLess( DStarLiteKey a, DStarLiteKey b )
     {
+      if(isInfinity(a.first))
+        return false;
+
       DStarLiteKey aa = a;
       aa.first -= c_dstarEpsilon;
       aa.second -= c_dstarEpsilon;
       return aa < b;
     }
 
-    inline bool dstarEquals( Real a, Real b )
+    inline bool dstarEquals( PathCost a, PathCost b )
     {
-      if ( isinf( a ) && isinf( b ) )
+      if ( isInfinity( a ) && isInfinity( b ) )
         return true;
-      return ( abs( a - b ) < c_dstarEpsilon );
+      return ( abs( a - b ) <= c_dstarEpsilon );
     }
 
-    inline Real heuristic( const MapPoint2& a, const MapPoint2& b )
+    inline PathCost heuristic( const MapPoint2& a, const MapPoint2& b )
     {
       return util_diagonalDistanceHeuristic( a, b );
       //return util_chebyshevDistanceHeuristic(a, b);
     }
 
-    DStarLiteKey DStarLite::calculateKey( NodeIndex sid, Real k_m )
+    DStarLiteKey DStarLite::calculateKey( NodeIndex sid, PathCost k_m )
     {
       auto& s = getNode( sid, *graph_ );
       auto& start = getNode( start_, *graph_ );
 
+      auto minValue = std::min(s.g, s.rhs);
+
+      if(isInfinity(minValue))
+      {
+        return DStarLiteKey{ c_inf, c_inf };
+      }
+
       DStarLiteKey key(
-        ( std::min( s.g, s.rhs ) + heuristic( s.location, start.location ) + k_m ),
-        ( std::min( s.g, s.rhs ) )
+        minValue + heuristic( s.location, start.location ) + k_m,
+        minValue
       );
 
       return key;
@@ -114,9 +136,9 @@ namespace hivemind {
       goal_ = goal;
 
       U.clear(); // U = null
-      k_m = 0.0f; // k_m = 0
+      k_m = 0; // k_m = 0
       graph_->initialize(); // rhs(s) = g(s) = inf
-      graph_->node( goal ).rhs = 0.0f; // rhs(s_goal) = 0
+      graph_->node( goal ).rhs = 0; // rhs(s_goal) = 0
       U.push( {goal_, calculateKey(goal_, k_m)} ); // U.Insert(s_goal, [h(s_start, s_goal); 0])
     }
 
@@ -131,7 +153,8 @@ namespace hivemind {
 
       if(dstarEquals(u.g, u.rhs))
       {
-        //graph_->console_->printf("u=(%d, %d) saturated with u.g=u.rhs=%f", uid.x, uid.y, u.g);
+        //graph_->console_->printf("u=(%d, %d) is already saturated with u.g=u.rhs=%f", uid.x, uid.y, u.g);
+        //graph_->console_->printf("u=(%d, %d) is already saturated with u.g=u.rhs=%d", uid.x, uid.y, u.g);
 
         U.erase(uid);
       }
@@ -177,8 +200,9 @@ namespace hivemind {
       while(!U.empty())
       {
         auto topKey = U.topKey();
+        auto startKey = calculateKey(start_, k_m);
 
-        if(!dstarLess(topKey, calculateKey(start_, k_m)) && dstarEquals(start.rhs, start.g))
+        if(!dstarLess(topKey, startKey) && dstarEquals(start.rhs, start.g))
         {
           // Found the shortest path. The remaining elements in U are off-path.
           break;
@@ -188,6 +212,7 @@ namespace hivemind {
         auto& u = getNode(uv.first, *graph_);
 
         //graph_->console_->printf("Node u=(%d, %d) visited with g(u) = %f, rhs(u) = %f, key={%f, %f}, h(u,start)=%f", u.location.x, u.location.y, u.g, u.rhs, topKey.first, topKey.second, heuristic( u.location, start.location ));
+        //graph_->console_->printf("Node u=(%d, %d) visited with g(u) = %d, rhs(u) = %d, key={%d, %d}, h(u,start)=%d", u.location.x, u.location.y, u.g, u.rhs, topKey.first, topKey.second, heuristic( u.location, start.location ));
 
         // LPA*
 #if 1
@@ -197,6 +222,9 @@ namespace hivemind {
           if(u.g > u.rhs)
           {
             u.g = u.rhs;
+
+            //graph_->console_->printf("u=(%d, %d) saturated with u.g=u.rhs=%f", u.location.x, u.location.y, u.g);
+            //graph_->console_->printf("u=(%d, %d) saturated with u.g=u.rhs=%d", u.location.x, u.location.y, u.g);
           }
           else
           {
@@ -257,7 +285,7 @@ namespace hivemind {
               auto& s = getNode(sid, graph_);
               if(dstarEquals(s.rhs, graph_.cost(s, u) + g_old) && sid != goal_)
               {
-                auto min_rhs = std::numeric_limits<Real>::max();
+                auto min_rhs = std::numeric_limits<PathCost>::max();
                 auto succs = successors(s);
                 for(auto succid : succs)
                 {
@@ -278,11 +306,11 @@ namespace hivemind {
       }
     }
 
-    pair<Real, NodeIndex> DStarLite::getNext(NodeIndex current) const
+    pair<PathCost, NodeIndex> DStarLite::getNext(NodeIndex current) const
     {
       auto& node = graph_->node(current);
 
-      Real bestValue = c_inf;
+      PathCost bestValue = c_inf;
       MapPoint2 bestSucc;
 
       for(auto delta : neighbourDeltas)
@@ -292,6 +320,9 @@ namespace hivemind {
           continue;
 
         auto& ss = getNode(neighbour, *graph_);
+
+        if(isInfinity(ss.g))
+          continue;
 
         auto value = ss.g + graph_->cost(node, ss);
 
@@ -305,7 +336,7 @@ namespace hivemind {
       return { bestValue, bestSucc };
     }
 
-    Real DStarLite::getNextValue(NodeIndex current) const
+    PathCost DStarLite::getNextValue(NodeIndex current) const
     {
       return getNext(current).first;
     }

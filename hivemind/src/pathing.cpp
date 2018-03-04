@@ -158,9 +158,27 @@ namespace hivemind {
         {
           const auto& node = path->dstarResult->graph_->node({ x, y });
 
-          if(node.rhs < 1000.0f || node.g < 1000.0f)
+          Real rhs = (Real)node.rhs;
+          Real g = (Real)node.g;
+
+#if HIVE_PATHING_USE_FIXED_POINT
+          rhs /= 1000.0f;
+          g /= 1000.0f;
+          if(node.rhs == std::numeric_limits<int>::max() && node.rhs == node.g)
+            continue;
+#endif
+          if(rhs > 10000.0f)
+            rhs /= 10000.0f;
+          if(g > 10000.0f)
+            g /= 10000.0f;
+
+          if(rhs < 1000.0f || g < 1000.0f)
           {
-            auto color = Colors::White;
+            auto color = Colors::Green;
+            if(rhs > g)
+              color = Colors::Red;
+            if(rhs < g)
+              color = Colors::Yellow;
 
             auto pos = sc2::Point3D( float( x ), float( y ), 0.0f );
             pos.z = bot_->map().heightMap_[x][y] + 0.21f;
@@ -168,7 +186,7 @@ namespace hivemind {
             bot_->debug().drawBox( pos, pos + sc2::Point3D( 1.0f, 1.0f, 0.0f ), color );
 
             stringstream ss;
-            ss << std::fixed << std::setprecision(1) << node.rhs << "/" << node.g;
+            ss << std::fixed << std::setprecision(1) << rhs << "/" << g;
 
             pos.x -= 0.25f;
             bot_->debug().drawText( ss.str(), Vector3( pos + sc2::Point3D( 0.5f, 0.5f, 0.0f ) ), color );

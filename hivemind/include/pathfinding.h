@@ -16,13 +16,21 @@ namespace hivemind {
 
     using MapPath = vector<MapPoint2>;
 
+#define HIVE_PATHING_USE_FIXED_POINT 1
+
+#if HIVE_PATHING_USE_FIXED_POINT
+    typedef int PathCost;
+#else
+    typedef Real PathCost;
+#endif
+
     struct GridGraphNode {
     public:
       MapPoint2 location;
 
       bool valid;
-      Real g;
-      Real rhs;
+      PathCost g;
+      PathCost rhs;
       bool hasObstacle;
 
     public:
@@ -103,7 +111,7 @@ namespace hivemind {
 
       explicit GridGraph( Console* console, std::unique_ptr<GridMap> map );
 
-      Real cost( const GridGraphNode& from, const GridGraphNode& to ) const;
+      PathCost cost( const GridGraphNode& from, const GridGraphNode& to ) const;
 
       inline GridGraphNode& node( int x, int y )
       {
@@ -127,15 +135,15 @@ namespace hivemind {
     };
 
     struct DStarLiteKey {
-      Real first; // min(g(s), rhs(s)) + h(s_start, s) + k_m
-      Real second; // min(g(s), rhs(s))
+      PathCost first; // min(g(s), rhs(s)) + h(s_start, s) + k_m
+      PathCost second; // min(g(s), rhs(s))
 
       DStarLiteKey():
-        first( 0.0f ),
-        second( 0.0f )
+        first( 0 ),
+        second( 0 )
       {
       }
-      DStarLiteKey( Real first_, Real second_ ):
+      DStarLiteKey( PathCost first_, PathCost second_ ):
         first( first_ ),
         second( second_ )
       {
@@ -163,9 +171,9 @@ namespace hivemind {
       NodeIndex start_;
       NodeIndex goal_;
       Heap<NodeIndex, DStarLiteKey> U;
-      Real k_m;
+      PathCost k_m;
 
-      DStarLiteKey calculateKey( NodeIndex s, Real km );
+      DStarLiteKey calculateKey( NodeIndex s, PathCost km );
       void updateVertex( NodeIndex u );
 
       void initialize( const MapPoint2& start, const MapPoint2& goal );
@@ -179,8 +187,8 @@ namespace hivemind {
       void updateWalkability(MapPoint2 changedNode, bool hasObstacle);
       void computeShortestPath();
 
-      pair<Real, NodeIndex> getNext(NodeIndex current) const;
-      Real getNextValue(NodeIndex current) const;
+      pair<PathCost, NodeIndex> getNext(NodeIndex current) const;
+      PathCost getNextValue(NodeIndex current) const;
       NodeIndex getNextNode(NodeIndex current) const;
 
       MapPath getMapPath() const;

@@ -385,27 +385,32 @@ namespace hivemind {
     {
       pathtest = true;
 
-      if(1)
+      auto makePath = [&](MapPoint2 from, MapPoint2 to)
+      {
+        platform::PerformanceTimer timer;
+        timer.start();
+
+        auto path = pathing_.createPath(from, to);
+
+        auto time = timer.stop();
+        console_.printf("Path from {%d, %d} to {%d, %d} took %d vertices%s, and %f ms", from.x, from.y, to.x, to.y, path->verts().size(), path->verts().empty() ? " (NOT FOUND)" : "", time);
+      };
+
+      if(0)
       {
         for(int i = 0; i < 5; i++)
         {
           auto idx = utils::randomBetween(0, (int)map_.getBaseLocations().size() - 2);
-          auto path = pathing_.createPath(map_.getBaseLocations()[idx].position(), map_.getBaseLocations()[idx + 1].position());
-          console_.printf("Pathing: Path from %d to %d - %d vertices%s", idx, idx + 1, path->verts().size(), path->verts().empty() ? " (NOT FOUND)" : "");
+          auto from = map_.getBaseLocations()[idx].position();
+          auto to = map_.getBaseLocations()[idx + 1].position();
+
+          makePath(from, to);
         }
       }
 
-      if(1)
-      {
-        auto path = pathing_.createPath({ 53, 100 }, { 57, 102 });
-        console_.printf("Pathing: Path from {53, 100} to {57, 102} - %d vertices%s", path->verts().size(), path->verts().empty() ? " (NOT FOUND)" : "");
-      }
-
-      if(1)
-      {
-        auto path = pathing_.createPath({ 50, 70 }, { 50, 80 });
-        console_.printf("Pathing: Path from {50, 70} to {50, 80} - %d vertices%s", path->verts().size(), path->verts().empty() ? " (NOT FOUND)" : "");
-      }
+      //makePath({ 53, 100 }, { 57, 102 });
+      //makePath({ 50, 70 }, { 50, 80 });
+      makePath({ 130, 100 }, { 30, 50 });
     }
 
     pathing_.draw();
