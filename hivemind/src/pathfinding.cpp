@@ -142,14 +142,22 @@ namespace hivemind {
       U.push( {goal_, calculateKey(goal_, k_m)} ); // U.Insert(s_goal, [h(s_start, s_goal); 0])
     }
 
+
     void DStarLite::updateVertex(NodeIndex uid)
     {
-      auto& u = getNode(uid, *graph_);
-
       if(uid != goal_)
       {
+        auto& u = getNode(uid, *graph_);
+
         u.rhs = getNextValue(uid);
       }
+
+      updateVertexLite(uid);
+    }
+
+    void DStarLite::updateVertexLite(NodeIndex uid)
+    {
+      auto& u = getNode(uid, *graph_);
 
       if(dstarEquals(u.g, u.rhs))
       {
@@ -197,7 +205,10 @@ namespace hivemind {
       auto& start = getNode(start_, *graph_);
       auto& goal = getNode(goal_, *graph_);
 
-      while(!U.empty())
+      int steps = 0;
+      const int maxSteps = 100000;
+
+      while(!U.empty() && steps++ < maxSteps)
       {
         auto topKey = U.topKey();
         auto startKey = calculateKey(start_, k_m);
@@ -219,26 +230,48 @@ namespace hivemind {
         {
           U.pop();
 
-          if(u.g > u.rhs)
+          if(u.rhs < u.g)
           {
             u.g = u.rhs;
 
             //graph_->console_->printf("u=(%d, %d) saturated with u.g=u.rhs=%f", u.location.x, u.location.y, u.g);
             //graph_->console_->printf("u=(%d, %d) saturated with u.g=u.rhs=%d", u.location.x, u.location.y, u.g);
+
+            for(auto delta : neighbourDeltas)
+            {
+              MapPoint2 neighbour = add(u.location, delta);
+              if(!isValidNeighbour(neighbour, *graph_))
+                continue;
+
+              if(neighbour == goal_)
+                continue;
+
+              auto& node = graph_->node(neighbour);
+              auto newValue = u.g + graph_->cost(u, node);
+
+              if(newValue < node.rhs)
+              {
+                node.rhs = newValue;
+
+                //updateVertexLite(neighbour);
+              }
+
+              updateVertexLite(neighbour);
+            }
           }
           else
           {
             u.g = c_inf;
             updateVertex(u.location);
-          }
 
-          for(auto delta : neighbourDeltas)
-          {
-            MapPoint2 neighbour = add(u.location, delta);
-            if(!isValidNeighbour(neighbour, *graph_))
-              continue;
+            for(auto delta : neighbourDeltas)
+            {
+              MapPoint2 neighbour = add(u.location, delta);
+              if(!isValidNeighbour(neighbour, *graph_))
+                continue;
 
-            updateVertex(neighbour);
+              updateVertex(neighbour);
+            }
           }
         }
 #else
@@ -301,8 +334,9 @@ namespace hivemind {
       }
 
       {
-        //auto topKey = (!U.empty() ? U.topKey() : DStarLiteKey{ c_inf, c_inf });
-        //graph_->console_->printf("Ending search with U.size=%d, U.topKey={%f,%f}, start.rhs=%f, start.g=%f", U.size(), topKey.first, topKey.second, start.rhs, start.g );
+        auto topKey = (!U.empty() ? U.topKey() : DStarLiteKey{ c_inf, c_inf });
+        //graph_->console_->printf("Ending search with U.size=%d, U.topKey={%f,%f}, start.rhs=%f, start.g=%f, steps=%d", U.size(), topKey.first, topKey.second, start.rhs, start.g, steps );
+        graph_->console_->printf("Ending search with U.size=%d, U.topKey={%d,%d}, start.rhs=%d, start.g=%d, steps=%d", U.size(), topKey.first, topKey.second, start.rhs, start.g, steps );
       }
     }
 
@@ -388,7 +422,11 @@ namespace hivemind {
       auto& v = graph_->node(obstacle);
       v.hasObstacle = hasObstacle;
       v.g = c_inf;
-      v.rhs = c_inf;
+
+      if(v != goal_)
+      {
+        v.rhs = c_inf;
+      }
 
       updateVertex(obstacle);
 

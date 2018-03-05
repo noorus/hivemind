@@ -78,7 +78,27 @@ namespace hivemind {
       }
     };
 
-    void testPathfinding(Console* console)
+    static void plant(const DStarLitePtr& g, TestGridMap* rawM, int w, int h, int x, int y, bool add)
+    {
+      for(int i = 0; i < w; ++i)
+      {
+        for(int j = 0; j < h; ++j)
+        {
+          auto z = MapPoint2{ x, y };
+          z.x += i;
+          z.y += j;
+          g->updateWalkability(z, add);
+          if(add)
+            rawM->grid_.at(z.y).at(z.x) |= TestGridMap::Blocked;
+          else
+            rawM->grid_.at(z.y).at(z.x) &= ~TestGridMap::Blocked;
+        }
+      }
+
+      g->computeShortestPath();
+    }
+
+    static void testPathfinding1(Console* console)
     {
       string s =
         "...............#\n"
@@ -95,31 +115,96 @@ namespace hivemind {
       auto* rawM = m.get();
       auto g = pathfinding::DStarLite::search(console, std::move(m), start, goal);
 
-      auto plant = [&g, rawM](int w, int h, int x, int y)
-      {
-        for(int i = 0; i < w; ++i)
-        {
-          for(int j = 0; j < h; ++j)
-          {
-            auto z = MapPoint2{ x, y };
-            z.x += i;
-            z.y += j;
-            g->updateWalkability(z, true);
-            rawM->grid_.at(z.y).at(z.x) |= TestGridMap::Blocked;
-          }
-        }
+      auto path1 = g->getMapPath();
+      assert(path1.size() == 32);
 
-        g->computeShortestPath();
-      };
+      plant(g, rawM, 1, 1, 13, 4, true);
 
-      plant(1, 1, 13, 4);
-      plant(1, 1, 14, 4);
+      auto path2 = g->getMapPath();
+      assert(path2.size() == 33);
 
-      //rawM->print(console);
+      plant(g, rawM, 1, 1, 14, 4, true);
 
-      auto path = g->getMapPath();
-      assert(path.size() == 34);
+      auto path3 = g->getMapPath();
+      assert(path3.size() == 34);
+    }
+
+    static void testPathfinding2(Console* console)
+    {
+      string s =
+        "....#....\n"
+        "....#....\n"
+        "....#....\n"
+        "....#....\n"
+        "....#....\n"
+        ".........";
+
+      auto start = MapPoint2(3, 0);
+      auto goal = MapPoint2(7, 0);
+
+      auto m = std::make_unique<TestGridMap>(s);
+      auto* rawM = m.get();
+      auto g = pathfinding::DStarLite::search(console, std::move(m), start, goal);
+
+      auto path1 = g->getMapPath();
+      assert(path1.size() == 11);
+
+      plant(g, rawM, 2, 2, 2, 3, true);
+
+      auto path2 = g->getMapPath();
+      assert(path2.size() == 13);
+
+      plant(g, rawM, 2, 2, 0, 3, true);
+
+      auto path3 = g->getMapPath();
+      assert(path3.size() == 11);
+    }
+
+    static void testPathfinding3(Console* console)
+    {
+      string s =
+        ".........\n"
+        ".........\n"
+        ".........\n"
+        ".........";
+
+      auto start = MapPoint2(1, 1);
+      auto goal = MapPoint2(7, 1);
+
+      auto m = std::make_unique<TestGridMap>(s);
+      auto* rawM = m.get();
+      auto g = pathfinding::DStarLite::search(console, std::move(m), start, goal);
+
+      auto path1 = g->getMapPath();
+      assert(path1.size() == 7);
+
+      plant(g, rawM, 2, 3, 1, 0, true);
+
+      auto path2 = g->getMapPath();
+      assert(path2.size() == 9);
+
+      plant(g, rawM, 2, 3, 1, 0, false);
+
+      auto path3 = g->getMapPath();
+      assert(path3.size() == 7);
+
+      plant(g, rawM, 2, 3, 6, 0, true);
+
+      rawM->print(console);
+
+      auto path4 = g->getMapPath();
+      assert(path4.size() == 9);
+
+      plant(g, rawM, 2, 3, 6, 0, false);
+      auto path5 = g->getMapPath();
+      assert(path5.size() == 7);
+    }
+
+    void testPathfinding(Console* console)
+    {
+      testPathfinding3(console);
+      testPathfinding2(console);
+      testPathfinding1(console);
     }
   }
-
 }

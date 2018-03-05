@@ -175,6 +175,7 @@ namespace hivemind {
 
       DStarLiteKey calculateKey( NodeIndex s, PathCost km );
       void updateVertex( NodeIndex u );
+      void updateVertexLite( NodeIndex u );
 
       void initialize( const MapPoint2& start, const MapPoint2& goal );
 
