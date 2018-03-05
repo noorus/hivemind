@@ -208,7 +208,7 @@ namespace hivemind {
           break;
         }
 
-        auto& uv = U.top();
+        auto uv = U.top();
         auto& u = getNode(uv.first, *graph_);
 
         //graph_->console_->printf("Node u=(%d, %d) visited with g(u) = %f, rhs(u) = %f, key={%f, %f}, h(u,start)=%f", u.location.x, u.location.y, u.g, u.rhs, topKey.first, topKey.second, heuristic( u.location, start.location ));
@@ -229,7 +229,7 @@ namespace hivemind {
           else
           {
             u.g = c_inf;
-            updateVertex(uv.first);
+            updateVertex(u.location);
           }
 
           for(auto delta : neighbourDeltas)
