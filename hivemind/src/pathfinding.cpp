@@ -138,8 +138,9 @@ namespace hivemind {
       U.clear(); // U = null
       k_m = 0; // k_m = 0
       graph_->initialize(); // rhs(s) = g(s) = inf
-      graph_->node( goal ).rhs = 0; // rhs(s_goal) = 0
-      U.push( {goal_, calculateKey(goal_, k_m)} ); // U.Insert(s_goal, [h(s_start, s_goal); 0])
+      auto& goalNode = graph_->node(goal);
+      goalNode.rhs = 0; // rhs(s_goal) = 0
+      U.push( {&goalNode, calculateKey(goal_, k_m)} ); // U.Insert(s_goal, [h(s_start, s_goal); 0])
     }
 
 
@@ -164,12 +165,12 @@ namespace hivemind {
         //graph_->console_->printf("u=(%d, %d) is already saturated with u.g=u.rhs=%f", uid.x, uid.y, u.g);
         //graph_->console_->printf("u=(%d, %d) is already saturated with u.g=u.rhs=%d", uid.x, uid.y, u.g);
 
-        U.erase(uid);
+        U.erase(&u);
       }
       else
       {
         auto key = calculateKey(uid, k_m);
-        U.set(uid, key);
+        U.set(&u, key);
       }
     }
 
@@ -219,8 +220,7 @@ namespace hivemind {
           break;
         }
 
-        auto uv = U.top();
-        auto& u = getNode(uv.first, *graph_);
+        auto& u = *U.top().first;
 
         //graph_->console_->printf("Node u=(%d, %d) visited with g(u) = %f, rhs(u) = %f, key={%f, %f}, h(u,start)=%f", u.location.x, u.location.y, u.g, u.rhs, topKey.first, topKey.second, heuristic( u.location, start.location ));
         //graph_->console_->printf("Node u=(%d, %d) visited with g(u) = %d, rhs(u) = %d, key={%d, %d}, h(u,start)=%d", u.location.x, u.location.y, u.g, u.rhs, topKey.first, topKey.second, heuristic( u.location, start.location ));

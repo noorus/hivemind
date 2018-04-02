@@ -288,6 +288,9 @@
     <ClInclude Include="include\test_pathfinding.h">
       <Filter>Header Files\Map</Filter>
     </ClInclude>
+    <ClInclude Include="include\hive_inplace_minheap.h">
+      <Filter>Header Files\Primitives</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\stdafx.cpp">

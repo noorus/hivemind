@@ -7,7 +7,7 @@
 #include "hive_geometry.h"
 #include "regiongraph.h"
 #include "hive_rect2.h"
-#include "hive_minheap.h"
+#include "hive_inplace_minheap.h"
 #include "map.h"
 
 namespace hivemind {
@@ -24,7 +24,7 @@ namespace hivemind {
     typedef Real PathCost;
 #endif
 
-    struct GridGraphNode {
+    struct GridGraphNode : public InplaceHeapNode {
     public:
       MapPoint2 location;
 
@@ -170,7 +170,7 @@ namespace hivemind {
     private:
       NodeIndex start_;
       NodeIndex goal_;
-      Heap<NodeIndex, DStarLiteKey> U;
+      InplaceHeap<pathfinding::GridGraphNode, DStarLiteKey> U;
       PathCost k_m;
 
       DStarLiteKey calculateKey( NodeIndex s, PathCost km );
