@@ -4888,8 +4888,8 @@
           {
             "state" : "CompleteOnly",
             "type" : "unitCount",
-            "unit" : [ 90 ],
-            "unitName" : [ "EvolutionChamber" ]
+            "unit" : [ 101, 100 ],
+            "unitName" : [ "Hive", "Lair" ]
           }
         ],
         "time" : 16.666499999999999,

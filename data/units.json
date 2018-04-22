@@ -2951,7 +2951,7 @@
     "collides" : [ "ForceField", "Ground", "Locust" ],
     "energyMax" : 200.0,
     "energyRegenRate" : 0.5625,
-    "energyStart" : 50.0,
+    "energyStart" : 75.0,
     "food" : -2.0,
     "footprint" : {},
     "invulnerable" : false,
@@ -3015,7 +3015,7 @@
     "collides" : [ "ForceField", "Ground", "Locust" ],
     "energyMax" : 200.0,
     "energyRegenRate" : 0.5625,
-    "energyStart" : 50.0,
+    "energyStart" : 75.0,
     "food" : -2.0,
     "footprint" : {},
     "invulnerable" : false,
@@ -26607,7 +26607,11 @@
       "MorphToSwarmHostMP,Execute",
       "attack,Execute",
       "move,AcquireMove",
-      "SpawnLocustsTargeted,Execute"
+      "SpawnLocustsTargeted,Execute",
+      "move,Move",
+      "stop,Stop",
+      "move,HoldPos",
+      "move,Patrol"
     ],
     "acceleration" : 0.0,
     "aiEvalFactor" : 1.0,
@@ -27290,6 +27294,9 @@
       "stop,Stop",
       "attack,Execute",
       "BurrowLurkerMPUp,Execute",
+      "move,Move",
+      "move,HoldPos",
+      "move,Patrol",
       "LurkerHoldFire,Execute",
       "LurkerRemoveHoldFire,Execute"
     ],
@@ -50683,8 +50690,8 @@
       "que5,CancelLast",
       "BuildInProgress,Cancel",
       "UpgradeToLurkerDenMP,Cancel",
-      "HydraliskDenResearch,Research2",
-      "HydraliskDenResearch,Research1"
+      "HydraliskDenResearch,Research1",
+      "HydraliskDenResearch,Research2"
     ],
     "acceleration" : 0.0,
     "aiEvalFactor" : 1.0,

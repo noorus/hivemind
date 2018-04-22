@@ -4547,8 +4547,8 @@
             {
               "state" : "CompleteOnly",
               "type" : "unitCount",
-              "unit" : [ 90 ],
-              "unitName" : [ "EvolutionChamber" ]
+              "unit" : [ 101, 100 ],
+              "unitName" : [ "Hive", "Lair" ]
             }
           ],
           "time" : 16.666499999999999,
@@ -5954,30 +5954,6 @@
       "researches" : 
       [
         {
-          "ability" : 1283,
-          "abilityName" : "HydraliskDenResearch,Research2",
-          "minerals" : 100,
-          "requires" : 
-          [
-            {
-              "operands" : 
-              [
-                {
-                  "state" : "QueuedOrBetter",
-                  "type" : "upgradeCount",
-                  "upgrade" : 135,
-                  "upgradeName" : "EvolveMuscularAugments"
-                }
-              ],
-              "type" : "not"
-            }
-          ],
-          "time" : 100.0,
-          "upgrade" : 135,
-          "upgradeName" : "EvolveMuscularAugments",
-          "vespene" : 100
-        },
-        {
           "ability" : 1282,
           "abilityName" : "HydraliskDenResearch,Research1",
           "minerals" : 100,
@@ -5999,6 +5975,30 @@
           "time" : 100.0,
           "upgrade" : 134,
           "upgradeName" : "EvolveGroovedSpines",
+          "vespene" : 100
+        },
+        {
+          "ability" : 1283,
+          "abilityName" : "HydraliskDenResearch,Research2",
+          "minerals" : 100,
+          "requires" : 
+          [
+            {
+              "operands" : 
+              [
+                {
+                  "state" : "QueuedOrBetter",
+                  "type" : "upgradeCount",
+                  "upgrade" : 135,
+                  "upgradeName" : "EvolveMuscularAugments"
+                }
+              ],
+              "type" : "not"
+            }
+          ],
+          "time" : 100.0,
+          "upgrade" : 135,
+          "upgradeName" : "EvolveMuscularAugments",
           "vespene" : 100
         }
       ]
