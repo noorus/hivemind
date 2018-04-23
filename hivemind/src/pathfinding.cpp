@@ -28,7 +28,7 @@ namespace hivemind {
     const PathCost c_inf = std::numeric_limits<Real>::infinity();
     const PathCost c_dstarEpsilon = 0.01f;
 #endif
-    
+
     static bool isInfinity(PathCost cost)
     {
       return cost == c_inf;
