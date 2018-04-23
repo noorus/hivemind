@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "sc2_forward.h"
 #include "subsystem.h"
 #include "ai_goals.h"

@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <sc2api/sc2_api.h>
 #include <sc2lib/sc2_lib.h>

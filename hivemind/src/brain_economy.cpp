@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "brain.h"
 #include "brain_macro.h"
 #include "brain_creep.h"

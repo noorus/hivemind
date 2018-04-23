@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "workers.h"
 #include "bot.h"
 #include "utilities.h"

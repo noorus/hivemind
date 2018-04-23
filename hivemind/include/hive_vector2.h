@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "hive_types.h"
 #include "hive_math.h"
 #include <sc2api/sc2_common.h>

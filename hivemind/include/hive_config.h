@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #define HIVE_PLATFORM_WINDOWS
 

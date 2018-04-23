@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "console.h"
 #include "consolewindow_windows.h"
 

@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "ai_fuzzy.h"
 
 namespace hivemind {

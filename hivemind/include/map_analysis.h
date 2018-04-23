@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "sc2_forward.h"
 #include "hive_vector2.h"
 #include "hive_array2.h"

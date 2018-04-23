@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "utilities.h"
 #include "hive_vector2.h"
 #include "hive_vector3.h"

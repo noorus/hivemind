@@ -1,4 +1,4 @@
-/**
+﻿/**
 * \mainpage
 * blob - 8-neighbour connected components labelling and contours extractor
 * =========================================================================

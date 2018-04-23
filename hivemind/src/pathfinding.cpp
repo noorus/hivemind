@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "map.h"
 #include "bot.h"
 #include "utilities.h"

@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "blob_algo.h"
 #include "exception.h"
 

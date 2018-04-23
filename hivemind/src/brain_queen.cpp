@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "brain.h"
 #include "brain_queen.h"
 #include "ai_goals.h"

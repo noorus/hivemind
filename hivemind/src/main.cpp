@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "bot.h"
 #include "exception.h"
 #include "database.h"

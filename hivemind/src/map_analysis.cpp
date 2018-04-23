@@ -1,4 +1,4 @@
-#pragma warning(disable: 4267)
+ï»¿#pragma warning(disable: 4267)
 #include "stdafx.h"
 #include "map.h"
 #include "map_analysis.h"
@@ -381,7 +381,7 @@ namespace hivemind {
 
     //
     // 5) Turn walkable areas (by way of non-walkable polygons) to a Voronoi diagram
-    // See "Improving Terrain Analysis and Applications to RTS Game AI" (Uriarte, Ontañón, AIIDE 16) & BWTA2
+    // See "Improving Terrain Analysis and Applications to RTS Game AI" (Uriarte, OntaÃ±Ã³n, AIIDE 16) & BWTA2
     //
     void Map_MakeVoronoi( const GameInfo & info, PolygonComponentVector & polygons_in, Array2<int>& labels_in, RegionGraph& graph, bgi::rtree<BoostSegmentI, bgi::quadratic<16> >& rtree )
     {
@@ -491,7 +491,7 @@ namespace hivemind {
 
     //
     // 6) Prune down the messy Voronoi diagram to only the medial axes per every branch
-    // See "Improving Terrain Analysis and Applications to RTS Game AI" (Uriarte, Ontañón, AIIDE 16) & BWTA2
+    // See "Improving Terrain Analysis and Applications to RTS Game AI" (Uriarte, OntaÃ±Ã³n, AIIDE 16) & BWTA2
     //
     void Map_PruneVoronoi( RegionGraph & graph )
     {

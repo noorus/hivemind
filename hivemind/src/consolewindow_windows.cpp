@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "console.h"
 #include "consolewindow_windows.h"
 
@@ -561,7 +561,7 @@ namespace hivemind {
       format.SetAlignment( gdip::StringAlignmentCenter );
       format.SetLineAlignment( gdip::StringAlignmentCenter );
 
-      gfx.DrawString( L"unpause �", -1, &font, rect, &format, &brush_text );
+      gfx.DrawString( L"unpause »", -1, &font, rect, &format, &brush_text );
     }
 
     LRESULT ConsoleWindow::wndProc( HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam )

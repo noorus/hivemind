@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "sc2_forward.h"
 #include "exception.h"
 #include "consolelistener.h"

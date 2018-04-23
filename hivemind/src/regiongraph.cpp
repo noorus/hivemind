@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "map.h"
 #include "map_analysis.h"
 #include "utilities.h"

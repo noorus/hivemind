@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "console.h"
 #include "utilities.h"
 #include "exception.h"
@@ -385,7 +385,7 @@ namespace hivemind {
 
   StringVector Console::tokenize( const string& str )
   {
-    // this implementation is na�ve, but hardly critical
+    // this implementation is naïve, but hardly critical
 
     bool quoted = false;
     bool escaped = false;

@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "basemanager.h"
 #include "bot.h"
 #include "exception.h"
