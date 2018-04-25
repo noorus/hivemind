@@ -463,32 +463,42 @@ namespace hivemind {
     reservedMap_.reset( Reserved_None );
     creepTumors_.clear();
 
-    auto applyFootprint = [this]( const Point2DI& pt, UnitTypeID ut )
+    auto applyFootprint = [this](const Point2DI& pt, UnitTypeID ut)
     {
-      auto& dbUnit = Database::unit( ut );
+      auto& dbUnit = Database::unit(ut);
 
-      Point2DI topleft(
-        pt.x + dbUnit.footprintOffset.x,
-        pt.y + dbUnit.footprintOffset.y
+      Point2DI topRight(
+        pt.x - dbUnit.footprintOffset.x,
+        pt.y - dbUnit.footprintOffset.y
       );
 
-      if ( topleft.x < 0 || topleft.y < 0
-        || ( topleft.x + dbUnit.footprint.width() ) >= width_
-        || ( topleft.y + dbUnit.footprint.height() ) >= height_ )
+      size_t unitWidth = dbUnit.footprint.width();
+      size_t unitHeight = dbUnit.footprint.height();
+
+      if(topRight.x < unitWidth || topRight.y < unitHeight
+        || topRight.x >= width_
+        || topRight.y >= height_)
         return;
 
-      for ( size_t y = 0; y < dbUnit.footprint.height(); y++ )
-        for ( size_t x = 0; x < dbUnit.footprint.width(); x++ )
-          if ( dbUnit.footprint[x][y] == UnitData::Footprint_Reserved )
+      for(size_t y = 0; y < dbUnit.footprint.height(); y++)
+      {
+        for(size_t x = 0; x < dbUnit.footprint.width(); x++)
+        {
+          size_t worldX = topRight.x - x;
+          size_t worldY = topRight.y - y;
+
+          if(dbUnit.footprint[x][y] == UnitData::Footprint_Reserved)
           {
-            auto& pixel = zergBuildable_[topleft.x + x][topleft.y + y];
-            pixel = ( pixel > CreepTile_No ? CreepTile_Walkable : CreepTile_No );
-            reservedMap_[topleft.x + x][topleft.y + y] = Reserved_Reserved;
+            auto& pixel = zergBuildable_[worldX][worldY];
+            pixel = (pixel > CreepTile_No ? CreepTile_Walkable : CreepTile_No);
+            reservedMap_[worldX][worldY] = Reserved_Reserved;
           }
-          else if ( dbUnit.footprint[x][y] == UnitData::Footprint_NearResource && reservedMap_[topleft.x + x][topleft.y + y] != Reserved_Reserved )
+          else if(dbUnit.footprint[x][y] == UnitData::Footprint_NearResource && reservedMap_[worldX][worldY] != Reserved_Reserved)
           {
-            reservedMap_[topleft.x + x][topleft.y + y] = Reserved_NearResource;
+            reservedMap_[worldX][worldY] = Reserved_NearResource;
           }
+        }
+      }
     };
 
     // get blocking units (i.e. structures)
