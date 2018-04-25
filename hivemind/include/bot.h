@@ -14,6 +14,7 @@
 #include "debug.h"
 #include "vision.h"
 #include "pathing.h"
+#include "myself.h"
 
 namespace hivemind {
 
@@ -54,6 +55,7 @@ namespace hivemind {
     Builder builder_;
     Vision vision_;
     Pathing pathing_;
+    Myself myself_;
     Options options_;
     State state_;
     bool cheatGodmode_;
@@ -79,6 +81,7 @@ namespace hivemind {
     inline Builder& builder() { return builder_; }
     inline Vision& vision() { return vision_; }
     inline Pathing& pathing() { return pathing_; }
+    inline Myself& my() { return myself_; }
     inline const State& state() const { return state_; }
     void initialize( const Options& opts );
     void enableGodmodeCheat(); //!< This cannot be toggled back in the same game

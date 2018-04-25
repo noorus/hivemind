@@ -291,6 +291,9 @@
     <ClInclude Include="include\hive_inplace_minheap.h">
       <Filter>Header Files\Primitives</Filter>
     </ClInclude>
+    <ClInclude Include="include\myself.h">
+      <Filter>Header Files\Systems</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\stdafx.cpp">
@@ -433,6 +436,9 @@
     </ClCompile>
     <ClCompile Include="src\test_pathfinding.cpp">
       <Filter>Source Files\Brain\Map</Filter>
+    </ClCompile>
+    <ClCompile Include="src\myself.cpp">
+      <Filter>Source Files\Systems</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

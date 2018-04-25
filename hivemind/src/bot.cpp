@@ -144,6 +144,7 @@ namespace hivemind {
     builder_( this ),
     vision_( this ),
     pathing_( this ),
+    myself_( this ),
     cheatCostIgnore_( false ),
     cheatGodmode_( false ),
     cheatShowMap_( false ),
@@ -242,6 +243,7 @@ namespace hivemind {
     vision_.gameBegin();
 
     intelligence_.gameBegin();
+    myself_.gameBegin();
 
     strategy_.gameBegin();
 
@@ -349,6 +351,7 @@ namespace hivemind {
     vision_.update( time_, delta );
 
     intelligence_.update( time_, delta );
+    myself_.update( time_, delta );
     pathing_.update(time_, delta);
 
     ControllerBase::setActions( action_ );
@@ -376,6 +379,7 @@ namespace hivemind {
     workers_.draw();
     builder_.draw();
     intelligence_.draw();
+    myself_.draw();
 
     map_.draw();
     baseManager_.draw();
@@ -459,6 +463,7 @@ namespace hivemind {
     vision_.gameEnd();
     baseManager_.gameEnd();
     intelligence_.gameEnd();
+    myself_.gameEnd();
     messaging_.gameEnd();
     console_.gameEnd();
 
