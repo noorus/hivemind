@@ -219,9 +219,6 @@ namespace hivemind {
         return true;
       } );
 
-      if ( dumpImages )
-        bot_->debug().mapDumpPolygons( width_, height_, obstacles_, tempChokeSides );
-
       // Region splitting ---
 
       util_verbosePerfSection( bot_, "Map: Splitting region polygons", [&]
@@ -315,6 +312,12 @@ namespace hivemind {
       } );
     }
 
+    regionGraph_.nodes_.swap( simplifiedGraph.nodes );
+    regionGraph_.adjacencyList_.swap( simplifiedGraph.adjacencyList_ );
+
+    if ( dumpImages )
+      bot_->debug().mapDumpPolygons( width_, height_, obstacles_, regions_, chokepoints_, info.start_locations, regionGraph_ );
+
     bot_->console().printf( "Map: Rebuild done" );
   }
 
@@ -384,17 +387,16 @@ namespace hivemind {
     {
       auto pt = util_tileToMarker( node, heightMap_, 1.0f, maxZ_ );
       bot_->debug().drawSphere( pt, 0.25f, sc2::Colors::Teal );
-    }
-
-    for ( size_t id = 0; id < simplifiedGraph.adjacencyList.size(); id++ )
+    }*/
+    for ( size_t id = 0; id < regionGraph_.adjacencyList_.size(); id++ )
     {
-      for ( auto adj : simplifiedGraph.adjacencyList[id] )
+      for ( auto adj : regionGraph_.adjacencyList_[id] )
       {
-        auto v0 = simplifiedGraph.nodes[id].to3( maxZ_ );
-        auto v1 = simplifiedGraph.nodes[adj].to3( maxZ_ );
+        auto v0 = regionGraph_.nodes_[id].to3( maxZ_ );
+        auto v1 = regionGraph_.nodes_[adj].to3( maxZ_ );
         bot_->debug().drawLine( v0, v1, sc2::Colors::Teal );
       }
-    }*/
+    }
     // draw baselocation info if draw_baselocations is enabled
     if ( g_CVar_draw_baselocations.as_b() )
     {

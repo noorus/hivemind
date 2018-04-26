@@ -172,31 +172,65 @@ namespace hivemind {
     stbi_write_png( "debug_map_bases.png", (int)info.width, (int)info.height, 3, rgb8.data(), (int)info.width * 3 );
   }
 
-  void DebugExtended::mapDumpPolygons( size_t width, size_t height, PolygonComponentVector& polys, Analysis::RegionChokesMap& chokes )
+  const double cVectorImageSizeMultiplier = 32.0;
+
+  void DebugExtended::mapDumpPolygons( size_t width, size_t height, PolygonComponentVector& polys, RegionVector& regions, ChokeVector& chokes, const Point2Vector& startLocations, OptimalRegionGraph& graph )
   {
-    svg::Dimensions dim( (double)width * 16.0, (double)height * 16.0 );
+    svg::Dimensions dim( (double)width * cVectorImageSizeMultiplier, (double)height * cVectorImageSizeMultiplier );
     svg::Document doc( "debug_map_polygons.svg", svg::Layout( dim, svg::Layout::BottomLeft ) );
-    for ( auto& poly : polys )
+    /*for ( auto& poly : polys )
     {
-      svg::Polygon svgPoly( svg::Stroke( 2.0, svg::Color::Purple ) );
+      svg::Polygon svgPoly( svg::Stroke( 1.0, svg::Color( 50, 50, 50 ) ) );
 
       for ( auto& pt : poly.contour )
         svgPoly << svg::Point( pt.x * 16.0, pt.y * 16.0 );
       for ( auto& hole : poly.contour.holes )
       {
-        svg::Polygon holePoly( svg::Stroke( 2.0, svg::Color::Red ) );
+        svg::Polygon holePoly( svg::Stroke( 1.0, svg::Color( 50, 50, 50 ) ) );
         for ( auto& pt : hole )
           holePoly << svg::Point( pt.x * 16.0, pt.y * 16.0 );
         doc << holePoly;
       }
       doc << svgPoly;
-    }
-    for ( auto& pair : chokes )
+    }*/
+    for ( auto& region : regions )
     {
-      Vector2 p0( pair.second.side1.x, pair.second.side1.y );
-      Vector2 p1( pair.second.side2.x, pair.second.side2.y );
-      svg::Line line( svg::Point( p0.x * 16, p0.y * 16 ), svg::Point( p1.x * 16, p1.y * 16 ), svg::Stroke( 2.0, svg::Color::Cyan ) );
+      if ( region->dubious_ )
+        continue;
+      auto clr = utils::prettyColor( region->label_, 25 );
+      svg::Polygon svgPoly( svg::Stroke( 4.0, svg::Color( clr.r, clr.g, clr.b ) ) );
+      for ( auto& vec : region->polygon_ )
+      {
+        svgPoly << svg::Point( vec.x * cVectorImageSizeMultiplier, vec.y * cVectorImageSizeMultiplier );
+      }
+      doc << svgPoly;
+    }
+    for ( auto& choke : chokes )
+    {
+      svg::Line line(
+        svg::Point( choke.side1.x * cVectorImageSizeMultiplier, choke.side1.y * cVectorImageSizeMultiplier ),
+        svg::Point( choke.side2.x * cVectorImageSizeMultiplier, choke.side2.y * cVectorImageSizeMultiplier ),
+        svg::Stroke( 6.0, svg::Color::Green ) );
       doc << line;
+    }
+    for ( auto& loc : startLocations )
+    {
+      auto pt = svg::Point( (double)loc.x * cVectorImageSizeMultiplier, (double)loc.y * cVectorImageSizeMultiplier );
+      svg::Circle circle( pt, 5.0 * cVectorImageSizeMultiplier, svg::Fill( svg::Color::Red ) );
+      doc << circle;
+    }
+    for ( size_t id = 0; id < graph.adjacencyList_.size(); id++ )
+    {
+      for ( auto adj : graph.adjacencyList_[id] )
+      {
+        auto v0 = graph.nodes_[id];
+        auto v1 = graph.nodes_[adj];
+        svg::Line line(
+          svg::Point( v0.x * cVectorImageSizeMultiplier, v0.y * cVectorImageSizeMultiplier ),
+          svg::Point( v1.x * cVectorImageSizeMultiplier, v1.y * cVectorImageSizeMultiplier ),
+          svg::Stroke( 6.0, svg::Color::Cyan ) );
+        doc << line;
+      }
     }
     doc.save();
   }

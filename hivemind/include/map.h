@@ -118,6 +118,7 @@ namespace hivemind {
     vector<MapPoint2> creepTumors_;
     MapData info_;
     ChokeVector chokepoints_;
+    OptimalRegionGraph regionGraph_;
     int maxHeightLevel_; //!< Maximum height (cliff) level, 0 being the lowest on the playable map
   private:
     Bot* bot_;

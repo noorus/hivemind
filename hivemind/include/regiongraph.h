@@ -7,11 +7,22 @@
 
 namespace hivemind {
 
+  using RegionNodeID = size_t;
+
+  using RegionNodeIDSet = set<RegionNodeID>;
+
+  class OptimalRegionGraph {
+  public:
+    vector<Vector2> nodes_;
+    vector<RegionNodeIDSet> adjacencyList_;
+    void reset()
+    {
+      nodes_.clear();
+      adjacencyList_.clear();
+    }
+  };
+
   namespace Analysis {
-
-    using RegionNodeID = size_t;
-
-    using RegionNodeIDSet = set<RegionNodeID>;
 
     class RegionGraph {
     public:
