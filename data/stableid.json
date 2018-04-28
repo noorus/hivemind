@@ -7687,6 +7687,10 @@
         {
             "id": 1921,
             "name": "SNARE_PLACEHOLDER"
+        },
+        {
+            "id": 1922,
+            "name": "ParasiticBombRelayDummy"
         }
     ],
     "Abilities": [
@@ -9001,18 +9005,18 @@
         },
         {
             "id": 211,
-            "remapid": 3690,
+            "remapid": 3673,
             "name": "RallyHatchery",
             "buttonname": "Rally",
-            "friendlyname": "Rally Hatchery Workers",
+            "friendlyname": "Rally Hatchery Units",
             "index": 0
         },
         {
             "id": 212,
-            "remapid": 3673,
+            "remapid": 3690,
             "name": "RallyHatchery",
             "buttonname": "",
-            "friendlyname": "Rally Hatchery Units",
+            "friendlyname": "Rally Hatchery Workers",
             "index": 1
         },
         {
@@ -30767,6 +30771,30 @@
             "name": "NexusShieldOverchargeOff",
             "buttonname": "",
             "index": 1
+        },
+        {
+            "id": 3771,
+            "name": "ViperParasiticBombRelay",
+            "buttonname": "ParasiticBomb",
+            "index": 0
+        },
+        {
+            "id": 3772,
+            "name": "ViperParasiticBombRelay",
+            "buttonname": "",
+            "index": 1
+        },
+        {
+            "id": 3773,
+            "name": "ParasiticBombRelayDodge",
+            "buttonname": "ParasiticBomb",
+            "index": 0
+        },
+        {
+            "id": 3774,
+            "name": "ParasiticBombRelayDodge",
+            "buttonname": "",
+            "index": 1
         }
     ],
     "Upgrades": [
@@ -33095,6 +33123,10 @@
         {
             "id": 286,
             "name": "NexusShieldOvercharge"
+        },
+        {
+            "id": 287,
+            "name": "ParasiticBombDelayTimedLife"
         }
     ],
     "Effects": [
