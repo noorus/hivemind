@@ -104,6 +104,7 @@ namespace hivemind {
 
     Trainer trainer_;
     Researcher researcher_;
+    friend Trainer;
 
   private:
     std::unordered_map<sc2::UNIT_TYPEID, UnitStats> unitStats_;
@@ -111,8 +112,10 @@ namespace hivemind {
 
     UnitRef acquireBuilder(Base& base);
 
+    std::unordered_map<BuildProjectID, int> finishedBuildProjects_;
+
   public:
-    Builder( Bot* bot );
+    explicit Builder( Bot* bot );
     void gameBegin() final;
 
     bool build( UnitTypeID structureType, Base* base, BuildingPlacement placement, BuildProjectID& idOut );
@@ -136,6 +139,13 @@ namespace hivemind {
     UpgradeStatus getUpgradeStatus(sc2::UPGRADE_ID upgradeType)
     {
       return upgradeStats_[upgradeType];
+    }
+
+    bool haveResourcesToMake(UnitTypeID unitType) const;
+
+    bool isFinished(BuildProjectID id) const
+    {
+      return finishedBuildProjects_.find(id) != finishedBuildProjects_.end();
     }
   };
 

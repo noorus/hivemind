@@ -243,6 +243,8 @@ namespace hivemind {
           build.base->addWorker(build.builder);
         }
         bot_->map().clearFootprint( build.position );
+        finishedBuildProjects_[build.id] = int(build.completed);
+
         it = buildProjects_.erase( it );
         continue;
       }
@@ -423,6 +425,42 @@ namespace hivemind {
     return false;
   }
 
+  static UnitTypeID getTrainerType(UnitTypeID unitType)
+  {
+    if(unitType == sc2::UNIT_TYPEID::ZERG_LAIR)
+    {
+      return sc2::UNIT_TYPEID::ZERG_HATCHERY;
+    }
+    else if(unitType == sc2::UNIT_TYPEID::ZERG_HIVE)
+    {
+      return sc2::UNIT_TYPEID::ZERG_LAIR;
+    }
+    else if(unitType == sc2::UNIT_TYPEID::ZERG_GREATERSPIRE)
+    {
+      return sc2::UNIT_TYPEID::ZERG_SPIRE;
+    }
+    else if(utils::isStructure(unitType))
+    {
+      return sc2::UNIT_TYPEID::ZERG_DRONE;
+    }
+    else
+    {
+      return sc2::UNIT_TYPEID::ZERG_LARVA;
+    }
+  }
+
+  static AllocatedResources getCost(UnitTypeID unitType)
+  {
+    UnitTypeID trainerType = getTrainerType(unitType);
+
+    auto& ability = Database::techTree().getBuildAbility(unitType, trainerType);
+
+    // Zerg buildings cost negative supply because they consume the drone.
+    int supplyCost = std::max(ability.supplyCost, 0);
+
+    return { ability.mineralCost, ability.vespeneCost, supplyCost };
+  }
+
   AllocatedResources Builder::getAllocatedResources() const
   {
     AllocatedResources builderResources = { 0, 0, 0 };
@@ -433,10 +471,11 @@ namespace hivemind {
         continue;
       }
 
-      const auto& data = Database::units().at(building.type);
-      builderResources.minerals += data.mineralCost;
-      builderResources.vespene += data.vespeneCost;
-      builderResources.food += 0;
+      auto cost = getCost(building.type);
+
+      builderResources.minerals += cost.minerals;
+      builderResources.vespene += cost.vespene;
+      builderResources.food += cost.food;
     }
 
     auto trainerResources = trainer_.getAllocatedResources();
@@ -448,4 +487,31 @@ namespace hivemind {
 
     return { m, v, f };
   }
+
+  bool Builder::haveResourcesToMake(UnitTypeID unitType) const
+  {
+    int minerals = bot_->Observation()->GetMinerals();
+    int vespene = bot_->Observation()->GetVespene();
+    int supplyLimit = bot_->Observation()->GetFoodCap();
+    int usedSupply = bot_->Observation()->GetFoodUsed();
+
+    auto& baseManager = bot_->bases();
+    auto& builder = bot_->builder();
+
+    auto allocatedResources = builder.getAllocatedResources();
+    minerals -= allocatedResources.minerals;
+    vespene -= allocatedResources.vespene;
+    usedSupply += allocatedResources.food;
+
+    auto cost = getCost(unitType);
+
+    bool haveMoney = minerals >= cost.minerals;
+    bool haveGas = vespene >= cost.vespene;
+    bool haveSupply = usedSupply + cost.food <= supplyLimit;
+
+    //bot_->console().printf("Cost of %s is %d minerals, %d vespene, %d supply", sc2::UnitTypeToName( unitType ), cost.minerals, cost.vespene, cost.food);
+
+    return haveMoney && haveGas && haveSupply;
+  }
+
 }
