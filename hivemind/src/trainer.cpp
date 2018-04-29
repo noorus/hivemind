@@ -120,6 +120,8 @@ namespace hivemind {
     trainers_.erase(training.trainer);
     auto& stats = unitStats_[training.type];
     stats.inProgress.erase(training.id);
+
+    bot_->builder().finishedBuildProjects_[training.id] = int(training.completed);
   }
 
   void Trainer::onMessage( const Message& msg )

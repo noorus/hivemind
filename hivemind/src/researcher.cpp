@@ -195,9 +195,14 @@ namespace hivemind {
         continue;
       }
 
+      // TODO: Fix this.
+      /* This is just wrong, it mixes upgrade id with unit id.
       const auto& data = Database::units().at(research.upgradeType);
       mineralSum += data.mineralCost;
       vespeneSum += data.vespeneCost;
+      */
+      mineralSum = 100;
+      vespeneSum = 100;
     }
     return { mineralSum, vespeneSum, 0 };
   }

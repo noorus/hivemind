@@ -11,6 +11,7 @@
 namespace hivemind {
 
   class Bot;
+  class BuildPlanner;
 
   namespace Goals {
 
@@ -28,6 +29,9 @@ namespace hivemind {
       virtual void terminate() final;
 
       void update();
+
+    private:
+      std::unique_ptr<BuildPlanner> planner_;
     };
 
   }
