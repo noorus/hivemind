@@ -93,7 +93,8 @@ namespace hivemind {
       debug_->DebugMoveCamera( pos );
     }
     void send() { debug_->SendDebug(); }
-    void drawMapPolygon( Map& map, Polygon& poly, Color color );
+    void drawMapPolygon( Map& map, const Polygon& poly, Color color, const Vector2& offset = Vector2( 0.0f ) );
+    void drawMapBarePolygon( Map& map, const Polygon& poly, Color color, const Vector2& offset = Vector2( 0.0f ), Real offsetZ = 0.5f );
     void drawMapLine( Map& map, const Vector2& p0, const Vector2& p1, Color color );
     void drawMapSphere( Map& map, const Vector2& pos, Real radius, Color color );
 

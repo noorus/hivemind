@@ -2,6 +2,7 @@
 #include "hive_types.h"
 #include "sc2_forward.h"
 #include "hive_array2.h"
+#include "hive_polygon.h"
 
 namespace hivemind {
 
@@ -79,7 +80,8 @@ namespace hivemind {
       Footprint_Empty = 0,
       Footprint_Creep,
       Footprint_NearResource,
-      Footprint_Reserved
+      Footprint_Reserved,
+      Footprint_BuildingPolyReserved
     };
     enum ResourceType {
       Resource_None = 0,
@@ -106,6 +108,8 @@ namespace hivemind {
     int mineralCost;
     bool flying;
     bool psionic;
+    bool invulnerable;
+    bool collapsible; // Collapsible rock towers that don't remove their footprint upon death
     Race race;
     Real radius;
     int scoreKill;
@@ -120,8 +124,9 @@ namespace hivemind {
     bool structure;
     Real turningRate;
     int vespeneCost;
-    Array2<Footprint> footprint; //!< Note: footprint has x & y flipped, otherwise there's a heap corruption on data load. (wtf?)
+    Array2<Footprint> footprint;
     Point2DI footprintOffset;
+    Polygon buildingPolygon;
     vector<string> weapons;
     vector<WeaponData*> resolvedWeapons_;
     ResourceType resource;

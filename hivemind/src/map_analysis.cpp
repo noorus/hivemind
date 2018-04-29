@@ -31,28 +31,49 @@ namespace hivemind {
 
       flags_out.reset( 0 );
 
-      for ( auto unit : observation.GetUnits( Unit::Alliance::Neutral ) )
+      auto applyFootprint = []( const GameInfo& info, Array2<uint64_t>& flagsMap, const Point2DI& pt, UnitTypeID ut )
       {
-        auto& dbUnit = Database::unit( unit->unit_type );
-        if ( !dbUnit.structure || dbUnit.flying || dbUnit.footprint.empty() )
-          continue;
+        auto& dbUnit = Database::unit( ut );
 
-        Point2DI topleft(
-          math::floor( unit->pos.x ) + dbUnit.footprintOffset.x,
-          math::floor( unit->pos.y ) + dbUnit.footprintOffset.y
+        Point2DI topLeft(
+          pt.x + dbUnit.footprintOffset.x,
+          pt.y + dbUnit.footprintOffset.y
         );
 
-        if ( topleft.x < 0 || topleft.y < 0
-          || ( topleft.x + dbUnit.footprint.width() ) >= width_out
-          || ( topleft.y + dbUnit.footprint.height() ) >= height_out )
+        size_t unitWidth = dbUnit.footprint.width();
+        size_t unitHeight = dbUnit.footprint.height();
+
+        if ( topLeft.x < 0 || topLeft.y < 0
+          || ( topLeft.x + unitWidth ) >= info.width
+          || ( topLeft.y + unitHeight ) >= info.height )
           return;
 
-        for ( size_t y = 0; y < dbUnit.footprint.height(); y++ )
-          for ( size_t x = 0; x < dbUnit.footprint.width(); x++ )
-            if ( dbUnit.footprint[x][y] == UnitData::Footprint_Reserved )
+        for ( size_t y = 0; y < dbUnit.footprint.height(); ++y )
+        {
+          for ( size_t x = 0; x < dbUnit.footprint.width(); ++x )
+          {
+            size_t worldX = topLeft.x + x;
+            size_t worldY = topLeft.y + y;
+
+            if ( dbUnit.footprint[x][y] == UnitData::Footprint_BuildingPolyReserved || dbUnit.footprint[x][y] == UnitData::Footprint_Reserved )
             {
-              flags_out[topleft.x + x][topleft.y + y] = MapFlag_INTERNAL_AnalysisTemp;
+              flagsMap[worldX][worldY] = MapFlag_Blocker;
             }
+          }
+        }
+      };
+
+      for ( auto unit : observation.GetUnits( Unit::Alliance::Neutral ) )
+      {
+        if ( !utils::isNeutralBlocker( unit ) )
+          continue;
+
+        Point2DI pos(
+          math::floor( unit->pos.x ),
+          math::floor( unit->pos.y )
+        );
+
+        applyFootprint( info, flags_out, pos, unit->unit_type );
       }
 
       for ( size_t x = 0; x < width_out; x++ )
@@ -61,12 +82,12 @@ namespace hivemind {
           auto tileZ = utils::terrainHeight( info, x, y );
           heightmap_out[x][y] = tileZ;
 
-          bool hasNeutralUnitFootprint = ( flags_out[x][y] & MapFlag_INTERNAL_AnalysisTemp );
+          bool hasBlockerFootprint = ( flags_out[x][y] & MapFlag_Blocker );
 
-          uint64_t flags = 0;
+          uint64_t flags = flags_out[x][y];
           if ( utils::placement( info, x, y ) )
             flags |= MapFlag_Buildable;
-          if ( ( flags & MapFlag_Buildable ) || utils::pathable( info, x, y ) || hasNeutralUnitFootprint )
+          if ( ( flags & MapFlag_Buildable ) || utils::pathable( info, x, y ) || hasBlockerFootprint )
             flags |= MapFlag_Walkable;
 
           if ( ( flags & MapFlag_Walkable ) && !( flags & MapFlag_Buildable ) && x > 3 && y > 3 && x < ( width_out - 3 ) && y < ( height_out - 3 ) )
@@ -116,23 +137,6 @@ namespace hivemind {
             if ( aroundORed & MapFlag_VisionBlocker )
               flags_out[x][y] |= MapFlag_NearVisionBlocker;
           }
-
-      // Mark vespene geysers.
-      for ( auto geyser : observation.GetUnits( Unit::Alliance::Neutral ) )
-      {
-        if ( !utils::isGeyser( geyser ) )
-          continue;
-
-        int x = static_cast<int>(geyser->pos.x);
-        int y = static_cast<int>(geyser->pos.y);
-        for(int i = -1; i <= 1; ++i)
-        {
-          for(int j = -1; j <= 1; ++j)
-          {
-            flags_out[x + i][y + j] |= MapFlag_VespeneGeyser;
-          }
-        }
-      }
     }
 
     //

@@ -12,6 +12,8 @@
 
 namespace hivemind {
 
+  class Console;
+
   namespace pathfinding {
 
     using MapPath = vector<MapPoint2>;

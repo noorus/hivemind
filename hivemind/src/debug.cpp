@@ -22,13 +22,34 @@ namespace hivemind {
     return Point3D( v.x + 0.5f, v.y + 0.5f, z );
   }
 
-  void DebugExtended::drawMapPolygon( Map& map, Polygon& poly, Color color )
+  Real mapTileHeight( const Vector2& v, const Array2<Real>& heightmap, Real offset )
+  {
+    MapPoint2 tile = MapPoint2( math::floor( v.x ), math::floor( v.y ) );
+    return heightmap[tile.x][tile.y] + offset;
+  }
+
+  void DebugExtended::drawMapPolygon( Map& map, const Polygon& poly, Color color, const Vector2& offset )
   {
     auto previous = poly.back();
     for ( auto& vec : poly )
     {
-      Point3D p0 = mapTileToMarker( previous, map.heightMap_, 0.5f, map.maxZ_ );
-      Point3D p1 = mapTileToMarker( vec, map.heightMap_, 0.5f, map.maxZ_ );
+      Point3D p0 = mapTileToMarker( previous + offset, map.heightMap_, 0.4f, map.maxZ_ );
+      Point3D p1 = mapTileToMarker( vec + offset, map.heightMap_, 0.4f, map.maxZ_ );
+      drawLine( p0, p1, color );
+      drawSphere( p1, 0.1f, color );
+      previous = vec;
+    }
+  }
+
+  void DebugExtended::drawMapBarePolygon( Map& map, const Polygon& poly, Color color, const Vector2& offset, Real offsetZ )
+  {
+    auto previous = poly.back();
+    for ( auto& vec : poly )
+    {
+      auto tmpPrev = previous + offset;
+      auto tmpCur = vec + offset;
+      Point3D p0( tmpPrev.x, tmpPrev.y, mapTileHeight( tmpPrev, map.heightMap_, offsetZ ) );
+      Point3D p1( tmpCur.x, tmpCur.y, mapTileHeight( tmpPrev, map.heightMap_, offsetZ ) );
       drawLine( p0, p1, color );
       drawSphere( p1, 0.1f, color );
       previous = vec;
@@ -55,6 +76,7 @@ namespace hivemind {
     Array2<uint8_t> height8( info.height, info.width );
     Array2<uint8_t> build8( info.height, info.width );
     Array2<uint8_t> path8( info.height, info.width );
+    Array2<uint8_t> block8( info.height, info.width );
 
     for ( size_t x = 0; x < info.width; x++ )
       for ( size_t y = 0; y < info.height; y++ )
@@ -70,11 +92,15 @@ namespace hivemind {
 
         uint8_t p = ( flagmap[x][y] & MapFlag_Walkable ) ? 0xFF : 0x00;
         path8[row][column] = p;
+
+        uint8_t blocked = ( flagmap[x][y] & MapFlag_Blocker ) ? 0xFF : 0x00;
+        block8[row][column] = blocked;
       }
 
     stbi_write_png( "debug_map_height.png", info.width, info.height, 1, height8.data(), info.width );
-    stbi_write_png( "debug_map_buildable.png", info.width, info.height, 1, build8.data(), info.width );
-    stbi_write_png( "debug_map_pathable.png", info.width, info.height, 1, path8.data(), info.width );
+    stbi_write_png( "debug_map_flags_buildable.png", info.width, info.height, 1, build8.data(), info.width );
+    stbi_write_png( "debug_map_flags_pathable.png", info.width, info.height, 1, path8.data(), info.width );
+    stbi_write_png( "debug_map_flags_blockers.png", info.width, info.height, 1, block8.data(), info.width );
   }
 
   void DebugExtended::mapDumpLabelMap( Array2<int>& map, bool contoured, const string& name )
@@ -219,7 +245,7 @@ namespace hivemind {
       svg::Circle circle( pt, 5.0 * cVectorImageSizeMultiplier, svg::Fill( svg::Color::Red ) );
       doc << circle;
     }
-    for ( size_t id = 0; id < graph.adjacencyList_.size(); id++ )
+    /*for ( size_t id = 0; id < graph.adjacencyList_.size(); id++ )
     {
       for ( auto adj : graph.adjacencyList_[id] )
       {
@@ -231,7 +257,7 @@ namespace hivemind {
           svg::Stroke( 6.0, svg::Color::Cyan ) );
         doc << line;
       }
-    }
+    }*/
     doc.save();
   }
 

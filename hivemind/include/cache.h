@@ -24,6 +24,8 @@ namespace hivemind {
     static void mapWriteRegionVector( const MapData& map, RegionVector& regions, const string& name );
     static bool mapReadChokeVector( const MapData& map, ChokeVector& chokes, RegionVector& regions, const string& name );
     static void mapWriteChokeVector( const MapData& map, ChokeVector& chokes, const string& name );
+    static bool mapReadRegionGraph( const MapData& map, OptimalRegionGraph& graph, const string& name );
+    static void mapWriteRegionGraph( const MapData& map, OptimalRegionGraph& graph, const string& name );
   };
 
 }

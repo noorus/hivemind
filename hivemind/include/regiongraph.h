@@ -11,17 +11,6 @@ namespace hivemind {
 
   using RegionNodeIDSet = set<RegionNodeID>;
 
-  class OptimalRegionGraph {
-  public:
-    vector<Vector2> nodes_;
-    vector<RegionNodeIDSet> adjacencyList_;
-    void reset()
-    {
-      nodes_.clear();
-      adjacencyList_.clear();
-    }
-  };
-
   namespace Analysis {
 
     class RegionGraph {

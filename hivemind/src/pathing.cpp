@@ -6,6 +6,7 @@
 #include "database.h"
 #include "pathing.h"
 #include "pathfinding.h"
+#include "hive_polygon.h"
 
 namespace hivemind {
 

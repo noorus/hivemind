@@ -12,7 +12,8 @@ namespace hivemind {
 
   HIVE_DECLARE_CONVAR( cache_path, "Path to a directory where the bot can cache stuff.", R"(..\cache)" );
 
-  const uint32_t cMapCacheVersion = 6;
+  //! Cache file version number, increment this to invalidate old caches if the format changes
+  const uint32_t cMapCacheVersion = 7;
 
   string makeCacheFilePath( const Sha256& hash, const string& name )
   {
@@ -311,6 +312,17 @@ namespace hivemind {
       serializeVector2( choke.side1, writer );
       serializeVector2( choke.side2, writer );
     }
+  }
+
+  bool Cache::mapReadRegionGraph( const MapData& map, OptimalRegionGraph& graph, const string& name )
+  {
+    // TODO
+    return true;
+  }
+
+  void Cache::mapWriteRegionGraph( const MapData& map, OptimalRegionGraph& graph, const string& name )
+  {
+    // TODO
   }
 
 }

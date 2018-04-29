@@ -385,7 +385,7 @@ namespace hivemind {
     baseManager_.draw();
 
     static bool pathtest = false;
-    if(!pathtest)
+    if(false)
     {
       pathtest = true;
 
@@ -425,14 +425,17 @@ namespace hivemind {
       {
         if(unit->is_selected)
         {
-          char hex[16];
-          sprintf_s(hex, 16, "%x", id(unit));
-          string txt = string(hex) + " " + sc2::UnitTypeToName(unit->unit_type);
-          txt.append(" (" + std::to_string(unit->unit_type) + ")\n");
+          auto& dbUnit = Database::unit( unit->unit_type );
+          char sdf[256];
+          sprintf_s( sdf, 256, "%x %s (%d) wpos (%.2f,%.2f)\n", id( unit ), dbUnit.name.c_str(), (int)unit->unit_type, unit->pos.x, unit->pos.y );
+          string txt( sdf );
           if (utils::isMine(unit))
             for ( auto& order : unit->orders )
               txt.append( string( sc2::AbilityTypeToName( order.ability_id ) ) + "\n" );
           debug_.drawText(txt, Vector3(unit->pos), sc2::Colors::Green);
+
+          if ( !dbUnit.buildingPolygon.empty() )
+            debug_.drawMapBarePolygon( map_, dbUnit.buildingPolygon, Colors::Teal, Vector2( unit->pos.x, unit->pos.y ) );
 
           MapPoint2 coord(unit->pos);
           auto regIndex = map_.regionMap_[coord.x][coord.y];

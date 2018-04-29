@@ -4,6 +4,7 @@
 #include "bot.h"
 #include "intelligence.h"
 #include "database.h"
+#include "external/clipper.hpp"
 
 namespace hivemind {
 
@@ -213,6 +214,10 @@ namespace hivemind {
     }
   }
 
+  const ClipperLib::IntPoint c_polyTestPoints[4] = {
+    { 250, 500 }, { 750, 500 }, { 500, 250 }, { 500, 750 }
+  };
+
   void loadUnitData( const string& filename, UnitDataMap& unitMap )
   {
     unitMap.clear();
@@ -249,6 +254,13 @@ namespace hivemind {
       entry.flying = boost::iequals( unit["mover"].asString(), "Fly" ) ? true : false;
       entry.psionic = unit["psionic"].asBool();
       entry.structure = unit["structure"].asBool();
+
+      entry.invulnerable = unit["invulnerable"].asBool();
+
+      // HACK this should be done better but we don't have the data
+      // Collapsibles are the rock towers and shit that when destroyed fall over to create another unit,
+      // and also do not clean up their original footprint
+      entry.collapsible = ( entry.name.find( "Collapsible" ) != string::npos );
 
       entry.cargoSize = unit["cargoSize"].asInt();
 
@@ -293,6 +305,28 @@ namespace hivemind {
         size_t width = 0;
         size_t height = 0;
 
+        ClipperLib::Path buildingPolyPath;
+        auto& buildShape = unit["footprint"]["shape"]["building"];
+        if ( buildShape.isArray() && !buildShape.empty() )
+        {
+          auto& poly = buildShape[0];
+          if ( !poly.isArray() || poly.size() < 3 )
+            HIVE_EXCEPT( "Footprint buildshape has invalid polygon" );
+          for ( auto it = poly.begin(); it != poly.end(); ++it )
+          {
+            // Skip last since it's the same as first (and our polygons assume that)
+            if ( std::next( it ) == poly.end() )
+              break;
+            auto& pt = ( *it );
+            if ( !pt.isArray() || !pt.isValidIndex( 1 ) )
+              HIVE_EXCEPT( "Malformed footprint build shape polypoint" );
+            // Flip Y coordinate since Blizzard's editor has it that way and we don't
+            auto intpt = ClipperLib::IntPoint( pt[0].asInt64(), -(pt[1].asInt64()) );
+            buildingPolyPath.push_back( intpt );
+          }
+          entry.buildingPolygon = util_clipperPathToPolygonFlipY( buildingPolyPath );
+        }
+
         if ( unit["footprint"]["dimensions"].isArray() && unit["footprint"]["dimensions"].isValidIndex( 1 ) )
         {
           width = unit["footprint"]["dimensions"][0].asUInt64();
@@ -310,16 +344,38 @@ namespace hivemind {
           entry.footprintOffset.x = unit["footprint"]["offset"][0].asInt();
           entry.footprintOffset.y = unit["footprint"]["offset"][1].asInt();
 
-          for ( size_t y = 0; y < height; y++ )
-            for ( size_t x = 0; x < width; x++ )
+          int64_t polyMinX = 0 - ( ( width * 1000 ) / 2 );
+          int64_t polyMinY = 0 - ( ( height * 1000 ) / 2 );
+          const int64_t polyIncrement = 1000;
+
+          for ( size_t y = 0; y < height; ++y )
+          {
+            for ( size_t x = 0; x < width; ++x )
             {
+              bool polyHit = false;
+              if ( !buildingPolyPath.empty() )
+              {
+                for ( size_t i = 0; i < 4; ++i )
+                {
+                  ClipperLib::IntPoint pt(
+                    polyMinX + ( x * polyIncrement ) + c_polyTestPoints[i].X,
+                    polyMinY + ( y * polyIncrement ) + c_polyTestPoints[i].Y );
+                  if ( ClipperLib::PointInPolygon( pt, buildingPolyPath ) != 0 )
+                  {
+                    polyHit = true;
+                    break;
+                  }
+                }
+              }
               auto idx = y * width + x;
-              entry.footprint[x][y] = (
+              entry.footprint[x][height - 1 - y] = (
                 data[idx] == 'x' ? UnitData::Footprint_Reserved :
+                polyHit ? UnitData::Footprint_BuildingPolyReserved :
                 data[idx] == 'n' ? UnitData::Footprint_NearResource :
                 data[idx] == 'o' ? UnitData::Footprint_Creep :
                 UnitData::Footprint_Empty );
             }
+          }
         }
       }
 

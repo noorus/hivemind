@@ -11,7 +11,7 @@ namespace hivemind {
     /* Brain: Spread creep goal */
 
     const GameTime cCreepCheckDelay = 50;
-    const GameTime cTumorFullCreepTime = utils::timeToTicks( 0, ( ( 21.0f - 3.0f ) / 2.0f ) * 0.8332f ); // ((fullGrownFootprint - spawnFootprint) / 2) * creepPeriod
+    const GameTime cTumorFullCreepTime = utils::timeToTicks( 0, (uint16_t)( ( ( 21.0f - 3.0f ) / 2.0f ) * 0.8332f ) ); // ((fullGrownFootprint - spawnFootprint) / 2) * creepPeriod
 
     Brain_SpreadCreep::Brain_SpreadCreep( AI::Agent * agent ):
     AI::CompositeGoal( agent )

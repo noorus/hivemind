@@ -3,9 +3,22 @@
 #include "hive_vector2.h"
 #include "hive_math.h"
 #include "hive_geometry.h"
-#include "utilities.h"
 
 namespace hivemind {
+
+  namespace utils {
+
+    namespace internal {
+
+      // Don't call this; use Polygon::distanceTo() instead.
+      Real pointDistanceToPoly( const Vector2& pt, const vector<Vector2>& poly );
+
+      // Don't call this; use Polygon::contains() instead.
+      int pointInsidePolyOuter( const Vector2& pt, const vector<Vector2>& poly );
+
+    }
+
+  }
 
   // this really doesn't belong here
   struct MapPoint2 {
@@ -167,6 +180,7 @@ namespace hivemind {
   inline Polygon util_clipperPathToPolygon( const ClipperLib::Path& in )
   {
     Polygon out;
+    out.reserve( in.size() );
     for ( auto& pt : in )
     {
       Real x = (Real)pt.X / 1000.0f;
@@ -176,9 +190,23 @@ namespace hivemind {
     return out;
   }
 
+  inline Polygon util_clipperPathToPolygonFlipY( const ClipperLib::Path& in )
+  {
+    Polygon out;
+    out.reserve( in.size() );
+    for ( auto& pt : in )
+    {
+      Real x = (Real)pt.X / 1000.0f;
+      Real y = (Real)(-( pt.Y )) / 1000.0f;
+      out.emplace_back( x, y );
+    }
+    return out;
+  }
+
   inline ClipperLib::Path util_polyToClipperPath( const Polygon& in )
   {
     ClipperLib::Path out;
+    out.reserve( in.size() );
     for ( auto& pt : in )
     {
       auto x = ( ClipperLib::cInt )( pt.x * 1000.0f );
@@ -191,6 +219,7 @@ namespace hivemind {
   inline ClipperLib::Path util_contourToClipperPath( const Contour& in )
   {
     ClipperLib::Path out;
+    out.reserve( in.size() );
     for ( auto& pt : in )
     {
       auto x = ( ClipperLib::cInt )( pt.x * 1000 );

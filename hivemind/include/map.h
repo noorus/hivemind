@@ -22,10 +22,9 @@ namespace hivemind {
     MapFlag_NearRamp = 32, //!< A tile that is at most 2 tiles away from a ramp tile
     MapFlag_StartLocation = 64, //!< A tile that is part of a start location's footprint
     MapFlag_NearStartLocation = 128, //!< A tile that is at most 2 tiles away from a base location footprint tile
-    MapFlag_VespeneGeyser = 256, //!< A tile that is part of a vespene geyser
-    MapFlag_VisionBlocker = 512,
-    MapFlag_NearVisionBlocker = 1024,
-    MapFlag_INTERNAL_AnalysisTemp = 2048
+    MapFlag_VisionBlocker = 256,
+    MapFlag_NearVisionBlocker = 512,
+    MapFlag_Blocker = 1024
   };
 
   struct MapComponent {
@@ -82,6 +81,20 @@ namespace hivemind {
     bool dubious_; //!< If this region has no real area or tiles, and probably lacks known height value
     ChokeSet chokepoints_;
     RegionSet reachableRegions_;
+  };
+
+  struct OptimalRegionNode {
+    Vector2 position_;
+    Real minDistance_;
+    Region* region_;
+  };
+
+  class Map;
+
+  class OptimalRegionGraph {
+  public:
+    vector<OptimalRegionNode> nodes_;
+    void initializeFrom( Analysis::RegionGraph& sourceGraph, Map& map );
   };
 
   struct MapData {

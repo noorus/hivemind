@@ -1,8 +1,8 @@
 ﻿#pragma once
 #include "sc2_forward.h"
 #include "hive_math.h"
-#include "database.h"
 #include "exception.h"
+#include "database.h"
 
 #ifdef HIVE_PLATFORM_WINDOWS
 # include "platform_windows.h"
@@ -42,16 +42,6 @@ namespace hivemind {
   };
 
   namespace utils {
-
-    namespace internal {
-
-      // Don't call this; use Polygon::distanceTo() instead.
-      Real pointDistanceToPoly( const Vector2& pt, const vector<Vector2>& poly );
-
-      // Don't call this; use Polygon::contains() instead.
-      int pointInsidePolyOuter( const Vector2& pt, const vector<Vector2>& poly );
-
-    }
 
     static std::random_device g_randomDevice;
     static std::mt19937 g_random( g_randomDevice() );
@@ -211,6 +201,18 @@ namespace hivemind {
 
     inline const bool isStructure( const Unit& unit ) { return isStructure( unit.unit_type ); }
     inline const bool isStructure( const UnitRef unit ) { return isStructure( unit->unit_type ); }
+
+    // This IGNORES collapsibles!
+    inline const bool isNeutralBlocker( const UnitRef unit )
+    {
+      if ( unit->alliance != sc2::Unit::Neutral )
+        return false;
+      const auto& dbUnit = Database::unit( unit->unit_type );
+      return ( dbUnit.structure
+        && !dbUnit.invulnerable
+        && !dbUnit.footprint.empty()
+        && !dbUnit.collapsible );
+    }
 
     inline void hsl2rgb( uint16_t hue, uint8_t sat, uint8_t lum, uint8_t rgb[3] )
     {
