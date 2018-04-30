@@ -195,14 +195,14 @@ namespace hivemind {
         continue;
       }
 
-      // TODO: Fix this.
-      /* This is just wrong, it mixes upgrade id with unit id.
-      const auto& data = Database::units().at(research.upgradeType);
-      mineralSum += data.mineralCost;
-      vespeneSum += data.vespeneCost;
-      */
-      mineralSum = 100;
-      vespeneSum = 100;
+      auto& upgrades = bot_->Observation()->GetUpgradeData();
+
+      auto& u = upgrades.at(research.upgradeType);
+
+      mineralSum += u.mineral_cost;
+      vespeneSum += u.vespene_cost;
+
+      //bot_->console().printf("Research %s costs %d minerals, %d vespene", sc2::UpgradeIDToName( research.upgradeType ), u.mineral_cost, u.vespene_cost);
     }
     return { mineralSum, vespeneSum, 0 };
   }
