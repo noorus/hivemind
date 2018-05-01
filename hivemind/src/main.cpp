@@ -10,6 +10,7 @@
 
 using namespace hivemind;
 
+static bool callbackCVAREnemyRace( ConVar* variable, ConVar::Value oldValue );
 static void concmdQuit( Console* console, ConCmd* command, StringVector& arguments );
 
 HIVE_DECLARE_CONVAR( screen_width, "Width of the launched game window.", 1920 );
@@ -20,6 +21,9 @@ HIVE_DECLARE_CONVAR( data_path, "Path to the bot's data directory.", R"(..\data)
 HIVE_DECLARE_CONVAR( map, "Name or path of the map to launch.", "Fractured Glacier" );
 
 HIVE_DECLARE_CONVAR( update_delay, "Time delay between main loop updates in milliseconds.", 10 );
+
+HIVE_DECLARE_CONVAR( enemy_count, "Number of enemy AI players to add in game.", 1 );
+HIVE_DECLARE_CONVAR_WITH_CB( enemy_race, "Race of the first enemy AI player. Subsequent players will cycle through races.", "terran", callbackCVAREnemyRace );
 
 HIVE_DECLARE_CONVAR( net_timeout, "Game API communications timeout in milliseconds.", 20000 );
 
@@ -39,6 +43,33 @@ void testTechChain(Console& console, sc2::UNIT_TYPEID targetType)
   {
     console.printf("  %s", sc2::UnitTypeToName(unitType));
   }
+}
+
+// Should match indexing of the sc2::Race enum
+const string c_raceStringMapping[4] = { "terran", "zerg", "protoss", "random" };
+
+sc2::Race resolveRace( const string& str )
+{
+  for ( size_t i = 0; i < 4; ++i )
+  {
+    if ( boost::iequals( str, c_raceStringMapping[i] ) )
+      return (Race)i;
+  }
+  return Race::Random;
+}
+
+bool callbackCVAREnemyRace( ConVar* variable, ConVar::Value oldValue )
+{
+  for ( int i = 0; i < 4; ++i )
+  {
+    if ( boost::iequals( variable->as_s(), c_raceStringMapping[i] ) )
+      return true;
+  }
+
+  if ( g_Bot )
+    g_Bot->console().printf( "Unknown race option \"%s\"", variable->as_s().c_str() );
+
+  return false;
 }
 
 void concmdQuit( Console* console, ConCmd* command, StringVector& arguments )
@@ -138,11 +169,18 @@ int runMain( hivemind::Bot::Options& options )
 
   coordinator.SetUseGeneralizedAbilityId( false );
 
-  coordinator.SetParticipants( {
-    CreateParticipant( sc2::Zerg, &hivemindBot ),
-    CreateComputer( sc2::Terran, sc2::Difficulty::VeryHard ),
-    CreateComputer( sc2::Protoss, sc2::Difficulty::VeryHard )
-    } );
+  vector<sc2::PlayerSetup> players = { CreateParticipant( sc2::Zerg, &hivemindBot ) };
+
+  int enemyRace = resolveRace( g_CVar_enemy_race.as_s() );
+  for ( int i = 0; i < g_CVar_enemy_count.as_i(); ++i )
+  {
+    players.push_back( CreateComputer( (Race)enemyRace, sc2::Difficulty::VeryHard ) );
+    enemyRace++;
+    if ( enemyRace >= Race::Random )
+      enemyRace = Race::Terran;
+  }
+
+  coordinator.SetParticipants( players );
 
   coordinator.LaunchStarcraft();
 
