@@ -149,4 +149,6 @@ namespace hivemind {
     }
   };
 
+  UnitTypeID getTrainerType(UnitTypeID unitType);
+
 }

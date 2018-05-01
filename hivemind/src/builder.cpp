@@ -425,7 +425,7 @@ namespace hivemind {
     return false;
   }
 
-  static UnitTypeID getTrainerType(UnitTypeID unitType)
+  UnitTypeID getTrainerType(UnitTypeID unitType)
   {
     if(unitType == sc2::UNIT_TYPEID::ZERG_LAIR)
     {
