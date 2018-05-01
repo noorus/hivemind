@@ -7,6 +7,8 @@
 
 namespace hivemind {
 
+  HIVE_DECLARE_CONVAR( draw_macro, "Whether to draw debug information about macro plans", true);
+
   struct BuildPlan
   {
     enum class State
@@ -14,6 +16,10 @@ namespace hivemind {
       NotDone,
       Done
     };
+
+    virtual ~BuildPlan()
+    {
+    }
 
     virtual int remainingCost() const = 0;
     virtual State updateProgress(BuildPlanner* planner) = 0;
@@ -90,6 +96,13 @@ namespace hivemind {
       return bot_;
     }
 
+    std::unique_ptr<StructureBuildPlan> makeTechPlan(Builder& builder, sc2::UnitTypeID unitType) const;
+
+    const std::vector<std::unique_ptr<BuildPlan>>& getPlans() const
+    {
+      return plans_;
+    }
+
   private:
     Bot* bot_;
 
@@ -132,8 +145,29 @@ namespace hivemind {
       return status_;
     }
 
+    static void draw(Bot* bot, const BuildPlanner* buildPlanner)
+    {
+      if(!g_CVar_draw_macro.as_b())
+        return;
+
+      auto& debug = bot->debug();
+
+      Point2D screenPosition = Point2D(0.03f, 0.3f);
+      const Point2D increment(0.0f, 0.011f);
+      for(auto& plan : buildPlanner->getPlans())
+      {
+        std::string text = plan->toString();
+
+        debug.drawText(text, screenPosition, sc2::Colors::Teal);
+        screenPosition += increment;
+      }
+      screenPosition += increment;
+    }
+
     void Brain_Macro::update()
     {
+      draw(bot_, planner_.get());
+
       auto& baseManager = bot_->bases();
 
       if(baseManager.bases().empty())
@@ -164,9 +198,16 @@ namespace hivemind {
       auto& droneState = builder.getUnitStats(sc2::UNIT_TYPEID::ZERG_DRONE);
       auto& queenState = builder.getUnitStats(sc2::UNIT_TYPEID::ZERG_QUEEN);
       auto& evolutionChamberState = builder.getUnitStats(sc2::UNIT_TYPEID::ZERG_EVOLUTIONCHAMBER);
+      auto& lingState = builder.getUnitStats(sc2::UNIT_TYPEID::ZERG_ZERGLING);
 
       int futureSupplyLimit = std::min(200, supplyLimit + overlordState.inProgressCount() * 8);
-      int overlordNeed = futureSupplyLimit < 200 && (usedSupply >= futureSupplyLimit - 1 ? true : false);
+      int overlordNeed = futureSupplyLimit < 200 &&
+        (
+          (usedSupply >= futureSupplyLimit - 1) ||
+          (usedSupply >= futureSupplyLimit - 2 && usedSupply > 20) ||
+          (usedSupply >= futureSupplyLimit - 3 && usedSupply > 30) ||
+          (usedSupply >= futureSupplyLimit - 6 && usedSupply > 60)
+        );
 
       int hatcheryCount = hatcheryState.unitCount() + lairState.unitCount() + hiveState.unitCount();
       int hatcheryFutureCount = hatcheryState.futureCount() + lairState.unitCount() + hiveState.unitCount();
@@ -176,18 +217,18 @@ namespace hivemind {
       int droneNeed = futureDroneCount < hatcheryCount * (16 + 2 * 3) + scoutDroneCount && futureDroneCount <= 75;
 
       int futureExtractorCount = extractorState.futureCount();
-      int extractorNeed = futureExtractorCount < hatcheryCount && (futureDroneCount > hatcheryCount * 16 + futureExtractorCount * 3 + 1 + scoutDroneCount || minerals > 400);
+      int extractorNeed = futureExtractorCount < hatcheryCount * 2 && (futureDroneCount > hatcheryCount * 16 + futureExtractorCount * 3);
 
       int poolNeed = poolState.futureCount() == 0 && futureDroneCount >= 16 + 1 + scoutDroneCount;
 
       int queenNeed = poolState.unitCount() > 0 && queenState.futureCount() < hatcheryCount && queenState.inProgressCount() < hatcheryCount;
 
-      int hatcheryNeed = droneState.futureCount() >= 17 * hatcheryFutureCount;
+      int hatcheryNeed = droneState.unitCount() > (16 + 2 * 3) * hatcheryFutureCount;
 
       auto lingSpeed = builder.getUpgradeStatus(sc2::UPGRADE_ID::ZERGLINGMOVEMENTSPEED);
       int lingSpeedNeed = poolState.unitCount() > 0 && lingSpeed == UpgradeStatus::NotStarted;
 
-      int evolutionChamberNeed = evolutionChamberState.futureCount() == 0 && poolState.unitCount() > 0 && extractorState.unitCount() > 0 && queenState.futureCount() > 0;
+      int evolutionChamberNeed = evolutionChamberState.futureCount() == 0 && poolState.unitCount() > 0 && extractorState.unitCount() > 0 && lingState.unitCount() >= 6;
 
       auto meleeAttack1 = builder.getUpgradeStatus(sc2::UPGRADE_ID::ZERGMELEEWEAPONSLEVEL1);
       int meleeAttack1Need = evolutionChamberState.unitCount() > 0 && meleeAttack1 == UpgradeStatus::NotStarted;
@@ -206,6 +247,7 @@ namespace hivemind {
             if(builder.build(sc2::UNIT_TYPEID::ZERG_HATCHERY, &base, BuildPlacement_MainBuilding, id))
               return;
         }
+        return;
       }
 
       /*
@@ -326,7 +368,28 @@ namespace hivemind {
       });
   }
 
-  static bool haveTechToTrain(Builder& builder, sc2::UnitTypeID unitType)
+  static std::vector<sc2::UnitTypeID> getReverseTechAliases(sc2::UnitTypeID unitType)
+  {
+    if(unitType == sc2::UNIT_TYPEID::ZERG_HATCHERY)
+    {
+      return { sc2::UNIT_TYPEID::ZERG_HATCHERY, sc2::UNIT_TYPEID::ZERG_LAIR, sc2::UNIT_TYPEID::ZERG_HIVE };
+    }
+    if(unitType == sc2::UNIT_TYPEID::ZERG_LAIR)
+    {
+      return  { sc2::UNIT_TYPEID::ZERG_LAIR, sc2::UNIT_TYPEID::ZERG_HIVE };
+    }
+    if(unitType == sc2::UNIT_TYPEID::ZERG_SPIRE)
+    {
+      return { sc2::UNIT_TYPEID::ZERG_SPIRE, sc2::UNIT_TYPEID::ZERG_GREATERSPIRE };
+    }
+    if(unitType == sc2::UNIT_TYPEID::ZERG_HYDRALISKDEN)
+    {
+      return { sc2::UNIT_TYPEID::ZERG_HYDRALISKDEN, sc2::UNIT_TYPEID::ZERG_LURKERDENMP };
+    }
+    return { unitType };
+  }
+
+  static bool haveTechToMake(Builder& builder, sc2::UnitTypeID unitType)
   {
     std::vector<sc2::UnitTypeID> techChain;
     Database::techTree().findTechChain(unitType, techChain);
@@ -336,8 +399,17 @@ namespace hivemind {
       if(!utils::isStructure(buildingType))
         continue;
 
-      auto& state = builder.getUnitStats(buildingType);
-      if(state.unitCount() < 1)
+      bool found = false;
+      for(auto alias : getReverseTechAliases(buildingType))
+      {
+        auto& stats = builder.getUnitStats(alias);
+        if(stats.unitCount() >= 1)
+        {
+          found = true;
+          break;
+        }
+      }
+      if(!found)
       {
         return false;
       }
@@ -346,111 +418,148 @@ namespace hivemind {
     return true;
   }
 
-  static std::unique_ptr<StructureBuildPlan> makeTechPlan(Builder& builder, sc2::UnitTypeID unitType)
+  std::unique_ptr<StructureBuildPlan> BuildPlanner::makeTechPlan(Builder& builder, sc2::UnitTypeID unitType) const
   {
     std::vector<sc2::UnitTypeID> techChain;
     Database::techTree().findTechChain(unitType, techChain);
 
-    for(auto& buildingType : techChain)
+    for(auto& buildingType : boost::adaptors::reverse(techChain))
     {
       if(!utils::isStructure(buildingType))
         continue;
 
-      auto& state = builder.getUnitStats(buildingType);
-      if(state.unitCount() < 1)
+      bool found = false;
+      for(auto alias : getReverseTechAliases(buildingType))
       {
-
-        return std::make_unique<StructureBuildPlan>(buildingType);
+        auto& stats = builder.getUnitStats(alias);
+        if(stats.futureCount() >= 1)
+        {
+          found = true;
+          break;
+        }
       }
+      if(found)
+        continue;
+
+      for(auto& x : plans_)
+      {
+        if(auto oldPlan = dynamic_cast<const StructureBuildPlan*>(x.get()))
+        {
+          if(oldPlan->building_ == buildingType)
+          {
+            continue;
+          }
+        }
+      }
+
+      if(!haveTechToMake(builder, buildingType))
+        continue;
+
+      return std::make_unique<StructureBuildPlan>(buildingType);
     }
 
     return nullptr;
   }
 
-  void BuildPlanner::executePlans()
+  void makeMorePlans(BuildPlanner* planner)
   {
-      int minerals = bot_->Observation()->GetMinerals();
-      int vespene = bot_->Observation()->GetVespene();
-      int supplyLimit = bot_->Observation()->GetFoodCap();
-      int usedSupply = bot_->Observation()->GetFoodUsed();
+    Bot* bot_ = planner->getBot();
 
-      auto& baseManager = bot_->bases();
-      auto& builder = bot_->builder();
+    int minerals = bot_->Observation()->GetMinerals();
+    int vespene = bot_->Observation()->GetVespene();
+    int supplyLimit = bot_->Observation()->GetFoodCap();
+    int usedSupply = bot_->Observation()->GetFoodUsed();
 
-      auto allocatedResources = builder.getAllocatedResources();
-      minerals -= allocatedResources.minerals;
-      vespene -= allocatedResources.vespene;
-      usedSupply += allocatedResources.food;
-#if 0
-      auto& droneState = builder.getUnitStats(sc2::UNIT_TYPEID::ZERG_DRONE);
-      auto& hatcheryState = builder.getUnitStats(sc2::UNIT_TYPEID::ZERG_HATCHERY);
-      auto& lairState = builder.getUnitStats(sc2::UNIT_TYPEID::ZERG_LAIR);
-      auto& hiveState = builder.getUnitStats(sc2::UNIT_TYPEID::ZERG_HIVE);
-      auto& poolState = builder.getUnitStats(sc2::UNIT_TYPEID::ZERG_SPAWNINGPOOL);
+    auto& baseManager = bot_->bases();
+    auto& builder = bot_->builder();
 
+    auto allocatedResources = builder.getAllocatedResources();
+    minerals -= allocatedResources.minerals;
+    vespene -= allocatedResources.vespene;
+    usedSupply += allocatedResources.food;
+
+    auto& droneState = builder.getUnitStats(sc2::UNIT_TYPEID::ZERG_DRONE);
+    auto& hatcheryState = builder.getUnitStats(sc2::UNIT_TYPEID::ZERG_HATCHERY);
+    auto& lairState = builder.getUnitStats(sc2::UNIT_TYPEID::ZERG_LAIR);
+    auto& hiveState = builder.getUnitStats(sc2::UNIT_TYPEID::ZERG_HIVE);
+    auto& poolState = builder.getUnitStats(sc2::UNIT_TYPEID::ZERG_SPAWNINGPOOL);
+
+    sc2::UNIT_TYPEID unitTypes[] =
+    {
+      sc2::UNIT_TYPEID::ZERG_DRONE,
+      sc2::UNIT_TYPEID::ZERG_DRONE,
+      sc2::UNIT_TYPEID::ZERG_ZERGLING,
+      sc2::UNIT_TYPEID::ZERG_DRONE,
+      sc2::UNIT_TYPEID::ZERG_ZERGLING,
+      sc2::UNIT_TYPEID::ZERG_DRONE,
+      sc2::UNIT_TYPEID::ZERG_ROACH,
+      sc2::UNIT_TYPEID::ZERG_DRONE,
+      sc2::UNIT_TYPEID::ZERG_ZERGLING,
+      sc2::UNIT_TYPEID::ZERG_HYDRALISK,
+      sc2::UNIT_TYPEID::ZERG_HYDRALISK,
+//      sc2::UNIT_TYPEID::ZERG_MUTALISK,
+//      sc2::UNIT_TYPEID::ZERG_ULTRALISK,
+//      sc2::UNIT_TYPEID::ZERG_SWARMHOSTMP,
+//      sc2::UNIT_TYPEID::ZERG_CORRUPTOR,
+//      sc2::UNIT_TYPEID::ZERG_INFESTOR,
+    };
+    const int N = sizeof(unitTypes) / sizeof(*unitTypes);
+
+    static int choice = N - 1;
+    choice = (choice + 1) % N;
+
+    auto unitType = unitTypes[choice];
+    int unitCount = 4;
+
+    if(unitType == sc2::UNIT_TYPEID::ZERG_DRONE)
+    {
       int hatcheryCount = hatcheryState.unitCount() + lairState.unitCount() + hiveState.unitCount();
       int hatcheryFutureCount = hatcheryState.futureCount() + lairState.unitCount() + hiveState.unitCount();
 
       int scoutDroneCount = 1;
       int futureDroneCount = droneState.futureCount();
-      int droneNeed = futureDroneCount < hatcheryCount * (16 + 2 * 3) + scoutDroneCount && futureDroneCount <= 75;
+      int optimalDroneCount = hatcheryCount * (16 + 2 * 3) + scoutDroneCount;
+      optimalDroneCount = std::min(optimalDroneCount, 75);
 
-      BuildProjectID id;
-      if(droneNeed > 0)
+      int droneNeed = optimalDroneCount - futureDroneCount;
+      droneNeed = std::max(droneNeed, 0);
+      droneNeed = std::min(droneNeed, 4);
+
+      unitCount = droneNeed;
+    }
+
+    if(unitCount == 0)
+      return;
+
+    if(haveTechToMake(builder, unitType))
+    {
+      auto plan = std::make_unique<UnitBuildPlan>(unitType, unitCount);
+      if(plan)
       {
-        if(minerals >= 50 && usedSupply < supplyLimit)
-        {
-          for(auto& base : baseManager.bases())
-            if(builder.train(sc2::UNIT_TYPEID::ZERG_DRONE, &base, sc2::UNIT_TYPEID::ZERG_LARVA, id))
-              return;
-        }
+        planner->addPlan(std::move(plan));
       }
-      else if(minerals >= 50 && usedSupply < supplyLimit && poolState.unitCount() > 0)
+    }
+    else
+    {
+      auto plan = planner->makeTechPlan(builder, unitType);
+      if(plan)
       {
-        for(auto& base : baseManager.bases())
-            if(builder.train(sc2::UNIT_TYPEID::ZERG_ZERGLING, &base, sc2::UNIT_TYPEID::ZERG_LARVA, id))
-              return;
+        planner->addPlan(std::move(plan));
       }
-#endif
+    }
+  }
 
-      if(plans_.size() < 2 || plans_.size() < 10 && minerals > 400)
-      {
-        sc2::UNIT_TYPEID unitTypes[] =
-        {
-          sc2::UNIT_TYPEID::ZERG_DRONE,
-          sc2::UNIT_TYPEID::ZERG_ZERGLING,
-          sc2::UNIT_TYPEID::ZERG_ROACH,
-        };
-        const int N = sizeof(unitTypes) / sizeof(*unitTypes);
+  void BuildPlanner::executePlans()
+  {
+    if(plans_.size() < 2)
+    {
+      makeMorePlans(this);
+    }
 
-        static int choice = N - 1;
-        choice = (choice + 1) % N;
-
-        auto unitType = unitTypes[choice];
-        int unitCount = 4;
-
-        if(haveTechToTrain(builder, unitType))
-        {
-          auto plan = std::make_unique<UnitBuildPlan>(unitType, unitCount);
-          if(plan)
-          {
-            addPlan(std::move(plan));
-          }
-        }
-        else
-        {
-          auto plan = makeTechPlan(builder, unitType);
-          if(plan)
-          {
-            addPlan(std::move(plan));
-          }
-        }
-      }
-
-      for(auto& plan : plans_)
-      {
-        plan->executePlan(this);
-      }
+    for(auto& plan : plans_)
+    {
+      plan->executePlan(this);
+    }
   }
 
   void UnitBuildPlan::executePlan(BuildPlanner* planner)
@@ -485,6 +594,25 @@ namespace hivemind {
     return "train " + std::to_string(count_) + " " + sc2::UnitTypeToName(unitType_);
   }
 
+  UnitBuildPlan::State UnitBuildPlan::updateProgress(BuildPlanner* planner)
+  {
+    Bot* bot = planner->getBot();
+    auto& builder = bot->builder();
+
+    if(startedBuilds_.size() < count_)
+    {
+      return State::NotDone;
+    }
+
+    for(auto& id : startedBuilds_)
+    {
+      if(!builder.isFinished(id))
+        return State::NotDone;
+    }
+
+    return State::Done;
+  }
+
   StructureBuildPlan::State StructureBuildPlan::updateProgress(BuildPlanner* planner)
   {
     Bot* bot = planner->getBot();
@@ -513,14 +641,32 @@ namespace hivemind {
         return;
       }
 
-      BuildProjectID id;
+      auto trainerType = getTrainerType(building_);
 
-      for(auto& base : baseManager.bases())
+      if(utils::isStructure(trainerType))
       {
-        if(builder.build(building_, &base, BuildPlacement_Generic, id))
+        // The target is an upgrade to an existing building, e.g. the lair.
+        BuildProjectID id;
+        for(auto& base : baseManager.bases())
         {
-          startedBuild_ = id;
-          break;
+          if(builder.train(building_, &base, trainerType, id))
+          {
+            startedBuild_ = id;
+            break;
+          }
+        }
+      }
+      else
+      {
+        // The target is a normal building that is built with a drone.
+        BuildProjectID id;
+        for(auto& base : baseManager.bases())
+        {
+          if(builder.build(building_, &base, BuildPlacement_Generic, id))
+          {
+            startedBuild_ = id;
+            break;
+          }
         }
       }
     }
@@ -529,24 +675,5 @@ namespace hivemind {
   std::string StructureBuildPlan::toString() const
   {
     return std::string("build ") + sc2::UnitTypeToName(building_);
-  }
-
-  UnitBuildPlan::State UnitBuildPlan::updateProgress(BuildPlanner* planner)
-  {
-    Bot* bot = planner->getBot();
-    auto& builder = bot->builder();
-
-    if(startedBuilds_.size() < count_)
-    {
-      return State::NotDone;
-    }
-
-    for(auto& id : startedBuilds_)
-    {
-      if(!builder.isFinished(id))
-        return State::NotDone;
-    }
-
-    return State::Done;
   }
 }

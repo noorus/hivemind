@@ -27,6 +27,9 @@ namespace hivemind {
 
   static UnitTypeID normalizeUnitType(UnitTypeID unitType)
   {
+    if(unitType == sc2::UNIT_TYPEID::ZERG_SWARMHOSTBURROWEDMP)
+      return sc2::UNIT_TYPEID::ZERG_SWARMHOSTMP;
+
     const auto& name = Database::unit(unitType).name;
     for(auto suffix : { "Burrowed", "Lowered", "Flying", "Sieged" })
     {

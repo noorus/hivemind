@@ -49,7 +49,7 @@ namespace hivemind {
     {
       for(auto building : base.depots())
       {
-        if(!building->unit_type == trainerType)
+        if(building->unit_type != trainerType)
         {
           continue;
         }
@@ -81,7 +81,7 @@ namespace hivemind {
     trainingProjects_.push_back( training );
 
     if ( g_CVar_trainer_debug.as_i() > 1 )
-      bot_->console().printf( "TrainOp %d for %s: created with %x", training.id, sc2::UnitTypeToName( training.type ), id( training.trainer ) );
+      bot_->console().printf( "TrainOp %d for %s: created with trainer %s %x", training.id, sc2::UnitTypeToName( training.type ), sc2::UnitTypeToName( training.trainer->unit_type ), id( training.trainer ) );
 
     trainers_.insert(trainer);
 
@@ -110,7 +110,7 @@ namespace hivemind {
   void Trainer::onTrainingComplete(const Training& training)
   {
     if ( g_CVar_trainer_debug.as_i() > 1 )
-      bot_->console().printf( "TrainOp %d for %s: removed with %x (%s)", training.id, sc2::UnitTypeToName( training.type ), id( training.trainer ), training.completed ? "completed" : "canceled" );
+      bot_->console().printf( "TrainOp %d for %s: removed with trainer %s %x (%s)", training.id, sc2::UnitTypeToName( training.type ), sc2::UnitTypeToName( training.trainer->unit_type ), id( training.trainer ), training.completed ? "completed" : "canceled" );
 
     if ( training.completed )
       bot_->messaging().sendGlobal( M_Training_Finished, training.id );
@@ -210,7 +210,7 @@ namespace hivemind {
           bot_->messaging().sendGlobal( M_Training_Started, training.id );
 
           if ( verbose )
-            bot_->console().printf( "TrainOp %d for %s: started with %x", training.id, sc2::UnitTypeToName( training.type ), id( training.trainer ) );
+            bot_->console().printf( "TrainOp %d for %s: started with trainer %s %x", training.id, sc2::UnitTypeToName( training.type ), sc2::UnitTypeToName( training.trainer->unit_type ), id( training.trainer ) );
         }
         else if ( training.nextUpdateTime <= time )
         {
@@ -221,7 +221,7 @@ namespace hivemind {
             bot_->unitDebugMsgs_[training.trainer] = "TrainOp " + std::to_string(training.id);
 
             if ( verbose )
-              bot_->console().printf( "TrainOp %d for %s: starting with %x", training.id, sc2::UnitTypeToName( training.type ), id( training.trainer ) );
+              bot_->console().printf( "TrainOp %d for %s: starting with trainer %s %x", training.id, sc2::UnitTypeToName( training.type ), sc2::UnitTypeToName( training.trainer->unit_type ), id( training.trainer ) );
 
             Larva(training.trainer).morph(training.type);
             training.tries++;
