@@ -159,7 +159,13 @@ namespace hivemind {
           if ( dist < cBuildDistHeur )
           {
             if ( g_CVar_builder_debug.as_i() > 1 )
-              bot_->console().printf( "BuildOp %d: Got building %x at pos %f,%f", build.id, id( unit ), pos.x, pos.y );
+              bot_->console().printf( "BuildOp %d for %s: Got building %x at pos %f,%f", build.id, sc2::UnitTypeToName( build.type ), id( unit ), pos.x, pos.y );
+
+            if(build.builder->unit_type == sc2::UNIT_TYPEID::ZERG_DRONE)
+            {
+              auto& droneStats = unitStats_[sc2::UNIT_TYPEID::ZERG_DRONE];
+              droneStats.units.erase(build.builder);
+            }
 
             build.building = unit;
             build.buildStartTime = bot_->time();
@@ -173,9 +179,9 @@ namespace hivemind {
     {
       UnitRef unit = msg.unit();
 
-      if ( !utils::isMine( msg.unit() ) )
+      if ( !utils::isMine( unit ) )
         return;
-      if ( !Database::unit( msg.unit()->unit_type ).structure )
+      if ( !utils::isStructure( unit ) )
         return;
 
       auto& stats = unitStats_[unit->unit_type];
@@ -183,26 +189,50 @@ namespace hivemind {
 
       for ( auto& build : buildProjects_ )
       {
-        if ( build.building == msg.unit() )
+        if ( build.building == unit )
         {
           build.completed = true;
           build.buildCompleteTime = bot_->time();
 
           if ( g_CVar_builder_debug.as_i() > 1 )
-            bot_->console().printf( "BuildOp %d: Completed in time %d", build.id, build.buildCompleteTime - build.buildStartTime );
-
-          stats.inProgress.erase(build.id);
+            bot_->console().printf( "BuildOp %d for %s: Completed in time %d", build.id, sc2::UnitTypeToName( build.type ), build.buildCompleteTime - build.buildStartTime );
         }
       }
     }
-    else if ( msg.code == M_Global_UnitDestroyed )
+    else if(msg.code == M_Global_UnitDestroyed)
     {
-      if ( !utils::isMine( msg.unit() ) || !utils::isWorker( msg.unit() ) )
+      UnitRef unit = msg.unit();
+
+      if(!utils::isMine(unit))
         return;
-      for ( auto& build : buildProjects_ )
+
+      if(utils::isWorker(unit))
       {
-        if ( build.builder == msg.unit() )
-          build.builder = nullptr;
+        for(auto& build : buildProjects_)
+        {
+          if(build.builder == unit)
+            build.builder = nullptr;
+        }
+      }
+      else if(utils::isStructure(unit))
+      {
+        for ( auto& build : buildProjects_ )
+        {
+          if ( build.building == unit )
+          {
+            build.cancel = true;
+            build.buildCompleteTime = bot_->time();
+
+            if ( g_CVar_builder_debug.as_i() > 1 )
+              bot_->console().printf( "BuildOp %d for %s: canceled (or destroyed) in time %d", build.id, sc2::UnitTypeToName( build.type ), build.buildCompleteTime - build.buildStartTime );
+
+            if(build.builder && build.builder->is_alive && build.builder->unit_type == sc2::UNIT_TYPEID::ZERG_DRONE)
+            {
+              auto& droneStats = unitStats_[sc2::UNIT_TYPEID::ZERG_DRONE];
+              droneStats.units.insert(build.builder);
+            }
+          }
+        }
       }
     }
   }
@@ -227,13 +257,16 @@ namespace hivemind {
       auto& build = ( *it );
       if ( build.completed || build.cancel )
       {
+        auto& stats = unitStats_[build.type];
+        stats.inProgress.erase(build.id);
+
         if ( build.completed )
           bot_->messaging().sendGlobal( M_Build_Finished, build.id );
         else
           bot_->messaging().sendGlobal( M_Build_Canceled, build.id );
 
         if ( verbose )
-          bot_->console().printf( "Builder: Removing BuildOp %d (%s)", build.id, build.completed ? "completed" : "canceled" );
+          bot_->console().printf( "BuildOp %d for %s (%s):", build.id, sc2::UnitTypeToName( build.type ), build.completed ? "completed" : "canceled" );
 
         if ( build.builder && build.builder->is_alive )
         {
@@ -273,7 +306,7 @@ namespace hivemind {
           if ( build.tries >= cBuildMaxWorkers )
           {
             if ( verbose )
-              bot_->console().printf( "BuildOp %d: Canceling after %d failed tries (no worker)", build.id, build.tries );
+              bot_->console().printf( "BuildOp %d for %s: Canceling after %d failed tries (no worker)", build.id, sc2::UnitTypeToName( build.type ), build.tries );
 
             build.cancel = true;
             continue;
@@ -284,14 +317,14 @@ namespace hivemind {
           if ( !build.builder )
           {
             if ( verbose )
-              bot_->console().printf( "BuildOp %d: No worker released from pool", build.id );
+              bot_->console().printf( "BuildOp %d for %s: No worker released from pool", build.id, sc2::UnitTypeToName( build.type ) );
 
             continue;
           }
           bot_->unitDebugMsgs_[build.builder] = "Builder, Op " + std::to_string( build.id );
 
           if ( verbose )
-            bot_->console().printf( "BuildOp %d: Got worker %x", build.id, id( build.builder ) );
+            bot_->console().printf( "BuildOp %d for %s: Got worker %x", build.id, sc2::UnitTypeToName( build.type ), id( build.builder ) );
 
           Drone( build.builder ).move( build.position );
           build.tries++;
@@ -314,7 +347,7 @@ namespace hivemind {
             if ( build.orderTries >= cBuildMaxOrders )
             {
               if ( verbose )
-                bot_->console().printf( "BuildOp %d: Canceling after %d failed tries (order failed)", build.id, build.orderTries );
+                bot_->console().printf( "BuildOp %d for %s: Canceling after %d failed tries (order failed)", build.id, sc2::UnitTypeToName( build.type ), build.orderTries );
 
               build.cancel = true;
               continue;
