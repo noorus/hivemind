@@ -86,7 +86,7 @@ namespace hivemind {
         {
           continue;
         }
-        if(refinery.refinery_->vespene_contents <= 0 || !refinery.refinery_->is_alive)
+        if(refinery.refinery_->vespene_contents <= 0 || !refinery.refinery_->is_alive || base.depots().empty())
         {
           for(auto worker : refinery.workers_)
           {
@@ -170,8 +170,8 @@ namespace hivemind {
     {
       auto action = &bot_->action();
 
-      from.refresh();
-      to.refresh();
+      from.refreshWorkerWants();
+      to.refreshWorkerWants();
 
       int have1 = int(from.workers().size());
       int want1 = int(from.wantWorkers().miners_);

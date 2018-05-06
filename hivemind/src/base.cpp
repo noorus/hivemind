@@ -27,14 +27,15 @@ namespace hivemind {
     return ( injectors_ + creepers_ + overhead_ );
   }
 
-  Real Base::saturation() const
-  {
-    return ( (Real)workers_.size() / (Real)wantWorkers_.total() );
-  }
-
-  void Base::refresh()
+  void Base::refreshWorkerWants()
   {
     wantWorkers_.collectors_ = ( location_->geysers_.size() * c_collectorsPerGeyser );
+
+    if(depots_.empty())
+    {
+      wantWorkers_.collectors_ = 0;
+    }
+
     wantWorkers_.overhead_ = 0;
 
     wantWorkers_.miners_ = 0;
@@ -209,6 +210,7 @@ namespace hivemind {
     larvae_.erase( unit );
     queens_.erase( unit );
     buildings_.erase( unit );
+    depots_.erase( unit );
 
     for(auto it = refineries_.begin(); it != refineries_.end(); ++it)
     {

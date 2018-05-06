@@ -49,15 +49,14 @@ namespace hivemind {
     Real buildingWeight_; //!< Importance of having tech, 0..1
     Real importance_; //!< Importance of this base, 0..1
   public:
-    void refresh();
     void draw( Bot* bot );
     inline BaseManager* manager() { return manager_; }
     inline const size_t id() const { return index_; }
     BaseLocation* location() const; //!< Base location
-    Real saturation() const; //!< Worker saturation between 0..1
     UnitRef releaseWorker(); //!< Release a worker for other use
     UnitSet releaseWorkers( int count ); //!< Release a set of workers for other use
     void releaseQueen(UnitRef queen); //!< Release a queen for other use
+    void refreshWorkerWants();
     const WantedWorkers& wantWorkers() const; //!< Wanted worker counts
     const WantedQueens& wantQueens() const; //!< Wanted queen counts
     const UnitSet& workers() const; //!< Return our set of workers
