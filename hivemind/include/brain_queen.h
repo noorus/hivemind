@@ -8,6 +8,9 @@
 
 #include <unordered_set>
 
+#include <boost/optional/optional.hpp>
+
+
 namespace hivemind {
 
   class Bot;
@@ -26,9 +29,20 @@ namespace hivemind {
         UnitRef queen;
       };
 
-      std::vector<InjectTask> injects_;
+      struct TumorTask
+      {
+        Base* base;
+        UnitRef queen;
+        Vector2 tumorLocation;
+      };
+
+      std::vector<InjectTask> injectTasks_;
+      std::vector<TumorTask> tumorTasks_;
 
       UnitRef acquireInjectorQueen(Base* base, UnitRef hatchery);
+      UnitRef acquireTumorQueen(Base* base);
+
+      boost::optional<Vector2> chooseTumorLocation(Base* base, UnitRef queen) const;
 
       void processLarvaInjections();
       void processCreepTumorBuilds();

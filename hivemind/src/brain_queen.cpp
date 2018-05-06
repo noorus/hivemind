@@ -7,6 +7,8 @@
 
 namespace hivemind {
 
+  HIVE_DECLARE_CONVAR( queen_debug, "Whether to show and print debug information on queens. 0 = none, 1 = basics, 2 = verbose", 1 );
+
   namespace Goals {
 
     Brain_Queen::Brain_Queen( AI::Agent * agent ):
@@ -61,12 +63,12 @@ namespace hivemind {
             }
           }
 
-          auto it = std::find_if(injects_.begin(), injects_.end(), [depot](auto& inject) {return inject.hatchery == depot; });
-          if(it == injects_.end() && !larvaInjectFound)
+          auto it = std::find_if(injectTasks_.begin(), injectTasks_.end(), [depot](auto& inject) {return inject.hatchery == depot; });
+          if(it == injectTasks_.end() && !larvaInjectFound)
           {
-            injects_.push_back({ &base, depot, nullptr });
+            injectTasks_.push_back({ &base, depot, nullptr });
           }
-          else if(it != injects_.end() && larvaInjectFound)
+          else if(it != injectTasks_.end() && larvaInjectFound)
           {
             auto queen = it->queen;
             if(queen && queen->is_alive)
@@ -74,12 +76,12 @@ namespace hivemind {
               it->base->addQueen(queen);
             }
 
-            injects_.erase(it);
+            injectTasks_.erase(it);
           }
         }
       }
 
-      for(auto it = injects_.begin(); it != injects_.end(); )
+      for(auto it = injectTasks_.begin(); it != injectTasks_.end(); )
       {
         if(!it->hatchery->is_alive)
         {
@@ -87,7 +89,7 @@ namespace hivemind {
           {
             it->base->addQueen(it->queen);
           }
-          it = injects_.erase(it);
+          it = injectTasks_.erase(it);
         }
         else
         {
@@ -95,7 +97,7 @@ namespace hivemind {
         }
       }
 
-      for(auto& inject : injects_)
+      for(auto& inject : injectTasks_)
       {
         if(inject.queen && !inject.queen->is_alive)
         {
@@ -119,36 +121,99 @@ namespace hivemind {
       }
     }
 
+    UnitRef Brain_Queen::acquireTumorQueen(Base* base)
+    {
+      for(auto queen : base->queens())
+      {
+        if(queen->energy < 25)
+          continue;
+
+        if(!queen->orders.empty())
+          continue;
+
+        base->releaseQueen(queen);
+
+        return queen;
+      }
+      return nullptr;
+    }
+
+    boost::optional<Vector2> Brain_Queen::chooseTumorLocation(Base* base, UnitRef queen) const
+    {
+      auto creep = bot_->map().creep( base->location()->position() );
+      if ( !creep )
+        return boost::none;
+      if ( creep->fronts.empty() )
+        return boost::none;
+
+      // try three times to find a random creep front that is less than 30 units away,
+      // and plant a creep tumor in the middle tile of that front
+      for ( size_t i = 0; i < 3; i++ )
+      {
+        assert(!creep->fronts.empty());
+
+        auto frontIndex = utils::randomBetween( 0, (int)creep->fronts.size() - 1 );
+        auto& front = creep->fronts[frontIndex];
+
+        auto middleIndex = math::floor( (Real)front.size() / 2.0f );
+        auto destPt = Vector2( (Real)front[middleIndex].x, (Real)front[middleIndex].y );
+
+        if ( destPt.distance( queen->pos ) < 30.0f )
+          return destPt;
+      }
+
+      return boost::none;
+    }
+
     void Brain_Queen::processCreepTumorBuilds()
     {
+      for(auto it = tumorTasks_.begin(); it != tumorTasks_.end(); )
+      {
+        auto tumorTaskIsOver = [](const auto& task) -> bool
+        {
+          UnitRef queen = task.queen;
+          if(!queen->is_alive)
+            return true;
+          if(queen->orders.empty())
+            return true;
+          if(queen->orders.back().ability_id != sc2::ABILITY_ID::BUILD_CREEPTUMOR_QUEEN)
+            return true;
+          return false;
+        };
+
+        if(tumorTaskIsOver(*it))
+        {
+          if(it->queen->is_alive)
+          {
+            it->base->addQueen(it->queen);
+
+            bot_->console().printf("Brain_Queen: Returning tumor queen %x from (%d,%d)", id( it->queen ), (int)it->tumorLocation.x, (int)it->tumorLocation.y );
+          }
+          it = tumorTasks_.erase(it);
+        }
+        else
+        {
+          ++it;
+        }
+      }
+
       for(auto& base : bot_->bases().bases())
       {
-        for(auto queen : base.queens())
+        UnitRef queen = acquireTumorQueen(&base);
+        if(!queen)
+          continue;
+
+        auto tumorLocation = chooseTumorLocation(&base, queen);
+        if(tumorLocation)
         {
-          if(queen->energy < 50)
-            continue;
+          tumorTasks_.push_back({ &base, queen, *tumorLocation });
 
-          auto creep = bot_->map().creep( base.location()->position() );
-          if ( !creep )
-            continue;
-          if ( creep->fronts.empty() )
-            continue;
+          bot_->action().UnitCommand( queen, sc2::ABILITY_ID::BUILD_CREEPTUMOR_QUEEN, *tumorLocation );
 
-          // try three times to find a random creep front that is less than 30 units away,
-          // and plant a creep tumor in the middle tile of that front
-          Vector2 destPt;
-          for ( size_t i = 0; i < 3; i++ )
+          if(g_CVar_queen_debug.as_i() > 0)
           {
-            // fronts cannot be empty, so no need to check that
-            auto index = utils::randomBetween( 0, (int)creep->fronts.size() - 1 );
-            auto& front = creep->fronts[index];
-            index = math::floor( (Real)front.size() / 2.0f );
-            destPt = Vector2( (Real)front[index].x, (Real)front[index].y );
-            if ( destPt.distance( queen->pos ) < 30.0f )
-              break;
+            bot_->console().printf("Brain_Queen: Planting tumor to (%d,%d) with queen %x", (int)tumorLocation->x, (int)tumorLocation->y, id( queen ));
           }
-
-          bot_->action().UnitCommand( queen, sc2::ABILITY_ID::BUILD_CREEPTUMOR_QUEEN, destPt );
         }
       }
     }
