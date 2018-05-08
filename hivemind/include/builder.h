@@ -122,6 +122,8 @@ namespace hivemind {
     bool train( UnitTypeID unitType, Base* base, BuildProjectID& idOut );
     bool research( UpgradeID upgradeType, Base* base, UnitTypeID researcherType, BuildProjectID& idOut );
 
+    bool make( UnitTypeID unitType, Base* base, BuildProjectID& idOut );
+
     void remove( BuildProjectID id );
     void update( const GameTime time, const GameTime delta );
     void draw() override;

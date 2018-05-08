@@ -30,11 +30,11 @@ namespace hivemind {
   struct UnitBuildPlan : public BuildPlan
   {
     sc2::UNIT_TYPEID unitType_;
-    int count_;
+    size_t count_;
 
     std::set<BuildProjectID> startedBuilds_;
 
-    explicit UnitBuildPlan(sc2::UNIT_TYPEID unitType, int count):
+    explicit UnitBuildPlan(sc2::UNIT_TYPEID unitType, size_t count = 1):
       unitType_(unitType),
       count_(count)
     {
@@ -48,28 +48,6 @@ namespace hivemind {
     virtual State updateProgress(BuildPlanner* planner) override;
     virtual void executePlan(BuildPlanner* planner) override;
     virtual std::string toString() const override;
-  };
-
-  struct StructureBuildPlan : public BuildPlan
-  {
-    sc2::UNIT_TYPEID building_;
-
-    BuildProjectID startedBuild_;
-
-    explicit StructureBuildPlan(sc2::UNIT_TYPEID building):
-      building_(building),
-      startedBuild_(-1)
-    {
-    }
-
-    virtual State updateProgress(BuildPlanner* planner) override;
-    virtual void executePlan(BuildPlanner* planner) override;
-    virtual std::string toString() const override;
-
-    int remainingCost() const override
-    {
-      return 0;
-    }
   };
 
   class BuildPlanner
@@ -96,7 +74,7 @@ namespace hivemind {
       return bot_;
     }
 
-    std::unique_ptr<StructureBuildPlan> makeTechPlan(Builder& builder, sc2::UnitTypeID unitType) const;
+    std::unique_ptr<UnitBuildPlan> makeTechPlan(Builder& builder, sc2::UnitTypeID unitType) const;
 
     const std::vector<std::unique_ptr<BuildPlan>>& getPlans() const
     {
@@ -237,8 +215,8 @@ namespace hivemind {
 
       //bot_->console().printf( "minerals left: %d, allocated minerals %d", minerals, allocatedResources.first );
 
-      BuildProjectID id;
-
+      //BuildProjectID id;
+      /*
       if(hatcheryNeed > 0)
       {
         if(minerals >= 300)
@@ -249,7 +227,7 @@ namespace hivemind {
         }
         return;
       }
-
+      */
       /*
       if(lairNeed > 0)
       {
@@ -273,7 +251,7 @@ namespace hivemind {
         }
       }
       */
-
+      /*
       if(lingSpeedNeed > 0)
       {
         if(minerals >= 100 && vespene > 100)
@@ -303,7 +281,8 @@ namespace hivemind {
               return;
         }
       }
-
+      */
+      /*
       if(overlordNeed > 0)
       {
         if(minerals >= 100)
@@ -313,7 +292,8 @@ namespace hivemind {
               return;
         }
       }
-
+      */
+      /*
       if(queenNeed > 0)
       {
         if(minerals >= 150 && usedSupply + 1 < supplyLimit)
@@ -335,7 +315,7 @@ namespace hivemind {
               return;
         }
       }
-
+      */
       {
         // Build units from larvae according to the plan.
         planner_->executePlans();
@@ -414,7 +394,7 @@ namespace hivemind {
     return true;
   }
 
-  std::unique_ptr<StructureBuildPlan> BuildPlanner::makeTechPlan(Builder& builder, sc2::UnitTypeID unitType) const
+  std::unique_ptr<UnitBuildPlan> BuildPlanner::makeTechPlan(Builder& builder, sc2::UnitTypeID unitType) const
   {
     std::vector<sc2::UnitTypeID> techChain;
     Database::techTree().findTechChain(unitType, techChain);
@@ -439,9 +419,9 @@ namespace hivemind {
 
       for(auto& x : plans_)
       {
-        if(auto oldPlan = dynamic_cast<const StructureBuildPlan*>(x.get()))
+        if(auto oldPlan = dynamic_cast<const UnitBuildPlan*>(x.get()))
         {
-          if(oldPlan->building_ == buildingType)
+          if(oldPlan->unitType_ == buildingType)
           {
             continue;
           }
@@ -451,7 +431,7 @@ namespace hivemind {
       if(!haveTechToMake(builder, buildingType))
         continue;
 
-      return std::make_unique<StructureBuildPlan>(buildingType);
+      return std::make_unique<UnitBuildPlan>(buildingType);
     }
 
     return nullptr;
@@ -480,33 +460,37 @@ namespace hivemind {
     auto& hiveState = builder.getUnitStats(sc2::UNIT_TYPEID::ZERG_HIVE);
     auto& poolState = builder.getUnitStats(sc2::UNIT_TYPEID::ZERG_SPAWNINGPOOL);
 
-    sc2::UNIT_TYPEID unitTypes[] =
+    pair<sc2::UNIT_TYPEID, size_t> unitTypes[] =
     {
-      sc2::UNIT_TYPEID::ZERG_DRONE,
-      sc2::UNIT_TYPEID::ZERG_DRONE,
-      sc2::UNIT_TYPEID::ZERG_ZERGLING,
-      sc2::UNIT_TYPEID::ZERG_DRONE,
-      sc2::UNIT_TYPEID::ZERG_ZERGLING,
-      sc2::UNIT_TYPEID::ZERG_DRONE,
-      sc2::UNIT_TYPEID::ZERG_ROACH,
-      sc2::UNIT_TYPEID::ZERG_DRONE,
-      sc2::UNIT_TYPEID::ZERG_ZERGLING,
-      sc2::UNIT_TYPEID::ZERG_HYDRALISK,
-      sc2::UNIT_TYPEID::ZERG_HYDRALISK,
-//      sc2::UNIT_TYPEID::ZERG_MUTALISK,
-//      sc2::UNIT_TYPEID::ZERG_ULTRALISK,
-//      sc2::UNIT_TYPEID::ZERG_SWARMHOSTMP,
-//      sc2::UNIT_TYPEID::ZERG_CORRUPTOR,
-//      sc2::UNIT_TYPEID::ZERG_INFESTOR,
+      { sc2::UNIT_TYPEID::ZERG_DRONE,        1 },
+      { sc2::UNIT_TYPEID::ZERG_OVERLORD,     1 },
+      { sc2::UNIT_TYPEID::ZERG_DRONE,        3 },
+      { sc2::UNIT_TYPEID::ZERG_HATCHERY,     1 },
+      { sc2::UNIT_TYPEID::ZERG_DRONE,        2 },
+      { sc2::UNIT_TYPEID::ZERG_EXTRACTOR,    1 },
+      { sc2::UNIT_TYPEID::ZERG_SPAWNINGPOOL, 1 },
+      { sc2::UNIT_TYPEID::ZERG_ZERGLING,     2 },
+      { sc2::UNIT_TYPEID::ZERG_ZERGLING,     200 },
+      /*
+      { sc2::UNIT_TYPEID::ZERG_DRONE,        1 },
+      { sc2::UNIT_TYPEID::ZERG_OVERLORD,     1 },
+      { sc2::UNIT_TYPEID::ZERG_ZERGLING,     1 },
+      { sc2::UNIT_TYPEID::ZERG_HYDRALISK,    1 },
+      { sc2::UNIT_TYPEID::ZERG_MUTALISK,     1 },
+      { sc2::UNIT_TYPEID::ZERG_ULTRALISK,    1 },
+      { sc2::UNIT_TYPEID::ZERG_SWARMHOSTMP,  1 },
+      { sc2::UNIT_TYPEID::ZERG_CORRUPTOR,    1 },
+      { sc2::UNIT_TYPEID::ZERG_INFESTOR,     1 },
+      */
     };
     const int N = sizeof(unitTypes) / sizeof(*unitTypes);
 
     static int choice = N - 1;
     choice = (choice + 1) % N;
 
-    auto unitType = unitTypes[choice];
-    int unitCount = 4;
-
+    auto unitType = unitTypes[choice].first;
+    auto unitCount = unitTypes[choice].second;
+    /*
     if(unitType == sc2::UNIT_TYPEID::ZERG_DRONE)
     {
       int hatcheryCount = hatcheryState.unitCount() + lairState.unitCount() + hiveState.unitCount();
@@ -523,7 +507,7 @@ namespace hivemind {
 
       unitCount = droneNeed;
     }
-
+    */
     if(unitCount == 0)
       return;
 
@@ -576,7 +560,7 @@ namespace hivemind {
 
       for(auto& base : baseManager.bases())
       {
-        if(builder.train(unitType_, &base, id))
+        if(builder.make(unitType_, &base, id))
         {
           startedBuilds_.insert(id);
           break;
@@ -587,7 +571,11 @@ namespace hivemind {
 
   std::string UnitBuildPlan::toString() const
   {
-    return "train " + std::to_string(count_) + " " + sc2::UnitTypeToName(unitType_);
+    size_t total = count_;
+    size_t started = startedBuilds_.size();
+    size_t remaining = total - started;
+
+    return "make " + std::to_string(total) + " " + sc2::UnitTypeToName(unitType_) + " (" + std::to_string(remaining) + " remaining)";
   }
 
   UnitBuildPlan::State UnitBuildPlan::updateProgress(BuildPlanner* planner)
@@ -607,69 +595,5 @@ namespace hivemind {
     }
 
     return State::Done;
-  }
-
-  StructureBuildPlan::State StructureBuildPlan::updateProgress(BuildPlanner* planner)
-  {
-    Bot* bot = planner->getBot();
-    auto& builder = bot->builder();
-
-    if(startedBuild_ == -1)
-      return State::NotDone;
-
-    if(!builder.isFinished(startedBuild_))
-      return State::NotDone;
-
-    return State::Done;
-  }
-
-  void StructureBuildPlan::executePlan(BuildPlanner* planner)
-  {
-    Bot* bot = planner->getBot();
-
-    auto& baseManager = bot->bases();
-    auto& builder = bot->builder();
-
-    if(startedBuild_ == -1)
-    {
-      if(!builder.haveResourcesToMake(building_))
-      {
-        return;
-      }
-
-      auto trainerType = getTrainerType(building_);
-
-      if(utils::isStructure(trainerType))
-      {
-        // The target is an upgrade to an existing building, e.g. the lair.
-        BuildProjectID id;
-        for(auto& base : baseManager.bases())
-        {
-          if(builder.train(building_, &base, id))
-          {
-            startedBuild_ = id;
-            break;
-          }
-        }
-      }
-      else
-      {
-        // The target is a normal building that is built with a drone.
-        BuildProjectID id;
-        for(auto& base : baseManager.bases())
-        {
-          if(builder.build(building_, &base, BuildPlacement_Generic, id))
-          {
-            startedBuild_ = id;
-            break;
-          }
-        }
-      }
-    }
-  }
-
-  std::string StructureBuildPlan::toString() const
-  {
-    return std::string("build ") + sc2::UnitTypeToName(building_);
   }
 }

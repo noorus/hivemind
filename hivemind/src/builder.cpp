@@ -29,6 +29,29 @@ namespace hivemind {
     researcher_.gameBegin();
   }
 
+  bool Builder::make(UnitTypeID unitType, Base* base, BuildProjectID& idOut)
+  {
+    auto trainerType = getTrainerType(unitType);
+
+    if(!utils::isStructure(unitType) || utils::isStructure(trainerType))
+    {
+      return train(unitType, base, idOut);
+    }
+    else
+    {
+      BuildingPlacement placement = BuildPlacement_Generic;
+
+      if(utils::isMainStructure(unitType))
+        placement = BuildPlacement_MainBuilding;
+
+      if(utils::isRefinery(unitType))
+        placement = BuildPlacement_Extractor;
+
+      return build(unitType, base, placement, idOut);
+    }
+  }
+
+
   bool Builder::build( UnitTypeID structureType, Base* base, BuildingPlacement placement, BuildProjectID& idOut )
   {
     auto ability = Database::techTree().getBuildAbility( structureType, sc2::UNIT_TYPEID::ZERG_DRONE ).ability;
@@ -158,8 +181,17 @@ namespace hivemind {
           auto dist = pos.distance( build.position );
           if ( dist < cBuildDistHeur )
           {
-            if ( g_CVar_builder_debug.as_i() > 1 )
-              bot_->console().printf( "BuildOp %d for %s: Got building %x at pos %f,%f", build.id, sc2::UnitTypeToName( build.type ), id( unit ), pos.x, pos.y );
+            build.building = unit;
+            build.buildStartTime = bot_->time();
+
+            if(g_CVar_builder_debug.as_i() > 1)
+            {
+              auto time = bot_->timeSeconds();
+              auto seconds = time % 60;
+              auto minutes = time / 60;
+
+              bot_->console().printf("BuildOp %d for %s: Started building %x at pos (%d,%d) at game time %d:%d", build.id, sc2::UnitTypeToName(build.type), id(unit), (int)pos.x, (int)pos.y, minutes, seconds);
+            }
 
             if(build.builder->unit_type == sc2::UNIT_TYPEID::ZERG_DRONE)
             {
@@ -167,8 +199,6 @@ namespace hivemind {
               droneStats.units.erase(build.builder);
             }
 
-            build.building = unit;
-            build.buildStartTime = bot_->time();
             bot_->messaging().sendGlobal( M_Build_Started, build.id );
             return;
           }
