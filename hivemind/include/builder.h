@@ -119,7 +119,7 @@ namespace hivemind {
     void gameBegin() final;
 
     bool build( UnitTypeID structureType, Base* base, BuildingPlacement placement, BuildProjectID& idOut );
-    bool train( UnitTypeID unitType, Base* base, UnitTypeID trainerType, BuildProjectID& idOut );
+    bool train( UnitTypeID unitType, Base* base, BuildProjectID& idOut );
     bool research( UpgradeID upgradeType, Base* base, UnitTypeID researcherType, BuildProjectID& idOut );
 
     void remove( BuildProjectID id );

@@ -53,9 +53,9 @@ namespace hivemind {
     return true;
   }
 
-  bool Builder::train(UnitTypeID unitType, Base* base, UnitTypeID trainerType, BuildProjectID& idOut)
+  bool Builder::train(UnitTypeID unitType, Base* base, BuildProjectID& idOut)
   {
-    return trainer_.train(unitType, base, trainerType, idOut);
+    return trainer_.train(unitType, base, idOut);
   }
 
   bool Builder::research(UpgradeID upgradeType, Base* base, UnitTypeID researcherType, BuildProjectID& idOut)

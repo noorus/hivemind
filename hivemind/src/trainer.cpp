@@ -67,9 +67,78 @@ namespace hivemind {
     return nullptr;
   }
 
-  bool Trainer::train( UnitTypeID unitType, Base* base, UnitTypeID trainerType, BuildProjectID& idOut )
+  template<typename T>
+  struct span
   {
-    auto trainer = getTrainer(*base, trainerType);
+    span(T* ptr, size_t count):
+      ptr_(ptr),
+      count_(count)
+    {
+    }
+
+    span(T* begin, T* end):
+      ptr_(begin),
+      count_(end - begin)
+    {
+    }
+
+    T* begin() const
+    {
+      return ptr_;
+    }
+
+    T* end() const
+    {
+      return ptr_ + count_;
+    }
+
+  private:
+    T* ptr_;
+    size_t count_;
+  };
+
+  static span<UnitTypeID> getTrainerTypes(UnitTypeID unitType)
+  {
+    if(unitType == sc2::UNIT_TYPEID::ZERG_HIVE)
+    {
+      static UnitTypeID trainerTypes[] = { sc2::UNIT_TYPEID::ZERG_LAIR };
+      const int N = sizeof(trainerTypes) / sizeof(*trainerTypes);
+      return { trainerTypes, trainerTypes + N };
+    }
+    else if(unitType == sc2::UNIT_TYPEID::ZERG_LAIR)
+    {
+      static UnitTypeID trainerTypes[] = { sc2::UNIT_TYPEID::ZERG_HATCHERY };
+      const int N = sizeof(trainerTypes) / sizeof(*trainerTypes);
+      return { trainerTypes, trainerTypes + N };
+    }
+    else if(unitType == sc2::UNIT_TYPEID::ZERG_QUEEN)
+    {
+      static UnitTypeID trainerTypes[] = { sc2::UNIT_TYPEID::ZERG_HATCHERY, sc2::UNIT_TYPEID::ZERG_LAIR, sc2::UNIT_TYPEID::ZERG_HIVE };
+      const int N = sizeof(trainerTypes) / sizeof(*trainerTypes);
+      return { trainerTypes, trainerTypes + N };
+    }
+    else
+    {
+      static UnitTypeID trainerTypes[] = { sc2::UNIT_TYPEID::ZERG_LARVA };
+      const int N = sizeof(trainerTypes) / sizeof(*trainerTypes);
+
+      return { trainerTypes, trainerTypes + N };
+    }
+  }
+
+  bool Trainer::train( UnitTypeID unitType, Base* base, BuildProjectID& idOut )
+  {
+    UnitRef trainer = nullptr;
+    UnitTypeID trainerType;
+    for(auto t : getTrainerTypes(unitType))
+    {
+      trainer = getTrainer(*base, t);
+      if(trainer)
+      {
+        trainerType = t;
+        break;
+      }
+    }
 
     if(!trainer)
     {

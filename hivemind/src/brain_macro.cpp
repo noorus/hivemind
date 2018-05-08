@@ -256,7 +256,7 @@ namespace hivemind {
         if(minerals >= 150 && vespene >= 100)
         {
           for(auto& base : baseManager.bases())
-            if(builder.train(sc2::UNIT_TYPEID::ZERG_LAIR, &base, sc2::UNIT_TYPEID::ZERG_HATCHERY, id))
+            if(builder.train(sc2::UNIT_TYPEID::ZERG_LAIR, &base, id))
               return;
         }
       }
@@ -309,7 +309,7 @@ namespace hivemind {
         if(minerals >= 100)
         {
           for(auto& base : baseManager.bases())
-            if(builder.train(sc2::UNIT_TYPEID::ZERG_OVERLORD, &base, sc2::UNIT_TYPEID::ZERG_LARVA, id))
+            if(builder.train(sc2::UNIT_TYPEID::ZERG_OVERLORD, &base, id))
               return;
         }
       }
@@ -320,11 +320,7 @@ namespace hivemind {
         {
           for(auto& base : baseManager.bases())
           {
-            if(builder.train(sc2::UNIT_TYPEID::ZERG_QUEEN, &base, sc2::UNIT_TYPEID::ZERG_HIVE, id))
-              return;
-            if(builder.train(sc2::UNIT_TYPEID::ZERG_QUEEN, &base, sc2::UNIT_TYPEID::ZERG_LAIR, id))
-              return;
-            if(builder.train(sc2::UNIT_TYPEID::ZERG_QUEEN, &base, sc2::UNIT_TYPEID::ZERG_HATCHERY, id))
+            if(builder.train(sc2::UNIT_TYPEID::ZERG_QUEEN, &base, id))
               return;
           }
         }
@@ -580,7 +576,7 @@ namespace hivemind {
 
       for(auto& base : baseManager.bases())
       {
-        if(builder.train(unitType_, &base, sc2::UNIT_TYPEID::ZERG_LARVA, id))
+        if(builder.train(unitType_, &base, id))
         {
           startedBuilds_.insert(id);
           break;
@@ -649,7 +645,7 @@ namespace hivemind {
         BuildProjectID id;
         for(auto& base : baseManager.bases())
         {
-          if(builder.train(building_, &base, trainerType, id))
+          if(builder.train(building_, &base, id))
           {
             startedBuild_ = id;
             break;
