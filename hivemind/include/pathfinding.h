@@ -73,6 +73,7 @@ namespace hivemind {
       virtual int width() const = 0;
       virtual int height() const = 0;
       virtual bool isWalkable(int x, int y) const = 0;
+      virtual bool isBlocked(int x, int y) const = 0;
     };
 
     class GridMapAdaptor: public pathfinding::GridMap
@@ -95,7 +96,11 @@ namespace hivemind {
       }
       virtual bool isWalkable(int x, int y) const
       {
-         return map_->flagsMap_[x][y] & MapFlag_Walkable;
+         return map_->isWalkable(x, y);
+      }
+      virtual bool isBlocked(int x, int y) const
+      {
+         return map_->isBlocked(x, y);
       }
     };
 

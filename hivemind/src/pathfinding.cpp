@@ -50,6 +50,7 @@ namespace hivemind {
         {
           GridGraphNode node( x, y );
           node.valid = map_->isWalkable(x, y);
+          node.hasObstacle = map_->isBlocked(x, y);
           node.rhs = c_inf;
           node.g = c_inf;
           grid[x][y] = node;

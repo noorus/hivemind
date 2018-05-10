@@ -63,6 +63,10 @@ namespace hivemind {
       {
         return (grid_.at(y).at(x) & Wall) != Wall;
       }
+      virtual bool isBlocked(int x, int y) const
+      {
+        return (grid_.at(y).at(x) & Wall) == Blocked;
+      }
 
       void print(Console* console)
       {

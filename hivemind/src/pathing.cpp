@@ -104,6 +104,17 @@ namespace hivemind {
       {
         bool blockStatus = map.isBlocked(x, y);
         auto& node = graph_->node(x, y);
+
+#if 0
+        if(blockStatus)
+        {
+          float h = map.heightMap_[x][y] + 0.2f;
+          Vector3 p{ x + 0.5f, y + 0.5f, h };
+          float r = 0.5;
+          bot_->debug().drawSphere(p, r);
+        }
+#endif
+
         if(blockStatus != node.hasObstacle)
         {
           node.hasObstacle = blockStatus;
