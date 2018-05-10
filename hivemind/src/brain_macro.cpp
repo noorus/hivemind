@@ -21,9 +21,9 @@ namespace hivemind {
     {
     }
 
-    virtual int remainingCost() const = 0;
+    virtual AllocatedResources remainingCost() const = 0;
     virtual State updateProgress(BuildPlanner* planner) = 0;
-    virtual void executePlan(BuildPlanner* planner) = 0;
+    virtual void executePlan(BuildPlanner* planner, AllocatedResources allocatedResources) = 0;
     virtual std::string toString() const = 0;
   };
 
@@ -40,13 +40,14 @@ namespace hivemind {
     {
     }
 
-    int remainingCost() const override
+    AllocatedResources remainingCost() const override
     {
-      return 0;
+      size_t remaining = count_ - startedBuilds_.size();
+      return Builder::getCost(unitType_) * (int)remaining;
     }
 
     virtual State updateProgress(BuildPlanner* planner) override;
-    virtual void executePlan(BuildPlanner* planner) override;
+    virtual void executePlan(BuildPlanner* planner, AllocatedResources allocatedResources) override;
     virtual std::string toString() const override;
   };
 
@@ -423,10 +424,13 @@ namespace hivemind {
         {
           if(oldPlan->unitType_ == buildingType)
           {
-            continue;
+            found = true;
+            break;
           }
         }
       }
+      if(found)
+        continue;
 
       if(!haveTechToMake(builder, buildingType))
         continue;
@@ -460,17 +464,56 @@ namespace hivemind {
     auto& hiveState = builder.getUnitStats(sc2::UNIT_TYPEID::ZERG_HIVE);
     auto& poolState = builder.getUnitStats(sc2::UNIT_TYPEID::ZERG_SPAWNINGPOOL);
 
-    pair<sc2::UNIT_TYPEID, size_t> unitTypes[] =
+#if 0
+    pair<sc2::UNIT_TYPEID, size_t> opening[] =
     {
+      { sc2::UNIT_TYPEID::ZERG_EXTRACTOR,    4 },
+    };
+#else
+    pair<sc2::UNIT_TYPEID, size_t> opening[] =
+    {
+      // Hatch first
       { sc2::UNIT_TYPEID::ZERG_DRONE,        1 },
       { sc2::UNIT_TYPEID::ZERG_OVERLORD,     1 },
-      { sc2::UNIT_TYPEID::ZERG_DRONE,        3 },
+      { sc2::UNIT_TYPEID::ZERG_DRONE,        4 },
       { sc2::UNIT_TYPEID::ZERG_HATCHERY,     1 },
       { sc2::UNIT_TYPEID::ZERG_DRONE,        2 },
       { sc2::UNIT_TYPEID::ZERG_EXTRACTOR,    1 },
       { sc2::UNIT_TYPEID::ZERG_SPAWNINGPOOL, 1 },
+      // Ling Roach (vs Protoss)
+      { sc2::UNIT_TYPEID::ZERG_DRONE,        1 },
+      { sc2::UNIT_TYPEID::ZERG_OVERLORD,     1 },
+      { sc2::UNIT_TYPEID::ZERG_QUEEN,        1 },
+      { sc2::UNIT_TYPEID::ZERG_DRONE,        1 },
+      { sc2::UNIT_TYPEID::ZERG_QUEEN,        1 },
       { sc2::UNIT_TYPEID::ZERG_ZERGLING,     2 },
-      { sc2::UNIT_TYPEID::ZERG_ZERGLING,     200 },
+      // Insert metabolic boost here.
+      { sc2::UNIT_TYPEID::ZERG_DRONE,        3 },
+      { sc2::UNIT_TYPEID::ZERG_HATCHERY,     1 },
+      { sc2::UNIT_TYPEID::ZERG_QUEEN,        1 },
+      { sc2::UNIT_TYPEID::ZERG_OVERLORD,     1 },
+      { sc2::UNIT_TYPEID::ZERG_ZERGLING,     2 },
+      { sc2::UNIT_TYPEID::ZERG_DRONE,        7 },
+      { sc2::UNIT_TYPEID::ZERG_SPORECRAWLER, 1 },
+      { sc2::UNIT_TYPEID::ZERG_DRONE,        1 },
+      { sc2::UNIT_TYPEID::ZERG_QUEEN,        1 },
+      { sc2::UNIT_TYPEID::ZERG_OVERLORD,     1 },
+      { sc2::UNIT_TYPEID::ZERG_SPORECRAWLER, 1 },
+      { sc2::UNIT_TYPEID::ZERG_DRONE,       11 },
+      { sc2::UNIT_TYPEID::ZERG_LAIR,         1 },
+      { sc2::UNIT_TYPEID::ZERG_DRONE,        4 },
+      { sc2::UNIT_TYPEID::ZERG_SPORECRAWLER, 1 },
+      { sc2::UNIT_TYPEID::ZERG_ZERGLING,     4 },
+      { sc2::UNIT_TYPEID::ZERG_EXTRACTOR,    1 },
+      { sc2::UNIT_TYPEID::ZERG_DRONE,        2 },
+      { sc2::UNIT_TYPEID::ZERG_ROACHWARREN,  1 },
+      { sc2::UNIT_TYPEID::ZERG_EXTRACTOR,    2 },
+    };
+#endif
+    pair<sc2::UNIT_TYPEID, size_t> continuation[] =
+    {
+      { sc2::UNIT_TYPEID::ZERG_OVERLORD,     1 },
+      { sc2::UNIT_TYPEID::ZERG_ROACH,        4 },
       /*
       { sc2::UNIT_TYPEID::ZERG_DRONE,        1 },
       { sc2::UNIT_TYPEID::ZERG_OVERLORD,     1 },
@@ -483,13 +526,28 @@ namespace hivemind {
       { sc2::UNIT_TYPEID::ZERG_INFESTOR,     1 },
       */
     };
-    const int N = sizeof(unitTypes) / sizeof(*unitTypes);
+    const int N = sizeof(opening) / sizeof(*opening);
+    const int N2 = sizeof(continuation) / sizeof(*continuation);
 
-    static int choice = N - 1;
-    choice = (choice + 1) % N;
+    pair<sc2::UNIT_TYPEID, size_t> plan;
 
-    auto unitType = unitTypes[choice].first;
-    auto unitCount = unitTypes[choice].second;
+
+    static int choice = 0;
+    if(choice < N)
+    {
+      plan = opening[choice];
+    }
+    else
+    {
+      int c = choice - N;
+      plan = continuation[c % N2];
+    }
+
+    ++choice;
+
+    auto unitType = plan.first;
+    auto unitCount = plan.second;
+
     /*
     if(unitType == sc2::UNIT_TYPEID::ZERG_DRONE)
     {
@@ -511,7 +569,7 @@ namespace hivemind {
     if(unitCount == 0)
       return;
 
-    if(haveTechToMake(builder, unitType))
+    //if(haveTechToMake(builder, unitType))
     {
       auto plan = std::make_unique<UnitBuildPlan>(unitType, unitCount);
       if(plan)
@@ -519,6 +577,7 @@ namespace hivemind {
         planner->addPlan(std::move(plan));
       }
     }
+    /*
     else
     {
       auto plan = planner->makeTechPlan(builder, unitType);
@@ -527,22 +586,25 @@ namespace hivemind {
         planner->addPlan(std::move(plan));
       }
     }
+    */
   }
 
   void BuildPlanner::executePlans()
   {
-    if(plans_.size() < 2)
+    if(plans_.size() < 10)
     {
       makeMorePlans(this);
     }
 
+    AllocatedResources allocatedResources{ 0, 0, 0 };
     for(auto& plan : plans_)
     {
-      plan->executePlan(this);
+      plan->executePlan(this, allocatedResources);
+      allocatedResources = allocatedResources + plan->remainingCost();
     }
   }
 
-  void UnitBuildPlan::executePlan(BuildPlanner* planner)
+  void UnitBuildPlan::executePlan(BuildPlanner* planner, AllocatedResources allocatedResources)
   {
     Bot* bot = planner->getBot();
 
@@ -551,9 +613,15 @@ namespace hivemind {
 
     if(startedBuilds_.size() < count_)
     {
-      if(!builder.haveResourcesToMake(unitType_))
+      if(!builder.haveResourcesToMake(unitType_, allocatedResources))
       {
         return;
+      }
+
+      if(!haveTechToMake(builder, unitType_))
+      {
+        return;
+
       }
 
       BuildProjectID id;

@@ -190,7 +190,7 @@ namespace hivemind {
               auto seconds = time % 60;
               auto minutes = time / 60;
 
-              bot_->console().printf("BuildOp %d for %s: Started building %x at pos (%d,%d) at game time %d:%d", build.id, sc2::UnitTypeToName(build.type), id(unit), (int)pos.x, (int)pos.y, minutes, seconds);
+              bot_->console().printf("BuildOp %d for %s: Started building %x at pos (%d,%d) at game time %02d:%02d", build.id, sc2::UnitTypeToName(build.type), id(unit), (int)pos.x, (int)pos.y, minutes, seconds);
             }
 
             if(build.builder->unit_type == sc2::UNIT_TYPEID::ZERG_DRONE)
@@ -333,21 +333,23 @@ namespace hivemind {
         build.nextUpdateTime = time + cBuildRecheckDelta;
         if ( !build.builder || !build.builder->is_alive )
         {
-          if ( build.tries >= cBuildMaxWorkers )
+          if ( build.workerTries >= cBuildMaxWorkers )
           {
             if ( verbose )
-              bot_->console().printf( "BuildOp %d for %s: Canceling after %d failed tries (no worker)", build.id, sc2::UnitTypeToName( build.type ), build.tries );
+              bot_->console().printf( "BuildOp %d for %s: Canceling after %d failed tries (no worker)", build.id, sc2::UnitTypeToName( build.type ), build.workerTries );
 
             build.cancel = true;
             continue;
           }
+
+          ++build.workerTries;
 
           build.builder = acquireBuilder(*build.base);
 
           if ( !build.builder )
           {
             if ( verbose )
-              bot_->console().printf( "BuildOp %d for %s: No worker released from pool", build.id, sc2::UnitTypeToName( build.type ) );
+              bot_->console().printf( "BuildOp %d for %s: Failed to acquire worker", build.id, sc2::UnitTypeToName( build.type ) );
 
             continue;
           }
@@ -357,7 +359,6 @@ namespace hivemind {
             bot_->console().printf( "BuildOp %d for %s: Got worker %x", build.id, sc2::UnitTypeToName( build.type ), id( build.builder ) );
 
           Drone( build.builder ).move( build.position );
-          build.tries++;
         }
 
         if ( !build.building || !build.building->is_alive )
@@ -417,14 +418,15 @@ namespace hivemind {
 
       for ( auto& tile : closestTiles )
       {
-        if ( bot_->map().canZergBuild( structure, tile, 1, true, true, true, true ) )
-        {
-          const Vector2& tileRet = tile;
-          if ( !bot_->query().Placement( ability, tileRet ) )
-            continue;
-          placementOut = tile;
-          return true;
-        }
+        if(!bot_->map().canZergBuild(structure, tile, 1, true, true, true, true))
+          continue;
+
+        const Vector2& tileRet = tile;
+        if ( !bot_->query().Placement( ability, tileRet ) )
+          continue;
+
+        placementOut = tile;
+        return true;
       }
     }
     else if ( type == BuildPlacement_Extractor )
@@ -435,6 +437,10 @@ namespace hivemind {
 
       for ( auto& geyser : base.location()->getGeysers() )
       {
+        Vector2 tile = geyser->pos;
+        if(!bot_->map().canZergBuild(structure, tile, 0, true, true, true, true))
+          continue;
+
         if ( !bot_->query().Placement( ability, geyser->pos ) )
           continue;
 
@@ -506,13 +512,17 @@ namespace hivemind {
     {
       return sc2::UNIT_TYPEID::ZERG_DRONE;
     }
+    else if(unitType == sc2::UNIT_TYPEID::ZERG_QUEEN)
+    {
+      return sc2::UNIT_TYPEID::ZERG_HATCHERY;
+    }
     else
     {
       return sc2::UNIT_TYPEID::ZERG_LARVA;
     }
   }
 
-  static AllocatedResources getCost(UnitTypeID unitType)
+  AllocatedResources Builder::getCost(UnitTypeID unitType)
   {
     UnitTypeID trainerType = getTrainerType(unitType);
 
@@ -551,7 +561,7 @@ namespace hivemind {
     return { m, v, f };
   }
 
-  bool Builder::haveResourcesToMake(UnitTypeID unitType) const
+  bool Builder::haveResourcesToMake(UnitTypeID unitType, AllocatedResources allocatedResources) const
   {
     int minerals = bot_->Observation()->GetMinerals();
     int vespene = bot_->Observation()->GetVespene();
@@ -561,7 +571,11 @@ namespace hivemind {
     auto& baseManager = bot_->bases();
     auto& builder = bot_->builder();
 
-    auto allocatedResources = builder.getAllocatedResources();
+    auto builderAllocatedResources = builder.getAllocatedResources();
+    minerals -= builderAllocatedResources.minerals;
+    vespene -= builderAllocatedResources.vespene;
+    usedSupply += builderAllocatedResources.food;
+
     minerals -= allocatedResources.minerals;
     vespene -= allocatedResources.vespene;
     usedSupply += allocatedResources.food;

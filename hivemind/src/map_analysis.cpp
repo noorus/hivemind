@@ -137,6 +137,23 @@ namespace hivemind {
             if ( aroundORed & MapFlag_VisionBlocker )
               flags_out[x][y] |= MapFlag_NearVisionBlocker;
           }
+
+      // Mark vespene geysers.
+      for ( auto geyser : observation.GetUnits( Unit::Alliance::Neutral ) )
+      {
+        if ( !utils::isGeyser( geyser ) )
+          continue;
+
+        int x = static_cast<int>(geyser->pos.x);
+        int y = static_cast<int>(geyser->pos.y);
+        for(int i = -1; i <= 1; ++i)
+        {
+          for(int j = -1; j <= 1; ++j)
+          {
+            flags_out[x + i][y + j] |= MapFlag_VespeneGeyser;
+          }
+        }
+      }
     }
 
     //

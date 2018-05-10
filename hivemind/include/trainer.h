@@ -20,6 +20,16 @@ namespace hivemind {
     int food;
   };
 
+  inline AllocatedResources operator+(AllocatedResources lhs, AllocatedResources rhs)
+  {
+    return { lhs.minerals + rhs.minerals, lhs.vespene + rhs.vespene, lhs.food + rhs.food };
+  }
+
+  inline AllocatedResources operator*(AllocatedResources lhs, int count)
+  {
+    return { lhs.minerals * count, lhs.vespene * count, lhs.food * count };
+  }
+
   struct Training {
     BuildProjectID id;
     UnitTypeID type;

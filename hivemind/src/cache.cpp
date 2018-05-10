@@ -13,7 +13,7 @@ namespace hivemind {
   HIVE_DECLARE_CONVAR( cache_path, "Path to a directory where the bot can cache stuff.", R"(..\cache)" );
 
   //! Cache file version number, increment this to invalidate old caches if the format changes
-  const uint32_t cMapCacheVersion = 7;
+  const uint32_t cMapCacheVersion = 8;
 
   string makeCacheFilePath( const Sha256& hash, const string& name )
   {

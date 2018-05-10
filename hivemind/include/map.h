@@ -24,7 +24,8 @@ namespace hivemind {
     MapFlag_NearStartLocation = 128, //!< A tile that is at most 2 tiles away from a base location footprint tile
     MapFlag_VisionBlocker = 256,
     MapFlag_NearVisionBlocker = 512,
-    MapFlag_Blocker = 1024
+    MapFlag_Blocker = 1024,
+    MapFlag_VespeneGeyser = 2048,
   };
 
   struct MapComponent {
@@ -143,6 +144,8 @@ namespace hivemind {
     void updateReservedMap();
     void splitCreepFronts();
     void labelBuildableCreeps();
+    void applyFootprint(const Point2DI& position, UnitTypeID unitType);
+
   public:
     Map( Bot* bot );
     ~Map();

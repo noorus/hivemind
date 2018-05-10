@@ -68,11 +68,11 @@ namespace hivemind {
     GameTime lastOrderTime;
     bool completed;
     bool moneyAllocated;
-    size_t tries;
+    size_t workerTries;
     size_t orderTries;
     AbilityID buildAbility;
 
-    Building(BuildProjectID id_, Base* base_, UnitTypeID type_, AbilityID abil_) :
+    Building(BuildProjectID id_, Base* base_, UnitTypeID type_, AbilityID ability_) :
         id(id_),
         base(base_),
         type(type_),
@@ -81,9 +81,9 @@ namespace hivemind {
         cancel(false),
         position(0, 0),
         nextUpdateTime(0),
-        tries(0),
+        workerTries(0),
         orderTries(0),
-        buildAbility(abil_),
+        buildAbility(ability_),
         buildStartTime(0),
         buildCompleteTime(0),
         completed(false),
@@ -133,7 +133,7 @@ namespace hivemind {
     // Returns the amount of resources that the not-yet-paid-trainings will cost.
     AllocatedResources getAllocatedResources() const;
 
-    UnitStats& getUnitStats(sc2::UNIT_TYPEID unitType)
+    UnitStats& getUnitStats(UnitTypeID unitType)
     {
       return unitStats_[unitType];
     }
@@ -143,7 +143,9 @@ namespace hivemind {
       return upgradeStats_[upgradeType];
     }
 
-    bool haveResourcesToMake(UnitTypeID unitType) const;
+    bool haveResourcesToMake(UnitTypeID unitType, AllocatedResources allocatedResources) const;
+
+    static AllocatedResources getCost(UnitTypeID unitType);
 
     bool isFinished(BuildProjectID id) const
     {

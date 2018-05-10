@@ -31,7 +31,7 @@ namespace hivemind {
       return sc2::UNIT_TYPEID::ZERG_SWARMHOSTMP;
 
     const auto& name = Database::unit(unitType).name;
-    for(auto suffix : { "Burrowed", "Lowered", "Flying", "Sieged" })
+    for(auto suffix : { "Burrowed", "Lowered", "Flying", "Sieged", "Uprooted" })
     {
       if(name.find(suffix) != string::npos)
       {

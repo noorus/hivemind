@@ -377,6 +377,8 @@ namespace hivemind {
             bot_->debug().drawSphere( pos, 0.1f, sc2::Colors::Blue );
           else if ( tile & MapFlag_NearVisionBlocker )
             bot_->debug().drawSphere( pos, 0.1f, sc2::Colors::Gray );
+          else if ( tile & MapFlag_VespeneGeyser)
+            bot_->debug().drawSphere( pos, 0.1f, sc2::Colors::White );
         }
       }
 
@@ -481,52 +483,52 @@ namespace hivemind {
     }
   }
 
+  void Map::applyFootprint(const Point2DI& position, UnitTypeID unitType)
+  {
+    auto& dbUnit = Database::unit( unitType );
+
+    Point2DI topLeft(
+      position.x + dbUnit.footprintOffset.x,
+      position.y + dbUnit.footprintOffset.y
+    );
+
+    size_t unitWidth = dbUnit.footprint.width();
+    size_t unitHeight = dbUnit.footprint.height();
+
+    if ( topLeft.x < 0 || topLeft.y < 0
+      || ( topLeft.x + unitWidth ) >= width_
+      || ( topLeft.y + unitHeight ) >= height_ )
+      return;
+
+    for ( size_t y = 0; y < dbUnit.footprint.height(); ++y )
+    {
+      for ( size_t x = 0; x < dbUnit.footprint.width(); ++x )
+      {
+        size_t worldX = topLeft.x + x;
+        size_t worldY = topLeft.y + y;
+
+        auto fp = dbUnit.footprint[x][y];
+
+        if ( fp == UnitData::Footprint_Reserved || fp == UnitData::Footprint_BuildingPolyReserved )
+        {
+          auto& pixel = zergBuildable_[worldX][worldY];
+          pixel = ( pixel > CreepTile_No ? CreepTile_Walkable : CreepTile_No );
+          reservedMap_[worldX][worldY] = Reserved_Reserved;
+        }
+        else if ( fp == UnitData::Footprint_NearResource && reservedMap_[worldX][worldY] != Reserved_Reserved )
+        {
+          reservedMap_[worldX][worldY] = Reserved_NearResource;
+        }
+      }
+    }
+  }
+
   void Map::updateReservedMap()
   {
     reservedMap_.reset( Reserved_None );
     creepTumors_.clear();
 
-    auto applyFootprint = [this]( const Point2DI& pt, UnitTypeID ut )
-    {
-      auto& dbUnit = Database::unit( ut );
-
-      Point2DI topLeft(
-        pt.x + dbUnit.footprintOffset.x,
-        pt.y + dbUnit.footprintOffset.y
-      );
-
-      size_t unitWidth = dbUnit.footprint.width();
-      size_t unitHeight = dbUnit.footprint.height();
-
-      if ( topLeft.x < 0 || topLeft.y < 0
-        || ( topLeft.x + unitWidth ) >= width_
-        || ( topLeft.y + unitHeight ) >= height_ )
-        return;
-
-      for ( size_t y = 0; y < dbUnit.footprint.height(); ++y )
-      {
-        for ( size_t x = 0; x < dbUnit.footprint.width(); ++x )
-        {
-          size_t worldX = topLeft.x + x;
-          size_t worldY = topLeft.y + y;
-
-          auto fp = dbUnit.footprint[x][y];
-
-          if ( fp == UnitData::Footprint_Reserved || fp == UnitData::Footprint_BuildingPolyReserved )
-          {
-            auto& pixel = zergBuildable_[worldX][worldY];
-            pixel = ( pixel > CreepTile_No ? CreepTile_Walkable : CreepTile_No );
-            reservedMap_[worldX][worldY] = Reserved_Reserved;
-          }
-          else if ( fp == UnitData::Footprint_NearResource && reservedMap_[worldX][worldY] != Reserved_Reserved )
-          {
-            reservedMap_[worldX][worldY] = Reserved_NearResource;
-          }
-        }
-      }
-    };
-
-    // get blocking units (i.e. structures)
+    // Get other blocking units except geysers (i.e. structures, minerals, rocks, ).
     auto blockingUnits = bot_->observation().GetUnits( []( const Unit& unit ) -> bool
     {
       if ( !unit.is_alive )
@@ -534,6 +536,9 @@ namespace hivemind {
 
       if ( unit.unit_type == UNIT_TYPEID::ZERG_CREEPTUMOR || unit.unit_type == UNIT_TYPEID::ZERG_CREEPTUMORBURROWED )
         return true;
+
+      if(utils::isGeyser(unit))
+        return false;
 
       auto& dbUnit = Database::unit( unit.unit_type );
       return ( dbUnit.structure && !dbUnit.flying && !dbUnit.footprint.empty() );
@@ -620,6 +625,7 @@ namespace hivemind {
   bool Map::canZergBuild( UnitTypeID structure, size_t x, size_t y, int padding, bool nearResources, bool noMainOverlap, bool notNearMain, bool notNearRamp )
   {
     auto& dbUnit = Database::unit( structure );
+    bool isRefinery = utils::isRefinery(structure);
 
     Point2DI topleft(
       ( (int)x + dbUnit.footprintOffset.x ) - padding,
@@ -633,6 +639,7 @@ namespace hivemind {
       return false;
 
     for ( int j = 0; j < fullheight; j++ )
+    {
       for ( int i = 0; i < fullwidth; i++ )
       {
         auto mx = ( topleft.x + i );
@@ -646,10 +653,18 @@ namespace hivemind {
         }
 
         auto fp = dbUnit.footprint[j - padding][i - padding];
-        if ( fp == UnitData::Footprint_Reserved || fp == UnitData::Footprint_BuildingPolyReserved )
+        if(fp == UnitData::Footprint_Reserved || fp == UnitData::Footprint_BuildingPolyReserved)
         {
-          if ( zergBuildable_[mx][my] != CreepTile_Buildable )
-            return false;
+          if(isRefinery)
+          {
+            if(reservedMap_[mx][my] == Reserved_Reserved)
+              return false;
+          }
+          else
+          {
+            if(zergBuildable_[mx][my] != CreepTile_Buildable)
+              return false;
+          }
           if ( noMainOverlap && ( flagsMap_[mx][my] & MapFlag_StartLocation ) )
             return false;
           if ( notNearMain && ( flagsMap_[mx][my] & MapFlag_NearStartLocation ) )
@@ -658,6 +673,7 @@ namespace hivemind {
             return false;
         }
       }
+    }
 
     return true;
   }
@@ -883,6 +899,9 @@ namespace hivemind {
   void Map::reserveFootprint( const Point2DI& position, UnitTypeID type )
   {
     buildingReservations_[util_encodePoint( position )] = BuildingReservation( position, type );
+
+    // Apply footprint immediately to prevent building multiple overlapping buildings on the same frame.
+    applyFootprint( position, type );
   }
 
   void Map::clearFootprint( const Point2DI& position )
@@ -926,7 +945,9 @@ namespace hivemind {
     if ( !isValid( x, y ) )
       return false;
 
-    return ( flagsMap_[x][y] & MapFlag_Walkable );
+    auto flag = flagsMap_[x][y];
+
+    return (flag & MapFlag_Walkable) && !(flag & MapFlag_VespeneGeyser);
   }
 
   bool Map::isBuildable( size_t x, size_t y )
