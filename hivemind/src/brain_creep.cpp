@@ -3,6 +3,7 @@
 #include "brain_creep.h"
 #include "ai_goals.h"
 #include "bot.h"
+#include "controllers.h"
 
 namespace hivemind {
 
@@ -11,7 +12,7 @@ namespace hivemind {
     /* Brain: Spread creep goal */
 
     const GameTime cCreepCheckDelay = 50;
-    const GameTime cTumorFullCreepTime = utils::timeToTicks( 0, (uint16_t)( ( ( 21.0f - 3.0f ) / 2.0f ) * 0.8332f ) ); // ((fullGrownFootprint - spawnFootprint) / 2) * creepPeriod
+    const GameTime cTumorFullCreepTime = utils::timeToTicks( 0, (uint16_t)( ( ( 21.0f - 3.0f ) / 2.0f ) * 0.8332f * 1.5f ) ); // ((fullGrownFootprint - spawnFootprint) / 2) * creepPeriod * goodMeasure
 
     Brain_SpreadCreep::Brain_SpreadCreep( AI::Agent * agent ):
     AI::CompositeGoal( agent )
@@ -83,7 +84,7 @@ namespace hivemind {
                     bot_->console().printf( "CREEP: Want to creep via tumor %x, but can't find placement at %i,%i", id( tumor ), (int)destPt.x, (int)destPt.y );
                 }
                 bot_->console().printf( "CREEP: Creeping via tumor %x to %i,%i", id( tumor ), (int)destPt.x, (int)destPt.y );
-                bot_->action().UnitCommand( tumor, sc2::ABILITY_ID::BUILD_CREEPTUMOR_TUMOR, destPt );
+                CreepTumor( tumor ).tumor( destPt );
               }
             }
           }

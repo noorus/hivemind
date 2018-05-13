@@ -64,11 +64,12 @@ namespace hivemind {
     Building build( idPool_++, base, structureType, ability );
     build.position = pos;
     build.target = target;
-    bot_->map().reserveFootprint( build.position, structureType );
+    build.footprintPosition = MapPoint2( build.position );
+    bot_->map().reserveFootprint( build.footprintPosition, structureType );
     buildProjects_.push_back( build );
 
     if ( g_CVar_builder_debug.as_i() > 1 )
-      bot_->console().printf( "Builder: New BuildOp %d for %s, position %d,%d", build.id, sc2::UnitTypeToName( structureType ), build.position.x, build.position.y );
+      bot_->console().printf( "DEBUG - BUILDER: New BuildOp %d for %s, position %.2f,%.2f", build.id, sc2::UnitTypeToName( structureType ), build.position.x, build.position.y );
 
     unitStats_[structureType].inProgress.insert(build.id);
 
@@ -113,8 +114,8 @@ namespace hivemind {
 
     for ( auto& b : buildProjects_ )
     {
-      Real height = bot_->map().heightMap_[b.position.x][b.position.y];
-      Vector3 pt( (Real)b.position.x + 0.5f, (Real)b.position.y + 0.5f, height );
+      Real height = bot_->map().heightMap_[b.footprintPosition.x][b.footprintPosition.y];
+      Vector3 pt = b.position.to3( height );
       debug.drawSphere( pt, 1.5f, sc2::Colors::Red );
       debug.drawText( std::to_string( b.id ), pt, sc2::Colors::Yellow );
       if ( b.builder && ( !b.building || !b.building->is_alive ) )
@@ -190,7 +191,7 @@ namespace hivemind {
               auto seconds = time % 60;
               auto minutes = time / 60;
 
-              bot_->console().printf("BuildOp %d for %s: Started building %x at pos (%d,%d) at game time %02d:%02d", build.id, sc2::UnitTypeToName(build.type), id(unit), (int)pos.x, (int)pos.y, minutes, seconds);
+              bot_->console().printf("DEBUG - BUILDER: BuildOp %d for %s: Started building %x at pos (%.2f,%.2f) at game time %02d:%02d", build.id, sc2::UnitTypeToName(build.type), id(unit), pos.x, pos.y, minutes, seconds);
             }
 
             if(build.builder->unit_type == sc2::UNIT_TYPEID::ZERG_DRONE)
@@ -225,7 +226,7 @@ namespace hivemind {
           build.buildCompleteTime = bot_->time();
 
           if ( g_CVar_builder_debug.as_i() > 1 )
-            bot_->console().printf( "BuildOp %d for %s: Completed in time %d", build.id, sc2::UnitTypeToName( build.type ), build.buildCompleteTime - build.buildStartTime );
+            bot_->console().printf( "DEBUG - BUILDER: BuildOp %d for %s: Completed in time %d", build.id, sc2::UnitTypeToName( build.type ), build.buildCompleteTime - build.buildStartTime );
         }
       }
     }
@@ -254,7 +255,7 @@ namespace hivemind {
             build.buildCompleteTime = bot_->time();
 
             if ( g_CVar_builder_debug.as_i() > 1 )
-              bot_->console().printf( "BuildOp %d for %s: canceled (or destroyed) in time %d", build.id, sc2::UnitTypeToName( build.type ), build.buildCompleteTime - build.buildStartTime );
+              bot_->console().printf( "DEBUG - BUILDER: BuildOp %d for %s: canceled (or destroyed) in time %d", build.id, sc2::UnitTypeToName( build.type ), build.buildCompleteTime - build.buildStartTime );
 
             if(build.builder && build.builder->is_alive && build.builder->unit_type == sc2::UNIT_TYPEID::ZERG_DRONE)
             {
@@ -296,16 +297,16 @@ namespace hivemind {
           bot_->messaging().sendGlobal( M_Build_Canceled, build.id );
 
         if ( verbose )
-          bot_->console().printf( "BuildOp %d for %s (%s):", build.id, sc2::UnitTypeToName( build.type ), build.completed ? "completed" : "canceled" );
+          bot_->console().printf( "DEBUG - BUILDER: BuildOp %d for %s (%s):", build.id, sc2::UnitTypeToName( build.type ), build.completed ? "completed" : "canceled" );
 
         if ( build.builder && build.builder->is_alive )
         {
           if ( verbose )
-            bot_->console().printf( "Builder: Returning worker %x", id( build.builder ) );
+            bot_->console().printf( "DEBUG - BUILDER: Builder: Returning worker %x", id( build.builder ) );
 
           build.base->addWorker(build.builder);
         }
-        bot_->map().clearFootprint( build.position );
+        bot_->map().clearFootprint( build.footprintPosition );
         finishedBuildProjects_[build.id] = int(build.completed);
 
         it = buildProjects_.erase( it );
@@ -336,7 +337,7 @@ namespace hivemind {
           if ( build.workerTries >= cBuildMaxWorkers )
           {
             if ( verbose )
-              bot_->console().printf( "BuildOp %d for %s: Canceling after %d failed tries (no worker)", build.id, sc2::UnitTypeToName( build.type ), build.workerTries );
+              bot_->console().printf( "DEBUG - BUILDER: BuildOp %d for %s: Canceling after %d failed tries (no worker)", build.id, sc2::UnitTypeToName( build.type ), build.workerTries );
 
             build.cancel = true;
             continue;
@@ -349,14 +350,14 @@ namespace hivemind {
           if ( !build.builder )
           {
             if ( verbose )
-              bot_->console().printf( "BuildOp %d for %s: Failed to acquire worker", build.id, sc2::UnitTypeToName( build.type ) );
+              bot_->console().printf( "DEBUG - BUILDER: BuildOp %d for %s: Failed to acquire worker", build.id, sc2::UnitTypeToName( build.type ) );
 
             continue;
           }
           bot_->unitDebugMsgs_[build.builder] = "Builder, Op " + std::to_string( build.id );
 
           if ( verbose )
-            bot_->console().printf( "BuildOp %d for %s: Got worker %x", build.id, sc2::UnitTypeToName( build.type ), id( build.builder ) );
+            bot_->console().printf( "DEBUG - BUILDER: BuildOp %d for %s: Got worker %x", build.id, sc2::UnitTypeToName( build.type ), id( build.builder ) );
 
           Drone( build.builder ).move( build.position );
         }
@@ -378,7 +379,7 @@ namespace hivemind {
             if ( build.orderTries >= cBuildMaxOrders )
             {
               if ( verbose )
-                bot_->console().printf( "BuildOp %d for %s: Canceling after %d failed tries (order failed)", build.id, sc2::UnitTypeToName( build.type ), build.orderTries );
+                bot_->console().printf( "DEBUG - BUILDER: BuildOp %d for %s: Canceling after %d failed tries (order failed)", build.id, sc2::UnitTypeToName( build.type ), build.orderTries );
 
               build.cancel = true;
               continue;
@@ -418,14 +419,14 @@ namespace hivemind {
 
       for ( auto& tile : closestTiles )
       {
-        if(!bot_->map().canZergBuild(structure, tile, 1, true, true, true, true))
+        if(!bot_->map().canZergBuild(structure, tile.vec2(), 1, true, true, true, true))
           continue;
 
-        const Vector2& tileRet = tile;
+        const Vector2 tileRet = utils::offsetBuildPosition( structure, tile.vec2() );
         if ( !bot_->query().Placement( ability, tileRet ) )
           continue;
 
-        placementOut = tile;
+        placementOut = tileRet;
         return true;
       }
     }

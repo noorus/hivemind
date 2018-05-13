@@ -3,6 +3,7 @@
 #include "brain_macro.h"
 #include "ai_goals.h"
 #include "bot.h"
+#include "controllers.h"
 
 namespace hivemind {
 
@@ -141,7 +142,7 @@ namespace hivemind {
 
           if(worker)
           {
-            action->UnitCommand(worker, sc2::ABILITY_ID::HARVEST_GATHER, refinery.refinery_);
+            Drone( worker ).harvestGather( refinery.refinery_ );
             refinery.workers_.insert(worker);
           }
         }
@@ -160,7 +161,7 @@ namespace hivemind {
 
           if(mineral)
           {
-            action->UnitCommand(worker, sc2::ABILITY_ID::HARVEST_GATHER, mineral);
+            Drone( worker ).harvestGather( mineral );
           }
         }
       }
@@ -186,7 +187,7 @@ namespace hivemind {
         UnitRef worker = from.releaseWorker();
         to.addWorker(worker);
 
-        action->UnitCommand(worker, sc2::ABILITY_ID::STOP);
+        Drone( worker ).stop();
       }
     }
   }

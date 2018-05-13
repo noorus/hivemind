@@ -35,7 +35,7 @@ namespace hivemind {
     UnitTypeID type;
     UnitTypeID trainerType;
     UnitRef trainer;
-    MapPoint2 position;
+    // MapPoint2 position;
     bool cancel;
     GameTime nextUpdateTime;
     GameTime buildStartTime;
@@ -52,7 +52,7 @@ namespace hivemind {
         trainerType(trainerType_),
         trainer(trainer_),
         cancel(false),
-        position(0, 0),
+        // position(0, 0),
         nextUpdateTime(0),
         tries(0),
         orderTries(0),

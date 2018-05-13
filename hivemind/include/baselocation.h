@@ -37,7 +37,7 @@ namespace hivemind {
     const UnitVector& getGeysers() const { return geysers_; }
     bool isInResourceBox( int x, int y ) const;
     bool overlapsMainFootprint( int x, int y ) const;
-    const vector<Vector2>& getClosestTiles() const;
+    const vector<MapPoint2>& getClosestTiles() const;
   };
 
   using BaseLocationVector = vector<BaseLocation>;

@@ -958,7 +958,7 @@ namespace hivemind {
     return ( flagsMap_[x][y] & MapFlag_Buildable );
   }
 
-  const DistanceMap & Map::getDistanceMap( const Point2D & tile ) const
+  const DistanceMap & Map::getDistanceMap( const MapPoint2& tile ) const
   {
     std::pair<size_t, size_t> index( (size_t)tile.x, (size_t)tile.y );
 

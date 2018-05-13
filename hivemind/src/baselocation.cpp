@@ -54,7 +54,7 @@ namespace hivemind {
     {
       MapPoint2 fixpos = position_;
       bot_->map().findClosestBuildablePosition( fixpos, sc2::UNIT_TYPEID::ZERG_HATCHERY, false );
-      position_ = static_cast<Vector2>( fixpos );
+      position_ = static_cast<Vector2>( fixpos.midVec2() ); // hardcoded for 5x5 buildings
     }
 
     auto region = bot_->map().region( position_ );
@@ -123,7 +123,7 @@ namespace hivemind {
     return ( dbUnit.footprint[pt.y][pt.x] == UnitData::Footprint_Reserved );
   }
 
-  const vector<Vector2>& BaseLocation::getClosestTiles() const
+  const vector<MapPoint2>& BaseLocation::getClosestTiles() const
   {
     return distanceMap_.sortedTiles();
   }

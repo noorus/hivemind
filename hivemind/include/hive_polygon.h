@@ -28,26 +28,20 @@ namespace hivemind {
     MapPoint2( int x_, int y_ ): x( x_ ), y( y_ )
     {
     }
-    MapPoint2( const Vector2& other ): x( math::floor( other.x ) ), y( math::floor( other.y ) )
+    MapPoint2( const Vector2& other ):
+      x( math::floor( other.x ) ),
+      y( math::floor( other.y ) )
     {
     }
-    inline MapPoint2& operator = ( const Vector2& rhs )
+    inline Vector2 midVec2() const
     {
-      x = math::floor( rhs.x );
-      y = math::floor( rhs.y );
-      return *this;
+      return Vector2(
+        ( (Real)x + 0.5f ),
+        ( (Real)y + 0.5f ) );
     }
-    inline MapPoint2& operator = ( const sc2::Point2D& rhs )
+    inline Vector2 vec2() const
     {
-      x = math::floor( rhs.x );
-      y = math::floor( rhs.y );
-      return *this;
-    }
-    inline MapPoint2& operator = ( const sc2::Point3D& rhs )
-    {
-      x = math::floor( rhs.x );
-      y = math::floor( rhs.y );
-      return *this;
+      return Vector2( (Real)x, (Real)y );
     }
     inline bool operator == ( const MapPoint2& rhs ) const
     {
@@ -65,6 +59,12 @@ namespace hivemind {
     {
       return rhs < *this;
     }
+    inline MapPoint2& operator=( const Vector2& rhs )
+    {
+      x = math::floor( rhs.x );
+      y = math::floor( rhs.y );
+      return *this;
+    }
     inline operator sc2::Point2DI() const
     {
       sc2::Point2DI ret;
@@ -72,6 +72,8 @@ namespace hivemind {
       ret.y = y;
       return ret;
     }
+
+  private:
     inline operator sc2::Point2D() const
     {
       sc2::Point2D ret;
@@ -85,6 +87,18 @@ namespace hivemind {
         ( (Real)x + 0.5f ),
         ( (Real)y + 0.5f )
       );
+    }
+    inline MapPoint2& operator=( const sc2::Point2D& rhs )
+    {
+      x = math::floor( rhs.x );
+      y = math::floor( rhs.y );
+      return *this;
+    }
+    inline MapPoint2& operator=( const sc2::Point3D& rhs )
+    {
+      x = math::floor( rhs.x );
+      y = math::floor( rhs.y );
+      return *this;
     }
   };
 

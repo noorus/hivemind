@@ -87,8 +87,7 @@ namespace hivemind {
 
       if ( utils::isStructure( unit ) )
       {
-        MapPoint2 pos = Vector2(unit->pos);
-        bot_->console().printf( "Building created: %s at (%d, %d)", sc2::UnitTypeToName( unit->unit_type ), pos.x, pos.y );
+        bot_->console().printf( "Building created: %s at (%.2f, %.2f)", sc2::UnitTypeToName( unit->unit_type ), unit->pos.x, unit->pos.y );
         addBuilding( unit );
       }
       else

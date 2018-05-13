@@ -4,6 +4,7 @@
 #include "ai_goals.h"
 #include "bot.h"
 #include "database.h"
+#include "controllers.h"
 
 namespace hivemind {
 
@@ -116,7 +117,7 @@ namespace hivemind {
 
         if(inject.queen->orders.empty() || inject.queen->orders.front().ability_id != sc2::ABILITY_ID::EFFECT_INJECTLARVA)
         {
-          bot_->action().UnitCommand(inject.queen, sc2::ABILITY_ID::EFFECT_INJECTLARVA, inject.hatchery);
+          Queen( inject.queen ).inject( inject.hatchery );
         }
       }
     }
@@ -208,7 +209,7 @@ namespace hivemind {
         {
           tumorTasks_.push_back({ &base, queen, *tumorLocation });
 
-          bot_->action().UnitCommand( queen, sc2::ABILITY_ID::BUILD_CREEPTUMOR_QUEEN, *tumorLocation );
+          Queen( queen ).tumor( *tumorLocation );
 
           if(g_CVar_queen_debug.as_i() > 0)
           {

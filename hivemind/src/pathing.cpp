@@ -42,7 +42,7 @@ namespace hivemind {
     auto poly = util_clipperPathToPolygon( clipperPath );
     vector<Vector2> verts;
     for ( auto& pt : mapPath )
-      verts.push_back( pt );
+      verts.push_back( pt.midVec2() );
     path->assignVertices( verts );
 
     path->dstarResult = std::move(dstarResult);
@@ -73,7 +73,7 @@ namespace hivemind {
       auto poly = util_clipperPathToPolygon( clipperPath );
       vector<Vector2> verts;
       for ( auto& pt : mapPath )
-        verts.push_back( pt );
+        verts.push_back( pt.midVec2() );
       path->assignVertices( verts );
     }
   }

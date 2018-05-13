@@ -150,6 +150,14 @@ namespace hivemind {
       return ( Database::unit( type ).resource == UnitData::Resource_GasHarvestable );
     }
 
+    inline Vector2 offsetBuildPosition( UnitTypeID structure, Vector2 position )
+    {
+      const auto& fp = Database::unit( structure ).footprint;
+      return Vector2(
+        ( fp.width() % 2 ) ? position.x + 0.5f : position.x,
+        ( fp.height() % 2 ) ? position.y + 0.5f : position.y );
+    }
+
     inline const bool isRefinery( const Unit& unit ) { return isRefinery( unit.unit_type ); }
     inline const bool isRefinery( const UnitRef unit ) { return isRefinery( unit->unit_type ); }
 

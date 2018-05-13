@@ -13,12 +13,7 @@ namespace hivemind {
     return dist_[x][y];
   }
 
-  int DistanceMap::dist( const Vector2& pos ) const
-  {
-    return dist( (size_t)pos.x, (size_t)pos.y );
-  }
-
-  void DistanceMap::compute( Bot* bot, const Vector2& startTile )
+  void DistanceMap::compute( Bot* bot, const MapPoint2& startTile )
   {
     startTile_ = startTile;
 
@@ -30,22 +25,22 @@ namespace hivemind {
 
     sorted_.reserve( width_ * height_ );
 
-    vector<Vector2> fringe;
+    vector<MapPoint2> fringe;
     fringe.reserve( width_ * height_ );
     fringe.push_back( startTile );
     sorted_.push_back( startTile );
 
-    dist_[(int)startTile.x][(int)startTile.y] = 0;
+    dist_[startTile.x][startTile.y] = 0;
 
     for ( size_t fringeIndex = 0; fringeIndex < fringe.size(); ++fringeIndex )
     {
-      const Vector2& tile = fringe[fringeIndex];
+      const MapPoint2& tile = fringe[fringeIndex];
       for ( size_t a = 0; a < c_legalActions; ++a )
       {
-        Vector2 nextTile( tile.x + c_actionX[a], tile.y + c_actionY[a] );
-        if ( bot->map().isWalkable( nextTile ) && dist( nextTile ) == -1 )
+        MapPoint2 nextTile( tile.x + c_actionX[a], tile.y + c_actionY[a] );
+        if ( bot->map().isWalkable( nextTile.x, nextTile.y ) && dist( nextTile ) == -1 )
         {
-          dist_[(int)nextTile.x][(int)nextTile.y] = dist_[(int)tile.x][(int)tile.y] + 1;
+          dist_[nextTile.x][nextTile.y] = dist_[tile.x][tile.y] + 1;
           fringe.push_back( nextTile );
           sorted_.push_back( nextTile );
         }

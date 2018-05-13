@@ -199,7 +199,7 @@ namespace hivemind {
     bool isWalkable( const Vector2& position ) { return isWalkable( (size_t)position.x, (size_t)position.y ); }
     bool isBuildable( size_t x, size_t y );
     bool isBuildable( const Vector2& position ) { return isBuildable( (size_t)position.x, (size_t)position.y ); }
-    const DistanceMap& getDistanceMap( const Point2D& tile ) const;
+    const DistanceMap& getDistanceMap( const MapPoint2& tile ) const;
   };
 
 }

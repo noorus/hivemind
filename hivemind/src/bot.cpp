@@ -125,7 +125,7 @@ namespace hivemind {
     console->printf("Pathing from (%d, %d) to (%d, %d)", start.x, start.y, end.x, end.y);
     platform::PerformanceTimer timer;
     timer.start();
-    auto path = g_Bot->pathing().createPath( start, end );
+    auto path = g_Bot->pathing().createPath( start.midVec2(), end.midVec2() );
     auto time = timer.stop();
     console->printf("Path length: %d, time: %f ms", path->verts().size(), time);
   }
@@ -394,7 +394,7 @@ namespace hivemind {
         platform::PerformanceTimer timer;
         timer.start();
 
-        auto path = pathing_.createPath(from, to);
+        auto path = pathing_.createPath( from.midVec2(), to.midVec2());
 
         auto time = timer.stop();
         console_.printf("Path from {%d, %d} to {%d, %d} took %d vertices%s, and %f ms", from.x, from.y, to.x, to.y, path->verts().size(), path->verts().empty() ? " (NOT FOUND)" : "", time);

@@ -60,7 +60,8 @@ namespace hivemind {
     UnitRef building;
     UnitRef builder;
     UnitRef target; //!< Targets unit instead of position; overrides position if not null
-    MapPoint2 position;
+    Vector2 position;
+    MapPoint2 footprintPosition;
     bool cancel;
     GameTime nextUpdateTime;
     GameTime buildStartTime;
