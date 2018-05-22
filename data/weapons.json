@@ -2674,67 +2674,32 @@
     "disabled" : false,
     "effect" : 
     {
-      "name" : "PunisherGrenadesLaunchSet",
-      "setEffects" : 
-      [
-        {
-          "impact" : 
+      "impact" : 
+      {
+        "name" : "PunisherGrenadesSet",
+        "setEffects" : 
+        [
           {
-            "name" : "PunisherGrenadesSet",
-            "setEffects" : 
-            [
-              {
-                "name" : "PunisherGrenadesSlow",
-                "type" : "unknown"
-              },
-              {
-                "dmgAmount" : 5.0,
-                "dmgArmorReduction" : 1.0,
-                "dmgAttributeBonuses" : 
-                {
-                  "Armored" : 5.0
-                },
-                "dmgKind" : "Ranged",
-                "dmgSplash" : [],
-                "name" : "PunisherGrenadesU",
-                "type" : "damage"
-              }
-            ],
-            "type" : "set"
+            "name" : "PunisherGrenadesSlow",
+            "type" : "unknown"
           },
-          "name" : "PunisherGrenadesLMLeft",
-          "type" : "missile"
-        },
-        {
-          "impact" : 
           {
-            "name" : "PunisherGrenadesSet",
-            "setEffects" : 
-            [
-              {
-                "name" : "PunisherGrenadesSlow",
-                "type" : "unknown"
-              },
-              {
-                "dmgAmount" : 5.0,
-                "dmgArmorReduction" : 1.0,
-                "dmgAttributeBonuses" : 
-                {
-                  "Armored" : 5.0
-                },
-                "dmgKind" : "Ranged",
-                "dmgSplash" : [],
-                "name" : "PunisherGrenadesU",
-                "type" : "damage"
-              }
-            ],
-            "type" : "set"
-          },
-          "name" : "PunisherGrenadesLMRight",
-          "type" : "missile"
-        }
-      ],
-      "type" : "set"
+            "dmgAmount" : 10.0,
+            "dmgArmorReduction" : 1.0,
+            "dmgAttributeBonuses" : 
+            {
+              "Armored" : 10.0
+            },
+            "dmgKind" : "Ranged",
+            "dmgSplash" : [],
+            "name" : "PunisherGrenadesU",
+            "type" : "damage"
+          }
+        ],
+        "type" : "set"
+      },
+      "name" : "PunisherGrenadesLM",
+      "type" : "missile"
     },
     "filterExcludes" : [ "stasis" ],
     "filterRequires" : [ "ground" ],
