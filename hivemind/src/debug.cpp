@@ -200,7 +200,7 @@ namespace hivemind {
 
   const double cVectorImageSizeMultiplier = 32.0;
 
-  void DebugExtended::mapDumpPolygons( size_t width, size_t height, PolygonComponentVector& polys, RegionVector& regions, ChokeVector& chokes, const Point2Vector& startLocations, OptimalRegionGraph& graph )
+  void DebugExtended::mapDumpPolygons( size_t width, size_t height, PolygonComponentVector& polys, RegionVector& regions, ChokeVector& chokes, const Point2Vector& startLocations )
   {
     svg::Dimensions dim( (double)width * cVectorImageSizeMultiplier, (double)height * cVectorImageSizeMultiplier );
     svg::Document doc( "debug_map_polygons.svg", svg::Layout( dim, svg::Layout::BottomLeft ) );

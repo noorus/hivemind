@@ -51,7 +51,7 @@ namespace hivemind {
 
   using CreepVector = vector<Creep>;
 
-  enum CreepTile: uint8_t {
+  enum CreepTile : uint8_t {
     CreepTile_No = 0,
     CreepTile_Walkable,
     CreepTile_Buildable
@@ -60,7 +60,8 @@ namespace hivemind {
   struct BuildingReservation {
     Point2DI position_;
     UnitTypeID type_;
-    BuildingReservation( const Point2DI& pos = Point2DI(), UnitTypeID t = 0 ): position_( pos ), type_( t ) {}
+    BuildingReservation( const Point2DI& pos = Point2DI(), UnitTypeID t = 0 )
+      : position_( pos ), type_( t ) {}
   };
 
   using BuildingReservationMap = std::map<uint64_t, BuildingReservation>; // using encodePoint()
@@ -69,6 +70,14 @@ namespace hivemind {
 
   using RegionSet = set<Region*>;
   using RegionVector = vector<Region*>;
+
+  struct RegionNode {
+  public:
+    Vector2 position_;
+    RegionNode( const Vector2& position ): position_( position ) {}
+  };
+
+  using RegionNodeVector = vector<RegionNode>;
 
   class Region {
   public:
@@ -82,20 +91,7 @@ namespace hivemind {
     bool dubious_; //!< If this region has no real area or tiles, and probably lacks known height value
     ChokeSet chokepoints_;
     RegionSet reachableRegions_;
-  };
-
-  struct OptimalRegionNode {
-    Vector2 position_;
-    Real minDistance_;
-    Region* region_;
-  };
-
-  class Map;
-
-  class OptimalRegionGraph {
-  public:
-    vector<OptimalRegionNode> nodes_;
-    void initializeFrom( Analysis::RegionGraph& sourceGraph, Map& map );
+    RegionNodeVector nodes_;
   };
 
   struct MapData {
@@ -105,11 +101,13 @@ namespace hivemind {
 
   class Map {
   public:
-    enum ReservedTile: uint8_t {
+    enum ReservedTile : uint8_t
+    {
       Reserved_None = 0,
       Reserved_NearResource,
       Reserved_Reserved
     };
+
   public:
     // Generated once per map
     size_t width_; //!< Map width
@@ -132,19 +130,19 @@ namespace hivemind {
     vector<MapPoint2> creepTumors_;
     MapData info_;
     ChokeVector chokepoints_;
-    OptimalRegionGraph regionGraph_;
     int maxHeightLevel_; //!< Maximum height (cliff) level, 0 being the lowest on the playable map
   private:
     Bot* bot_;
     uint8_t* contourTraceImageBuffer_;
     mutable std::map<std::pair<size_t, size_t>, DistanceMap> distanceMapCache_;
+
   private:
     GameTime nextCreepUpdate_;
     bool rampHasCreepTumor( int x, int y );
     void updateReservedMap();
     void splitCreepFronts();
     void labelBuildableCreeps();
-    void applyFootprint(const Point2DI& position, UnitTypeID unitType);
+    void applyFootprint( const Point2DI& position, UnitTypeID unitType );
 
   public:
     Map( Bot* bot );

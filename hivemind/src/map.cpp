@@ -28,8 +28,8 @@ HIVE_DECLARE_CONVAR( analysis_dump_maps, "Dump out images of generated map layer
 namespace hivemind {
 
   const size_t c_legalActions = 4;
-  const int c_actionX[c_legalActions] = { 1, -1, 0, 0 };
-  const int c_actionY[c_legalActions] = { 0, 0, 1, -1 };
+  const int c_actionX[c_legalActions] = {1, -1, 0, 0};
+  const int c_actionY[c_legalActions] = {0, 0, 1, -1};
 
   const char cClosestRegionTilesCacheName[] = "regionclosetiles";
   const char cRegionLabelMapCacheName[] = "regionlabels";
@@ -38,19 +38,8 @@ namespace hivemind {
   const char cChokepointsCacheName[] = "chokes";
   const char cRegionGraphName[] = "regiongraph";
 
-  void OptimalRegionGraph::initializeFrom( Analysis::RegionGraph& sourceGraph, Map& map )
-  {
-    for ( size_t i = 0; i < sourceGraph.nodes.size(); ++i )
-    {
-      OptimalRegionNode node;
-      node.position_ = sourceGraph.nodes[i];
-      node.minDistance_ = (Real)sourceGraph.minDistToObstacle_[i];
-      node.region_ = map.region( node.position_ );
-      nodes_.push_back( node );
-    }
-  }
-
-  Map::Map( Bot* bot ): bot_( bot ), width_( 0 ), height_( 0 ), contourTraceImageBuffer_( nullptr )
+  Map::Map( Bot* bot )
+      : bot_( bot ), width_( 0 ), height_( 0 ), contourTraceImageBuffer_( nullptr )
   {
   }
 
@@ -95,16 +84,15 @@ namespace hivemind {
     bool writeCache = g_CVar_analysis_use_cache.as_b();
 
     bool dumpImages = false;
-  #ifdef HIVE_SUPPORT_MAP_DUMPS
+#ifdef HIVE_SUPPORT_MAP_DUMPS
     dumpImages = g_CVar_analysis_dump_maps.as_b();
-  #endif
+#endif
 
     distanceMapCache_.clear();
 
     const GameInfo& info = bot_->observation().GetGameInfo();
 
-    util_verbosePerfSection( bot_, "Map: Extracting walkability- and heightmaps", [&]
-    {
+    util_verbosePerfSection( bot_, "Map: Extracting walkability- and heightmaps", [&] {
       Analysis::Map_BuildBasics( bot_->observation(), width_, height_, flagsMap_, heightMap_ );
 
       for ( auto unit : bot_->observation().GetUnits( Unit::Alliance::Neutral ) )
@@ -130,7 +118,7 @@ namespace hivemind {
     if ( contourTraceImageBuffer_ )
       ::free( contourTraceImageBuffer_ );
 
-    contourTraceImageBuffer_ = ( uint8_t* )::malloc( width_ * height_ );
+    contourTraceImageBuffer_ = (uint8_t*)::malloc( width_ * height_ );
 
     ComponentVector components;
     PolygonComponentVector polygons;
@@ -147,8 +135,7 @@ namespace hivemind {
     bool gotClosestRegionTiles = false;
     bool gotFlagsMap = false;
 
-    util_verbosePerfSection( bot_, "Map: Processing contours", [&]
-    {
+    util_verbosePerfSection( bot_, "Map: Processing contours", [&] {
       Analysis::Map_ProcessContours( flagsMap_, componentLabels, components );
 
       if ( dumpImages )
@@ -159,15 +146,15 @@ namespace hivemind {
 
     // Polygon generation from traced contours ---
 
-    util_verbosePerfSection( bot_, "Map: Generating polygons", [&]
-    {
+    util_verbosePerfSection( bot_, "Map: Generating polygons", [&] {
       Analysis::Map_ComponentPolygons( components, polygons );
 
       if ( g_CVar_analysis_invertwalkable.as_b() )
       {
         bot_->console().printf( "Map: Inverting walkable polygons to obstacles..." );
         Analysis::Map_InvertPolygons( polygons, obstacles_, Rect2( info.playable_min, info.playable_max ), Vector2( (Real)info.width, (Real)info.height ) );
-      } else
+      }
+      else
         obstacles_ = polygons;
 
       return true;
@@ -177,8 +164,7 @@ namespace hivemind {
 
     if ( readCache && Cache::hasMapCache( data, cFlagsMapCacheName ) )
     {
-      gotFlagsMap = util_verbosePerfSection( bot_, "Map: Loading ground flags tilemap (cached)", [&]
-      {
+      gotFlagsMap = util_verbosePerfSection( bot_, "Map: Loading ground flags tilemap (cached)", [&] {
         return ( Cache::mapReadUint64Array2( data, flagsMap_, cFlagsMapCacheName ) );
       } );
     }
@@ -188,12 +174,10 @@ namespace hivemind {
     if ( readCache && Cache::hasMapCache( data, cRegionVectorCacheName ) && Cache::hasMapCache( data, cRegionLabelMapCacheName ) )
     {
       assert( regions_.empty() );
-      gotRegions = util_verbosePerfSection( bot_, "Map: Loading regions (cached)", [&]
-      {
+      gotRegions = util_verbosePerfSection( bot_, "Map: Loading regions (cached)", [&] {
         return ( Cache::mapReadRegionVector( data, regions_, cRegionVectorCacheName )
           && Cache::mapReadIntArray2( data, regionMap_, cRegionLabelMapCacheName )
-          && Cache::mapReadChokeVector( data, chokepoints_, regions_, cChokepointsCacheName )
-          && Cache::mapReadRegionGraph( data, regionGraph_, cRegionGraphName ) );
+          && Cache::mapReadChokeVector( data, chokepoints_, regions_, cChokepointsCacheName ) );
       } );
     }
 
@@ -208,8 +192,7 @@ namespace hivemind {
       Analysis::RegionGraph graph;
       bgi::rtree<BoostSegmentI, bgi::quadratic<16>> rtree;
 
-      util_verbosePerfSection( bot_, "Map: Generating Voronoi diagram", [&]
-      {
+      util_verbosePerfSection( bot_, "Map: Generating Voronoi diagram", [&] {
         Analysis::Map_MakeVoronoi( info, obstacles_, componentLabels, graph, rtree );
         Analysis::Map_PruneVoronoi( graph );
         return true;
@@ -217,8 +200,7 @@ namespace hivemind {
 
       // Graph processing ---
 
-      util_verbosePerfSection( bot_, "Map: Processing graph", [&]
-      {
+      util_verbosePerfSection( bot_, "Map: Processing graph", [&] {
         Analysis::Map_DetectNodes( graph );
         Analysis::Map_SimplifyGraph( graph, simplifiedGraph );
         Analysis::Map_MergeRegionNodes( simplifiedGraph );
@@ -227,16 +209,14 @@ namespace hivemind {
 
       // Chokepoints ---
 
-      util_verbosePerfSection( bot_, "Map: Figuring out chokepoints", [&]
-      {
+      util_verbosePerfSection( bot_, "Map: Figuring out chokepoints", [&] {
         Analysis::Map_GetChokepointSides( simplifiedGraph, rtree, tempChokeSides );
         return true;
       } );
 
       // Region splitting ---
 
-      util_verbosePerfSection( bot_, "Map: Splitting region polygons", [&]
-      {
+      util_verbosePerfSection( bot_, "Map: Splitting region polygons", [&] {
         Analysis::Map_MakeRegions( polygons, tempChokeSides, flagsMap_, width_, height_, regions_, regionMap_, simplifiedGraph );
         return true;
       } );
@@ -249,16 +229,14 @@ namespace hivemind {
 
     if ( readCache && Cache::hasMapCache( data, cClosestRegionTilesCacheName ) )
     {
-      gotClosestRegionTiles = util_verbosePerfSection( bot_, "Map: Loading closest-region tilemap (cached)", [&]
-      {
+      gotClosestRegionTiles = util_verbosePerfSection( bot_, "Map: Loading closest-region tilemap (cached)", [&] {
         return ( Cache::mapReadIntArray2( data, closestRegionMap_, cClosestRegionTilesCacheName ) );
       } );
     }
 
     if ( !gotClosestRegionTiles )
     {
-      util_verbosePerfSection( bot_, "Map: Precalculating closest-region tilemap", [&]
-      {
+      util_verbosePerfSection( bot_, "Map: Precalculating closest-region tilemap", [&] {
         Analysis::Map_CacheClosestRegions( regions_, regionMap_, closestRegionMap_ );
         if ( writeCache )
           Cache::mapWriteIntArray2( data, closestRegionMap_, cClosestRegionTilesCacheName );
@@ -274,8 +252,7 @@ namespace hivemind {
 
     vector<UnitVector> resourceClusters;
 
-    util_verbosePerfSection( bot_, "Map: Finding resource clusters", [&]
-    {
+    util_verbosePerfSection( bot_, "Map: Finding resource clusters", [&] {
       Analysis::Map_FindResourceClusters( bot_->observation(), resourceClusters, 4, 16.0f );
 
       updateReservedMap();
@@ -285,8 +262,7 @@ namespace hivemind {
 
     // Base locations ---
 
-    util_verbosePerfSection( bot_, "Map: Creating base locations", [&]
-    {
+    util_verbosePerfSection( bot_, "Map: Creating base locations", [&] {
       baseLocations_.clear();
 
       size_t index = 0;
@@ -308,8 +284,7 @@ namespace hivemind {
 
     if ( !gotRegions )
     {
-      util_verbosePerfSection( bot_, "Map: Calculating region heights", [&]
-      {
+      util_verbosePerfSection( bot_, "Map: Calculating region heights", [&] {
         Analysis::Map_CalculateRegionHeights( flagsMap_, regions_, regionMap_, heightMap_ );
 
         chokepoints_.clear();
@@ -318,7 +293,19 @@ namespace hivemind {
         return true;
       } );
 
-      regionGraph_.initializeFrom( simplifiedGraph, *this );
+      for ( size_t i = 0; i < simplifiedGraph.nodes.size(); ++i )
+      {
+        if ( simplifiedGraph.nodeType[i] == Analysis::RegionGraph::NodeType_Chokepoint )
+          continue;
+
+        auto& node = simplifiedGraph.nodes[i];
+
+        auto rgn = region( node );
+        if ( rgn )
+        {
+          rgn->nodes_.emplace_back( node );
+        }
+      }
 
       if ( writeCache )
       {
@@ -330,21 +317,13 @@ namespace hivemind {
     }
 
     if ( dumpImages )
-      bot_->debug().mapDumpPolygons( width_, height_, obstacles_, regions_, chokepoints_, info.start_locations, regionGraph_ );
+      bot_->debug().mapDumpPolygons( width_, height_, obstacles_, regions_, chokepoints_, info.start_locations );
 
     bot_->console().printf( "Map: Rebuild done" );
   }
 
   void Map::draw()
   {
-    /*for ( size_t i = 0; i < regionGraph_.nodes_.size(); ++i )
-    {
-      auto& node = regionGraph_.nodes_[i];
-      bot_->debug().drawMapSphere( *this, node.position_, 3.0f, Colors::Green );
-      char shit[128];
-      sprintf_s( shit, 128, "RegionNode %i minDist %f region %i", i, node.minDistance_, node.region_ ? node.region_->label_ : -1 );
-      bot_->debug().drawText( shit, Vector3( node.position_.x, node.position_.y, maxZ_ ), Colors::White );
-    }*/
     // draw map tile flags and region polygons if draw_map is enabled
     if ( g_CVar_draw_map.as_b() )
     {
@@ -377,7 +356,7 @@ namespace hivemind {
             bot_->debug().drawSphere( pos, 0.1f, sc2::Colors::Blue );
           else if ( tile & MapFlag_NearVisionBlocker )
             bot_->debug().drawSphere( pos, 0.1f, sc2::Colors::Gray );
-          else if ( tile & MapFlag_VespeneGeyser)
+          else if ( tile & MapFlag_VespeneGeyser )
             bot_->debug().drawSphere( pos, 0.1f, sc2::Colors::White );
         }
       }
@@ -391,6 +370,10 @@ namespace hivemind {
         sprintf_s( asd, 64, "region %d\r\nheight %.3f\r\nlevel %d", regptr->label_, regptr->height_, regptr->heightLevel_ );
         auto mid = regptr->polygon_.centroid();
         bot_->debug().drawText( asd, Vector3( mid.x, mid.y, regptr->height_ + 0.5f ), Colors::White, 12 );
+        for ( auto& node : regptr->nodes_ )
+        {
+          bot_->debug().drawCircle( node.position_.to3( regptr->height_ + 0.65f ), 1.5f, Colors::Purple, 32 );
+        }
         i++;
       }
     }
@@ -410,15 +393,6 @@ namespace hivemind {
     {
       auto pt = util_tileToMarker( node, heightMap_, 1.0f, maxZ_ );
       bot_->debug().drawSphere( pt, 0.25f, sc2::Colors::Teal );
-    }
-    for ( size_t id = 0; id < regionGraph_.adjacencyList_.size(); id++ )
-    {
-      for ( auto adj : regionGraph_.adjacencyList_[id] )
-      {
-        auto v0 = regionGraph_.nodes_[id].to3( maxZ_ );
-        auto v1 = regionGraph_.nodes_[adj].to3( maxZ_ );
-        bot_->debug().drawLine( v0, v1, sc2::Colors::Teal );
-      }
     }*/
     // draw baselocation info if draw_baselocations is enabled
     if ( g_CVar_draw_baselocations.as_b() )
@@ -483,21 +457,18 @@ namespace hivemind {
     }
   }
 
-  void Map::applyFootprint(const Point2DI& position, UnitTypeID unitType)
+  void Map::applyFootprint( const Point2DI& position, UnitTypeID unitType )
   {
     auto& dbUnit = Database::unit( unitType );
 
     Point2DI topLeft(
       position.x + dbUnit.footprintOffset.x,
-      position.y + dbUnit.footprintOffset.y
-    );
+      position.y + dbUnit.footprintOffset.y );
 
     size_t unitWidth = dbUnit.footprint.width();
     size_t unitHeight = dbUnit.footprint.height();
 
-    if ( topLeft.x < 0 || topLeft.y < 0
-      || ( topLeft.x + unitWidth ) >= width_
-      || ( topLeft.y + unitHeight ) >= height_ )
+    if ( topLeft.x < 0 || topLeft.y < 0 || ( topLeft.x + unitWidth ) >= width_ || ( topLeft.y + unitHeight ) >= height_ )
       return;
 
     for ( size_t y = 0; y < dbUnit.footprint.height(); ++y )
@@ -529,15 +500,14 @@ namespace hivemind {
     creepTumors_.clear();
 
     // Get other blocking units except geysers (i.e. structures, minerals, rocks, ).
-    auto blockingUnits = bot_->observation().GetUnits( []( const Unit& unit ) -> bool
-    {
+    auto blockingUnits = bot_->observation().GetUnits( []( const Unit& unit ) -> bool {
       if ( !unit.is_alive )
         return false;
 
       if ( unit.unit_type == UNIT_TYPEID::ZERG_CREEPTUMOR || unit.unit_type == UNIT_TYPEID::ZERG_CREEPTUMORBURROWED )
         return true;
 
-      if(utils::isGeyser(unit))
+      if ( utils::isGeyser( unit ) )
         return false;
 
       auto& dbUnit = Database::unit( unit.unit_type );
@@ -552,8 +522,7 @@ namespace hivemind {
 
       Point2DI pos(
         math::floor( unit->pos.x ),
-        math::floor( unit->pos.y )
-      );
+        math::floor( unit->pos.y ) );
 
       applyFootprint( pos, unit->unit_type );
     }
@@ -625,12 +594,11 @@ namespace hivemind {
   bool Map::canZergBuild( UnitTypeID structure, size_t x, size_t y, int padding, bool nearResources, bool noMainOverlap, bool notNearMain, bool notNearRamp )
   {
     auto& dbUnit = Database::unit( structure );
-    bool isRefinery = utils::isRefinery(structure);
+    bool isRefinery = utils::isRefinery( structure );
 
     Point2DI topleft(
       ( (int)x + dbUnit.footprintOffset.x ) - padding,
-      ( (int)y + dbUnit.footprintOffset.y ) - padding
-    );
+      ( (int)y + dbUnit.footprintOffset.y ) - padding );
 
     int fullwidth = ( (int)dbUnit.footprint.width() + ( padding * 2 ) );
     int fullheight = ( (int)dbUnit.footprint.height() + ( padding * 2 ) );
@@ -653,16 +621,16 @@ namespace hivemind {
         }
 
         auto fp = dbUnit.footprint[j - padding][i - padding];
-        if(fp == UnitData::Footprint_Reserved || fp == UnitData::Footprint_BuildingPolyReserved)
+        if ( fp == UnitData::Footprint_Reserved || fp == UnitData::Footprint_BuildingPolyReserved )
         {
-          if(isRefinery)
+          if ( isRefinery )
           {
-            if(reservedMap_[mx][my] == Reserved_Reserved)
+            if ( reservedMap_[mx][my] == Reserved_Reserved )
               return false;
           }
           else
           {
-            if(zergBuildable_[mx][my] != CreepTile_Buildable)
+            if ( zergBuildable_[mx][my] != CreepTile_Buildable )
               return false;
           }
           if ( noMainOverlap && ( flagsMap_[mx][my] & MapFlag_StartLocation ) )
@@ -684,8 +652,7 @@ namespace hivemind {
 
     Point2DI topleft(
       position.x + dbUnit.footprintOffset.x,
-      position.y + dbUnit.footprintOffset.y
-    );
+      position.y + dbUnit.footprintOffset.y );
 
     int fullwidth = (int)dbUnit.footprint.width();
     int fullheight = (int)dbUnit.footprint.height();
@@ -749,8 +716,7 @@ namespace hivemind {
     // - it's not dynamically blocked, i.e. have a structure in the way
     // - it's not inside any base resource box
     // - ...or is part of a ramp which has no creep tumor
-    auto fnCheckTile = [&]( int x, int y ) -> bool
-    {
+    auto fnCheckTile = [&]( int x, int y ) -> bool {
       if ( x < 5 || y < 5 || x >= ( width_ - 5 ) || y >= ( height_ - 5 ) )
         return false;
       if ( reservedMap_[x][y] == Reserved_Reserved )
@@ -808,8 +774,7 @@ namespace hivemind {
         labeledCreeps_[x][y] = (int)lbl_out[idx];
       }
 
-    auto fnConvertContour = []( blob_algo::contour_t& in, Contour& out )
-    {
+    auto fnConvertContour = []( blob_algo::contour_t& in, Contour& out ) {
       for ( int i = 0; i < in.count; i++ )
         out.emplace_back( in.points[i * sizeof( int16_t )], in.points[( i * sizeof( int16_t ) ) + 1] );
     };
@@ -830,7 +795,7 @@ namespace hivemind {
     blob_algo::destroy_blobs( blob_out, blob_count );
   }
 
-  BaseLocation* Map::closestLocation( const Vector2 & position )
+  BaseLocation* Map::closestLocation( const Vector2& position )
   {
     Real bestDist = std::numeric_limits<Real>::max();
     BaseLocation* best = nullptr;
@@ -848,7 +813,7 @@ namespace hivemind {
     return best;
   }
 
-  Vector2 Map::closestByGround( const Vector2 & from, const list<Vector2> & to )
+  Vector2 Map::closestByGround( const Vector2& from, const list<Vector2>& to )
   {
     if ( to.empty() )
       return from;
@@ -947,7 +912,7 @@ namespace hivemind {
 
     auto flag = flagsMap_[x][y];
 
-    return (flag & MapFlag_Walkable) && !(flag & MapFlag_VespeneGeyser);
+    return ( flag & MapFlag_Walkable ) && !( flag & MapFlag_VespeneGeyser );
   }
 
   bool Map::isBuildable( size_t x, size_t y )
@@ -958,7 +923,7 @@ namespace hivemind {
     return ( flagsMap_[x][y] & MapFlag_Buildable );
   }
 
-  const DistanceMap & Map::getDistanceMap( const MapPoint2& tile ) const
+  const DistanceMap& Map::getDistanceMap( const MapPoint2& tile ) const
   {
     std::pair<size_t, size_t> index( (size_t)tile.x, (size_t)tile.y );
 
@@ -970,5 +935,4 @@ namespace hivemind {
 
     return distanceMapCache_[index];
   }
-
 }

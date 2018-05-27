@@ -13,7 +13,7 @@ namespace hivemind {
   HIVE_DECLARE_CONVAR( cache_path, "Path to a directory where the bot can cache stuff.", R"(..\cache)" );
 
   //! Cache file version number, increment this to invalidate old caches if the format changes
-  const uint32_t cMapCacheVersion = 8;
+  const uint32_t cMapCacheVersion = 9;
 
   string makeCacheFilePath( const Sha256& hash, const string& name )
   {
@@ -93,7 +93,7 @@ namespace hivemind {
       return false;
     }
 
-    auto size = (uint32_t)( data.width() * data.height() * sizeof( int ) );
+    auto size = ( uint32_t )( data.width() * data.height() * sizeof( int ) );
     if ( reader->size() != ( size + sizeof( version ) ) )
     {
       bot_->console().printf( "Cache: Error; cache file size mismatch: %d, expected %d bytes", reader->size(), size );
@@ -113,11 +113,11 @@ namespace hivemind {
 
     writer->writeUint32( cMapCacheVersion );
 
-    auto size = (uint32_t)( data.width() * data.height() * sizeof( int ) );
+    auto size = ( uint32_t )( data.width() * data.height() * sizeof( int ) );
     writer->writeBlob( (const void*)data.data(), size );
   }
 
-  bool Cache::mapReadUint64Array2( const MapData & map, Array2<uint64_t>& data, const string & name )
+  bool Cache::mapReadUint64Array2( const MapData& map, Array2<uint64_t>& data, const string& name )
   {
     auto reader = openCacheFile( map.hash, name );
 
@@ -131,7 +131,7 @@ namespace hivemind {
       return false;
     }
 
-    auto size = (uint32_t)( data.width() * data.height() * sizeof( uint64_t ) );
+    auto size = ( uint32_t )( data.width() * data.height() * sizeof( uint64_t ) );
     if ( reader->size() != ( size + sizeof( version ) ) )
     {
       bot_->console().printf( "Cache: Error; cache file size mismatch: %d, expected %d bytes", reader->size(), size );
@@ -142,7 +142,7 @@ namespace hivemind {
     return true;
   }
 
-  void Cache::mapWriteUint64Array2( const MapData & map, Array2<uint64_t>& data, const string & name )
+  void Cache::mapWriteUint64Array2( const MapData& map, Array2<uint64_t>& data, const string& name )
   {
     auto writer = createCacheFile( map.hash, name );
 
@@ -151,7 +151,7 @@ namespace hivemind {
 
     writer->writeUint32( cMapCacheVersion );
 
-    auto size = (uint32_t)( data.width() * data.height() * sizeof( uint64_t ) );
+    auto size = ( uint32_t )( data.width() * data.height() * sizeof( uint64_t ) );
     writer->writeBlob( (const void*)data.data(), size );
   }
 
@@ -207,6 +207,12 @@ namespace hivemind {
         auto reachReg = regions[index];
         regions[i]->reachableRegions_.insert( reachReg );
       }
+      size_t nodes = reader->readUint64();
+      for ( size_t j = 0; j < nodes; j++ )
+      {
+        auto pos = unserializeVector2( reader );
+        regions[i]->nodes_.emplace_back( pos );
+      }
     }
 
     return true;
@@ -254,6 +260,11 @@ namespace hivemind {
       for ( auto reach : region->reachableRegions_ )
       {
         writer->writeUint64( reach->label_ );
+      }
+      writer->writeUint64( region->nodes_.size() );
+      for ( auto& node : region->nodes_ )
+      {
+        serializeVector2( node.position_, writer );
       }
     }
   }
@@ -313,16 +324,4 @@ namespace hivemind {
       serializeVector2( choke.side2, writer );
     }
   }
-
-  bool Cache::mapReadRegionGraph( const MapData& map, OptimalRegionGraph& graph, const string& name )
-  {
-    // TODO
-    return true;
-  }
-
-  void Cache::mapWriteRegionGraph( const MapData& map, OptimalRegionGraph& graph, const string& name )
-  {
-    // TODO
-  }
-
 }
