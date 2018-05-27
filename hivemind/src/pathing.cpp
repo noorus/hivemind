@@ -51,6 +51,12 @@ namespace hivemind {
     return path;
   }
 
+  void Pathing::destroyPath( PathPtr& path )
+  {
+    // TODO CHECK does this work?
+    paths_.remove( path );
+  }
+
   void Pathing::updatePathWalkability(MapPoint2 changedNode, bool hasObstacle)
   {
     //bot_->console().printf("Marking pathing obstacle=%d at (%d, %d)", hasObstacle, changedNode.x, changedNode.y);

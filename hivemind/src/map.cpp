@@ -175,9 +175,7 @@ namespace hivemind {
     {
       assert( regions_.empty() );
       gotRegions = util_verbosePerfSection( bot_, "Map: Loading regions (cached)", [&] {
-        return ( Cache::mapReadRegionVector( data, regions_, cRegionVectorCacheName )
-          && Cache::mapReadIntArray2( data, regionMap_, cRegionLabelMapCacheName )
-          && Cache::mapReadChokeVector( data, chokepoints_, regions_, cChokepointsCacheName ) );
+        return ( Cache::mapReadRegionVector( data, regions_, cRegionVectorCacheName ) && Cache::mapReadIntArray2( data, regionMap_, cRegionLabelMapCacheName ) && Cache::mapReadChokeVector( data, chokepoints_, regions_, cChokepointsCacheName ) );
       } );
     }
 
@@ -307,6 +305,25 @@ namespace hivemind {
         }
       }
 
+      for ( auto regptr : regions_ )
+      {
+        for ( auto choke : regptr->chokepoints_ )
+        {
+          for ( auto other : regptr->chokepoints_ )
+          {
+            if ( choke == other )
+              continue;
+            auto key = ( choke < other ? pair<ChokepointID, ChokepointID>( choke, other ) : pair<ChokepointID, ChokepointID>( other, choke ) );
+            if ( regptr->chokePaths_.find( key ) == regptr->chokePaths_.end() )
+            {
+              auto path = bot_->pathing().createPath( chokepoints_[choke].middle(), chokepoints_[other].middle() );
+              regptr->chokePaths_.insert_or_assign(key, std::move( CachedPath( *( path.get() ) ) ) );
+              bot_->pathing().destroyPath( path );
+            }
+          }
+        }
+      }
+
       if ( writeCache )
       {
         bot_->console().print( "Map: Final cache writes" );
@@ -373,6 +390,21 @@ namespace hivemind {
         for ( auto& node : regptr->nodes_ )
         {
           bot_->debug().drawCircle( node.position_.to3( regptr->height_ + 0.65f ), 1.5f, Colors::Purple, 32 );
+        }
+        Real pathZ = regptr->height_ + 0.75f;
+        for ( auto& path : regptr->chokePaths_ )
+        {
+          if ( path.second.vertices_.size() < 2 )
+            continue;
+          size_t previous = 0;
+          for ( size_t j = 1; j < path.second.vertices_.size(); ++j )
+          {
+            auto p0 = path.second.vertices_[previous];
+            auto p1 = path.second.vertices_[j];
+            bot_->debug().drawLine( p0.to3( pathZ ), p1.to3( pathZ ), color );
+            previous = j;
+          }
+          pathZ += 0.15f;
         }
         i++;
       }

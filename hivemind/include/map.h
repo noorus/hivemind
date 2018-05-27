@@ -7,6 +7,7 @@
 #include "regiongraph.h"
 #include "baselocation.h"
 #include "chokepoint.h"
+#include "pathing.h"
 
 namespace hivemind {
 
@@ -92,6 +93,7 @@ namespace hivemind {
     ChokeSet chokepoints_;
     RegionSet reachableRegions_;
     RegionNodeVector nodes_;
+    map<pair<ChokepointID, ChokepointID>, CachedPath> chokePaths_;
   };
 
   struct MapData {

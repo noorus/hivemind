@@ -15,10 +15,12 @@ namespace hivemind {
     typedef std::unique_ptr<DStarLite> DStarLitePtr;
   }
 
-  class Path {
+  class Path
+  {
   private:
     Pathing* host_;
     vector<Vector2> verts_;
+
   public:
     explicit Path( Pathing* pathing );
     void assignVertices( const vector<Vector2>& path );
@@ -32,18 +34,38 @@ namespace hivemind {
 
   using PathList = list<PathPtr>;
 
-  class Pathing: public Subsystem, Listener {
+  struct CachedPath {
+  public:
+    vector<Vector2> vertices_;
+    Real length_;
+    CachedPath( const Path& source ): length_( 0.0f )
+    {
+      vertices_ = source.verts();
+      if ( !vertices_.empty() )
+      {
+        auto previous = vertices_[0];
+        for ( auto& vert : vertices_ )
+        {
+          length_ += previous.distance( vert );
+        }
+      }
+    }
+  };
+
+  class Pathing : public Subsystem, Listener
+  {
   private:
     PathList paths_;
     std::unique_ptr<pathfinding::GridGraph> graph_;
 
     void updatePaths();
-    void updatePathWalkability(MapPoint2 changedNode, bool hasObstacle);
+    void updatePathWalkability( MapPoint2 changedNode, bool hasObstacle );
 
   public:
     explicit Pathing( Bot* bot );
 
     PathPtr createPath( const Vector2& from, const Vector2& to );
+    void destroyPath( PathPtr& path ); // Removes path from internal update list, but the object is still usable.
 
     void clear();
     void gameBegin() final;
@@ -52,5 +74,4 @@ namespace hivemind {
     void onMessage( const Message& msg ) final;
     void gameEnd() final;
   };
-
 }
