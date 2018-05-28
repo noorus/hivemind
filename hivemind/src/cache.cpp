@@ -13,7 +13,7 @@ namespace hivemind {
   HIVE_DECLARE_CONVAR( cache_path, "Path to a directory where the bot can cache stuff.", R"(..\cache)" );
 
   //! Cache file version number, increment this to invalidate old caches if the format changes
-  const uint32_t cMapCacheVersion = 9;
+  const uint32_t cMapCacheVersion = 10;
 
   string makeCacheFilePath( const Sha256& hash, const string& name )
   {
@@ -201,17 +201,33 @@ namespace hivemind {
     for ( size_t i = 0; i < size; ++i )
     {
       size_t reachable = reader->readUint64();
-      for ( size_t j = 0; j < reachable; j++ )
+      for ( size_t j = 0; j < reachable; ++j )
       {
         size_t index = reader->readUint64();
         auto reachReg = regions[index];
         regions[i]->reachableRegions_.insert( reachReg );
       }
       size_t nodes = reader->readUint64();
-      for ( size_t j = 0; j < nodes; j++ )
+      for ( size_t j = 0; j < nodes; ++j )
       {
         auto pos = unserializeVector2( reader );
         regions[i]->nodes_.emplace_back( pos );
+      }
+      size_t paths = reader->readUint64();
+      for ( size_t j = 0; j < paths; ++j )
+      {
+        auto k0 = reader->readInt();
+        auto k1 = reader->readInt();
+        pair<ChokepointID, ChokepointID> key = std::make_pair( k0, k1 );
+        auto len = reader->readReal();
+        size_t verts = reader->readUint64();
+        CachedPath path;
+        path.length_ = len;
+        for ( size_t k = 0; k < verts; ++k )
+        {
+          path.vertices_.push_back( unserializeVector2( reader ) );
+        }
+        regions[i]->chokePaths_.insert_or_assign( key, std::move( path ) );
       }
     }
 
@@ -265,6 +281,18 @@ namespace hivemind {
       for ( auto& node : region->nodes_ )
       {
         serializeVector2( node.position_, writer );
+      }
+      writer->writeUint64( region->chokePaths_.size() );
+      for ( auto& chokePath : region->chokePaths_ )
+      {
+        writer->writeInt( chokePath.first.first );
+        writer->writeInt( chokePath.first.second );
+        writer->writeReal( chokePath.second.length_ );
+        writer->writeUint64( chokePath.second.vertices_.size() );
+        for ( auto& vert : chokePath.second.vertices_ )
+        {
+          serializeVector2( vert, writer );
+        }
       }
     }
   }

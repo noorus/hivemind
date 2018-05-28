@@ -38,6 +38,10 @@ namespace hivemind {
   public:
     vector<Vector2> vertices_;
     Real length_;
+    CachedPath( )
+      : length_( 0.0f )
+    {
+    }
     CachedPath( const Path& source ): length_( 0.0f )
     {
       vertices_ = source.verts();
