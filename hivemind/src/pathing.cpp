@@ -51,6 +51,24 @@ namespace hivemind {
     return path;
   }
 
+  PathPtr Pathing::quickPathPlainRegion( const Vector2& from, const Vector2& to, int region )
+  {
+    PathPtr path = std::make_shared<Path>( this );
+
+    auto dstarResult = pathfinding::DStarLite::search( &bot_->console(), std::make_unique<pathfinding::GridMapPlainRegionOnlyAdaptor>( &bot_->map(), region ), from, to );
+    auto mapPath = dstarResult->getMapPath();
+
+    auto clipperPath = util_contourToClipperPath( mapPath );
+    ClipperLib::CleanPolygon( clipperPath );
+    auto poly = util_clipperPathToPolygon( clipperPath );
+    vector<Vector2> verts;
+    for ( auto& pt : mapPath )
+      verts.push_back( pt.midVec2() );
+    path->assignVertices( verts );
+
+    return path;
+  }
+
   void Pathing::destroyPath( PathPtr& path )
   {
     // TODO CHECK does this work?

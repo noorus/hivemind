@@ -316,9 +316,8 @@ namespace hivemind {
             auto key = ( choke < other ? pair<ChokepointID, ChokepointID>( choke, other ) : pair<ChokepointID, ChokepointID>( other, choke ) );
             if ( regptr->chokePaths_.find( key ) == regptr->chokePaths_.end() )
             {
-              auto path = bot_->pathing().createPath( chokepoints_[choke].middle(), chokepoints_[other].middle() );
+              auto path = bot_->pathing().quickPathPlainRegion( chokepoints_[choke].middle(), chokepoints_[other].middle(), regptr->label_ );
               regptr->chokePaths_.insert_or_assign(key, std::move( CachedPath( *( path.get() ) ) ) );
-              bot_->pathing().destroyPath( path );
             }
           }
         }

@@ -65,6 +65,8 @@ namespace hivemind {
     explicit Pathing( Bot* bot );
 
     PathPtr createPath( const Vector2& from, const Vector2& to );
+    //! Calculate a one-shot path that is region bound and does not see obstacles
+    PathPtr quickPathPlainRegion( const Vector2& from, const Vector2& to, int region );
     void destroyPath( PathPtr& path ); // Removes path from internal update list, but the object is still usable.
 
     void clear();

@@ -26,7 +26,8 @@ namespace hivemind {
     typedef Real PathCost;
 #endif
 
-    struct GridGraphNode : public InplaceHeapNode {
+    struct GridGraphNode : public InplaceHeapNode
+    {
     public:
       MapPoint2 location;
 
@@ -36,33 +37,33 @@ namespace hivemind {
       bool hasObstacle;
 
     public:
-      GridGraphNode():
-        location( 0, 0 ),
-        valid( false ),
-        hasObstacle( false )
+      GridGraphNode()
+          : location( 0, 0 ),
+            valid( false ),
+            hasObstacle( false )
       {
       }
-      GridGraphNode( int x, int y ):
-        location( x, y ),
-        valid( false ),
-        hasObstacle( false )
+      GridGraphNode( int x, int y )
+          : location( x, y ),
+            valid( false ),
+            hasObstacle( false )
       {
       }
-      inline bool operator == ( const GridGraphNode& rhs ) const
+      inline bool operator==( const GridGraphNode& rhs ) const
       {
         return location == rhs.location;
       }
-      inline bool operator != ( const GridGraphNode& rhs ) const
+      inline bool operator!=( const GridGraphNode& rhs ) const
       {
-        return !(*this == rhs);
+        return !( *this == rhs );
       }
-      inline bool operator == ( const MapPoint2& rhs ) const
+      inline bool operator==( const MapPoint2& rhs ) const
       {
         return location == rhs;
       }
-      inline bool operator != ( const MapPoint2& rhs ) const
+      inline bool operator!=( const MapPoint2& rhs ) const
       {
-        return !(*this == rhs);
+        return !( *this == rhs );
       }
     };
 
@@ -72,17 +73,17 @@ namespace hivemind {
       virtual ~GridMap() = default;
       virtual int width() const = 0;
       virtual int height() const = 0;
-      virtual bool isWalkable(int x, int y) const = 0;
-      virtual bool isBlocked(int x, int y) const = 0;
+      virtual bool isWalkable( int x, int y ) const = 0;
+      virtual bool isBlocked( int x, int y ) const = 0;
     };
 
-    class GridMapAdaptor: public pathfinding::GridMap
+    class GridMapAdaptor : public pathfinding::GridMap
     {
     public:
       Map* map_;
 
-      explicit GridMapAdaptor(Map* map):
-        map_(map)
+      explicit GridMapAdaptor( Map* map )
+          : map_( map )
       {
       }
 
@@ -94,17 +95,51 @@ namespace hivemind {
       {
         return (int)map_->height();
       }
-      virtual bool isWalkable(int x, int y) const
+      virtual bool isWalkable( int x, int y ) const
       {
-         return map_->isWalkable(x, y);
+        return map_->isWalkable( x, y );
       }
-      virtual bool isBlocked(int x, int y) const
+      virtual bool isBlocked( int x, int y ) const
       {
-         return map_->isBlocked(x, y);
+        return map_->isBlocked( x, y );
       }
     };
 
-    class GridGraph {
+    class GridMapPlainRegionOnlyAdaptor : public pathfinding::GridMap
+    {
+    public:
+      Map* map_;
+      int region_;
+
+      explicit GridMapPlainRegionOnlyAdaptor( Map* map, int region )
+          : map_( map ), region_( region )
+      {
+      }
+
+      int width() const override
+      {
+        return (int)map_->width();
+      }
+      int height() const override
+      {
+        return (int)map_->height();
+      }
+      bool isWalkable( int x, int y ) const override
+      {
+        return map_->isWalkable( x, y );
+        /*if ( !map_->isWalkable( x, y ) )
+          return false;
+        auto rid = map_->regionId( x, y );
+        return ( rid == region_ || rid == -1 );*/
+      }
+      bool isBlocked( int x, int y ) const override
+      {
+        return false;
+      }
+    };
+
+    class GridGraph
+    {
     public:
       Array2<GridGraphNode> grid;
       std::unique_ptr<GridMap> map_;
@@ -115,7 +150,6 @@ namespace hivemind {
       void initialize();
 
     public:
-
       explicit GridGraph( Console* console, std::unique_ptr<GridMap> map );
 
       PathCost cost( const GridGraphNode& from, const GridGraphNode& to ) const;
@@ -141,25 +175,26 @@ namespace hivemind {
       }
     };
 
-    struct DStarLiteKey {
+    struct DStarLiteKey
+    {
       PathCost first; // min(g(s), rhs(s)) + h(s_start, s) + k_m
       PathCost second; // min(g(s), rhs(s))
 
-      DStarLiteKey():
-        first( 0 ),
-        second( 0 )
+      DStarLiteKey()
+          : first( 0 ),
+            second( 0 )
       {
       }
-      DStarLiteKey( PathCost first_, PathCost second_ ):
-        first( first_ ),
-        second( second_ )
+      DStarLiteKey( PathCost first_, PathCost second_ )
+          : first( first_ ),
+            second( second_ )
       {
       }
-      bool operator < ( const DStarLiteKey& rhs ) const
+      bool operator<( const DStarLiteKey& rhs ) const
       {
-        return std::tie(first, second) < std::tie(rhs.first, rhs.second);
+        return std::tie( first, second ) < std::tie( rhs.first, rhs.second );
       }
-      bool operator > ( const DStarLiteKey& rhs ) const
+      bool operator>( const DStarLiteKey& rhs ) const
       {
         return rhs < *this;
       }
@@ -167,13 +202,14 @@ namespace hivemind {
 
     typedef MapPoint2 NodeIndex;
 
-
     class DStarLite;
     typedef std::unique_ptr<DStarLite> DStarLitePtr;
 
-    class DStarLite {
+    class DStarLite
+    {
     public:
       std::unique_ptr<pathfinding::GridGraph> graph_;
+
     private:
       NodeIndex start_;
       NodeIndex goal_;
@@ -186,21 +222,19 @@ namespace hivemind {
 
       void initialize( const MapPoint2& start, const MapPoint2& goal );
 
-      explicit DStarLite(Console* console, std::unique_ptr<GridMap> map, const MapPoint2& start, const MapPoint2& goal);
+      explicit DStarLite( Console* console, std::unique_ptr<GridMap> map, const MapPoint2& start, const MapPoint2& goal );
 
     public:
+      static DStarLitePtr search( Console* console, std::unique_ptr<GridMap> map, const MapPoint2& start, const MapPoint2& goal );
 
-      static DStarLitePtr search(Console* console, std::unique_ptr<GridMap> map, const MapPoint2& start, const MapPoint2& goal);
-
-      void updateWalkability(MapPoint2 changedNode, bool hasObstacle);
+      void updateWalkability( MapPoint2 changedNode, bool hasObstacle );
       void computeShortestPath();
 
-      pair<PathCost, NodeIndex> getNext(NodeIndex current) const;
-      PathCost getNextValue(NodeIndex current) const;
-      NodeIndex getNextNode(NodeIndex current) const;
+      pair<PathCost, NodeIndex> getNext( NodeIndex current ) const;
+      PathCost getNextValue( NodeIndex current ) const;
+      NodeIndex getNextNode( NodeIndex current ) const;
 
       MapPath getMapPath() const;
     };
   }
-
 }
