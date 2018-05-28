@@ -286,6 +286,7 @@ namespace hivemind {
           {
             name = data.name;
             radius = data.radius;
+            break;
           }
         }
         auto x = math::floor( pos.x );

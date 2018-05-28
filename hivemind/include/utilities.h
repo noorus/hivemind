@@ -5,7 +5,7 @@
 #include "database.h"
 
 #ifdef HIVE_PLATFORM_WINDOWS
-# include "platform_windows.h"
+#include "platform_windows.h"
 #endif
 
 namespace hivemind {
@@ -14,17 +14,19 @@ namespace hivemind {
 
   //! \class ScopedRWLock
   //! Automation for scoped acquisition and release of an RWLock.
-  class ScopedRWLock: boost::noncopyable {
+  class ScopedRWLock : boost::noncopyable
+  {
   protected:
     platform::RWLock* lock_;
     bool exclusive_;
     bool locked_;
+
   public:
     //! Constructor.
     //! \param  lock      The lock to acquire.
     //! \param  exclusive (Optional) true to acquire in exclusive mode, false for shared.
-    ScopedRWLock( platform::RWLock* lock, bool exclusive = true ):
-    lock_( lock ), exclusive_( exclusive ), locked_( true )
+    ScopedRWLock( platform::RWLock* lock, bool exclusive = true )
+        : lock_( lock ), exclusive_( exclusive ), locked_( true )
     {
       exclusive_ ? lock_->lock() : lock_->lockShared();
     }
@@ -50,7 +52,7 @@ namespace hivemind {
     {
       const float speed_multiplier = 1.4f; // faster
       const GameTime ticks_per_second = 16; // 32 updates per second / 2 updates per tick
-      return (GameTime)( ( ( minutes * 60 ) + seconds ) * ticks_per_second * speed_multiplier );
+      return ( GameTime )( ( ( minutes * 60 ) + seconds ) * ticks_per_second * speed_multiplier );
     }
 
     inline const RealTime ticksToTime( const GameTime ticks )
@@ -111,8 +113,10 @@ namespace hivemind {
     inline const bool isNeutral( const Unit& unit ) { return ( unit.alliance == Unit::Alliance::Neutral ); }
     inline const bool isNeutral( const UnitRef unit ) { return ( unit->alliance == Unit::Alliance::Neutral ); }
 
-    struct isFlying {
-      inline bool operator()( const Unit& unit ) {
+    struct isFlying
+    {
+      inline bool operator()( const Unit& unit )
+      {
         return unit.is_flying;
       }
     };
@@ -139,8 +143,10 @@ namespace hivemind {
     inline const bool isMainStructure( const Unit& unit ) { return isMainStructure( unit.unit_type ); }
     inline const bool isMainStructure( const UnitRef unit ) { return isMainStructure( unit->unit_type ); }
 
-    struct isMainStructure {
-      inline bool operator()( const Unit& unit ) {
+    struct isMainStructure
+    {
+      inline bool operator()( const Unit& unit )
+      {
         return hivemind::utils::isMainStructure( unit.unit_type );
       }
     };
@@ -216,10 +222,7 @@ namespace hivemind {
       if ( unit->alliance != sc2::Unit::Neutral )
         return false;
       const auto& dbUnit = Database::unit( unit->unit_type );
-      return ( dbUnit.structure
-        && !dbUnit.invulnerable
-        && !dbUnit.footprint.empty()
-        && !dbUnit.collapsible );
+      return ( dbUnit.structure && !dbUnit.invulnerable && !dbUnit.footprint.empty() && !dbUnit.collapsible );
     }
 
     inline void hsl2rgb( uint16_t hue, uint8_t sat, uint8_t lum, uint8_t rgb[3] )
@@ -229,19 +232,26 @@ namespace hivemind {
       uint8_t inverse_sat = ( sat ^ 255 );
       hue = hue % 768;
       hue_mod = hue % 256;
-      if ( hue < 256 ) {
+      if ( hue < 256 )
+      {
         r_temp = hue_mod ^ 255;
         g_temp = hue_mod;
         b_temp = 0;
-      } else if ( hue < 512 ) {
+      }
+      else if ( hue < 512 )
+      {
         r_temp = 0;
         g_temp = hue_mod ^ 255;
         b_temp = hue_mod;
-      } else if ( hue < 768 ) {
+      }
+      else if ( hue < 768 )
+      {
         r_temp = hue_mod;
         g_temp = 0;
         b_temp = hue_mod ^ 255;
-      } else {
+      }
+      else
+      {
         r_temp = 0;
         g_temp = 0;
         b_temp = 0;
@@ -258,7 +268,7 @@ namespace hivemind {
     }
 
     template <class Container, typename Needle, typename DistanceFunction>
-    typename Container::value_type findClosestPtr(const Container& haystack, Needle needle, DistanceFunction distanceFunction)
+    typename Container::value_type findClosestPtr( const Container& haystack, Needle needle, DistanceFunction distanceFunction )
     {
       typename Container::value_type closest{};
       Real bestDistance = std::numeric_limits<Real>::max();
@@ -277,13 +287,13 @@ namespace hivemind {
     //! Return the unit in set closest to given world position.
     inline const UnitRef findClosestUnit( const std::set<UnitRef>& haystack, const Vector2& pos )
     {
-      return findClosestPtr( haystack, pos, []( const Unit* unit, const Vector2& b ) { return b.distance(unit->pos); } );
+      return findClosestPtr( haystack, pos, []( const Unit* unit, const Vector2& b ) { return b.distance( unit->pos ); } );
     }
 
     //! Return the unit in vector closest to given world position.
     inline const UnitRef findClosestUnit( const std::vector<UnitRef>& haystack, const Vector2& pos )
     {
-      return findClosestPtr( haystack, pos, []( const Unit* unit, const Vector2& b ) { return b.distance(unit->pos); } );
+      return findClosestPtr( haystack, pos, []( const Unit* unit, const Vector2& b ) { return b.distance( unit->pos ); } );
     }
 
     inline Real distanceToLineSegment( const Vector2& l0, const Vector2& l1, const Vector2& pt )
@@ -298,6 +308,32 @@ namespace hivemind {
       }
       auto ret = ( pt - ( l0 + t * diff ) );
       return ret.length();
+    }
+
+    inline Polygon offsetPolygon( const Polygon& poly, Real offset, bool simplify = false )
+    {
+      auto clipperPoly = util_polyToClipperPath( poly );
+      ClipperLib::CleanPolygon( clipperPoly, 1415.0 );
+      if ( simplify )
+      {
+        ClipperLib::Paths out;
+        ClipperLib::SimplifyPolygon( clipperPoly, out );
+        if ( !out.empty() )
+          clipperPoly.swap( out[0] );
+      }
+      ClipperLib::ClipperOffset co;
+      co.AddPath( clipperPoly, ClipperLib::jtSquare, ClipperLib::etClosedPolygon );
+      ClipperLib::Paths solution;
+      co.Execute( solution, (double)offset * 1000.0f );
+      ClipperLib::Path* best = nullptr;
+      for ( auto& ret : solution )
+      {
+        if ( !best || ret.size() > best->size() )
+          best = &ret;
+      }
+      if ( !best )
+        return Polygon();
+      return util_clipperPathToPolygon( *best );
     }
 
     inline void readAndHashFile( const string& filename, Sha256& hash )
@@ -352,23 +388,22 @@ namespace hivemind {
       color.b = tmp.b;
       return color;
     }
-
   }
 
   template <class T, class Alloc, class Predicate>
-  void erase_if(std::vector<T, Alloc>& c, Predicate pred)
+  void erase_if( std::vector<T, Alloc>& c, Predicate pred )
   {
-    c.erase(std::remove_if(c.begin(), c.end(), pred), c.end());
+    c.erase( std::remove_if( c.begin(), c.end(), pred ), c.end() );
   }
 
   template <class Key, class Compare, class Alloc, class Predicate>
-  void erase_if(std::set<Key,Compare,Alloc>& c, Predicate pred)
+  void erase_if( std::set<Key, Compare, Alloc>& c, Predicate pred )
   {
-    for (auto it = c.begin(), last = c.end(); it != last; )
+    for ( auto it = c.begin(), last = c.end(); it != last; )
     {
-      if (pred(*it))
+      if ( pred( *it ) )
       {
-        it = c.erase(it);
+        it = c.erase( it );
       }
       else
       {

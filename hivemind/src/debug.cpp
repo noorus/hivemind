@@ -30,6 +30,8 @@ namespace hivemind {
 
   void DebugExtended::drawMapPolygon( Map& map, const Polygon& poly, Color color, const Vector2& offset )
   {
+    if ( poly.size() < 3 )
+      return;
     auto previous = poly.back();
     for ( auto& vec : poly )
     {
