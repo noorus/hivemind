@@ -13,7 +13,7 @@ namespace hivemind {
   HIVE_DECLARE_CONVAR( cache_path, "Path to a directory where the bot can cache stuff.", R"(..\cache)" );
 
   //! Cache file version number, increment this to invalidate old caches if the format changes
-  const uint32_t cMapCacheVersion = 10;
+  const uint32_t cMapCacheVersion = 11;
 
   string makeCacheFilePath( const Sha256& hash, const string& name )
   {
@@ -213,6 +213,12 @@ namespace hivemind {
         auto pos = unserializeVector2( reader );
         regions[i]->nodes_.emplace_back( pos );
       }
+      size_t chokes = reader->readUint64();
+      for ( size_t j = 0; j < chokes; ++j )
+      {
+        auto id = reader->readInt();
+        regions[i]->chokepoints_.insert( id );
+      }
       size_t paths = reader->readUint64();
       for ( size_t j = 0; j < paths; ++j )
       {
@@ -281,6 +287,11 @@ namespace hivemind {
       for ( auto& node : region->nodes_ )
       {
         serializeVector2( node.position_, writer );
+      }
+      writer->writeUint64( region->chokepoints_.size() );
+      for ( auto chokeId : region->chokepoints_ )
+      {
+        writer->writeInt( chokeId );
       }
       writer->writeUint64( region->chokePaths_.size() );
       for ( auto& chokePath : region->chokePaths_ )
