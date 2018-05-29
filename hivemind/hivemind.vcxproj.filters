@@ -49,11 +49,11 @@
     <Filter Include="Source Files\Brain">
       <UniqueIdentifier>{9a34a9bf-d7ae-45fb-855b-85f5d075af48}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Brain\Map">
-      <UniqueIdentifier>{f4e1f4b9-b533-4735-bbdf-84c6c9243e83}</UniqueIdentifier>
-    </Filter>
     <Filter Include="SC2API">
       <UniqueIdentifier>{c86f3781-d01d-4388-b13c-e41d4a98decb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Map">
+      <UniqueIdentifier>{f4e1f4b9-b533-4735-bbdf-84c6c9243e83}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -294,6 +294,9 @@
     <ClInclude Include="include\myself.h">
       <Filter>Header Files\Systems</Filter>
     </ClInclude>
+    <ClInclude Include="include\region.h">
+      <Filter>Header Files\Map</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\stdafx.cpp">
@@ -315,10 +318,10 @@
       <Filter>Source Files\Algorithm</Filter>
     </ClCompile>
     <ClCompile Include="src\map.cpp">
-      <Filter>Source Files\Brain\Map</Filter>
+      <Filter>Source Files\Map</Filter>
     </ClCompile>
     <ClCompile Include="src\map_analysis.cpp">
-      <Filter>Source Files\Brain\Map</Filter>
+      <Filter>Source Files\Map</Filter>
     </ClCompile>
     <ClCompile Include="src\console.cpp">
       <Filter>Source Files\Systems</Filter>
@@ -342,7 +345,7 @@
       <Filter>Source Files\Algorithm</Filter>
     </ClCompile>
     <ClCompile Include="src\regiongraph.cpp">
-      <Filter>Source Files\Brain\Map</Filter>
+      <Filter>Source Files\Map</Filter>
     </ClCompile>
     <ClCompile Include="src\baselocation.cpp">
       <Filter>Source Files\Systems</Filter>
@@ -429,16 +432,19 @@
       <Filter>Source Files\Systems</Filter>
     </ClCompile>
     <ClCompile Include="src\pathfinding.cpp">
-      <Filter>Source Files\Brain\Map</Filter>
+      <Filter>Source Files\Map</Filter>
     </ClCompile>
     <ClCompile Include="src\pathing.cpp">
       <Filter>Source Files\Systems</Filter>
     </ClCompile>
     <ClCompile Include="src\test_pathfinding.cpp">
-      <Filter>Source Files\Brain\Map</Filter>
+      <Filter>Source Files\Map</Filter>
     </ClCompile>
     <ClCompile Include="src\myself.cpp">
       <Filter>Source Files\Systems</Filter>
+    </ClCompile>
+    <ClCompile Include="src\region.cpp">
+      <Filter>Source Files\Map</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

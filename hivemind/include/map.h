@@ -8,13 +8,15 @@
 #include "baselocation.h"
 #include "chokepoint.h"
 #include "pathing.h"
+#include "region.h"
 
 namespace hivemind {
 
   class Bot;
   struct BaseLocation;
 
-  enum MapFlag {
+  enum MapFlag
+  {
     MapFlag_Walkable = 1,
     MapFlag_Buildable = 2,
     MapFlag_ResourceBox = 4, //!< Is this tile part of a base location's harvesting area
@@ -29,7 +31,8 @@ namespace hivemind {
     MapFlag_VespeneGeyser = 2048,
   };
 
-  struct MapComponent {
+  struct MapComponent
+  {
     int label; //!< Component number
     Contour contour;
     ContourVector holes;
@@ -37,14 +40,16 @@ namespace hivemind {
 
   using ComponentVector = vector<MapComponent>;
 
-  struct PolygonComponent {
+  struct PolygonComponent
+  {
     int label;
     Polygon contour;
   };
 
   using PolygonComponentVector = vector<PolygonComponent>;
 
-  struct Creep {
+  struct Creep
+  {
     int label;
     Contour contour;
     vector<vector<MapPoint2>> fronts;
@@ -52,56 +57,31 @@ namespace hivemind {
 
   using CreepVector = vector<Creep>;
 
-  enum CreepTile : uint8_t {
+  enum CreepTile : uint8_t
+  {
     CreepTile_No = 0,
     CreepTile_Walkable,
     CreepTile_Buildable
   };
 
-  struct BuildingReservation {
+  struct BuildingReservation
+  {
     Point2DI position_;
     UnitTypeID type_;
     BuildingReservation( const Point2DI& pos = Point2DI(), UnitTypeID t = 0 )
-      : position_( pos ), type_( t ) {}
+        : position_( pos ), type_( t ) {}
   };
 
   using BuildingReservationMap = std::map<uint64_t, BuildingReservation>; // using encodePoint()
 
-  class Region;
-
-  using RegionSet = set<Region*>;
-  using RegionVector = vector<Region*>;
-
-  struct RegionNode {
-  public:
-    Vector2 position_;
-    RegionNode( const Vector2& position ): position_( position ) {}
-  };
-
-  using RegionNodeVector = vector<RegionNode>;
-
-  class Region {
-  public:
-    int label_;
-    Polygon polygon_;
-    Real opennessDistance_;
-    Vector2 opennessPoint_;
-    Real height_;
-    int tileCount_;
-    int heightLevel_; //!< AKA cliff level or whatever, 0 being lowest on map
-    bool dubious_; //!< If this region has no real area or tiles, and probably lacks known height value
-    ChokeSet chokepoints_;
-    RegionSet reachableRegions_;
-    RegionNodeVector nodes_;
-    map<pair<ChokepointID, ChokepointID>, CachedPath> chokePaths_;
-  };
-
-  struct MapData {
+  struct MapData
+  {
     string filepath;
     Sha256 hash;
   };
 
-  class Map {
+  class Map
+  {
   public:
     enum ReservedTile : uint8_t
     {
@@ -201,5 +181,4 @@ namespace hivemind {
     bool isBuildable( const Vector2& position ) { return isBuildable( (size_t)position.x, (size_t)position.y ); }
     const DistanceMap& getDistanceMap( const MapPoint2& tile ) const;
   };
-
 }

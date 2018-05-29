@@ -172,6 +172,7 @@
     <ClInclude Include="include\pathing.h" />
     <ClInclude Include="include\platform_windows.h" />
     <ClInclude Include="include\player.h" />
+    <ClInclude Include="include\region.h" />
     <ClInclude Include="include\regiongraph.h" />
     <ClInclude Include="include\researcher.h" />
     <ClInclude Include="include\sc2_forward.h" />
@@ -225,6 +226,7 @@
     <ClCompile Include="src\platform_windows.cpp" />
     <ClCompile Include="src\player.cpp" />
     <ClCompile Include="src\playermanager.cpp" />
+    <ClCompile Include="src\region.cpp" />
     <ClCompile Include="src\regiongraph.cpp" />
     <ClCompile Include="src\researcher.cpp" />
     <ClCompile Include="src\stdafx.cpp">

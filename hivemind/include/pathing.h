@@ -34,15 +34,17 @@ namespace hivemind {
 
   using PathList = list<PathPtr>;
 
-  struct CachedPath {
+  struct CachedPath
+  {
   public:
     vector<Vector2> vertices_;
     Real length_;
-    CachedPath( )
-      : length_( 0.0f )
+    CachedPath()
+        : length_( 0.0f )
     {
     }
-    CachedPath( const Path& source ): length_( 0.0f )
+    CachedPath( const Path& source )
+        : length_( 0.0f )
     {
       vertices_ = source.verts();
       if ( !vertices_.empty() )
@@ -53,6 +55,10 @@ namespace hivemind {
           length_ += previous.distance( vert );
         }
       }
+    }
+    void reverse()
+    {
+      std::reverse( vertices_.begin(), vertices_.end() );
     }
   };
 

@@ -313,11 +313,23 @@ namespace hivemind {
           {
             if ( choke == other )
               continue;
-            auto key = ( choke < other ? pair<ChokepointID, ChokepointID>( choke, other ) : pair<ChokepointID, ChokepointID>( other, choke ) );
+            auto key = pair<ChokepointID, ChokepointID>( choke, other );
             if ( regptr->chokePaths_.find( key ) == regptr->chokePaths_.end() )
             {
-              auto path = bot_->pathing().quickPathPlainRegion( chokepoints_[choke].middle(), chokepoints_[other].middle(), regptr->label_ );
-              regptr->chokePaths_.insert_or_assign(key, std::move( CachedPath( *( path.get() ) ) ) );
+              auto otherKey = pair<ChokepointID, ChokepointID>( other, choke );
+              auto otherIter = regptr->chokePaths_.find( otherKey );
+              // If the other way around already exists, just copy and reverse that path.
+              if ( otherIter != regptr->chokePaths_.end() )
+              {
+                auto otherPath = otherIter->second;
+                otherPath.reverse();
+                regptr->chokePaths_.insert_or_assign( key, std::move( otherPath ) );
+              }
+              else
+              {
+                auto path = bot_->pathing().quickPathPlainRegion( chokepoints_[choke].middle(), chokepoints_[other].middle(), regptr->label_ );
+                regptr->chokePaths_.insert_or_assign( key, std::move( CachedPath( *( path.get() ) ) ) );
+              }
             }
           }
         }
