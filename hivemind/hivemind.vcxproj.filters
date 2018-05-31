@@ -297,6 +297,9 @@
     <ClInclude Include="include\region.h">
       <Filter>Header Files\Map</Filter>
     </ClInclude>
+    <ClInclude Include="include\graphsearch.h">
+      <Filter>Header Files\Algorithm</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\stdafx.cpp">

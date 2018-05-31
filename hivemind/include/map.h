@@ -9,6 +9,7 @@
 #include "chokepoint.h"
 #include "pathing.h"
 #include "region.h"
+#include "graphsearch.h"
 
 namespace hivemind {
 
@@ -80,6 +81,64 @@ namespace hivemind {
     Sha256 hash;
   };
 
+  class RegionGraphPather : public graphsearch::SearchableGraph<ChokepointID>
+  {
+  private:
+    ChokeSet closed_;
+    ChokeVector* chokes_;
+  public:
+    RegionGraphPather( ChokeVector* chokes )
+        : chokes_( chokes )
+    {
+    }
+    void reset() override
+    {
+      closed_.clear();
+    }
+    const bool isValid( ChokepointID node ) const override
+    {
+      assert( node >= 0 && node < chokes_->size() );
+      return true;
+    }
+    const bool isClosed( ChokepointID node ) const override
+    {
+      return ( closed_.find( node ) != closed_.end() );
+    }
+    vector<ChokepointID> getNeighbours( ChokepointID node ) override
+    {
+      auto& choke = chokes_->at( node );
+      vector<ChokepointID> neighbours( choke.region1->chokepoints_.size() + choke.region2->chokepoints_.size() );
+      neighbours.insert( neighbours.end(), choke.region1->chokepoints_.begin(), choke.region1->chokepoints_.end() );
+      neighbours.insert( neighbours.end(), choke.region2->chokepoints_.begin(), choke.region2->chokepoints_.end() );
+      return neighbours;
+    }
+    graphsearch::SearchableGraphValueType getCost( ChokepointID from, ChokepointID to ) override
+    {
+      auto& choke = chokes_->at( from );
+      if ( choke.region1->chokepoints_.find( to ) != choke.region1->chokepoints_.end() )
+      {
+        return choke.region1->getChokePath( from, to ).length_;
+      }
+      else if ( choke.region2->chokepoints_.find( to ) != choke.region2->chokepoints_.end() )
+      {
+        return choke.region2->getChokePath( from, to ).length_;
+      }
+      else
+      {
+        return 10000.0f;
+      }
+    }
+    void markClosed( ChokepointID node ) override
+    {
+      closed_.insert( node );
+    }
+    vector<ChokepointID> findPath( ChokepointID from, ChokepointID to )
+    {
+      reset();
+      return graphsearch::genericAStarSearch<ChokepointID>( *this, from, to );
+    }
+  };
+
   class Map
   {
   public:
@@ -112,6 +171,7 @@ namespace hivemind {
     vector<MapPoint2> creepTumors_;
     MapData info_;
     ChokeVector chokepoints_;
+    vector<Vector2> testPath_;
     int maxHeightLevel_; //!< Maximum height (cliff) level, 0 being the lowest on the playable map
   private:
     Bot* bot_;

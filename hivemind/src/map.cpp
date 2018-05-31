@@ -347,6 +347,16 @@ namespace hivemind {
     if ( dumpImages )
       bot_->debug().mapDumpPolygons( width_, height_, obstacles_, regions_, chokepoints_, info.start_locations );
 
+    testPath_.clear();
+    RegionGraphPather pather( &chokepoints_ );
+    ChokepointID from = *( region( info.start_locations[0].x, info.start_locations[0].y )->chokepoints_.begin() );
+    ChokepointID to = *( region( info.start_locations[1].x, info.start_locations[1].y )->chokepoints_.begin() );
+    auto chokepath = pather.findPath( from, to );
+    for ( auto it : chokepath )
+    {
+      bot_->console().printf( "DEBUG: Choke path entry %d", it );
+    }
+
     bot_->console().printf( "Map: Rebuild done" );
   }
 

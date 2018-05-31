@@ -29,16 +29,16 @@ namespace hivemind {
     const PathCost c_dstarEpsilon = 0.01f;
 #endif
 
-    static bool isInfinity(PathCost cost)
+    static bool isInfinity( PathCost cost )
     {
       return cost == c_inf;
     }
 
-    GridGraph::GridGraph( Console* console,  std::unique_ptr<GridMap> map ):
-      map_( std::move(map) ),
-      console_(console),
-      width_( map_->width() ),
-      height_( map_->height() )
+    GridGraph::GridGraph( Console* console, std::unique_ptr<GridMap> map )
+        : map_( std::move( map ) ),
+          console_( console ),
+          width_( map_->width() ),
+          height_( map_->height() )
     {
       grid.resize( width_, height_ );
     }
@@ -49,8 +49,8 @@ namespace hivemind {
         for ( int y = 0; y < height_; ++y )
         {
           GridGraphNode node( x, y );
-          node.valid = map_->isWalkable(x, y);
-          node.hasObstacle = map_->isBlocked(x, y);
+          node.valid = map_->isWalkable( x, y );
+          node.hasObstacle = map_->isBlocked( x, y );
           node.rhs = c_inf;
           node.g = c_inf;
           grid[x][y] = node;
@@ -59,7 +59,7 @@ namespace hivemind {
 
     PathCost GridGraph::cost( const GridGraphNode& from, const GridGraphNode& to ) const
     {
-      if(to.hasObstacle || from.hasObstacle)
+      if ( to.hasObstacle || from.hasObstacle )
         return ObstacleStepWeight;
 
       if ( to.location.x != from.location.x && to.location.y != from.location.y )
@@ -72,7 +72,7 @@ namespace hivemind {
     {
       auto dx = math::abs( b.x - a.x );
       auto dy = math::abs( b.y - a.y );
-      return (NormalStepWeight * (dx + dy)) + ((DiagonalStepWeight - (2 * NormalStepWeight)) * std::min( dx, dy ));
+      return ( NormalStepWeight * ( dx + dy ) ) + ( ( DiagonalStepWeight - ( 2 * NormalStepWeight ) ) * std::min( dx, dy ) );
     }
 
     inline PathCost util_chebyshevDistanceHeuristic( const MapPoint2& a, const MapPoint2& b )
@@ -89,7 +89,7 @@ namespace hivemind {
 
     inline bool dstarLess( DStarLiteKey a, DStarLiteKey b )
     {
-      if(isInfinity(a.first))
+      if ( isInfinity( a.first ) )
         return false;
 
       DStarLiteKey aa = a;
@@ -116,17 +116,16 @@ namespace hivemind {
       auto& s = getNode( sid, *graph_ );
       auto& start = getNode( start_, *graph_ );
 
-      auto minValue = std::min(s.g, s.rhs);
+      auto minValue = std::min( s.g, s.rhs );
 
-      if(isInfinity(minValue))
+      if ( isInfinity( minValue ) )
       {
-        return DStarLiteKey{ c_inf, c_inf };
+        return DStarLiteKey{c_inf, c_inf};
       }
 
       DStarLiteKey key(
         minValue + heuristic( s.location, start.location ) + k_m,
-        minValue
-      );
+        minValue );
 
       return key;
     }
@@ -139,83 +138,82 @@ namespace hivemind {
       U.clear(); // U = null
       k_m = 0; // k_m = 0
       graph_->initialize(); // rhs(s) = g(s) = inf
-      auto& goalNode = graph_->node(goal);
+      auto& goalNode = graph_->node( goal );
       goalNode.rhs = 0; // rhs(s_goal) = 0
-      U.push( {&goalNode, calculateKey(goal_, k_m)} ); // U.Insert(s_goal, [h(s_start, s_goal); 0])
+      U.push( {&goalNode, calculateKey( goal_, k_m )} ); // U.Insert(s_goal, [h(s_start, s_goal); 0])
     }
 
-
-    void DStarLite::updateVertex(NodeIndex uid)
+    void DStarLite::updateVertex( NodeIndex uid )
     {
-      if(uid != goal_)
+      if ( uid != goal_ )
       {
-        auto& u = getNode(uid, *graph_);
+        auto& u = getNode( uid, *graph_ );
 
-        u.rhs = getNextValue(uid);
+        u.rhs = getNextValue( uid );
       }
 
-      updateVertexLite(uid);
+      updateVertexLite( uid );
     }
 
-    void DStarLite::updateVertexLite(NodeIndex uid)
+    void DStarLite::updateVertexLite( NodeIndex uid )
     {
-      auto& u = getNode(uid, *graph_);
+      auto& u = getNode( uid, *graph_ );
 
-      if(dstarEquals(u.g, u.rhs))
+      if ( dstarEquals( u.g, u.rhs ) )
       {
         //graph_->console_->printf("u=(%d, %d) is already saturated with u.g=u.rhs=%f", uid.x, uid.y, u.g);
         //graph_->console_->printf("u=(%d, %d) is already saturated with u.g=u.rhs=%d", uid.x, uid.y, u.g);
 
-        U.erase(&u);
+        U.erase( &u );
       }
       else
       {
-        auto key = calculateKey(uid, k_m);
-        U.set(&u, key);
+        auto key = calculateKey( uid, k_m );
+        U.set( &u, key );
       }
     }
 
-    static bool isValidNeighbour(NodeIndex neighbour, const GridGraph& graph)
+    static bool isValidNeighbour( NodeIndex neighbour, const GridGraph& graph )
     {
-      if(neighbour.x < 0 || neighbour.x >= graph.width_)
+      if ( neighbour.x < 0 || neighbour.x >= graph.width_ )
         return false;
-      if(neighbour.y < 0 || neighbour.y >= graph.height_)
+      if ( neighbour.y < 0 || neighbour.y >= graph.height_ )
         return false;
 
-      return graph.node(neighbour).valid;
+      return graph.node( neighbour ).valid;
     }
 
     static const NodeIndex neighbourDeltas[] =
-    {
-      {-1,-1 },
-      { 0,-1 },
-      { 1,-1 },
-      {-1, 0 },
-      { 1, 0 },
-      {-1, 1 },
-      { 0, 1 },
-      { 1, 1 },
+      {
+        {-1, -1},
+        {0, -1},
+        {1, -1},
+        {-1, 0},
+        {1, 0},
+        {-1, 1},
+        {0, 1},
+        {1, 1},
     };
 
-    static NodeIndex add(NodeIndex location, NodeIndex delta)
+    static NodeIndex add( NodeIndex location, NodeIndex delta )
     {
-      return { location.x + delta.x, location.y + delta.y };
+      return {location.x + delta.x, location.y + delta.y};
     }
 
     void DStarLite::computeShortestPath()
     {
-      auto& start = getNode(start_, *graph_);
-      auto& goal = getNode(goal_, *graph_);
+      auto& start = getNode( start_, *graph_ );
+      auto& goal = getNode( goal_, *graph_ );
 
       int steps = 0;
       const int maxSteps = 100000;
 
-      while(!U.empty() && steps++ < maxSteps)
+      while ( !U.empty() && steps++ < maxSteps )
       {
         auto topKey = U.topKey();
-        auto startKey = calculateKey(start_, k_m);
+        auto startKey = calculateKey( start_, k_m );
 
-        if(!dstarLess(topKey, startKey) && dstarEquals(start.rhs, start.g))
+        if ( !dstarLess( topKey, startKey ) && dstarEquals( start.rhs, start.g ) )
         {
           // Found the shortest path. The remaining elements in U are off-path.
           break;
@@ -231,47 +229,47 @@ namespace hivemind {
         {
           U.pop();
 
-          if(u.rhs < u.g)
+          if ( u.rhs < u.g )
           {
             u.g = u.rhs;
 
             //graph_->console_->printf("u=(%d, %d) saturated with u.g=u.rhs=%f", u.location.x, u.location.y, u.g);
             //graph_->console_->printf("u=(%d, %d) saturated with u.g=u.rhs=%d", u.location.x, u.location.y, u.g);
 
-            for(auto delta : neighbourDeltas)
+            for ( auto delta : neighbourDeltas )
             {
-              MapPoint2 neighbour = add(u.location, delta);
-              if(!isValidNeighbour(neighbour, *graph_))
+              MapPoint2 neighbour = add( u.location, delta );
+              if ( !isValidNeighbour( neighbour, *graph_ ) )
                 continue;
 
-              if(neighbour == goal_)
+              if ( neighbour == goal_ )
                 continue;
 
-              auto& node = graph_->node(neighbour);
-              auto newValue = u.g + graph_->cost(u, node);
+              auto& node = graph_->node( neighbour );
+              auto newValue = u.g + graph_->cost( u, node );
 
-              if(newValue < node.rhs)
+              if ( newValue < node.rhs )
               {
                 node.rhs = newValue;
 
                 //updateVertexLite(neighbour);
               }
 
-              updateVertexLite(neighbour);
+              updateVertexLite( neighbour );
             }
           }
           else
           {
             u.g = c_inf;
-            updateVertex(u.location);
+            updateVertex( u.location );
 
-            for(auto delta : neighbourDeltas)
+            for ( auto delta : neighbourDeltas )
             {
-              MapPoint2 neighbour = add(u.location, delta);
-              if(!isValidNeighbour(neighbour, *graph_))
+              MapPoint2 neighbour = add( u.location, delta );
+              if ( !isValidNeighbour( neighbour, *graph_ ) )
                 continue;
 
-              updateVertex(neighbour);
+              updateVertex( neighbour );
             }
           }
         }
@@ -279,30 +277,30 @@ namespace hivemind {
         // D*-lite
         {
           auto& k_old = uv.second;
-          auto k_new = calculateKey(uv.first, k_m);
+          auto k_new = calculateKey( uv.first, k_m );
 
-          if(k_old < k_new)
+          if ( k_old < k_new )
           {
-            graph_.bot_->console().printf("Node u=(%d, %d) visited with k_old = %f < k_new = %f", u.location.x, u.location.y, k_old, k_new);
+            graph_.bot_->console().printf( "Node u=(%d, %d) visited with k_old = %f < k_new = %f", u.location.x, u.location.y, k_old, k_new );
 
-            U.set(uv.first, k_new);
+            U.set( uv.first, k_new );
           }
-          else if(u.g > u.rhs)
+          else if ( u.g > u.rhs )
           {
             u.g = u.rhs;
 
-            graph_.bot_->console().printf("Node u=(%d, %d) visited with g(u) = %f", u.location.x, u.location.y, u.g);
+            graph_.bot_->console().printf( "Node u=(%d, %d) visited with g(u) = %f", u.location.x, u.location.y, u.g );
 
-            U.erase(uv.first);
-            auto preds = predecessors(u);
-            for(auto sid : preds)
+            U.erase( uv.first );
+            auto preds = predecessors( u );
+            for ( auto sid : preds )
             {
-              if(sid != goal_)
+              if ( sid != goal_ )
               {
-                auto& s = getNode(sid, graph_);
-                s.rhs = std::min(s.rhs, graph_.cost(s, u) + u.g);
+                auto& s = getNode( sid, graph_ );
+                s.rhs = std::min( s.rhs, graph_.cost( s, u ) + u.g );
               }
-              updateVertex(sid);
+              updateVertex( sid );
             }
           }
           else
@@ -310,24 +308,24 @@ namespace hivemind {
             auto g_old = u.g;
             u.g = c_inf;
 
-            graph_.bot_->console().printf("Node u=(%d, %d) expanded with g(u)=%f", u.location.x, u.location.y, g_old);
+            graph_.bot_->console().printf( "Node u=(%d, %d) expanded with g(u)=%f", u.location.x, u.location.y, g_old );
 
-            auto preds = predecessors(u);
-            preds.push_back(uv.first); // Pred(u) union {u}
-            for(auto sid : preds)
+            auto preds = predecessors( u );
+            preds.push_back( uv.first ); // Pred(u) union {u}
+            for ( auto sid : preds )
             {
-              auto& s = getNode(sid, graph_);
-              if(dstarEquals(s.rhs, graph_.cost(s, u) + g_old) && sid != goal_)
+              auto& s = getNode( sid, graph_ );
+              if ( dstarEquals( s.rhs, graph_.cost( s, u ) + g_old ) && sid != goal_ )
               {
                 auto min_rhs = std::numeric_limits<PathCost>::max();
-                auto succs = successors(s);
-                for(auto succid : succs)
+                auto succs = successors( s );
+                for ( auto succid : succs )
                 {
-                  auto& subsucc = getNode(succid, graph_);
-                  min_rhs = std::min(min_rhs, subsucc.g + graph_.cost(s, subsucc));
+                  auto& subsucc = getNode( succid, graph_ );
+                  min_rhs = std::min( min_rhs, subsucc.g + graph_.cost( s, subsucc ) );
                 }
               }
-              updateVertex(sid);
+              updateVertex( sid );
             }
           }
         }
@@ -335,111 +333,111 @@ namespace hivemind {
       }
 
       {
-        auto topKey = (!U.empty() ? U.topKey() : DStarLiteKey{ c_inf, c_inf });
+        auto topKey = ( !U.empty() ? U.topKey() : DStarLiteKey{c_inf, c_inf} );
         //graph_->console_->printf("Ending search with U.size=%d, U.topKey={%f,%f}, start.rhs=%f, start.g=%f, steps=%d", U.size(), topKey.first, topKey.second, start.rhs, start.g, steps );
-        graph_->console_->printf("Ending search with U.size=%d, U.topKey={%d,%d}, start.rhs=%d, start.g=%d, steps=%d", U.size(), topKey.first, topKey.second, start.rhs, start.g, steps );
+        graph_->console_->printf( "Ending search with U.size=%d, U.topKey={%d,%d}, start.rhs=%d, start.g=%d, steps=%d", U.size(), topKey.first, topKey.second, start.rhs, start.g, steps );
       }
     }
 
-    pair<PathCost, NodeIndex> DStarLite::getNext(NodeIndex current) const
+    pair<PathCost, NodeIndex> DStarLite::getNext( NodeIndex current ) const
     {
-      auto& node = graph_->node(current);
+      auto& node = graph_->node( current );
 
       PathCost bestValue = c_inf;
       MapPoint2 bestSucc;
 
-      for(auto delta : neighbourDeltas)
+      for ( auto delta : neighbourDeltas )
       {
-        MapPoint2 neighbour = add(node.location, delta);
-        if(!isValidNeighbour(neighbour, *graph_))
+        MapPoint2 neighbour = add( node.location, delta );
+        if ( !isValidNeighbour( neighbour, *graph_ ) )
           continue;
 
-        auto& ss = getNode(neighbour, *graph_);
+        auto& ss = getNode( neighbour, *graph_ );
 
-        if(isInfinity(ss.g))
+        if ( isInfinity( ss.g ) )
           continue;
 
-        auto value = ss.g + graph_->cost(node, ss);
+        auto value = ss.g + graph_->cost( node, ss );
 
-        if(value < bestValue)
+        if ( value < bestValue )
         {
           bestSucc = neighbour;
           bestValue = value;
         }
       }
 
-      return { bestValue, bestSucc };
+      return {bestValue, bestSucc};
     }
 
-    PathCost DStarLite::getNextValue(NodeIndex current) const
+    PathCost DStarLite::getNextValue( NodeIndex current ) const
     {
-      return getNext(current).first;
+      return getNext( current ).first;
     }
 
-    NodeIndex DStarLite::getNextNode(NodeIndex current) const
+    NodeIndex DStarLite::getNextNode( NodeIndex current ) const
     {
-      return getNext(current).second;
+      return getNext( current ).second;
     }
 
     MapPath DStarLite::getMapPath() const
     {
       MapPath mapPath;
 
-      auto startNode = graph_->node(start_);
-      if(startNode.rhs < c_inf)
+      auto startNode = graph_->node( start_ );
+      if ( startNode.rhs < c_inf )
       {
         auto s = start_;
-        while(s != goal_)
+        while ( s != goal_ )
         {
-          mapPath.push_back(s);
-          s = getNextNode(s);
+          mapPath.push_back( s );
+          s = getNextNode( s );
 
-          if(mapPath.size() > 1000)
+          if ( mapPath.size() > 1000 )
           {
-            graph_->console_->printf("BUG: failed get path from (%d, %d) to (%d, %d)", start_.x, start_.y, goal_.x, goal_.y);
+            graph_->console_->printf( "BUG: failed get path from (%d, %d) to (%d, %d)", start_.x, start_.y, goal_.x, goal_.y );
             break;
           }
         }
-        mapPath.push_back(goal_);
+        mapPath.push_back( goal_ );
       }
 
       return mapPath;
     }
 
-    DStarLite::DStarLite(Console* console, std::unique_ptr<GridMap> map, const MapPoint2& start, const MapPoint2& goal)
+    DStarLite::DStarLite( Console* console, std::unique_ptr<GridMap> map, const MapPoint2& start, const MapPoint2& goal )
     {
-      graph_ = std::make_unique<pathfinding::GridGraph>( console, std::move(map) );
-      initialize(start, goal);
+      graph_ = std::make_unique<pathfinding::GridGraph>( console, std::move( map ) );
+      initialize( start, goal );
       computeShortestPath();
     }
 
-    DStarLitePtr DStarLite::search(Console* console, std::unique_ptr<GridMap> map, const MapPoint2& start, const MapPoint2& goal)
+    DStarLitePtr DStarLite::search( Console* console, std::unique_ptr<GridMap> map, const MapPoint2& start, const MapPoint2& goal )
     {
-      return DStarLitePtr(new DStarLite(console, std::move(map), start, goal));
+      return DStarLitePtr( new DStarLite( console, std::move( map ), start, goal ) );
     }
 
-    void DStarLite::updateWalkability(MapPoint2 obstacle, bool hasObstacle)
+    void DStarLite::updateWalkability( MapPoint2 obstacle, bool hasObstacle )
     {
-      auto& v = graph_->node(obstacle);
+      auto& v = graph_->node( obstacle );
       v.hasObstacle = hasObstacle;
       v.g = c_inf;
 
-      if(v != goal_)
+      if ( v != goal_ )
       {
         v.rhs = c_inf;
       }
 
-      updateVertex(obstacle);
+      updateVertex( obstacle );
 
-      for(auto delta : neighbourDeltas)
+      for ( auto delta : neighbourDeltas )
       {
-        MapPoint2 neighbour = add(v.location, delta);
-        if(!isValidNeighbour(neighbour, *graph_))
+        MapPoint2 neighbour = add( v.location, delta );
+        if ( !isValidNeighbour( neighbour, *graph_ ) )
           continue;
 
-        updateVertex(neighbour);
+        updateVertex( neighbour );
       }
     }
+
   }
 }
-

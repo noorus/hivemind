@@ -152,6 +152,7 @@
     <ClInclude Include="include\distancemap.h" />
     <ClInclude Include="include\exception.h" />
     <ClInclude Include="include\external\clipper.hpp" />
+    <ClInclude Include="include\graphsearch.h" />
     <ClInclude Include="include\hive_array2.h" />
     <ClInclude Include="include\hive_config.h" />
     <ClInclude Include="include\hive_geometry.h" />

@@ -53,6 +53,7 @@ namespace hivemind {
         for ( auto& vert : vertices_ )
         {
           length_ += previous.distance( vert );
+          previous = vert;
         }
       }
     }
