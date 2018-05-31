@@ -86,6 +86,7 @@ namespace hivemind {
   private:
     ChokeSet closed_;
     ChokeVector* chokes_;
+
   public:
     RegionGraphPather( ChokeVector* chokes )
         : chokes_( chokes )
@@ -104,12 +105,12 @@ namespace hivemind {
     {
       return ( closed_.find( node ) != closed_.end() );
     }
-    vector<ChokepointID> getNeighbours( ChokepointID node ) override
+    set<ChokepointID> getNeighbours( ChokepointID node ) override
     {
       auto& choke = chokes_->at( node );
-      vector<ChokepointID> neighbours( choke.region1->chokepoints_.size() + choke.region2->chokepoints_.size() );
-      neighbours.insert( neighbours.end(), choke.region1->chokepoints_.begin(), choke.region1->chokepoints_.end() );
-      neighbours.insert( neighbours.end(), choke.region2->chokepoints_.begin(), choke.region2->chokepoints_.end() );
+      set<ChokepointID> neighbours( choke.region1->chokepoints_.begin(), choke.region1->chokepoints_.end() );
+      std::copy( choke.region2->chokepoints_.begin(), choke.region2->chokepoints_.end(), std::inserter( neighbours, neighbours.end() ) );
+      neighbours.erase( node );
       return neighbours;
     }
     graphsearch::SearchableGraphValueType getCost( ChokepointID from, ChokepointID to ) override

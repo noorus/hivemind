@@ -16,7 +16,7 @@ namespace hivemind {
       virtual void reset() = 0;
       virtual const bool isValid( T node ) const = 0;
       virtual const bool isClosed( T node ) const = 0;
-      virtual vector<T> getNeighbours( T node ) = 0;
+      virtual set<T> getNeighbours( T node ) = 0;
       virtual SearchableGraphValueType getCost( T from, T to ) = 0;
       virtual void markClosed( T node ) = 0;
       virtual SearchableGraphValueType heuristic( T from, T to ) { return c_zeroValue; }
@@ -46,7 +46,7 @@ namespace hivemind {
         openTiles.pop();
         graph.markClosed( current );
 
-        vector<T> neighbours = graph.getNeighbours( current );
+        set<T> neighbours = graph.getNeighbours( current );
 
         for ( auto neighbour : neighbours )
         {
