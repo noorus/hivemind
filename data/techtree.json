@@ -767,30 +767,6 @@
           "upgrade" : 99,
           "upgradeName" : "PhoenixRangeUpgrade",
           "vespene" : 150
-        },
-        {
-          "ability" : 44,
-          "abilityName" : "FleetBeaconResearch,Research1",
-          "minerals" : 150,
-          "requires" : 
-          [
-            {
-              "operands" : 
-              [
-                {
-                  "state" : "QueuedOrBetter",
-                  "type" : "upgradeCount",
-                  "upgrade" : 1,
-                  "upgradeName" : "CarrierLaunchSpeedUpgrade"
-                }
-              ],
-              "type" : "not"
-            }
-          ],
-          "time" : 80.0,
-          "upgrade" : 1,
-          "upgradeName" : "CarrierLaunchSpeedUpgrade",
-          "vespene" : 150
         }
       ]
     },
@@ -882,7 +858,7 @@
               "unitName" : [ "FleetBeacon" ]
             }
           ],
-          "time" : 120.0,
+          "time" : 90.0,
           "unit" : 79,
           "unitName" : "Carrier"
         },
@@ -974,7 +950,7 @@
               "type" : "not"
             }
           ],
-          "time" : 170.0,
+          "time" : 140.0,
           "upgrade" : 141,
           "upgradeName" : "DarkTemplarBlinkUpgrade",
           "vespene" : 100
@@ -1547,22 +1523,6 @@
           "unitName" : "Pylon"
         },
         {
-          "ability" : 883,
-          "abilityName" : "ProtossBuild,Build4",
-          "requires" : 
-          [
-            {
-              "state" : "CompleteOnly",
-              "type" : "unitCount",
-              "unit" : [ 59 ],
-              "unitName" : [ "Nexus" ]
-            }
-          ],
-          "time" : 65.0,
-          "unit" : 62,
-          "unitName" : "Gateway"
-        },
-        {
           "ability" : 884,
           "abilityName" : "ProtossBuild,Build5",
           "requires" : 
@@ -1609,6 +1569,22 @@
           "time" : 40.0,
           "unit" : 66,
           "unitName" : "PhotonCannon"
+        },
+        {
+          "ability" : 883,
+          "abilityName" : "ProtossBuild,Build4",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "unitCount",
+              "unit" : [ 59 ],
+              "unitName" : [ "Nexus" ]
+            }
+          ],
+          "time" : 65.0,
+          "unit" : 62,
+          "unitName" : "Gateway"
         },
         {
           "ability" : 895,
@@ -2074,30 +2050,6 @@
           "vespene" : 250
         },
         {
-          "ability" : 655,
-          "abilityName" : "EngineeringBayResearch,Research6",
-          "minerals" : 100,
-          "requires" : 
-          [
-            {
-              "operands" : 
-              [
-                {
-                  "state" : "QueuedOrBetter",
-                  "type" : "upgradeCount",
-                  "upgrade" : 10,
-                  "upgradeName" : "NeosteelFrame"
-                }
-              ],
-              "type" : "not"
-            }
-          ],
-          "time" : 110.0,
-          "upgrade" : 10,
-          "upgradeName" : "NeosteelFrame",
-          "vespene" : 100
-        },
-        {
           "ability" : 651,
           "abilityName" : "EngineeringBayResearch,Research2",
           "minerals" : 150,
@@ -2377,6 +2329,15 @@
         {
           "ability" : 597,
           "abilityName" : "FactoryTrain,Train8",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnlyAtUnit",
+              "type" : "unitCount",
+              "unit" : [ 5 ],
+              "unitName" : [ "TechLab" ]
+            }
+          ],
           "time" : 45.0,
           "unit" : 692,
           "unitName" : "Cyclone"
@@ -3198,9 +3159,9 @@
           "vespene" : 100
         },
         {
-          "ability" : 768,
-          "abilityName" : "FactoryTechLabResearch,Research9",
-          "minerals" : 75,
+          "ability" : 769,
+          "abilityName" : "FactoryTechLabResearch,Research10",
+          "minerals" : 100,
           "requires" : 
           [
             {
@@ -3209,17 +3170,17 @@
                 {
                   "state" : "QueuedOrBetter",
                   "type" : "upgradeCount",
-                  "upgrade" : 291,
-                  "upgradeName" : "CycloneRapidFireLaunchers"
+                  "upgrade" : 144,
+                  "upgradeName" : "CycloneLockOnDamageUpgrade"
                 }
               ],
               "type" : "not"
             }
           ],
           "time" : 110.0,
-          "upgrade" : 291,
-          "upgradeName" : "CycloneRapidFireLaunchers",
-          "vespene" : 75
+          "upgrade" : 144,
+          "upgradeName" : "CycloneLockOnDamageUpgrade",
+          "vespene" : 100
         }
       ]
     },
@@ -3279,7 +3240,7 @@
         {
           "ability" : 799,
           "abilityName" : "StarportTechLabResearch,Research10",
-          "minerals" : 200,
+          "minerals" : 150,
           "requires" : 
           [
             {
@@ -3298,7 +3259,7 @@
           "time" : 170.0,
           "upgrade" : 136,
           "upgradeName" : "BansheeSpeed",
-          "vespene" : 200
+          "vespene" : 150
         },
         {
           "ability" : 804,
@@ -4472,6 +4433,236 @@
           "time" : 0.0,
           "unit" : 116,
           "unitName" : "DroneBurrowed"
+        },
+        {
+          "ability" : 1390,
+          "abilityName" : "BurrowZerglingDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 119,
+          "unitName" : "ZerglingBurrowed"
+        },
+        {
+          "ability" : 1374,
+          "abilityName" : "BurrowBanelingDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 115,
+          "unitName" : "BanelingBurrowed"
+        },
+        {
+          "ability" : 1386,
+          "abilityName" : "BurrowRoachDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 118,
+          "unitName" : "RoachBurrowed"
+        },
+        {
+          "ability" : 1382,
+          "abilityName" : "BurrowHydraliskDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 117,
+          "unitName" : "HydraliskBurrowed"
+        },
+        {
+          "ability" : 2340,
+          "abilityName" : "BurrowRavagerDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 690,
+          "unitName" : "RavagerBurrowed"
+        },
+        {
+          "ability" : 2014,
+          "abilityName" : "MorphToSwarmHostBurrowedMP,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 493,
+          "unitName" : "SwarmHostBurrowedMP"
+        },
+        {
+          "ability" : 1433,
+          "abilityName" : "BurrowQueenDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 125,
+          "unitName" : "QueenBurrowed"
+        },
+        {
+          "ability" : 1394,
+          "abilityName" : "BurrowInfestorTerranDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 120,
+          "unitName" : "InfestorTerranBurrowed"
+        },
+        {
+          "ability" : 1444,
+          "abilityName" : "BurrowInfestorDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 127,
+          "unitName" : "InfestorBurrowed"
+        },
+        {
+          "ability" : 1512,
+          "abilityName" : "BurrowUltraliskDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 131,
+          "unitName" : "UltraliskBurrowed"
+        },
+        {
+          "ability" : 1392,
+          "abilityName" : "BurrowZerglingUp,Execute",
+          "time" : 0.0,
+          "unit" : 105,
+          "unitName" : "Zergling"
+        },
+        {
+          "ability" : 1376,
+          "abilityName" : "BurrowBanelingUp,Execute",
+          "time" : 0.0,
+          "unit" : 9,
+          "unitName" : "Baneling"
+        },
+        {
+          "ability" : 1388,
+          "abilityName" : "BurrowRoachUp,Execute",
+          "time" : 0.0,
+          "unit" : 110,
+          "unitName" : "Roach"
+        },
+        {
+          "ability" : 1384,
+          "abilityName" : "BurrowHydraliskUp,Execute",
+          "time" : 0.0,
+          "unit" : 107,
+          "unitName" : "Hydralisk"
+        },
+        {
+          "ability" : 2342,
+          "abilityName" : "BurrowRavagerUp,Execute",
+          "time" : 0.0,
+          "unit" : 688,
+          "unitName" : "Ravager"
+        },
+        {
+          "ability" : 2016,
+          "abilityName" : "MorphToSwarmHostMP,Execute",
+          "time" : 0.5,
+          "unit" : 494,
+          "unitName" : "SwarmHostMP"
+        },
+        {
+          "ability" : 1435,
+          "abilityName" : "BurrowQueenUp,Execute",
+          "time" : 0.0,
+          "unit" : 126,
+          "unitName" : "Queen"
+        },
+        {
+          "ability" : 1396,
+          "abilityName" : "BurrowInfestorTerranUp,Execute",
+          "time" : 0.0,
+          "unit" : 7,
+          "unitName" : "InfestorTerran"
+        },
+        {
+          "ability" : 1446,
+          "abilityName" : "BurrowInfestorUp,Execute",
+          "time" : 0.0,
+          "unit" : 111,
+          "unitName" : "Infestor"
+        },
+        {
+          "ability" : 1514,
+          "abilityName" : "BurrowUltraliskUp,Execute",
+          "time" : 0.0,
+          "unit" : 109,
+          "unitName" : "Ultralisk"
         }
       ],
       "name" : "Drone"
@@ -4515,6 +4706,236 @@
           "time" : 0.0,
           "unit" : 119,
           "unitName" : "ZerglingBurrowed"
+        },
+        {
+          "ability" : 1378,
+          "abilityName" : "BurrowDroneDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 116,
+          "unitName" : "DroneBurrowed"
+        },
+        {
+          "ability" : 1374,
+          "abilityName" : "BurrowBanelingDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 115,
+          "unitName" : "BanelingBurrowed"
+        },
+        {
+          "ability" : 1386,
+          "abilityName" : "BurrowRoachDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 118,
+          "unitName" : "RoachBurrowed"
+        },
+        {
+          "ability" : 1382,
+          "abilityName" : "BurrowHydraliskDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 117,
+          "unitName" : "HydraliskBurrowed"
+        },
+        {
+          "ability" : 2340,
+          "abilityName" : "BurrowRavagerDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 690,
+          "unitName" : "RavagerBurrowed"
+        },
+        {
+          "ability" : 2014,
+          "abilityName" : "MorphToSwarmHostBurrowedMP,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 493,
+          "unitName" : "SwarmHostBurrowedMP"
+        },
+        {
+          "ability" : 1433,
+          "abilityName" : "BurrowQueenDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 125,
+          "unitName" : "QueenBurrowed"
+        },
+        {
+          "ability" : 1394,
+          "abilityName" : "BurrowInfestorTerranDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 120,
+          "unitName" : "InfestorTerranBurrowed"
+        },
+        {
+          "ability" : 1444,
+          "abilityName" : "BurrowInfestorDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 127,
+          "unitName" : "InfestorBurrowed"
+        },
+        {
+          "ability" : 1512,
+          "abilityName" : "BurrowUltraliskDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 131,
+          "unitName" : "UltraliskBurrowed"
+        },
+        {
+          "ability" : 1380,
+          "abilityName" : "BurrowDroneUp,Execute",
+          "time" : 0.0,
+          "unit" : 104,
+          "unitName" : "Drone"
+        },
+        {
+          "ability" : 1376,
+          "abilityName" : "BurrowBanelingUp,Execute",
+          "time" : 0.0,
+          "unit" : 9,
+          "unitName" : "Baneling"
+        },
+        {
+          "ability" : 1388,
+          "abilityName" : "BurrowRoachUp,Execute",
+          "time" : 0.0,
+          "unit" : 110,
+          "unitName" : "Roach"
+        },
+        {
+          "ability" : 1384,
+          "abilityName" : "BurrowHydraliskUp,Execute",
+          "time" : 0.0,
+          "unit" : 107,
+          "unitName" : "Hydralisk"
+        },
+        {
+          "ability" : 2342,
+          "abilityName" : "BurrowRavagerUp,Execute",
+          "time" : 0.0,
+          "unit" : 688,
+          "unitName" : "Ravager"
+        },
+        {
+          "ability" : 2016,
+          "abilityName" : "MorphToSwarmHostMP,Execute",
+          "time" : 0.5,
+          "unit" : 494,
+          "unitName" : "SwarmHostMP"
+        },
+        {
+          "ability" : 1435,
+          "abilityName" : "BurrowQueenUp,Execute",
+          "time" : 0.0,
+          "unit" : 126,
+          "unitName" : "Queen"
+        },
+        {
+          "ability" : 1396,
+          "abilityName" : "BurrowInfestorTerranUp,Execute",
+          "time" : 0.0,
+          "unit" : 7,
+          "unitName" : "InfestorTerran"
+        },
+        {
+          "ability" : 1446,
+          "abilityName" : "BurrowInfestorUp,Execute",
+          "time" : 0.0,
+          "unit" : 111,
+          "unitName" : "Infestor"
+        },
+        {
+          "ability" : 1514,
+          "abilityName" : "BurrowUltraliskUp,Execute",
+          "time" : 0.0,
+          "unit" : 109,
+          "unitName" : "Ultralisk"
         }
       ],
       "name" : "Zergling"
@@ -4593,6 +5014,236 @@
           "time" : 25.0,
           "unit" : 502,
           "unitName" : "LurkerMP"
+        },
+        {
+          "ability" : 1378,
+          "abilityName" : "BurrowDroneDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 116,
+          "unitName" : "DroneBurrowed"
+        },
+        {
+          "ability" : 1390,
+          "abilityName" : "BurrowZerglingDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 119,
+          "unitName" : "ZerglingBurrowed"
+        },
+        {
+          "ability" : 1374,
+          "abilityName" : "BurrowBanelingDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 115,
+          "unitName" : "BanelingBurrowed"
+        },
+        {
+          "ability" : 1386,
+          "abilityName" : "BurrowRoachDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 118,
+          "unitName" : "RoachBurrowed"
+        },
+        {
+          "ability" : 2340,
+          "abilityName" : "BurrowRavagerDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 690,
+          "unitName" : "RavagerBurrowed"
+        },
+        {
+          "ability" : 2014,
+          "abilityName" : "MorphToSwarmHostBurrowedMP,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 493,
+          "unitName" : "SwarmHostBurrowedMP"
+        },
+        {
+          "ability" : 1433,
+          "abilityName" : "BurrowQueenDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 125,
+          "unitName" : "QueenBurrowed"
+        },
+        {
+          "ability" : 1394,
+          "abilityName" : "BurrowInfestorTerranDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 120,
+          "unitName" : "InfestorTerranBurrowed"
+        },
+        {
+          "ability" : 1444,
+          "abilityName" : "BurrowInfestorDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 127,
+          "unitName" : "InfestorBurrowed"
+        },
+        {
+          "ability" : 1512,
+          "abilityName" : "BurrowUltraliskDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 131,
+          "unitName" : "UltraliskBurrowed"
+        },
+        {
+          "ability" : 1380,
+          "abilityName" : "BurrowDroneUp,Execute",
+          "time" : 0.0,
+          "unit" : 104,
+          "unitName" : "Drone"
+        },
+        {
+          "ability" : 1392,
+          "abilityName" : "BurrowZerglingUp,Execute",
+          "time" : 0.0,
+          "unit" : 105,
+          "unitName" : "Zergling"
+        },
+        {
+          "ability" : 1376,
+          "abilityName" : "BurrowBanelingUp,Execute",
+          "time" : 0.0,
+          "unit" : 9,
+          "unitName" : "Baneling"
+        },
+        {
+          "ability" : 1388,
+          "abilityName" : "BurrowRoachUp,Execute",
+          "time" : 0.0,
+          "unit" : 110,
+          "unitName" : "Roach"
+        },
+        {
+          "ability" : 2342,
+          "abilityName" : "BurrowRavagerUp,Execute",
+          "time" : 0.0,
+          "unit" : 688,
+          "unitName" : "Ravager"
+        },
+        {
+          "ability" : 2016,
+          "abilityName" : "MorphToSwarmHostMP,Execute",
+          "time" : 0.5,
+          "unit" : 494,
+          "unitName" : "SwarmHostMP"
+        },
+        {
+          "ability" : 1435,
+          "abilityName" : "BurrowQueenUp,Execute",
+          "time" : 0.0,
+          "unit" : 126,
+          "unitName" : "Queen"
+        },
+        {
+          "ability" : 1396,
+          "abilityName" : "BurrowInfestorTerranUp,Execute",
+          "time" : 0.0,
+          "unit" : 7,
+          "unitName" : "InfestorTerran"
+        },
+        {
+          "ability" : 1446,
+          "abilityName" : "BurrowInfestorUp,Execute",
+          "time" : 0.0,
+          "unit" : 111,
+          "unitName" : "Infestor"
+        },
+        {
+          "ability" : 1514,
+          "abilityName" : "BurrowUltraliskUp,Execute",
+          "time" : 0.0,
+          "unit" : 109,
+          "unitName" : "Ultralisk"
         }
       ],
       "name" : "Hydralisk"
@@ -4616,6 +5267,236 @@
           "time" : 0.0,
           "unit" : 131,
           "unitName" : "UltraliskBurrowed"
+        },
+        {
+          "ability" : 1378,
+          "abilityName" : "BurrowDroneDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 116,
+          "unitName" : "DroneBurrowed"
+        },
+        {
+          "ability" : 1390,
+          "abilityName" : "BurrowZerglingDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 119,
+          "unitName" : "ZerglingBurrowed"
+        },
+        {
+          "ability" : 1374,
+          "abilityName" : "BurrowBanelingDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 115,
+          "unitName" : "BanelingBurrowed"
+        },
+        {
+          "ability" : 1386,
+          "abilityName" : "BurrowRoachDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 118,
+          "unitName" : "RoachBurrowed"
+        },
+        {
+          "ability" : 1382,
+          "abilityName" : "BurrowHydraliskDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 117,
+          "unitName" : "HydraliskBurrowed"
+        },
+        {
+          "ability" : 2340,
+          "abilityName" : "BurrowRavagerDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 690,
+          "unitName" : "RavagerBurrowed"
+        },
+        {
+          "ability" : 2014,
+          "abilityName" : "MorphToSwarmHostBurrowedMP,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 493,
+          "unitName" : "SwarmHostBurrowedMP"
+        },
+        {
+          "ability" : 1433,
+          "abilityName" : "BurrowQueenDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 125,
+          "unitName" : "QueenBurrowed"
+        },
+        {
+          "ability" : 1394,
+          "abilityName" : "BurrowInfestorTerranDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 120,
+          "unitName" : "InfestorTerranBurrowed"
+        },
+        {
+          "ability" : 1444,
+          "abilityName" : "BurrowInfestorDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 127,
+          "unitName" : "InfestorBurrowed"
+        },
+        {
+          "ability" : 1380,
+          "abilityName" : "BurrowDroneUp,Execute",
+          "time" : 0.0,
+          "unit" : 104,
+          "unitName" : "Drone"
+        },
+        {
+          "ability" : 1392,
+          "abilityName" : "BurrowZerglingUp,Execute",
+          "time" : 0.0,
+          "unit" : 105,
+          "unitName" : "Zergling"
+        },
+        {
+          "ability" : 1376,
+          "abilityName" : "BurrowBanelingUp,Execute",
+          "time" : 0.0,
+          "unit" : 9,
+          "unitName" : "Baneling"
+        },
+        {
+          "ability" : 1388,
+          "abilityName" : "BurrowRoachUp,Execute",
+          "time" : 0.0,
+          "unit" : 110,
+          "unitName" : "Roach"
+        },
+        {
+          "ability" : 1384,
+          "abilityName" : "BurrowHydraliskUp,Execute",
+          "time" : 0.0,
+          "unit" : 107,
+          "unitName" : "Hydralisk"
+        },
+        {
+          "ability" : 2342,
+          "abilityName" : "BurrowRavagerUp,Execute",
+          "time" : 0.0,
+          "unit" : 688,
+          "unitName" : "Ravager"
+        },
+        {
+          "ability" : 2016,
+          "abilityName" : "MorphToSwarmHostMP,Execute",
+          "time" : 0.5,
+          "unit" : 494,
+          "unitName" : "SwarmHostMP"
+        },
+        {
+          "ability" : 1435,
+          "abilityName" : "BurrowQueenUp,Execute",
+          "time" : 0.0,
+          "unit" : 126,
+          "unitName" : "Queen"
+        },
+        {
+          "ability" : 1396,
+          "abilityName" : "BurrowInfestorTerranUp,Execute",
+          "time" : 0.0,
+          "unit" : 7,
+          "unitName" : "InfestorTerran"
+        },
+        {
+          "ability" : 1446,
+          "abilityName" : "BurrowInfestorUp,Execute",
+          "time" : 0.0,
+          "unit" : 111,
+          "unitName" : "Infestor"
         }
       ],
       "name" : "Ultralisk"
@@ -4655,6 +5536,236 @@
           "time" : 12.0,
           "unit" : 688,
           "unitName" : "Ravager"
+        },
+        {
+          "ability" : 1378,
+          "abilityName" : "BurrowDroneDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 116,
+          "unitName" : "DroneBurrowed"
+        },
+        {
+          "ability" : 1390,
+          "abilityName" : "BurrowZerglingDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 119,
+          "unitName" : "ZerglingBurrowed"
+        },
+        {
+          "ability" : 1374,
+          "abilityName" : "BurrowBanelingDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 115,
+          "unitName" : "BanelingBurrowed"
+        },
+        {
+          "ability" : 1382,
+          "abilityName" : "BurrowHydraliskDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 117,
+          "unitName" : "HydraliskBurrowed"
+        },
+        {
+          "ability" : 2340,
+          "abilityName" : "BurrowRavagerDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 690,
+          "unitName" : "RavagerBurrowed"
+        },
+        {
+          "ability" : 2014,
+          "abilityName" : "MorphToSwarmHostBurrowedMP,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 493,
+          "unitName" : "SwarmHostBurrowedMP"
+        },
+        {
+          "ability" : 1433,
+          "abilityName" : "BurrowQueenDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 125,
+          "unitName" : "QueenBurrowed"
+        },
+        {
+          "ability" : 1394,
+          "abilityName" : "BurrowInfestorTerranDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 120,
+          "unitName" : "InfestorTerranBurrowed"
+        },
+        {
+          "ability" : 1444,
+          "abilityName" : "BurrowInfestorDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 127,
+          "unitName" : "InfestorBurrowed"
+        },
+        {
+          "ability" : 1512,
+          "abilityName" : "BurrowUltraliskDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 131,
+          "unitName" : "UltraliskBurrowed"
+        },
+        {
+          "ability" : 1380,
+          "abilityName" : "BurrowDroneUp,Execute",
+          "time" : 0.0,
+          "unit" : 104,
+          "unitName" : "Drone"
+        },
+        {
+          "ability" : 1392,
+          "abilityName" : "BurrowZerglingUp,Execute",
+          "time" : 0.0,
+          "unit" : 105,
+          "unitName" : "Zergling"
+        },
+        {
+          "ability" : 1376,
+          "abilityName" : "BurrowBanelingUp,Execute",
+          "time" : 0.0,
+          "unit" : 9,
+          "unitName" : "Baneling"
+        },
+        {
+          "ability" : 1384,
+          "abilityName" : "BurrowHydraliskUp,Execute",
+          "time" : 0.0,
+          "unit" : 107,
+          "unitName" : "Hydralisk"
+        },
+        {
+          "ability" : 2342,
+          "abilityName" : "BurrowRavagerUp,Execute",
+          "time" : 0.0,
+          "unit" : 688,
+          "unitName" : "Ravager"
+        },
+        {
+          "ability" : 2016,
+          "abilityName" : "MorphToSwarmHostMP,Execute",
+          "time" : 0.5,
+          "unit" : 494,
+          "unitName" : "SwarmHostMP"
+        },
+        {
+          "ability" : 1435,
+          "abilityName" : "BurrowQueenUp,Execute",
+          "time" : 0.0,
+          "unit" : 126,
+          "unitName" : "Queen"
+        },
+        {
+          "ability" : 1396,
+          "abilityName" : "BurrowInfestorTerranUp,Execute",
+          "time" : 0.0,
+          "unit" : 7,
+          "unitName" : "InfestorTerran"
+        },
+        {
+          "ability" : 1446,
+          "abilityName" : "BurrowInfestorUp,Execute",
+          "time" : 0.0,
+          "unit" : 111,
+          "unitName" : "Infestor"
+        },
+        {
+          "ability" : 1514,
+          "abilityName" : "BurrowUltraliskUp,Execute",
+          "time" : 0.0,
+          "unit" : 109,
+          "unitName" : "Ultralisk"
         }
       ],
       "name" : "Roach"
@@ -4678,6 +5789,236 @@
           "time" : 0.0,
           "unit" : 127,
           "unitName" : "InfestorBurrowed"
+        },
+        {
+          "ability" : 1378,
+          "abilityName" : "BurrowDroneDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 116,
+          "unitName" : "DroneBurrowed"
+        },
+        {
+          "ability" : 1390,
+          "abilityName" : "BurrowZerglingDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 119,
+          "unitName" : "ZerglingBurrowed"
+        },
+        {
+          "ability" : 1374,
+          "abilityName" : "BurrowBanelingDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 115,
+          "unitName" : "BanelingBurrowed"
+        },
+        {
+          "ability" : 1386,
+          "abilityName" : "BurrowRoachDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 118,
+          "unitName" : "RoachBurrowed"
+        },
+        {
+          "ability" : 1382,
+          "abilityName" : "BurrowHydraliskDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 117,
+          "unitName" : "HydraliskBurrowed"
+        },
+        {
+          "ability" : 2340,
+          "abilityName" : "BurrowRavagerDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 690,
+          "unitName" : "RavagerBurrowed"
+        },
+        {
+          "ability" : 2014,
+          "abilityName" : "MorphToSwarmHostBurrowedMP,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 493,
+          "unitName" : "SwarmHostBurrowedMP"
+        },
+        {
+          "ability" : 1433,
+          "abilityName" : "BurrowQueenDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 125,
+          "unitName" : "QueenBurrowed"
+        },
+        {
+          "ability" : 1394,
+          "abilityName" : "BurrowInfestorTerranDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 120,
+          "unitName" : "InfestorTerranBurrowed"
+        },
+        {
+          "ability" : 1512,
+          "abilityName" : "BurrowUltraliskDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 131,
+          "unitName" : "UltraliskBurrowed"
+        },
+        {
+          "ability" : 1380,
+          "abilityName" : "BurrowDroneUp,Execute",
+          "time" : 0.0,
+          "unit" : 104,
+          "unitName" : "Drone"
+        },
+        {
+          "ability" : 1392,
+          "abilityName" : "BurrowZerglingUp,Execute",
+          "time" : 0.0,
+          "unit" : 105,
+          "unitName" : "Zergling"
+        },
+        {
+          "ability" : 1376,
+          "abilityName" : "BurrowBanelingUp,Execute",
+          "time" : 0.0,
+          "unit" : 9,
+          "unitName" : "Baneling"
+        },
+        {
+          "ability" : 1388,
+          "abilityName" : "BurrowRoachUp,Execute",
+          "time" : 0.0,
+          "unit" : 110,
+          "unitName" : "Roach"
+        },
+        {
+          "ability" : 1384,
+          "abilityName" : "BurrowHydraliskUp,Execute",
+          "time" : 0.0,
+          "unit" : 107,
+          "unitName" : "Hydralisk"
+        },
+        {
+          "ability" : 2342,
+          "abilityName" : "BurrowRavagerUp,Execute",
+          "time" : 0.0,
+          "unit" : 688,
+          "unitName" : "Ravager"
+        },
+        {
+          "ability" : 2016,
+          "abilityName" : "MorphToSwarmHostMP,Execute",
+          "time" : 0.5,
+          "unit" : 494,
+          "unitName" : "SwarmHostMP"
+        },
+        {
+          "ability" : 1435,
+          "abilityName" : "BurrowQueenUp,Execute",
+          "time" : 0.0,
+          "unit" : 126,
+          "unitName" : "Queen"
+        },
+        {
+          "ability" : 1396,
+          "abilityName" : "BurrowInfestorTerranUp,Execute",
+          "time" : 0.0,
+          "unit" : 7,
+          "unitName" : "InfestorTerran"
+        },
+        {
+          "ability" : 1514,
+          "abilityName" : "BurrowUltraliskUp,Execute",
+          "time" : 0.0,
+          "unit" : 109,
+          "unitName" : "Ultralisk"
         }
       ],
       "name" : "Infestor"
@@ -4715,6 +6056,236 @@
           "time" : 0.0,
           "unit" : 9,
           "unitName" : "Baneling"
+        },
+        {
+          "ability" : 1378,
+          "abilityName" : "BurrowDroneDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 116,
+          "unitName" : "DroneBurrowed"
+        },
+        {
+          "ability" : 1390,
+          "abilityName" : "BurrowZerglingDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 119,
+          "unitName" : "ZerglingBurrowed"
+        },
+        {
+          "ability" : 1386,
+          "abilityName" : "BurrowRoachDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 118,
+          "unitName" : "RoachBurrowed"
+        },
+        {
+          "ability" : 1382,
+          "abilityName" : "BurrowHydraliskDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 117,
+          "unitName" : "HydraliskBurrowed"
+        },
+        {
+          "ability" : 2340,
+          "abilityName" : "BurrowRavagerDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 690,
+          "unitName" : "RavagerBurrowed"
+        },
+        {
+          "ability" : 2014,
+          "abilityName" : "MorphToSwarmHostBurrowedMP,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 493,
+          "unitName" : "SwarmHostBurrowedMP"
+        },
+        {
+          "ability" : 1433,
+          "abilityName" : "BurrowQueenDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 125,
+          "unitName" : "QueenBurrowed"
+        },
+        {
+          "ability" : 1394,
+          "abilityName" : "BurrowInfestorTerranDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 120,
+          "unitName" : "InfestorTerranBurrowed"
+        },
+        {
+          "ability" : 1444,
+          "abilityName" : "BurrowInfestorDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 127,
+          "unitName" : "InfestorBurrowed"
+        },
+        {
+          "ability" : 1512,
+          "abilityName" : "BurrowUltraliskDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 131,
+          "unitName" : "UltraliskBurrowed"
+        },
+        {
+          "ability" : 1380,
+          "abilityName" : "BurrowDroneUp,Execute",
+          "time" : 0.0,
+          "unit" : 104,
+          "unitName" : "Drone"
+        },
+        {
+          "ability" : 1392,
+          "abilityName" : "BurrowZerglingUp,Execute",
+          "time" : 0.0,
+          "unit" : 105,
+          "unitName" : "Zergling"
+        },
+        {
+          "ability" : 1388,
+          "abilityName" : "BurrowRoachUp,Execute",
+          "time" : 0.0,
+          "unit" : 110,
+          "unitName" : "Roach"
+        },
+        {
+          "ability" : 1384,
+          "abilityName" : "BurrowHydraliskUp,Execute",
+          "time" : 0.0,
+          "unit" : 107,
+          "unitName" : "Hydralisk"
+        },
+        {
+          "ability" : 2342,
+          "abilityName" : "BurrowRavagerUp,Execute",
+          "time" : 0.0,
+          "unit" : 688,
+          "unitName" : "Ravager"
+        },
+        {
+          "ability" : 2016,
+          "abilityName" : "MorphToSwarmHostMP,Execute",
+          "time" : 0.5,
+          "unit" : 494,
+          "unitName" : "SwarmHostMP"
+        },
+        {
+          "ability" : 1435,
+          "abilityName" : "BurrowQueenUp,Execute",
+          "time" : 0.0,
+          "unit" : 126,
+          "unitName" : "Queen"
+        },
+        {
+          "ability" : 1396,
+          "abilityName" : "BurrowInfestorTerranUp,Execute",
+          "time" : 0.0,
+          "unit" : 7,
+          "unitName" : "InfestorTerran"
+        },
+        {
+          "ability" : 1446,
+          "abilityName" : "BurrowInfestorUp,Execute",
+          "time" : 0.0,
+          "unit" : 111,
+          "unitName" : "Infestor"
+        },
+        {
+          "ability" : 1514,
+          "abilityName" : "BurrowUltraliskUp,Execute",
+          "time" : 0.0,
+          "unit" : 109,
+          "unitName" : "Ultralisk"
         }
       ],
       "name" : "BanelingBurrowed"
@@ -4729,6 +6300,236 @@
           "time" : 0.0,
           "unit" : 104,
           "unitName" : "Drone"
+        },
+        {
+          "ability" : 1390,
+          "abilityName" : "BurrowZerglingDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 119,
+          "unitName" : "ZerglingBurrowed"
+        },
+        {
+          "ability" : 1374,
+          "abilityName" : "BurrowBanelingDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 115,
+          "unitName" : "BanelingBurrowed"
+        },
+        {
+          "ability" : 1386,
+          "abilityName" : "BurrowRoachDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 118,
+          "unitName" : "RoachBurrowed"
+        },
+        {
+          "ability" : 1382,
+          "abilityName" : "BurrowHydraliskDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 117,
+          "unitName" : "HydraliskBurrowed"
+        },
+        {
+          "ability" : 2340,
+          "abilityName" : "BurrowRavagerDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 690,
+          "unitName" : "RavagerBurrowed"
+        },
+        {
+          "ability" : 2014,
+          "abilityName" : "MorphToSwarmHostBurrowedMP,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 493,
+          "unitName" : "SwarmHostBurrowedMP"
+        },
+        {
+          "ability" : 1433,
+          "abilityName" : "BurrowQueenDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 125,
+          "unitName" : "QueenBurrowed"
+        },
+        {
+          "ability" : 1394,
+          "abilityName" : "BurrowInfestorTerranDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 120,
+          "unitName" : "InfestorTerranBurrowed"
+        },
+        {
+          "ability" : 1444,
+          "abilityName" : "BurrowInfestorDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 127,
+          "unitName" : "InfestorBurrowed"
+        },
+        {
+          "ability" : 1512,
+          "abilityName" : "BurrowUltraliskDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 131,
+          "unitName" : "UltraliskBurrowed"
+        },
+        {
+          "ability" : 1392,
+          "abilityName" : "BurrowZerglingUp,Execute",
+          "time" : 0.0,
+          "unit" : 105,
+          "unitName" : "Zergling"
+        },
+        {
+          "ability" : 1376,
+          "abilityName" : "BurrowBanelingUp,Execute",
+          "time" : 0.0,
+          "unit" : 9,
+          "unitName" : "Baneling"
+        },
+        {
+          "ability" : 1388,
+          "abilityName" : "BurrowRoachUp,Execute",
+          "time" : 0.0,
+          "unit" : 110,
+          "unitName" : "Roach"
+        },
+        {
+          "ability" : 1384,
+          "abilityName" : "BurrowHydraliskUp,Execute",
+          "time" : 0.0,
+          "unit" : 107,
+          "unitName" : "Hydralisk"
+        },
+        {
+          "ability" : 2342,
+          "abilityName" : "BurrowRavagerUp,Execute",
+          "time" : 0.0,
+          "unit" : 688,
+          "unitName" : "Ravager"
+        },
+        {
+          "ability" : 2016,
+          "abilityName" : "MorphToSwarmHostMP,Execute",
+          "time" : 0.5,
+          "unit" : 494,
+          "unitName" : "SwarmHostMP"
+        },
+        {
+          "ability" : 1435,
+          "abilityName" : "BurrowQueenUp,Execute",
+          "time" : 0.0,
+          "unit" : 126,
+          "unitName" : "Queen"
+        },
+        {
+          "ability" : 1396,
+          "abilityName" : "BurrowInfestorTerranUp,Execute",
+          "time" : 0.0,
+          "unit" : 7,
+          "unitName" : "InfestorTerran"
+        },
+        {
+          "ability" : 1446,
+          "abilityName" : "BurrowInfestorUp,Execute",
+          "time" : 0.0,
+          "unit" : 111,
+          "unitName" : "Infestor"
+        },
+        {
+          "ability" : 1514,
+          "abilityName" : "BurrowUltraliskUp,Execute",
+          "time" : 0.0,
+          "unit" : 109,
+          "unitName" : "Ultralisk"
         }
       ],
       "name" : "DroneBurrowed"
@@ -4743,6 +6544,236 @@
           "time" : 0.0,
           "unit" : 107,
           "unitName" : "Hydralisk"
+        },
+        {
+          "ability" : 1378,
+          "abilityName" : "BurrowDroneDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 116,
+          "unitName" : "DroneBurrowed"
+        },
+        {
+          "ability" : 1390,
+          "abilityName" : "BurrowZerglingDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 119,
+          "unitName" : "ZerglingBurrowed"
+        },
+        {
+          "ability" : 1374,
+          "abilityName" : "BurrowBanelingDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 115,
+          "unitName" : "BanelingBurrowed"
+        },
+        {
+          "ability" : 1386,
+          "abilityName" : "BurrowRoachDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 118,
+          "unitName" : "RoachBurrowed"
+        },
+        {
+          "ability" : 2340,
+          "abilityName" : "BurrowRavagerDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 690,
+          "unitName" : "RavagerBurrowed"
+        },
+        {
+          "ability" : 2014,
+          "abilityName" : "MorphToSwarmHostBurrowedMP,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 493,
+          "unitName" : "SwarmHostBurrowedMP"
+        },
+        {
+          "ability" : 1433,
+          "abilityName" : "BurrowQueenDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 125,
+          "unitName" : "QueenBurrowed"
+        },
+        {
+          "ability" : 1394,
+          "abilityName" : "BurrowInfestorTerranDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 120,
+          "unitName" : "InfestorTerranBurrowed"
+        },
+        {
+          "ability" : 1444,
+          "abilityName" : "BurrowInfestorDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 127,
+          "unitName" : "InfestorBurrowed"
+        },
+        {
+          "ability" : 1512,
+          "abilityName" : "BurrowUltraliskDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 131,
+          "unitName" : "UltraliskBurrowed"
+        },
+        {
+          "ability" : 1380,
+          "abilityName" : "BurrowDroneUp,Execute",
+          "time" : 0.0,
+          "unit" : 104,
+          "unitName" : "Drone"
+        },
+        {
+          "ability" : 1392,
+          "abilityName" : "BurrowZerglingUp,Execute",
+          "time" : 0.0,
+          "unit" : 105,
+          "unitName" : "Zergling"
+        },
+        {
+          "ability" : 1376,
+          "abilityName" : "BurrowBanelingUp,Execute",
+          "time" : 0.0,
+          "unit" : 9,
+          "unitName" : "Baneling"
+        },
+        {
+          "ability" : 1388,
+          "abilityName" : "BurrowRoachUp,Execute",
+          "time" : 0.0,
+          "unit" : 110,
+          "unitName" : "Roach"
+        },
+        {
+          "ability" : 2342,
+          "abilityName" : "BurrowRavagerUp,Execute",
+          "time" : 0.0,
+          "unit" : 688,
+          "unitName" : "Ravager"
+        },
+        {
+          "ability" : 2016,
+          "abilityName" : "MorphToSwarmHostMP,Execute",
+          "time" : 0.5,
+          "unit" : 494,
+          "unitName" : "SwarmHostMP"
+        },
+        {
+          "ability" : 1435,
+          "abilityName" : "BurrowQueenUp,Execute",
+          "time" : 0.0,
+          "unit" : 126,
+          "unitName" : "Queen"
+        },
+        {
+          "ability" : 1396,
+          "abilityName" : "BurrowInfestorTerranUp,Execute",
+          "time" : 0.0,
+          "unit" : 7,
+          "unitName" : "InfestorTerran"
+        },
+        {
+          "ability" : 1446,
+          "abilityName" : "BurrowInfestorUp,Execute",
+          "time" : 0.0,
+          "unit" : 111,
+          "unitName" : "Infestor"
+        },
+        {
+          "ability" : 1514,
+          "abilityName" : "BurrowUltraliskUp,Execute",
+          "time" : 0.0,
+          "unit" : 109,
+          "unitName" : "Ultralisk"
         }
       ],
       "name" : "HydraliskBurrowed"
@@ -4757,6 +6788,236 @@
           "time" : 0.0,
           "unit" : 110,
           "unitName" : "Roach"
+        },
+        {
+          "ability" : 1378,
+          "abilityName" : "BurrowDroneDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 116,
+          "unitName" : "DroneBurrowed"
+        },
+        {
+          "ability" : 1390,
+          "abilityName" : "BurrowZerglingDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 119,
+          "unitName" : "ZerglingBurrowed"
+        },
+        {
+          "ability" : 1374,
+          "abilityName" : "BurrowBanelingDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 115,
+          "unitName" : "BanelingBurrowed"
+        },
+        {
+          "ability" : 1382,
+          "abilityName" : "BurrowHydraliskDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 117,
+          "unitName" : "HydraliskBurrowed"
+        },
+        {
+          "ability" : 2340,
+          "abilityName" : "BurrowRavagerDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 690,
+          "unitName" : "RavagerBurrowed"
+        },
+        {
+          "ability" : 2014,
+          "abilityName" : "MorphToSwarmHostBurrowedMP,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 493,
+          "unitName" : "SwarmHostBurrowedMP"
+        },
+        {
+          "ability" : 1433,
+          "abilityName" : "BurrowQueenDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 125,
+          "unitName" : "QueenBurrowed"
+        },
+        {
+          "ability" : 1394,
+          "abilityName" : "BurrowInfestorTerranDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 120,
+          "unitName" : "InfestorTerranBurrowed"
+        },
+        {
+          "ability" : 1444,
+          "abilityName" : "BurrowInfestorDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 127,
+          "unitName" : "InfestorBurrowed"
+        },
+        {
+          "ability" : 1512,
+          "abilityName" : "BurrowUltraliskDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 131,
+          "unitName" : "UltraliskBurrowed"
+        },
+        {
+          "ability" : 1380,
+          "abilityName" : "BurrowDroneUp,Execute",
+          "time" : 0.0,
+          "unit" : 104,
+          "unitName" : "Drone"
+        },
+        {
+          "ability" : 1392,
+          "abilityName" : "BurrowZerglingUp,Execute",
+          "time" : 0.0,
+          "unit" : 105,
+          "unitName" : "Zergling"
+        },
+        {
+          "ability" : 1376,
+          "abilityName" : "BurrowBanelingUp,Execute",
+          "time" : 0.0,
+          "unit" : 9,
+          "unitName" : "Baneling"
+        },
+        {
+          "ability" : 1384,
+          "abilityName" : "BurrowHydraliskUp,Execute",
+          "time" : 0.0,
+          "unit" : 107,
+          "unitName" : "Hydralisk"
+        },
+        {
+          "ability" : 2342,
+          "abilityName" : "BurrowRavagerUp,Execute",
+          "time" : 0.0,
+          "unit" : 688,
+          "unitName" : "Ravager"
+        },
+        {
+          "ability" : 2016,
+          "abilityName" : "MorphToSwarmHostMP,Execute",
+          "time" : 0.5,
+          "unit" : 494,
+          "unitName" : "SwarmHostMP"
+        },
+        {
+          "ability" : 1435,
+          "abilityName" : "BurrowQueenUp,Execute",
+          "time" : 0.0,
+          "unit" : 126,
+          "unitName" : "Queen"
+        },
+        {
+          "ability" : 1396,
+          "abilityName" : "BurrowInfestorTerranUp,Execute",
+          "time" : 0.0,
+          "unit" : 7,
+          "unitName" : "InfestorTerran"
+        },
+        {
+          "ability" : 1446,
+          "abilityName" : "BurrowInfestorUp,Execute",
+          "time" : 0.0,
+          "unit" : 111,
+          "unitName" : "Infestor"
+        },
+        {
+          "ability" : 1514,
+          "abilityName" : "BurrowUltraliskUp,Execute",
+          "time" : 0.0,
+          "unit" : 109,
+          "unitName" : "Ultralisk"
         }
       ],
       "name" : "RoachBurrowed"
@@ -4771,6 +7032,236 @@
           "time" : 0.0,
           "unit" : 105,
           "unitName" : "Zergling"
+        },
+        {
+          "ability" : 1378,
+          "abilityName" : "BurrowDroneDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 116,
+          "unitName" : "DroneBurrowed"
+        },
+        {
+          "ability" : 1374,
+          "abilityName" : "BurrowBanelingDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 115,
+          "unitName" : "BanelingBurrowed"
+        },
+        {
+          "ability" : 1386,
+          "abilityName" : "BurrowRoachDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 118,
+          "unitName" : "RoachBurrowed"
+        },
+        {
+          "ability" : 1382,
+          "abilityName" : "BurrowHydraliskDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 117,
+          "unitName" : "HydraliskBurrowed"
+        },
+        {
+          "ability" : 2340,
+          "abilityName" : "BurrowRavagerDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 690,
+          "unitName" : "RavagerBurrowed"
+        },
+        {
+          "ability" : 2014,
+          "abilityName" : "MorphToSwarmHostBurrowedMP,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 493,
+          "unitName" : "SwarmHostBurrowedMP"
+        },
+        {
+          "ability" : 1433,
+          "abilityName" : "BurrowQueenDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 125,
+          "unitName" : "QueenBurrowed"
+        },
+        {
+          "ability" : 1394,
+          "abilityName" : "BurrowInfestorTerranDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 120,
+          "unitName" : "InfestorTerranBurrowed"
+        },
+        {
+          "ability" : 1444,
+          "abilityName" : "BurrowInfestorDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 127,
+          "unitName" : "InfestorBurrowed"
+        },
+        {
+          "ability" : 1512,
+          "abilityName" : "BurrowUltraliskDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 131,
+          "unitName" : "UltraliskBurrowed"
+        },
+        {
+          "ability" : 1380,
+          "abilityName" : "BurrowDroneUp,Execute",
+          "time" : 0.0,
+          "unit" : 104,
+          "unitName" : "Drone"
+        },
+        {
+          "ability" : 1376,
+          "abilityName" : "BurrowBanelingUp,Execute",
+          "time" : 0.0,
+          "unit" : 9,
+          "unitName" : "Baneling"
+        },
+        {
+          "ability" : 1388,
+          "abilityName" : "BurrowRoachUp,Execute",
+          "time" : 0.0,
+          "unit" : 110,
+          "unitName" : "Roach"
+        },
+        {
+          "ability" : 1384,
+          "abilityName" : "BurrowHydraliskUp,Execute",
+          "time" : 0.0,
+          "unit" : 107,
+          "unitName" : "Hydralisk"
+        },
+        {
+          "ability" : 2342,
+          "abilityName" : "BurrowRavagerUp,Execute",
+          "time" : 0.0,
+          "unit" : 688,
+          "unitName" : "Ravager"
+        },
+        {
+          "ability" : 2016,
+          "abilityName" : "MorphToSwarmHostMP,Execute",
+          "time" : 0.5,
+          "unit" : 494,
+          "unitName" : "SwarmHostMP"
+        },
+        {
+          "ability" : 1435,
+          "abilityName" : "BurrowQueenUp,Execute",
+          "time" : 0.0,
+          "unit" : 126,
+          "unitName" : "Queen"
+        },
+        {
+          "ability" : 1396,
+          "abilityName" : "BurrowInfestorTerranUp,Execute",
+          "time" : 0.0,
+          "unit" : 7,
+          "unitName" : "InfestorTerran"
+        },
+        {
+          "ability" : 1446,
+          "abilityName" : "BurrowInfestorUp,Execute",
+          "time" : 0.0,
+          "unit" : 111,
+          "unitName" : "Infestor"
+        },
+        {
+          "ability" : 1514,
+          "abilityName" : "BurrowUltraliskUp,Execute",
+          "time" : 0.0,
+          "unit" : 109,
+          "unitName" : "Ultralisk"
         }
       ],
       "name" : "ZerglingBurrowed"
@@ -4785,6 +7276,236 @@
           "time" : 0.0,
           "unit" : 7,
           "unitName" : "InfestorTerran"
+        },
+        {
+          "ability" : 1378,
+          "abilityName" : "BurrowDroneDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 116,
+          "unitName" : "DroneBurrowed"
+        },
+        {
+          "ability" : 1390,
+          "abilityName" : "BurrowZerglingDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 119,
+          "unitName" : "ZerglingBurrowed"
+        },
+        {
+          "ability" : 1374,
+          "abilityName" : "BurrowBanelingDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 115,
+          "unitName" : "BanelingBurrowed"
+        },
+        {
+          "ability" : 1386,
+          "abilityName" : "BurrowRoachDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 118,
+          "unitName" : "RoachBurrowed"
+        },
+        {
+          "ability" : 1382,
+          "abilityName" : "BurrowHydraliskDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 117,
+          "unitName" : "HydraliskBurrowed"
+        },
+        {
+          "ability" : 2340,
+          "abilityName" : "BurrowRavagerDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 690,
+          "unitName" : "RavagerBurrowed"
+        },
+        {
+          "ability" : 2014,
+          "abilityName" : "MorphToSwarmHostBurrowedMP,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 493,
+          "unitName" : "SwarmHostBurrowedMP"
+        },
+        {
+          "ability" : 1433,
+          "abilityName" : "BurrowQueenDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 125,
+          "unitName" : "QueenBurrowed"
+        },
+        {
+          "ability" : 1444,
+          "abilityName" : "BurrowInfestorDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 127,
+          "unitName" : "InfestorBurrowed"
+        },
+        {
+          "ability" : 1512,
+          "abilityName" : "BurrowUltraliskDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 131,
+          "unitName" : "UltraliskBurrowed"
+        },
+        {
+          "ability" : 1380,
+          "abilityName" : "BurrowDroneUp,Execute",
+          "time" : 0.0,
+          "unit" : 104,
+          "unitName" : "Drone"
+        },
+        {
+          "ability" : 1392,
+          "abilityName" : "BurrowZerglingUp,Execute",
+          "time" : 0.0,
+          "unit" : 105,
+          "unitName" : "Zergling"
+        },
+        {
+          "ability" : 1376,
+          "abilityName" : "BurrowBanelingUp,Execute",
+          "time" : 0.0,
+          "unit" : 9,
+          "unitName" : "Baneling"
+        },
+        {
+          "ability" : 1388,
+          "abilityName" : "BurrowRoachUp,Execute",
+          "time" : 0.0,
+          "unit" : 110,
+          "unitName" : "Roach"
+        },
+        {
+          "ability" : 1384,
+          "abilityName" : "BurrowHydraliskUp,Execute",
+          "time" : 0.0,
+          "unit" : 107,
+          "unitName" : "Hydralisk"
+        },
+        {
+          "ability" : 2342,
+          "abilityName" : "BurrowRavagerUp,Execute",
+          "time" : 0.0,
+          "unit" : 688,
+          "unitName" : "Ravager"
+        },
+        {
+          "ability" : 2016,
+          "abilityName" : "MorphToSwarmHostMP,Execute",
+          "time" : 0.5,
+          "unit" : 494,
+          "unitName" : "SwarmHostMP"
+        },
+        {
+          "ability" : 1435,
+          "abilityName" : "BurrowQueenUp,Execute",
+          "time" : 0.0,
+          "unit" : 126,
+          "unitName" : "Queen"
+        },
+        {
+          "ability" : 1446,
+          "abilityName" : "BurrowInfestorUp,Execute",
+          "time" : 0.0,
+          "unit" : 111,
+          "unitName" : "Infestor"
+        },
+        {
+          "ability" : 1514,
+          "abilityName" : "BurrowUltraliskUp,Execute",
+          "time" : 0.0,
+          "unit" : 109,
+          "unitName" : "Ultralisk"
         }
       ],
       "name" : "InfestorTerranBurrowed"
@@ -4799,6 +7520,236 @@
           "time" : 0.0,
           "unit" : 126,
           "unitName" : "Queen"
+        },
+        {
+          "ability" : 1378,
+          "abilityName" : "BurrowDroneDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 116,
+          "unitName" : "DroneBurrowed"
+        },
+        {
+          "ability" : 1390,
+          "abilityName" : "BurrowZerglingDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 119,
+          "unitName" : "ZerglingBurrowed"
+        },
+        {
+          "ability" : 1374,
+          "abilityName" : "BurrowBanelingDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 115,
+          "unitName" : "BanelingBurrowed"
+        },
+        {
+          "ability" : 1386,
+          "abilityName" : "BurrowRoachDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 118,
+          "unitName" : "RoachBurrowed"
+        },
+        {
+          "ability" : 1382,
+          "abilityName" : "BurrowHydraliskDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 117,
+          "unitName" : "HydraliskBurrowed"
+        },
+        {
+          "ability" : 2340,
+          "abilityName" : "BurrowRavagerDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 690,
+          "unitName" : "RavagerBurrowed"
+        },
+        {
+          "ability" : 2014,
+          "abilityName" : "MorphToSwarmHostBurrowedMP,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 493,
+          "unitName" : "SwarmHostBurrowedMP"
+        },
+        {
+          "ability" : 1394,
+          "abilityName" : "BurrowInfestorTerranDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 120,
+          "unitName" : "InfestorTerranBurrowed"
+        },
+        {
+          "ability" : 1444,
+          "abilityName" : "BurrowInfestorDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 127,
+          "unitName" : "InfestorBurrowed"
+        },
+        {
+          "ability" : 1512,
+          "abilityName" : "BurrowUltraliskDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 131,
+          "unitName" : "UltraliskBurrowed"
+        },
+        {
+          "ability" : 1380,
+          "abilityName" : "BurrowDroneUp,Execute",
+          "time" : 0.0,
+          "unit" : 104,
+          "unitName" : "Drone"
+        },
+        {
+          "ability" : 1392,
+          "abilityName" : "BurrowZerglingUp,Execute",
+          "time" : 0.0,
+          "unit" : 105,
+          "unitName" : "Zergling"
+        },
+        {
+          "ability" : 1376,
+          "abilityName" : "BurrowBanelingUp,Execute",
+          "time" : 0.0,
+          "unit" : 9,
+          "unitName" : "Baneling"
+        },
+        {
+          "ability" : 1388,
+          "abilityName" : "BurrowRoachUp,Execute",
+          "time" : 0.0,
+          "unit" : 110,
+          "unitName" : "Roach"
+        },
+        {
+          "ability" : 1384,
+          "abilityName" : "BurrowHydraliskUp,Execute",
+          "time" : 0.0,
+          "unit" : 107,
+          "unitName" : "Hydralisk"
+        },
+        {
+          "ability" : 2342,
+          "abilityName" : "BurrowRavagerUp,Execute",
+          "time" : 0.0,
+          "unit" : 688,
+          "unitName" : "Ravager"
+        },
+        {
+          "ability" : 2016,
+          "abilityName" : "MorphToSwarmHostMP,Execute",
+          "time" : 0.5,
+          "unit" : 494,
+          "unitName" : "SwarmHostMP"
+        },
+        {
+          "ability" : 1396,
+          "abilityName" : "BurrowInfestorTerranUp,Execute",
+          "time" : 0.0,
+          "unit" : 7,
+          "unitName" : "InfestorTerran"
+        },
+        {
+          "ability" : 1446,
+          "abilityName" : "BurrowInfestorUp,Execute",
+          "time" : 0.0,
+          "unit" : 111,
+          "unitName" : "Infestor"
+        },
+        {
+          "ability" : 1514,
+          "abilityName" : "BurrowUltraliskUp,Execute",
+          "time" : 0.0,
+          "unit" : 109,
+          "unitName" : "Ultralisk"
         }
       ],
       "name" : "QueenBurrowed"
@@ -4832,6 +7783,236 @@
           "time" : 0.0,
           "unit" : 125,
           "unitName" : "QueenBurrowed"
+        },
+        {
+          "ability" : 1378,
+          "abilityName" : "BurrowDroneDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 116,
+          "unitName" : "DroneBurrowed"
+        },
+        {
+          "ability" : 1390,
+          "abilityName" : "BurrowZerglingDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 119,
+          "unitName" : "ZerglingBurrowed"
+        },
+        {
+          "ability" : 1374,
+          "abilityName" : "BurrowBanelingDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 115,
+          "unitName" : "BanelingBurrowed"
+        },
+        {
+          "ability" : 1386,
+          "abilityName" : "BurrowRoachDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 118,
+          "unitName" : "RoachBurrowed"
+        },
+        {
+          "ability" : 1382,
+          "abilityName" : "BurrowHydraliskDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 117,
+          "unitName" : "HydraliskBurrowed"
+        },
+        {
+          "ability" : 2340,
+          "abilityName" : "BurrowRavagerDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 690,
+          "unitName" : "RavagerBurrowed"
+        },
+        {
+          "ability" : 2014,
+          "abilityName" : "MorphToSwarmHostBurrowedMP,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 493,
+          "unitName" : "SwarmHostBurrowedMP"
+        },
+        {
+          "ability" : 1394,
+          "abilityName" : "BurrowInfestorTerranDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 120,
+          "unitName" : "InfestorTerranBurrowed"
+        },
+        {
+          "ability" : 1444,
+          "abilityName" : "BurrowInfestorDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 127,
+          "unitName" : "InfestorBurrowed"
+        },
+        {
+          "ability" : 1512,
+          "abilityName" : "BurrowUltraliskDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 131,
+          "unitName" : "UltraliskBurrowed"
+        },
+        {
+          "ability" : 1380,
+          "abilityName" : "BurrowDroneUp,Execute",
+          "time" : 0.0,
+          "unit" : 104,
+          "unitName" : "Drone"
+        },
+        {
+          "ability" : 1392,
+          "abilityName" : "BurrowZerglingUp,Execute",
+          "time" : 0.0,
+          "unit" : 105,
+          "unitName" : "Zergling"
+        },
+        {
+          "ability" : 1376,
+          "abilityName" : "BurrowBanelingUp,Execute",
+          "time" : 0.0,
+          "unit" : 9,
+          "unitName" : "Baneling"
+        },
+        {
+          "ability" : 1388,
+          "abilityName" : "BurrowRoachUp,Execute",
+          "time" : 0.0,
+          "unit" : 110,
+          "unitName" : "Roach"
+        },
+        {
+          "ability" : 1384,
+          "abilityName" : "BurrowHydraliskUp,Execute",
+          "time" : 0.0,
+          "unit" : 107,
+          "unitName" : "Hydralisk"
+        },
+        {
+          "ability" : 2342,
+          "abilityName" : "BurrowRavagerUp,Execute",
+          "time" : 0.0,
+          "unit" : 688,
+          "unitName" : "Ravager"
+        },
+        {
+          "ability" : 2016,
+          "abilityName" : "MorphToSwarmHostMP,Execute",
+          "time" : 0.5,
+          "unit" : 494,
+          "unitName" : "SwarmHostMP"
+        },
+        {
+          "ability" : 1396,
+          "abilityName" : "BurrowInfestorTerranUp,Execute",
+          "time" : 0.0,
+          "unit" : 7,
+          "unitName" : "InfestorTerran"
+        },
+        {
+          "ability" : 1446,
+          "abilityName" : "BurrowInfestorUp,Execute",
+          "time" : 0.0,
+          "unit" : 111,
+          "unitName" : "Infestor"
+        },
+        {
+          "ability" : 1514,
+          "abilityName" : "BurrowUltraliskUp,Execute",
+          "time" : 0.0,
+          "unit" : 109,
+          "unitName" : "Ultralisk"
         }
       ],
       "name" : "Queen"
@@ -4846,6 +8027,236 @@
           "time" : 0.0,
           "unit" : 111,
           "unitName" : "Infestor"
+        },
+        {
+          "ability" : 1378,
+          "abilityName" : "BurrowDroneDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 116,
+          "unitName" : "DroneBurrowed"
+        },
+        {
+          "ability" : 1390,
+          "abilityName" : "BurrowZerglingDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 119,
+          "unitName" : "ZerglingBurrowed"
+        },
+        {
+          "ability" : 1374,
+          "abilityName" : "BurrowBanelingDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 115,
+          "unitName" : "BanelingBurrowed"
+        },
+        {
+          "ability" : 1386,
+          "abilityName" : "BurrowRoachDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 118,
+          "unitName" : "RoachBurrowed"
+        },
+        {
+          "ability" : 1382,
+          "abilityName" : "BurrowHydraliskDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 117,
+          "unitName" : "HydraliskBurrowed"
+        },
+        {
+          "ability" : 2340,
+          "abilityName" : "BurrowRavagerDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 690,
+          "unitName" : "RavagerBurrowed"
+        },
+        {
+          "ability" : 2014,
+          "abilityName" : "MorphToSwarmHostBurrowedMP,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 493,
+          "unitName" : "SwarmHostBurrowedMP"
+        },
+        {
+          "ability" : 1433,
+          "abilityName" : "BurrowQueenDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 125,
+          "unitName" : "QueenBurrowed"
+        },
+        {
+          "ability" : 1394,
+          "abilityName" : "BurrowInfestorTerranDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 120,
+          "unitName" : "InfestorTerranBurrowed"
+        },
+        {
+          "ability" : 1512,
+          "abilityName" : "BurrowUltraliskDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 131,
+          "unitName" : "UltraliskBurrowed"
+        },
+        {
+          "ability" : 1380,
+          "abilityName" : "BurrowDroneUp,Execute",
+          "time" : 0.0,
+          "unit" : 104,
+          "unitName" : "Drone"
+        },
+        {
+          "ability" : 1392,
+          "abilityName" : "BurrowZerglingUp,Execute",
+          "time" : 0.0,
+          "unit" : 105,
+          "unitName" : "Zergling"
+        },
+        {
+          "ability" : 1376,
+          "abilityName" : "BurrowBanelingUp,Execute",
+          "time" : 0.0,
+          "unit" : 9,
+          "unitName" : "Baneling"
+        },
+        {
+          "ability" : 1388,
+          "abilityName" : "BurrowRoachUp,Execute",
+          "time" : 0.0,
+          "unit" : 110,
+          "unitName" : "Roach"
+        },
+        {
+          "ability" : 1384,
+          "abilityName" : "BurrowHydraliskUp,Execute",
+          "time" : 0.0,
+          "unit" : 107,
+          "unitName" : "Hydralisk"
+        },
+        {
+          "ability" : 2342,
+          "abilityName" : "BurrowRavagerUp,Execute",
+          "time" : 0.0,
+          "unit" : 688,
+          "unitName" : "Ravager"
+        },
+        {
+          "ability" : 2016,
+          "abilityName" : "MorphToSwarmHostMP,Execute",
+          "time" : 0.5,
+          "unit" : 494,
+          "unitName" : "SwarmHostMP"
+        },
+        {
+          "ability" : 1435,
+          "abilityName" : "BurrowQueenUp,Execute",
+          "time" : 0.0,
+          "unit" : 126,
+          "unitName" : "Queen"
+        },
+        {
+          "ability" : 1396,
+          "abilityName" : "BurrowInfestorTerranUp,Execute",
+          "time" : 0.0,
+          "unit" : 7,
+          "unitName" : "InfestorTerran"
+        },
+        {
+          "ability" : 1514,
+          "abilityName" : "BurrowUltraliskUp,Execute",
+          "time" : 0.0,
+          "unit" : 109,
+          "unitName" : "Ultralisk"
         }
       ],
       "name" : "InfestorBurrowed"
@@ -4874,6 +8285,236 @@
           "time" : 0.0,
           "unit" : 109,
           "unitName" : "Ultralisk"
+        },
+        {
+          "ability" : 1378,
+          "abilityName" : "BurrowDroneDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 116,
+          "unitName" : "DroneBurrowed"
+        },
+        {
+          "ability" : 1390,
+          "abilityName" : "BurrowZerglingDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 119,
+          "unitName" : "ZerglingBurrowed"
+        },
+        {
+          "ability" : 1374,
+          "abilityName" : "BurrowBanelingDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 115,
+          "unitName" : "BanelingBurrowed"
+        },
+        {
+          "ability" : 1386,
+          "abilityName" : "BurrowRoachDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 118,
+          "unitName" : "RoachBurrowed"
+        },
+        {
+          "ability" : 1382,
+          "abilityName" : "BurrowHydraliskDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 117,
+          "unitName" : "HydraliskBurrowed"
+        },
+        {
+          "ability" : 2340,
+          "abilityName" : "BurrowRavagerDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 690,
+          "unitName" : "RavagerBurrowed"
+        },
+        {
+          "ability" : 2014,
+          "abilityName" : "MorphToSwarmHostBurrowedMP,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 493,
+          "unitName" : "SwarmHostBurrowedMP"
+        },
+        {
+          "ability" : 1433,
+          "abilityName" : "BurrowQueenDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 125,
+          "unitName" : "QueenBurrowed"
+        },
+        {
+          "ability" : 1394,
+          "abilityName" : "BurrowInfestorTerranDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 120,
+          "unitName" : "InfestorTerranBurrowed"
+        },
+        {
+          "ability" : 1444,
+          "abilityName" : "BurrowInfestorDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 127,
+          "unitName" : "InfestorBurrowed"
+        },
+        {
+          "ability" : 1380,
+          "abilityName" : "BurrowDroneUp,Execute",
+          "time" : 0.0,
+          "unit" : 104,
+          "unitName" : "Drone"
+        },
+        {
+          "ability" : 1392,
+          "abilityName" : "BurrowZerglingUp,Execute",
+          "time" : 0.0,
+          "unit" : 105,
+          "unitName" : "Zergling"
+        },
+        {
+          "ability" : 1376,
+          "abilityName" : "BurrowBanelingUp,Execute",
+          "time" : 0.0,
+          "unit" : 9,
+          "unitName" : "Baneling"
+        },
+        {
+          "ability" : 1388,
+          "abilityName" : "BurrowRoachUp,Execute",
+          "time" : 0.0,
+          "unit" : 110,
+          "unitName" : "Roach"
+        },
+        {
+          "ability" : 1384,
+          "abilityName" : "BurrowHydraliskUp,Execute",
+          "time" : 0.0,
+          "unit" : 107,
+          "unitName" : "Hydralisk"
+        },
+        {
+          "ability" : 2342,
+          "abilityName" : "BurrowRavagerUp,Execute",
+          "time" : 0.0,
+          "unit" : 688,
+          "unitName" : "Ravager"
+        },
+        {
+          "ability" : 2016,
+          "abilityName" : "MorphToSwarmHostMP,Execute",
+          "time" : 0.5,
+          "unit" : 494,
+          "unitName" : "SwarmHostMP"
+        },
+        {
+          "ability" : 1435,
+          "abilityName" : "BurrowQueenUp,Execute",
+          "time" : 0.0,
+          "unit" : 126,
+          "unitName" : "Queen"
+        },
+        {
+          "ability" : 1396,
+          "abilityName" : "BurrowInfestorTerranUp,Execute",
+          "time" : 0.0,
+          "unit" : 7,
+          "unitName" : "InfestorTerran"
+        },
+        {
+          "ability" : 1446,
+          "abilityName" : "BurrowInfestorUp,Execute",
+          "time" : 0.0,
+          "unit" : 111,
+          "unitName" : "Infestor"
         }
       ],
       "name" : "UltraliskBurrowed"
@@ -5132,6 +8773,236 @@
           "time" : 0.5,
           "unit" : 494,
           "unitName" : "SwarmHostMP"
+        },
+        {
+          "ability" : 1378,
+          "abilityName" : "BurrowDroneDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 116,
+          "unitName" : "DroneBurrowed"
+        },
+        {
+          "ability" : 1390,
+          "abilityName" : "BurrowZerglingDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 119,
+          "unitName" : "ZerglingBurrowed"
+        },
+        {
+          "ability" : 1374,
+          "abilityName" : "BurrowBanelingDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 115,
+          "unitName" : "BanelingBurrowed"
+        },
+        {
+          "ability" : 1386,
+          "abilityName" : "BurrowRoachDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 118,
+          "unitName" : "RoachBurrowed"
+        },
+        {
+          "ability" : 1382,
+          "abilityName" : "BurrowHydraliskDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 117,
+          "unitName" : "HydraliskBurrowed"
+        },
+        {
+          "ability" : 2340,
+          "abilityName" : "BurrowRavagerDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 690,
+          "unitName" : "RavagerBurrowed"
+        },
+        {
+          "ability" : 1433,
+          "abilityName" : "BurrowQueenDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 125,
+          "unitName" : "QueenBurrowed"
+        },
+        {
+          "ability" : 1394,
+          "abilityName" : "BurrowInfestorTerranDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 120,
+          "unitName" : "InfestorTerranBurrowed"
+        },
+        {
+          "ability" : 1444,
+          "abilityName" : "BurrowInfestorDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 127,
+          "unitName" : "InfestorBurrowed"
+        },
+        {
+          "ability" : 1512,
+          "abilityName" : "BurrowUltraliskDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 131,
+          "unitName" : "UltraliskBurrowed"
+        },
+        {
+          "ability" : 1380,
+          "abilityName" : "BurrowDroneUp,Execute",
+          "time" : 0.0,
+          "unit" : 104,
+          "unitName" : "Drone"
+        },
+        {
+          "ability" : 1392,
+          "abilityName" : "BurrowZerglingUp,Execute",
+          "time" : 0.0,
+          "unit" : 105,
+          "unitName" : "Zergling"
+        },
+        {
+          "ability" : 1376,
+          "abilityName" : "BurrowBanelingUp,Execute",
+          "time" : 0.0,
+          "unit" : 9,
+          "unitName" : "Baneling"
+        },
+        {
+          "ability" : 1388,
+          "abilityName" : "BurrowRoachUp,Execute",
+          "time" : 0.0,
+          "unit" : 110,
+          "unitName" : "Roach"
+        },
+        {
+          "ability" : 1384,
+          "abilityName" : "BurrowHydraliskUp,Execute",
+          "time" : 0.0,
+          "unit" : 107,
+          "unitName" : "Hydralisk"
+        },
+        {
+          "ability" : 2342,
+          "abilityName" : "BurrowRavagerUp,Execute",
+          "time" : 0.0,
+          "unit" : 688,
+          "unitName" : "Ravager"
+        },
+        {
+          "ability" : 1435,
+          "abilityName" : "BurrowQueenUp,Execute",
+          "time" : 0.0,
+          "unit" : 126,
+          "unitName" : "Queen"
+        },
+        {
+          "ability" : 1396,
+          "abilityName" : "BurrowInfestorTerranUp,Execute",
+          "time" : 0.0,
+          "unit" : 7,
+          "unitName" : "InfestorTerran"
+        },
+        {
+          "ability" : 1446,
+          "abilityName" : "BurrowInfestorUp,Execute",
+          "time" : 0.0,
+          "unit" : 111,
+          "unitName" : "Infestor"
+        },
+        {
+          "ability" : 1514,
+          "abilityName" : "BurrowUltraliskUp,Execute",
+          "time" : 0.0,
+          "unit" : 109,
+          "unitName" : "Ultralisk"
         }
       ],
       "name" : "SwarmHostBurrowedMP"
@@ -5155,6 +9026,236 @@
           "time" : 0.0,
           "unit" : 493,
           "unitName" : "SwarmHostBurrowedMP"
+        },
+        {
+          "ability" : 1378,
+          "abilityName" : "BurrowDroneDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 116,
+          "unitName" : "DroneBurrowed"
+        },
+        {
+          "ability" : 1390,
+          "abilityName" : "BurrowZerglingDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 119,
+          "unitName" : "ZerglingBurrowed"
+        },
+        {
+          "ability" : 1374,
+          "abilityName" : "BurrowBanelingDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 115,
+          "unitName" : "BanelingBurrowed"
+        },
+        {
+          "ability" : 1386,
+          "abilityName" : "BurrowRoachDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 118,
+          "unitName" : "RoachBurrowed"
+        },
+        {
+          "ability" : 1382,
+          "abilityName" : "BurrowHydraliskDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 117,
+          "unitName" : "HydraliskBurrowed"
+        },
+        {
+          "ability" : 2340,
+          "abilityName" : "BurrowRavagerDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 690,
+          "unitName" : "RavagerBurrowed"
+        },
+        {
+          "ability" : 1433,
+          "abilityName" : "BurrowQueenDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 125,
+          "unitName" : "QueenBurrowed"
+        },
+        {
+          "ability" : 1394,
+          "abilityName" : "BurrowInfestorTerranDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 120,
+          "unitName" : "InfestorTerranBurrowed"
+        },
+        {
+          "ability" : 1444,
+          "abilityName" : "BurrowInfestorDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 127,
+          "unitName" : "InfestorBurrowed"
+        },
+        {
+          "ability" : 1512,
+          "abilityName" : "BurrowUltraliskDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 131,
+          "unitName" : "UltraliskBurrowed"
+        },
+        {
+          "ability" : 1380,
+          "abilityName" : "BurrowDroneUp,Execute",
+          "time" : 0.0,
+          "unit" : 104,
+          "unitName" : "Drone"
+        },
+        {
+          "ability" : 1392,
+          "abilityName" : "BurrowZerglingUp,Execute",
+          "time" : 0.0,
+          "unit" : 105,
+          "unitName" : "Zergling"
+        },
+        {
+          "ability" : 1376,
+          "abilityName" : "BurrowBanelingUp,Execute",
+          "time" : 0.0,
+          "unit" : 9,
+          "unitName" : "Baneling"
+        },
+        {
+          "ability" : 1388,
+          "abilityName" : "BurrowRoachUp,Execute",
+          "time" : 0.0,
+          "unit" : 110,
+          "unitName" : "Roach"
+        },
+        {
+          "ability" : 1384,
+          "abilityName" : "BurrowHydraliskUp,Execute",
+          "time" : 0.0,
+          "unit" : 107,
+          "unitName" : "Hydralisk"
+        },
+        {
+          "ability" : 2342,
+          "abilityName" : "BurrowRavagerUp,Execute",
+          "time" : 0.0,
+          "unit" : 688,
+          "unitName" : "Ravager"
+        },
+        {
+          "ability" : 1435,
+          "abilityName" : "BurrowQueenUp,Execute",
+          "time" : 0.0,
+          "unit" : 126,
+          "unitName" : "Queen"
+        },
+        {
+          "ability" : 1396,
+          "abilityName" : "BurrowInfestorTerranUp,Execute",
+          "time" : 0.0,
+          "unit" : 7,
+          "unitName" : "InfestorTerran"
+        },
+        {
+          "ability" : 1446,
+          "abilityName" : "BurrowInfestorUp,Execute",
+          "time" : 0.0,
+          "unit" : 111,
+          "unitName" : "Infestor"
+        },
+        {
+          "ability" : 1514,
+          "abilityName" : "BurrowUltraliskUp,Execute",
+          "time" : 0.0,
+          "unit" : 109,
+          "unitName" : "Ultralisk"
         }
       ],
       "name" : "SwarmHostMP"
@@ -5243,6 +9344,236 @@
           "time" : 0.0,
           "unit" : 690,
           "unitName" : "RavagerBurrowed"
+        },
+        {
+          "ability" : 1378,
+          "abilityName" : "BurrowDroneDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 116,
+          "unitName" : "DroneBurrowed"
+        },
+        {
+          "ability" : 1390,
+          "abilityName" : "BurrowZerglingDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 119,
+          "unitName" : "ZerglingBurrowed"
+        },
+        {
+          "ability" : 1374,
+          "abilityName" : "BurrowBanelingDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 115,
+          "unitName" : "BanelingBurrowed"
+        },
+        {
+          "ability" : 1386,
+          "abilityName" : "BurrowRoachDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 118,
+          "unitName" : "RoachBurrowed"
+        },
+        {
+          "ability" : 1382,
+          "abilityName" : "BurrowHydraliskDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 117,
+          "unitName" : "HydraliskBurrowed"
+        },
+        {
+          "ability" : 2014,
+          "abilityName" : "MorphToSwarmHostBurrowedMP,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 493,
+          "unitName" : "SwarmHostBurrowedMP"
+        },
+        {
+          "ability" : 1433,
+          "abilityName" : "BurrowQueenDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 125,
+          "unitName" : "QueenBurrowed"
+        },
+        {
+          "ability" : 1394,
+          "abilityName" : "BurrowInfestorTerranDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 120,
+          "unitName" : "InfestorTerranBurrowed"
+        },
+        {
+          "ability" : 1444,
+          "abilityName" : "BurrowInfestorDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 127,
+          "unitName" : "InfestorBurrowed"
+        },
+        {
+          "ability" : 1512,
+          "abilityName" : "BurrowUltraliskDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 131,
+          "unitName" : "UltraliskBurrowed"
+        },
+        {
+          "ability" : 1380,
+          "abilityName" : "BurrowDroneUp,Execute",
+          "time" : 0.0,
+          "unit" : 104,
+          "unitName" : "Drone"
+        },
+        {
+          "ability" : 1392,
+          "abilityName" : "BurrowZerglingUp,Execute",
+          "time" : 0.0,
+          "unit" : 105,
+          "unitName" : "Zergling"
+        },
+        {
+          "ability" : 1376,
+          "abilityName" : "BurrowBanelingUp,Execute",
+          "time" : 0.0,
+          "unit" : 9,
+          "unitName" : "Baneling"
+        },
+        {
+          "ability" : 1388,
+          "abilityName" : "BurrowRoachUp,Execute",
+          "time" : 0.0,
+          "unit" : 110,
+          "unitName" : "Roach"
+        },
+        {
+          "ability" : 1384,
+          "abilityName" : "BurrowHydraliskUp,Execute",
+          "time" : 0.0,
+          "unit" : 107,
+          "unitName" : "Hydralisk"
+        },
+        {
+          "ability" : 2016,
+          "abilityName" : "MorphToSwarmHostMP,Execute",
+          "time" : 0.5,
+          "unit" : 494,
+          "unitName" : "SwarmHostMP"
+        },
+        {
+          "ability" : 1435,
+          "abilityName" : "BurrowQueenUp,Execute",
+          "time" : 0.0,
+          "unit" : 126,
+          "unitName" : "Queen"
+        },
+        {
+          "ability" : 1396,
+          "abilityName" : "BurrowInfestorTerranUp,Execute",
+          "time" : 0.0,
+          "unit" : 7,
+          "unitName" : "InfestorTerran"
+        },
+        {
+          "ability" : 1446,
+          "abilityName" : "BurrowInfestorUp,Execute",
+          "time" : 0.0,
+          "unit" : 111,
+          "unitName" : "Infestor"
+        },
+        {
+          "ability" : 1514,
+          "abilityName" : "BurrowUltraliskUp,Execute",
+          "time" : 0.0,
+          "unit" : 109,
+          "unitName" : "Ultralisk"
         }
       ],
       "name" : "Ravager"
@@ -5257,6 +9588,236 @@
           "time" : 0.0,
           "unit" : 688,
           "unitName" : "Ravager"
+        },
+        {
+          "ability" : 1378,
+          "abilityName" : "BurrowDroneDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 116,
+          "unitName" : "DroneBurrowed"
+        },
+        {
+          "ability" : 1390,
+          "abilityName" : "BurrowZerglingDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 119,
+          "unitName" : "ZerglingBurrowed"
+        },
+        {
+          "ability" : 1374,
+          "abilityName" : "BurrowBanelingDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 115,
+          "unitName" : "BanelingBurrowed"
+        },
+        {
+          "ability" : 1386,
+          "abilityName" : "BurrowRoachDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 118,
+          "unitName" : "RoachBurrowed"
+        },
+        {
+          "ability" : 1382,
+          "abilityName" : "BurrowHydraliskDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 117,
+          "unitName" : "HydraliskBurrowed"
+        },
+        {
+          "ability" : 2014,
+          "abilityName" : "MorphToSwarmHostBurrowedMP,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 493,
+          "unitName" : "SwarmHostBurrowedMP"
+        },
+        {
+          "ability" : 1433,
+          "abilityName" : "BurrowQueenDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 125,
+          "unitName" : "QueenBurrowed"
+        },
+        {
+          "ability" : 1394,
+          "abilityName" : "BurrowInfestorTerranDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 120,
+          "unitName" : "InfestorTerranBurrowed"
+        },
+        {
+          "ability" : 1444,
+          "abilityName" : "BurrowInfestorDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 127,
+          "unitName" : "InfestorBurrowed"
+        },
+        {
+          "ability" : 1512,
+          "abilityName" : "BurrowUltraliskDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 131,
+          "unitName" : "UltraliskBurrowed"
+        },
+        {
+          "ability" : 1380,
+          "abilityName" : "BurrowDroneUp,Execute",
+          "time" : 0.0,
+          "unit" : 104,
+          "unitName" : "Drone"
+        },
+        {
+          "ability" : 1392,
+          "abilityName" : "BurrowZerglingUp,Execute",
+          "time" : 0.0,
+          "unit" : 105,
+          "unitName" : "Zergling"
+        },
+        {
+          "ability" : 1376,
+          "abilityName" : "BurrowBanelingUp,Execute",
+          "time" : 0.0,
+          "unit" : 9,
+          "unitName" : "Baneling"
+        },
+        {
+          "ability" : 1388,
+          "abilityName" : "BurrowRoachUp,Execute",
+          "time" : 0.0,
+          "unit" : 110,
+          "unitName" : "Roach"
+        },
+        {
+          "ability" : 1384,
+          "abilityName" : "BurrowHydraliskUp,Execute",
+          "time" : 0.0,
+          "unit" : 107,
+          "unitName" : "Hydralisk"
+        },
+        {
+          "ability" : 2016,
+          "abilityName" : "MorphToSwarmHostMP,Execute",
+          "time" : 0.5,
+          "unit" : 494,
+          "unitName" : "SwarmHostMP"
+        },
+        {
+          "ability" : 1435,
+          "abilityName" : "BurrowQueenUp,Execute",
+          "time" : 0.0,
+          "unit" : 126,
+          "unitName" : "Queen"
+        },
+        {
+          "ability" : 1396,
+          "abilityName" : "BurrowInfestorTerranUp,Execute",
+          "time" : 0.0,
+          "unit" : 7,
+          "unitName" : "InfestorTerran"
+        },
+        {
+          "ability" : 1446,
+          "abilityName" : "BurrowInfestorUp,Execute",
+          "time" : 0.0,
+          "unit" : 111,
+          "unitName" : "Infestor"
+        },
+        {
+          "ability" : 1514,
+          "abilityName" : "BurrowUltraliskUp,Execute",
+          "time" : 0.0,
+          "unit" : 109,
+          "unitName" : "Ultralisk"
         }
       ],
       "name" : "RavagerBurrowed"
@@ -5280,6 +9841,236 @@
           "time" : 0.0,
           "unit" : 120,
           "unitName" : "InfestorTerranBurrowed"
+        },
+        {
+          "ability" : 1378,
+          "abilityName" : "BurrowDroneDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 116,
+          "unitName" : "DroneBurrowed"
+        },
+        {
+          "ability" : 1390,
+          "abilityName" : "BurrowZerglingDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 119,
+          "unitName" : "ZerglingBurrowed"
+        },
+        {
+          "ability" : 1374,
+          "abilityName" : "BurrowBanelingDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 115,
+          "unitName" : "BanelingBurrowed"
+        },
+        {
+          "ability" : 1386,
+          "abilityName" : "BurrowRoachDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 118,
+          "unitName" : "RoachBurrowed"
+        },
+        {
+          "ability" : 1382,
+          "abilityName" : "BurrowHydraliskDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 117,
+          "unitName" : "HydraliskBurrowed"
+        },
+        {
+          "ability" : 2340,
+          "abilityName" : "BurrowRavagerDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 690,
+          "unitName" : "RavagerBurrowed"
+        },
+        {
+          "ability" : 2014,
+          "abilityName" : "MorphToSwarmHostBurrowedMP,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 493,
+          "unitName" : "SwarmHostBurrowedMP"
+        },
+        {
+          "ability" : 1433,
+          "abilityName" : "BurrowQueenDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 125,
+          "unitName" : "QueenBurrowed"
+        },
+        {
+          "ability" : 1444,
+          "abilityName" : "BurrowInfestorDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 127,
+          "unitName" : "InfestorBurrowed"
+        },
+        {
+          "ability" : 1512,
+          "abilityName" : "BurrowUltraliskDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 131,
+          "unitName" : "UltraliskBurrowed"
+        },
+        {
+          "ability" : 1380,
+          "abilityName" : "BurrowDroneUp,Execute",
+          "time" : 0.0,
+          "unit" : 104,
+          "unitName" : "Drone"
+        },
+        {
+          "ability" : 1392,
+          "abilityName" : "BurrowZerglingUp,Execute",
+          "time" : 0.0,
+          "unit" : 105,
+          "unitName" : "Zergling"
+        },
+        {
+          "ability" : 1376,
+          "abilityName" : "BurrowBanelingUp,Execute",
+          "time" : 0.0,
+          "unit" : 9,
+          "unitName" : "Baneling"
+        },
+        {
+          "ability" : 1388,
+          "abilityName" : "BurrowRoachUp,Execute",
+          "time" : 0.0,
+          "unit" : 110,
+          "unitName" : "Roach"
+        },
+        {
+          "ability" : 1384,
+          "abilityName" : "BurrowHydraliskUp,Execute",
+          "time" : 0.0,
+          "unit" : 107,
+          "unitName" : "Hydralisk"
+        },
+        {
+          "ability" : 2342,
+          "abilityName" : "BurrowRavagerUp,Execute",
+          "time" : 0.0,
+          "unit" : 688,
+          "unitName" : "Ravager"
+        },
+        {
+          "ability" : 2016,
+          "abilityName" : "MorphToSwarmHostMP,Execute",
+          "time" : 0.5,
+          "unit" : 494,
+          "unitName" : "SwarmHostMP"
+        },
+        {
+          "ability" : 1435,
+          "abilityName" : "BurrowQueenUp,Execute",
+          "time" : 0.0,
+          "unit" : 126,
+          "unitName" : "Queen"
+        },
+        {
+          "ability" : 1446,
+          "abilityName" : "BurrowInfestorUp,Execute",
+          "time" : 0.0,
+          "unit" : 111,
+          "unitName" : "Infestor"
+        },
+        {
+          "ability" : 1514,
+          "abilityName" : "BurrowUltraliskUp,Execute",
+          "time" : 0.0,
+          "unit" : 109,
+          "unitName" : "Ultralisk"
         }
       ],
       "name" : "InfestorTerran"
@@ -5517,6 +10308,236 @@
           "time" : 0.0,
           "unit" : 115,
           "unitName" : "BanelingBurrowed"
+        },
+        {
+          "ability" : 1378,
+          "abilityName" : "BurrowDroneDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 116,
+          "unitName" : "DroneBurrowed"
+        },
+        {
+          "ability" : 1390,
+          "abilityName" : "BurrowZerglingDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 119,
+          "unitName" : "ZerglingBurrowed"
+        },
+        {
+          "ability" : 1386,
+          "abilityName" : "BurrowRoachDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 118,
+          "unitName" : "RoachBurrowed"
+        },
+        {
+          "ability" : 1382,
+          "abilityName" : "BurrowHydraliskDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 117,
+          "unitName" : "HydraliskBurrowed"
+        },
+        {
+          "ability" : 2340,
+          "abilityName" : "BurrowRavagerDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 690,
+          "unitName" : "RavagerBurrowed"
+        },
+        {
+          "ability" : 2014,
+          "abilityName" : "MorphToSwarmHostBurrowedMP,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 493,
+          "unitName" : "SwarmHostBurrowedMP"
+        },
+        {
+          "ability" : 1433,
+          "abilityName" : "BurrowQueenDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 125,
+          "unitName" : "QueenBurrowed"
+        },
+        {
+          "ability" : 1394,
+          "abilityName" : "BurrowInfestorTerranDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 120,
+          "unitName" : "InfestorTerranBurrowed"
+        },
+        {
+          "ability" : 1444,
+          "abilityName" : "BurrowInfestorDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 127,
+          "unitName" : "InfestorBurrowed"
+        },
+        {
+          "ability" : 1512,
+          "abilityName" : "BurrowUltraliskDown,Execute",
+          "requires" : 
+          [
+            {
+              "state" : "CompleteOnly",
+              "type" : "upgradeCount",
+              "upgrade" : 64,
+              "upgradeName" : "Burrow"
+            }
+          ],
+          "time" : 0.0,
+          "unit" : 131,
+          "unitName" : "UltraliskBurrowed"
+        },
+        {
+          "ability" : 1380,
+          "abilityName" : "BurrowDroneUp,Execute",
+          "time" : 0.0,
+          "unit" : 104,
+          "unitName" : "Drone"
+        },
+        {
+          "ability" : 1392,
+          "abilityName" : "BurrowZerglingUp,Execute",
+          "time" : 0.0,
+          "unit" : 105,
+          "unitName" : "Zergling"
+        },
+        {
+          "ability" : 1388,
+          "abilityName" : "BurrowRoachUp,Execute",
+          "time" : 0.0,
+          "unit" : 110,
+          "unitName" : "Roach"
+        },
+        {
+          "ability" : 1384,
+          "abilityName" : "BurrowHydraliskUp,Execute",
+          "time" : 0.0,
+          "unit" : 107,
+          "unitName" : "Hydralisk"
+        },
+        {
+          "ability" : 2342,
+          "abilityName" : "BurrowRavagerUp,Execute",
+          "time" : 0.0,
+          "unit" : 688,
+          "unitName" : "Ravager"
+        },
+        {
+          "ability" : 2016,
+          "abilityName" : "MorphToSwarmHostMP,Execute",
+          "time" : 0.5,
+          "unit" : 494,
+          "unitName" : "SwarmHostMP"
+        },
+        {
+          "ability" : 1435,
+          "abilityName" : "BurrowQueenUp,Execute",
+          "time" : 0.0,
+          "unit" : 126,
+          "unitName" : "Queen"
+        },
+        {
+          "ability" : 1396,
+          "abilityName" : "BurrowInfestorTerranUp,Execute",
+          "time" : 0.0,
+          "unit" : 7,
+          "unitName" : "InfestorTerran"
+        },
+        {
+          "ability" : 1446,
+          "abilityName" : "BurrowInfestorUp,Execute",
+          "time" : 0.0,
+          "unit" : 111,
+          "unitName" : "Infestor"
+        },
+        {
+          "ability" : 1514,
+          "abilityName" : "BurrowUltraliskUp,Execute",
+          "time" : 0.0,
+          "unit" : 109,
+          "unitName" : "Ultralisk"
         }
       ],
       "name" : "Baneling"

@@ -1600,7 +1600,7 @@
       {
         "index" : 1384,
         "time" : 0.0,
-        "units" : [ "Hydralisk" ]
+        "units" : [ "Hydralisk", "Hydralisk" ]
       }
     },
     "name" : "BurrowHydraliskUp",
@@ -1887,7 +1887,7 @@
       {
         "index" : 1392,
         "time" : 0.0,
-        "units" : [ "Zergling" ]
+        "units" : [ "Zergling", "Zergling" ]
       }
     },
     "name" : "BurrowZerglingUp",
@@ -2351,7 +2351,7 @@
             "type" : "not"
           }
         ],
-        "time" : 170.0
+        "time" : 140.0
       }
     },
     "name" : "DarkShrineResearch",
@@ -2964,6 +2964,26 @@
   {
     "commands" : 
     {
+      "Research10" : 
+      {
+        "index" : 769,
+        "requires" : 
+        [
+          {
+            "operands" : 
+            [
+              {
+                "state" : "QueuedOrBetter",
+                "type" : "upgradeCount",
+                "upgrade" : 144,
+                "upgradeName" : "CycloneLockOnDamageUpgrade"
+              }
+            ],
+            "type" : "not"
+          }
+        ],
+        "time" : 110.0
+      },
       "Research2" : 
       {
         "index" : 761,
@@ -3212,6 +3232,15 @@
       "Train8" : 
       {
         "index" : 597,
+        "requires" : 
+        [
+          {
+            "state" : "CompleteOnlyAtUnit",
+            "type" : "unitCount",
+            "unit" : [ 5 ],
+            "unitName" : [ "TechLab" ]
+          }
+        ],
         "time" : 45.0,
         "units" : [ "Cyclone" ]
       }
@@ -4464,7 +4493,7 @@
       {
         "index" : 1520,
         "time" : 0.0,
-        "units" : [ "Gateway" ]
+        "units" : [ "Gateway", "Gateway" ]
       }
     },
     "name" : "MorphBackToGateway",
@@ -4893,13 +4922,7 @@
           }
         ],
         "time" : 16.666499999999999,
-        "units" : 
-        [
-          "TransportOverlordCocoon",
-          "OverlordTransport",
-          "TransportOverlordCocoon",
-          "OverlordTransport"
-        ]
+        "units" : [ "TransportOverlordCocoon", "OverlordTransport" ]
       }
     },
     "name" : "MorphToTransportOverlord",
@@ -5057,7 +5080,7 @@
       {
         "index" : 3741,
         "time" : 0.0,
-        "units" : [ "ObserverSiegeMode", "ObserverSiegeMode" ]
+        "units" : [ "ObserverSiegeMode" ]
       }
     },
     "name" : "ObserverMorphtoObserverSiege",
@@ -5071,7 +5094,7 @@
       {
         "index" : 3739,
         "time" : 0.0,
-        "units" : [ "Observer", "Observer" ]
+        "units" : [ "Observer" ]
       }
     },
     "name" : "ObserverSiegeMorphtoObserver",
@@ -5147,7 +5170,7 @@
       {
         "index" : 3743,
         "time" : 0.0,
-        "units" : [ "OverseerSiegeMode", "OverseerSiegeMode" ]
+        "units" : [ "OverseerSiegeMode" ]
       }
     },
     "name" : "OverseerMorphtoOverseerSiegeMode",
@@ -5161,7 +5184,7 @@
       {
         "index" : 3745,
         "time" : 0.0,
-        "units" : [ "Overseer", "Overseer" ]
+        "units" : [ "Overseer" ]
       }
     },
     "name" : "OverseerSiegeModeMorphtoOverseer",
@@ -5582,7 +5605,7 @@
           }
         ],
         "time" : 40.0,
-        "units" : [ "ShieldBattery", "ShieldBattery" ]
+        "units" : [ "ShieldBattery" ]
       },
       "Build2" : 
       {
@@ -5716,7 +5739,7 @@
       {
         "index" : 2716,
         "time" : 0.0,
-        "units" : [ "PylonOvercharged", "PylonOvercharged" ]
+        "units" : [ "PylonOvercharged" ]
       }
     },
     "name" : "PurifyMorphPylon",
@@ -5730,7 +5753,7 @@
       {
         "index" : 2718,
         "time" : 0.0,
-        "units" : [ "Pylon", "Pylon" ]
+        "units" : [ "Pylon" ]
       }
     },
     "name" : "PurifyMorphPylonBack",
@@ -6692,7 +6715,7 @@
       {
         "index" : 1731,
         "time" : 0.0,
-        "units" : [ "SporeCrawler", "SporeCrawler", "SporeCrawler" ]
+        "units" : [ "SporeCrawler", "SporeCrawler" ]
       }
     },
     "name" : "SporeCrawlerRoot",
@@ -6749,7 +6772,7 @@
             "unitName" : [ "FleetBeacon" ]
           }
         ],
-        "time" : 120.0,
+        "time" : 90.0,
         "units" : [ "Carrier" ]
       },
       "Train5" : 
@@ -7630,7 +7653,7 @@
       {
         "index" : 2362,
         "time" : 0.0,
-        "units" : [ "ThorAP", "ThorAP", "ThorAP" ]
+        "units" : [ "ThorAP", "ThorAP" ]
       }
     },
     "name" : "ThorAPMode",
@@ -7644,7 +7667,7 @@
       {
         "index" : 2364,
         "time" : 0.0,
-        "units" : [ "Thor", "Thor", "Thor" ]
+        "units" : [ "Thor", "Thor" ]
       }
     },
     "name" : "ThorNormalMode",
@@ -7745,6 +7768,26 @@
   {
     "commands" : 
     {
+      "Research1" : 
+      {
+        "index" : 263,
+        "requires" : 
+        [
+          {
+            "operands" : 
+            [
+              {
+                "state" : "QueuedOrBetter",
+                "type" : "upgradeCount",
+                "upgrade" : 88,
+                "upgradeName" : "AnabolicSynthesis"
+              }
+            ],
+            "type" : "not"
+          }
+        ],
+        "time" : 60.0
+      },
       "Research3" : 
       {
         "index" : 265,
@@ -7777,7 +7820,7 @@
       {
         "index" : 390,
         "time" : 0.0,
-        "units" : [ "SiegeTank", "SiegeTank", "SiegeTank" ]
+        "units" : [ "SiegeTank", "SiegeTank" ]
       }
     },
     "name" : "Unsiege",
@@ -7869,7 +7912,7 @@
           }
         ],
         "time" : 0.0,
-        "units" : [ "LurkerDenMP", "LurkerDenMP", "LurkerDenMP" ]
+        "units" : [ "LurkerDenMP", "LurkerDenMP" ]
       }
     },
     "name" : "UpgradeToLurkerDenMP",
@@ -8419,7 +8462,7 @@
           }
         ],
         "time" : 120.0,
-        "units" : [ "LurkerDenMP", "LurkerDenMP" ]
+        "units" : [ "LurkerDenMP" ]
       },
       "Build13" : 
       {

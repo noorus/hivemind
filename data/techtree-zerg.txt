@@ -5,10 +5,50 @@ AcidSpinesWeapon
 Baneling
   morphs
     BanelingBurrowed
+    DroneBurrowed
+    ZerglingBurrowed
+    RoachBurrowed
+    HydraliskBurrowed
+    RavagerBurrowed
+    SwarmHostBurrowedMP
+    QueenBurrowed
+    InfestorTerranBurrowed
+    InfestorBurrowed
+    UltraliskBurrowed
+    Drone
+    Zergling
+    Roach
+    Hydralisk
+    Ravager
+    SwarmHostMP
+    Queen
+    InfestorTerran
+    Infestor
+    Ultralisk
 
 BanelingBurrowed
   morphs
     Baneling
+    DroneBurrowed
+    ZerglingBurrowed
+    RoachBurrowed
+    HydraliskBurrowed
+    RavagerBurrowed
+    SwarmHostBurrowedMP
+    QueenBurrowed
+    InfestorTerranBurrowed
+    InfestorBurrowed
+    UltraliskBurrowed
+    Drone
+    Zergling
+    Roach
+    Hydralisk
+    Ravager
+    SwarmHostMP
+    Queen
+    InfestorTerran
+    Infestor
+    Ultralisk
 
 BanelingCocoon
 
@@ -100,10 +140,50 @@ Drone
     LurkerDenMP
   morphs
     DroneBurrowed
+    ZerglingBurrowed
+    BanelingBurrowed
+    RoachBurrowed
+    HydraliskBurrowed
+    RavagerBurrowed
+    SwarmHostBurrowedMP
+    QueenBurrowed
+    InfestorTerranBurrowed
+    InfestorBurrowed
+    UltraliskBurrowed
+    Zergling
+    Baneling
+    Roach
+    Hydralisk
+    Ravager
+    SwarmHostMP
+    Queen
+    InfestorTerran
+    Infestor
+    Ultralisk
 
 DroneBurrowed
   morphs
     Drone
+    ZerglingBurrowed
+    BanelingBurrowed
+    RoachBurrowed
+    HydraliskBurrowed
+    RavagerBurrowed
+    SwarmHostBurrowedMP
+    QueenBurrowed
+    InfestorTerranBurrowed
+    InfestorBurrowed
+    UltraliskBurrowed
+    Zergling
+    Baneling
+    Roach
+    Hydralisk
+    Ravager
+    SwarmHostMP
+    Queen
+    InfestorTerran
+    Infestor
+    Ultralisk
 
 Egg
 
@@ -120,6 +200,8 @@ EvolutionChamber
     ZergMissileWeaponsLevel3
 
 Extractor
+
+ExtractorRich
 
 EyeStalkWeapon
 
@@ -170,10 +252,50 @@ Hydralisk
   morphs
     HydraliskBurrowed
     LurkerMP
+    DroneBurrowed
+    ZerglingBurrowed
+    BanelingBurrowed
+    RoachBurrowed
+    RavagerBurrowed
+    SwarmHostBurrowedMP
+    QueenBurrowed
+    InfestorTerranBurrowed
+    InfestorBurrowed
+    UltraliskBurrowed
+    Drone
+    Zergling
+    Baneling
+    Roach
+    Ravager
+    SwarmHostMP
+    Queen
+    InfestorTerran
+    Infestor
+    Ultralisk
 
 HydraliskBurrowed
   morphs
     Hydralisk
+    DroneBurrowed
+    ZerglingBurrowed
+    BanelingBurrowed
+    RoachBurrowed
+    RavagerBurrowed
+    SwarmHostBurrowedMP
+    QueenBurrowed
+    InfestorTerranBurrowed
+    InfestorBurrowed
+    UltraliskBurrowed
+    Drone
+    Zergling
+    Baneling
+    Roach
+    Ravager
+    SwarmHostMP
+    Queen
+    InfestorTerran
+    Infestor
+    Ultralisk
 
 HydraliskDen
   upgrades
@@ -198,18 +320,98 @@ InfestedTerransWeapon
 Infestor
   morphs
     InfestorBurrowed
+    DroneBurrowed
+    ZerglingBurrowed
+    BanelingBurrowed
+    RoachBurrowed
+    HydraliskBurrowed
+    RavagerBurrowed
+    SwarmHostBurrowedMP
+    QueenBurrowed
+    InfestorTerranBurrowed
+    UltraliskBurrowed
+    Drone
+    Zergling
+    Baneling
+    Roach
+    Hydralisk
+    Ravager
+    SwarmHostMP
+    Queen
+    InfestorTerran
+    Ultralisk
 
 InfestorBurrowed
   morphs
     Infestor
+    DroneBurrowed
+    ZerglingBurrowed
+    BanelingBurrowed
+    RoachBurrowed
+    HydraliskBurrowed
+    RavagerBurrowed
+    SwarmHostBurrowedMP
+    QueenBurrowed
+    InfestorTerranBurrowed
+    UltraliskBurrowed
+    Drone
+    Zergling
+    Baneling
+    Roach
+    Hydralisk
+    Ravager
+    SwarmHostMP
+    Queen
+    InfestorTerran
+    Ultralisk
 
 InfestorTerran
   morphs
     InfestorTerranBurrowed
+    DroneBurrowed
+    ZerglingBurrowed
+    BanelingBurrowed
+    RoachBurrowed
+    HydraliskBurrowed
+    RavagerBurrowed
+    SwarmHostBurrowedMP
+    QueenBurrowed
+    InfestorBurrowed
+    UltraliskBurrowed
+    Drone
+    Zergling
+    Baneling
+    Roach
+    Hydralisk
+    Ravager
+    SwarmHostMP
+    Queen
+    Infestor
+    Ultralisk
 
 InfestorTerranBurrowed
   morphs
     InfestorTerran
+    DroneBurrowed
+    ZerglingBurrowed
+    BanelingBurrowed
+    RoachBurrowed
+    HydraliskBurrowed
+    RavagerBurrowed
+    SwarmHostBurrowedMP
+    QueenBurrowed
+    InfestorBurrowed
+    UltraliskBurrowed
+    Drone
+    Zergling
+    Baneling
+    Roach
+    Hydralisk
+    Ravager
+    SwarmHostMP
+    Queen
+    Infestor
+    Ultralisk
 
 InfestorTerransWeapon
 
@@ -311,10 +513,50 @@ Queen
     CreepTumorQueen
   morphs
     QueenBurrowed
+    DroneBurrowed
+    ZerglingBurrowed
+    BanelingBurrowed
+    RoachBurrowed
+    HydraliskBurrowed
+    RavagerBurrowed
+    SwarmHostBurrowedMP
+    InfestorTerranBurrowed
+    InfestorBurrowed
+    UltraliskBurrowed
+    Drone
+    Zergling
+    Baneling
+    Roach
+    Hydralisk
+    Ravager
+    SwarmHostMP
+    InfestorTerran
+    Infestor
+    Ultralisk
 
 QueenBurrowed
   morphs
     Queen
+    DroneBurrowed
+    ZerglingBurrowed
+    BanelingBurrowed
+    RoachBurrowed
+    HydraliskBurrowed
+    RavagerBurrowed
+    SwarmHostBurrowedMP
+    InfestorTerranBurrowed
+    InfestorBurrowed
+    UltraliskBurrowed
+    Drone
+    Zergling
+    Baneling
+    Roach
+    Hydralisk
+    Ravager
+    SwarmHostMP
+    InfestorTerran
+    Infestor
+    Ultralisk
 
 QueenMP
 
@@ -325,10 +567,50 @@ QueenMPSpawnBroodlingsMissile
 Ravager
   morphs
     RavagerBurrowed
+    DroneBurrowed
+    ZerglingBurrowed
+    BanelingBurrowed
+    RoachBurrowed
+    HydraliskBurrowed
+    SwarmHostBurrowedMP
+    QueenBurrowed
+    InfestorTerranBurrowed
+    InfestorBurrowed
+    UltraliskBurrowed
+    Drone
+    Zergling
+    Baneling
+    Roach
+    Hydralisk
+    SwarmHostMP
+    Queen
+    InfestorTerran
+    Infestor
+    Ultralisk
 
 RavagerBurrowed
   morphs
     Ravager
+    DroneBurrowed
+    ZerglingBurrowed
+    BanelingBurrowed
+    RoachBurrowed
+    HydraliskBurrowed
+    SwarmHostBurrowedMP
+    QueenBurrowed
+    InfestorTerranBurrowed
+    InfestorBurrowed
+    UltraliskBurrowed
+    Drone
+    Zergling
+    Baneling
+    Roach
+    Hydralisk
+    SwarmHostMP
+    Queen
+    InfestorTerran
+    Infestor
+    Ultralisk
 
 RavagerCocoon
 
@@ -340,10 +622,50 @@ Roach
   morphs
     RoachBurrowed
     Ravager
+    DroneBurrowed
+    ZerglingBurrowed
+    BanelingBurrowed
+    HydraliskBurrowed
+    RavagerBurrowed
+    SwarmHostBurrowedMP
+    QueenBurrowed
+    InfestorTerranBurrowed
+    InfestorBurrowed
+    UltraliskBurrowed
+    Drone
+    Zergling
+    Baneling
+    Hydralisk
+    Ravager
+    SwarmHostMP
+    Queen
+    InfestorTerran
+    Infestor
+    Ultralisk
 
 RoachBurrowed
   morphs
     Roach
+    DroneBurrowed
+    ZerglingBurrowed
+    BanelingBurrowed
+    HydraliskBurrowed
+    RavagerBurrowed
+    SwarmHostBurrowedMP
+    QueenBurrowed
+    InfestorTerranBurrowed
+    InfestorBurrowed
+    UltraliskBurrowed
+    Drone
+    Zergling
+    Baneling
+    Hydralisk
+    Ravager
+    SwarmHostMP
+    Queen
+    InfestorTerran
+    Infestor
+    Ultralisk
 
 RoachWarren
   upgrades
@@ -391,10 +713,50 @@ SporeCrawlerWeapon
 SwarmHostBurrowedMP
   morphs
     SwarmHostMP
+    DroneBurrowed
+    ZerglingBurrowed
+    BanelingBurrowed
+    RoachBurrowed
+    HydraliskBurrowed
+    RavagerBurrowed
+    QueenBurrowed
+    InfestorTerranBurrowed
+    InfestorBurrowed
+    UltraliskBurrowed
+    Drone
+    Zergling
+    Baneling
+    Roach
+    Hydralisk
+    Ravager
+    Queen
+    InfestorTerran
+    Infestor
+    Ultralisk
 
 SwarmHostMP
   morphs
     SwarmHostBurrowedMP
+    DroneBurrowed
+    ZerglingBurrowed
+    BanelingBurrowed
+    RoachBurrowed
+    HydraliskBurrowed
+    RavagerBurrowed
+    QueenBurrowed
+    InfestorTerranBurrowed
+    InfestorBurrowed
+    UltraliskBurrowed
+    Drone
+    Zergling
+    Baneling
+    Roach
+    Hydralisk
+    Ravager
+    Queen
+    InfestorTerran
+    Infestor
+    Ultralisk
 
 TalonsMissileWeapon
 
@@ -405,10 +767,50 @@ TransportOverlordCocoon
 Ultralisk
   morphs
     UltraliskBurrowed
+    DroneBurrowed
+    ZerglingBurrowed
+    BanelingBurrowed
+    RoachBurrowed
+    HydraliskBurrowed
+    RavagerBurrowed
+    SwarmHostBurrowedMP
+    QueenBurrowed
+    InfestorTerranBurrowed
+    InfestorBurrowed
+    Drone
+    Zergling
+    Baneling
+    Roach
+    Hydralisk
+    Ravager
+    SwarmHostMP
+    Queen
+    InfestorTerran
+    Infestor
 
 UltraliskBurrowed
   morphs
     Ultralisk
+    DroneBurrowed
+    ZerglingBurrowed
+    BanelingBurrowed
+    RoachBurrowed
+    HydraliskBurrowed
+    RavagerBurrowed
+    SwarmHostBurrowedMP
+    QueenBurrowed
+    InfestorTerranBurrowed
+    InfestorBurrowed
+    Drone
+    Zergling
+    Baneling
+    Roach
+    Hydralisk
+    Ravager
+    SwarmHostMP
+    Queen
+    InfestorTerran
+    Infestor
 
 UltraliskCavern
   upgrades
@@ -433,8 +835,48 @@ Zergling
     Baneling
   morphs
     ZerglingBurrowed
+    DroneBurrowed
+    BanelingBurrowed
+    RoachBurrowed
+    HydraliskBurrowed
+    RavagerBurrowed
+    SwarmHostBurrowedMP
+    QueenBurrowed
+    InfestorTerranBurrowed
+    InfestorBurrowed
+    UltraliskBurrowed
+    Drone
+    Baneling
+    Roach
+    Hydralisk
+    Ravager
+    SwarmHostMP
+    Queen
+    InfestorTerran
+    Infestor
+    Ultralisk
 
 ZerglingBurrowed
   morphs
     Zergling
+    DroneBurrowed
+    BanelingBurrowed
+    RoachBurrowed
+    HydraliskBurrowed
+    RavagerBurrowed
+    SwarmHostBurrowedMP
+    QueenBurrowed
+    InfestorTerranBurrowed
+    InfestorBurrowed
+    UltraliskBurrowed
+    Drone
+    Baneling
+    Roach
+    Hydralisk
+    Ravager
+    SwarmHostMP
+    Queen
+    InfestorTerran
+    Infestor
+    Ultralisk
 

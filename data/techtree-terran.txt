@@ -90,7 +90,6 @@ EngineeringBay
     TerranInfantryWeaponsLevel1
     TerranInfantryWeaponsLevel2
     TerranInfantryWeaponsLevel3
-    NeosteelFrame
     TerranBuildingArmor
     HiSecAutoTracking
     TerranInfantryArmorsLevel1
@@ -122,7 +121,7 @@ FactoryTechLab
     HighCapacityBarrels
     DrillClaws
     SmartServos
-    CycloneRapidFireLaunchers
+    CycloneLockOnDamageUpgrade
 
 FusionCore
   upgrades
@@ -200,6 +199,8 @@ PointDefenseDrone
 
 PointDefenseDroneReleaseWeapon
 
+PreviewBunkerUpgraded
+
 PunisherGrenadesLMWeapon
 
 Raven
@@ -219,6 +220,12 @@ Reaper
 ReaperPlaceholder
 
 Refinery
+
+RefineryRich
+
+RenegadeLongboltMissileWeapon
+
+RenegadeMissileTurret
 
 SCV
   builds
@@ -310,6 +317,8 @@ TornadoMissileWeapon
 
 TowerMine
 
+Viking
+
 VikingAssault
   morphs
     VikingFighter
@@ -319,8 +328,6 @@ VikingFighter
     VikingAssault
 
 VikingFighterWeapon
-
-VikingSkinPreview
 
 WarHound
 

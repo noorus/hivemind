@@ -16,6 +16,8 @@ Archon
 
 Assimilator
 
+AssimilatorRich
+
 Carrier
 
 Colossus
@@ -49,7 +51,6 @@ DisruptorPhased
 FleetBeacon
   upgrades
     PhoenixRangeUpgrade
-    CarrierLaunchSpeedUpgrade
 
 ForceField
 
@@ -130,10 +131,10 @@ Probe
     Nexus
     Assimilator
     Pylon
-    Gateway
     Forge
     CyberneticsCore
     PhotonCannon
+    Gateway
     ShieldBattery
     Stargate
     TemplarArchive

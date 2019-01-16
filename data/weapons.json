@@ -62,7 +62,7 @@
   },
   "ATALaserBattery" : 
   {
-    "arc" : 0.0,
+    "arc" : 360.0,
     "arcSlop" : 11.25,
     "backSwing" : 0.5,
     "damagePoint" : 0.16700000000000001,
@@ -71,7 +71,7 @@
     {
       "impact" : 
       {
-        "dmgAmount" : 6.0,
+        "dmgAmount" : 5.0,
         "dmgArmorReduction" : 1.0,
         "dmgAttributeBonuses" : {},
         "dmgKind" : "Ranged",
@@ -89,8 +89,8 @@
     "minScanRange" : 5.0,
     "name" : "ATALaserBattery",
     "period" : 0.22500000000000001,
-    "randomDelayMax" : 0.1875,
-    "randomDelayMin" : -0.0625,
+    "randomDelayMax" : 0.0,
+    "randomDelayMin" : 0.0,
     "range" : 6.0,
     "rangeSlop" : 1.0
   },
@@ -123,8 +123,8 @@
     "minScanRange" : 5.0,
     "name" : "ATSLaserBattery",
     "period" : 0.22500000000000001,
-    "randomDelayMax" : 0.1875,
-    "randomDelayMin" : -0.0625,
+    "randomDelayMax" : 0.0,
+    "randomDelayMin" : 0.0,
     "range" : 6.0,
     "rangeSlop" : 1.0
   },
@@ -396,6 +396,41 @@
     "range" : 6.0,
     "rangeSlop" : 1.0
   },
+  "BattlecruiserWeaponSwitch" : 
+  {
+    "arc" : 360.0,
+    "arcSlop" : 11.25,
+    "backSwing" : 0.5,
+    "damagePoint" : 0.16700000000000001,
+    "disabled" : false,
+    "effect" : 
+    {
+      "name" : "BattlecruiserDamageSet",
+      "setEffects" : 
+      [
+        {
+          "name" : "BattlecruiserTransientTrackerAB",
+          "type" : "unknown"
+        },
+        {
+          "name" : "BattlecruiserDamageSwitch",
+          "type" : "unknown"
+        }
+      ],
+      "type" : "set"
+    },
+    "filterExcludes" : [ "stasis" ],
+    "filterRequires" : [],
+    "hidden" : true,
+    "melee" : false,
+    "minScanRange" : 5.0,
+    "name" : "BattlecruiserWeaponSwitch",
+    "period" : 0.22500000000000001,
+    "randomDelayMax" : 0.0,
+    "randomDelayMin" : 0.0,
+    "range" : 6.0,
+    "rangeSlop" : 1.0
+  },
   "BroodlingEscort" : 
   {
     "arc" : 360.0,
@@ -482,7 +517,7 @@
     "effect" : 
     {
       "name" : "BypassArmorCreatePersistent",
-      "persistentPeriods" : [ 0.5, 0.5 ],
+      "persistentPeriods" : [ 0.5 ],
       "setEffects" : 
       [
         {
@@ -856,6 +891,26 @@
           "dmgSplash" : [],
           "name" : "DisruptionBeamDamage",
           "type" : "damage"
+        },
+        {
+          "name" : "SentryWeaponPeriodicSet",
+          "setEffects" : 
+          [
+            {
+              "name" : "SentryWeaponApplyCooldown",
+              "type" : "unknown"
+            },
+            {
+              "dmgAmount" : 6.0,
+              "dmgArmorReduction" : 1.0,
+              "dmgAttributeBonuses" : {},
+              "dmgKind" : "Ranged",
+              "dmgSplash" : [],
+              "name" : "DisruptionBeamDamage",
+              "type" : "damage"
+            }
+          ],
+          "type" : "set"
         }
       ],
       "type" : "persistent"
@@ -1353,6 +1408,82 @@
     "range" : 2.0,
     "rangeSlop" : 1.0
   },
+  "InterceptorBeamAA" : 
+  {
+    "arc" : 19.6875,
+    "arcSlop" : 11.25,
+    "backSwing" : 0.5,
+    "damagePoint" : 0.16700000000000001,
+    "disabled" : false,
+    "effect" : 
+    {
+      "name" : "InterceptorBeamAAPersistent",
+      "persistentCount" : 1,
+      "persistentPeriods" : [ 0.0, 0.0 ],
+      "setEffects" : 
+      [
+        {
+          "dmgAmount" : 5.0,
+          "dmgArmorReduction" : 1.0,
+          "dmgAttributeBonuses" : {},
+          "dmgKind" : "Ranged",
+          "dmgSplash" : [],
+          "name" : "InterceptorBeamAADamage",
+          "type" : "damage"
+        }
+      ],
+      "type" : "persistent"
+    },
+    "filterExcludes" : [ "stasis" ],
+    "filterRequires" : [ "air" ],
+    "hidden" : false,
+    "melee" : false,
+    "minScanRange" : 5.0,
+    "name" : "InterceptorBeamAA",
+    "period" : 3.0,
+    "randomDelayMax" : 0.125,
+    "randomDelayMin" : -0.0625,
+    "range" : 2.0,
+    "rangeSlop" : 1.0
+  },
+  "InterceptorBeamAG" : 
+  {
+    "arc" : 19.6875,
+    "arcSlop" : 11.25,
+    "backSwing" : 0.5,
+    "damagePoint" : 0.16700000000000001,
+    "disabled" : false,
+    "effect" : 
+    {
+      "name" : "InterceptorBeamAGPersistent",
+      "persistentCount" : 1,
+      "persistentPeriods" : [ 0.0, 0.0 ],
+      "setEffects" : 
+      [
+        {
+          "dmgAmount" : 5.0,
+          "dmgArmorReduction" : 1.0,
+          "dmgAttributeBonuses" : {},
+          "dmgKind" : "Ranged",
+          "dmgSplash" : [],
+          "name" : "InterceptorBeamAGDamage",
+          "type" : "damage"
+        }
+      ],
+      "type" : "persistent"
+    },
+    "filterExcludes" : [ "stasis" ],
+    "filterRequires" : [ "ground" ],
+    "hidden" : false,
+    "melee" : false,
+    "minScanRange" : 5.0,
+    "name" : "InterceptorBeamAG",
+    "period" : 3.0,
+    "randomDelayMax" : 0.125,
+    "randomDelayMin" : -0.0625,
+    "range" : 2.0,
+    "rangeSlop" : 1.0
+  },
   "InterceptorLaunch" : 
   {
     "arc" : 360.0,
@@ -1364,7 +1495,7 @@
     {
       "name" : "InterceptorLaunchPersistent",
       "persistentCount" : 8,
-      "persistentPeriods" : [ 0.5 ],
+      "persistentPeriods" : [ 0.5, 0.375 ],
       "setEffects" : 
       [
         {
@@ -1505,7 +1636,7 @@
             [
               {
                 "fraction" : 1.0,
-                "radius" : 0.59999999999999998
+                "radius" : 0.5
               }
             ],
             "name" : "JavelinMissileLaunchersDamage",
@@ -1581,11 +1712,11 @@
     "disabled" : false,
     "effect" : 
     {
-      "dmgAmount" : 35.0,
+      "dmgAmount" : 40.0,
       "dmgArmorReduction" : 1.0,
       "dmgAttributeBonuses" : 
       {
-        "Armored" : 15.0
+        "Massive" : 15.0
       },
       "dmgKind" : "Ranged",
       "dmgSplash" : [],
@@ -1600,7 +1731,7 @@
     "melee" : false,
     "minScanRange" : 5.0,
     "name" : "LanceMissileLaunchers",
-    "period" : 3.0,
+    "period" : 2.3999999999999999,
     "randomDelayMax" : 0.125,
     "randomDelayMin" : -0.0625,
     "range" : 10.0,
@@ -1906,15 +2037,6 @@
         0.125,
         0.125,
         0.125,
-        0.125,
-        0.125,
-        0.125,
-        0.125,
-        0.125,
-        0.125,
-        0.125,
-        0.125,
-        0.125,
         0.125
       ],
       "setEffects" : 
@@ -2156,7 +2278,7 @@
     "melee" : false,
     "minScanRange" : 5.5,
     "name" : "NeedleSpines",
-    "period" : 0.75,
+    "period" : 0.82499999999999996,
     "randomDelayMax" : 0.125,
     "randomDelayMin" : -0.0625,
     "range" : 5.0,
@@ -2257,6 +2379,29 @@
           "dmgSplash" : [],
           "name" : "OracleWeaponDamage",
           "type" : "damage"
+        },
+        {
+          "name" : "OracleWeaponPeriodicSet",
+          "setEffects" : 
+          [
+            {
+              "name" : "OracleWeaponApplyCooldown",
+              "type" : "unknown"
+            },
+            {
+              "dmgAmount" : 15.0,
+              "dmgArmorReduction" : 0.0,
+              "dmgAttributeBonuses" : 
+              {
+                "Light" : 7.0
+              },
+              "dmgKind" : "Spell",
+              "dmgSplash" : [],
+              "name" : "OracleWeaponDamage",
+              "type" : "damage"
+            }
+          ],
+          "type" : "set"
         }
       ],
       "type" : "persistent"
@@ -2775,6 +2920,49 @@
     "randomDelayMin" : -0.0625,
     "range" : 6.0,
     "rangeSlop" : 1.0
+  },
+  "RenegadeLongboltMissile" : 
+  {
+    "arc" : 0.0,
+    "arcSlop" : 11.25,
+    "backSwing" : 0.5,
+    "damagePoint" : 0.16700000000000001,
+    "disabled" : false,
+    "effect" : 
+    {
+      "name" : "RenegadeLongboltMissileCP",
+      "persistentCount" : 2,
+      "persistentPeriods" : [ 0.0, 0.10000000000000001 ],
+      "setEffects" : 
+      [
+        {
+          "impact" : 
+          {
+            "dmgAmount" : 12.0,
+            "dmgArmorReduction" : 1.0,
+            "dmgAttributeBonuses" : {},
+            "dmgKind" : "Ranged",
+            "dmgSplash" : [],
+            "name" : "RenegadeLongboltMissileU",
+            "type" : "damage"
+          },
+          "name" : "RenegadeLongboltMissileLM",
+          "type" : "missile"
+        }
+      ],
+      "type" : "persistent"
+    },
+    "filterExcludes" : [ "stasis" ],
+    "filterRequires" : [ "air" ],
+    "hidden" : false,
+    "melee" : false,
+    "minScanRange" : 5.0,
+    "name" : "RenegadeLongboltMissile",
+    "period" : 0.86080000000000001,
+    "randomDelayMax" : 0.125,
+    "randomDelayMin" : -0.0625,
+    "range" : 7.0,
+    "rangeSlop" : 0.0
   },
   "RepulsorCannon" : 
   {
@@ -3307,7 +3495,7 @@
     "effect" : 
     {
       "name" : "ThermalBeamPersistent",
-      "persistentPeriods" : [ 1.0, 1.0 ],
+      "persistentPeriods" : [ 1.0 ],
       "setEffects" : 
       [
         {
@@ -3459,13 +3647,7 @@
         {
           "name" : "ThermalLancesReverse",
           "persistentCount" : 11,
-          "persistentPeriods" : 
-          [
-            0.031199999999999999,
-            0.025000000000000001,
-            0.022700000000000001,
-            0.022700000000000001
-          ],
+          "persistentPeriods" : [ 0.031199999999999999, 0.025000000000000001, 0.022700000000000001 ],
           "setEffects" : 
           [
             {
@@ -3619,15 +3801,15 @@
       "type" : "unknown"
     },
     "filterExcludes" : [ "stasis" ],
-    "filterRequires" : [ "ground" ],
+    "filterRequires" : [],
     "hidden" : false,
     "melee" : false,
-    "minScanRange" : 6.5,
+    "minScanRange" : 5.5,
     "name" : "TyphoonMissilePod",
-    "period" : 0.14000000000000001,
-    "randomDelayMax" : 0.0,
-    "randomDelayMin" : 0.0,
-    "range" : 6.0,
+    "period" : 1.0,
+    "randomDelayMax" : 0.125,
+    "randomDelayMin" : -0.0625,
+    "range" : 5.0,
     "rangeSlop" : 1.0
   },
   "VoidRaySwarm" : 
@@ -3654,6 +3836,29 @@
           "dmgSplash" : [],
           "name" : "VoidRaySwarmDamage",
           "type" : "damage"
+        },
+        {
+          "name" : "VoidRayWeaponPeriodicSet",
+          "setEffects" : 
+          [
+            {
+              "name" : "VoidRayWeaponApplyCooldown",
+              "type" : "unknown"
+            },
+            {
+              "dmgAmount" : 6.0,
+              "dmgArmorReduction" : 1.0,
+              "dmgAttributeBonuses" : 
+              {
+                "Armored" : 4.0
+              },
+              "dmgKind" : "Ranged",
+              "dmgSplash" : [],
+              "name" : "VoidRaySwarmDamage",
+              "type" : "damage"
+            }
+          ],
+          "type" : "set"
         }
       ],
       "type" : "persistent"

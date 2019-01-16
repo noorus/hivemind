@@ -576,6 +576,12 @@ x
 Footprint1x1CreepNormal (0,0,1,1)
 x
 
+Footprint1x1RampFriendly (0,0,1,1)
+x
+
+Footprint1x1RampFriendlyContour (0,0,1,1)
+x
+
 Footprint1x1Underground (0,0,1,1)
 x
 
