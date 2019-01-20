@@ -347,6 +347,13 @@ namespace hivemind {
               else
               {
                 auto path = bot_->pathing().quickPathPlainRegion( chokepoints_[choke].middle(), chokepoints_[other].middle(), regptr->label_ );
+                if ( path->verts().empty() )
+                {
+                  bot_->console().printf( "Map: Warning: Choke %i has no in-region path to %i", choke, other );
+                  path = bot_->pathing().quickPathPlain( chokepoints_[choke].middle(), chokepoints_[other].middle() );
+                  if ( path->verts().empty() )
+                    HIVE_EXCEPT( "Could not find a path between region's own chokepoints" );
+                }
                 regptr->chokePaths_.insert_or_assign( key, std::move( CachedPath( *( path.get() ) ) ) );
               }
             }
@@ -936,7 +943,7 @@ namespace hivemind {
   {
     buildingReservations_[util_encodePoint( position )] = BuildingReservation( position, type );
 
-    // Apply footprint immediately to prevent building multiple overlapping buildings on the same frame.
+    // Apply footprint immediately to prevent trying to create overlapping buildings during the same frame.
     applyFootprint( position, type );
   }
 

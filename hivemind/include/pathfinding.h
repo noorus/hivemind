@@ -81,12 +81,9 @@ namespace hivemind {
     {
     public:
       Map* map_;
-
-      explicit GridMapAdaptor( Map* map )
-          : map_( map )
+      explicit GridMapAdaptor( Map* map ): map_( map )
       {
       }
-
       virtual int width() const override
       {
         return (int)map_->width();
@@ -95,42 +92,46 @@ namespace hivemind {
       {
         return (int)map_->height();
       }
-      virtual bool isWalkable( int x, int y ) const
+      virtual bool isWalkable( int x, int y ) const override
       {
         return map_->isWalkable( x, y );
       }
-      virtual bool isBlocked( int x, int y ) const
+      virtual bool isBlocked( int x, int y ) const override
       {
         return map_->isBlocked( x, y );
       }
     };
 
-    class GridMapPlainRegionOnlyAdaptor : public pathfinding::GridMap
+    class GridMapPlainRegionOnlyAdaptor : public GridMapAdaptor
     {
     public:
-      Map* map_;
       int region_;
-
-      explicit GridMapPlainRegionOnlyAdaptor( Map* map, int region )
-          : map_( map ), region_( region )
+      explicit GridMapPlainRegionOnlyAdaptor( Map* map, int region ):
+        GridMapAdaptor( map ), region_( region )
       {
       }
-
-      int width() const override
+      bool isWalkable( int x, int y ) const override
       {
-        return (int)map_->width();
+        if ( !map_->isWalkable( x, y ) )
+          return false;
+        auto rid = map_->regionId( x, y );
+        return ( rid == region_ || rid == -1 );
       }
-      int height() const override
+      bool isBlocked( int x, int y ) const override
       {
-        return (int)map_->height();
+        return false;
+      }
+    };
+
+    class GridMapNoBlocksAdaptor: public GridMapAdaptor {
+    public:
+      explicit GridMapNoBlocksAdaptor( Map* map ):
+        GridMapAdaptor( map )
+      {
       }
       bool isWalkable( int x, int y ) const override
       {
         return map_->isWalkable( x, y );
-        /*if ( !map_->isWalkable( x, y ) )
-          return false;
-        auto rid = map_->regionId( x, y );
-        return ( rid == region_ || rid == -1 );*/
       }
       bool isBlocked( int x, int y ) const override
       {

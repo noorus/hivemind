@@ -23,7 +23,7 @@ namespace hivemind {
     bool startLocation_;
     int region_;
   private:
-    // this is a distance check instead of region check, only used before region is available
+    // This is a distance check instead of region check, only used before region is available
     bool initialContainsPosition( const Vector2& pos ) const;
   public:
     BaseLocation( Bot* bot, size_t baseID, const UnitVector& resources );
@@ -38,6 +38,7 @@ namespace hivemind {
     bool isInResourceBox( int x, int y ) const;
     bool overlapsMainFootprint( int x, int y ) const;
     const vector<MapPoint2>& getClosestTiles() const;
+    inline const int region() const { return region_; }
   };
 
   using BaseLocationVector = vector<BaseLocation>;
