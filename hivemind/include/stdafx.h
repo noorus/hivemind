@@ -78,10 +78,7 @@
 #pragma warning(pop)
 
 #include "external/clipper.hpp"
-#pragma warning(push)
-#pragma warning(disable:4244)
-#include "external/picosha2.h"
-#pragma warning(pop)
+#include "external/sha2.h"
 
 #pragma warning(push)
 #pragma warning(disable: 4275 4996)

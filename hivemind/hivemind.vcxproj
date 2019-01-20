@@ -152,6 +152,7 @@
     <ClInclude Include="include\distancemap.h" />
     <ClInclude Include="include\exception.h" />
     <ClInclude Include="include\external\clipper.hpp" />
+    <ClInclude Include="include\external\sha2.h" />
     <ClInclude Include="include\graphsearch.h" />
     <ClInclude Include="include\hive_array2.h" />
     <ClInclude Include="include\hive_config.h" />
@@ -216,6 +217,7 @@
     <ClCompile Include="src\distancemap.cpp" />
     <ClCompile Include="src\exception.cpp" />
     <ClCompile Include="src\external\clipper.cpp" />
+    <ClCompile Include="src\external\sha2.cpp" />
     <ClCompile Include="src\intelligence.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\map.cpp" />

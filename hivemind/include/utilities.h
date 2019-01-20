@@ -342,15 +342,32 @@ namespace hivemind {
       auto buffer = malloc( reader.size() );
       reader.read( buffer, (uint32_t)reader.size() );
       auto ptr = (uint8_t*)buffer;
-      picosha2::hash256( ptr, ptr + reader.size(), hash, hash + 32 );
+      sha2::sha256_hash( ptr, reader.size(), hash );
       free( buffer );
+    }
+
+    inline string bin2hex( const uint8_t* src, size_t length )
+    {
+      const unsigned char hexchars[] = "0123456789abcdef";
+
+      if ( !length )
+        return string();
+
+      string str;
+      str.resize( length * 2 );
+
+      for ( size_t i = 0; i < length; i++ )
+      {
+        str[i * 2 + 0] = hexchars[( src[i] >> 4 ) & 0x0F];
+        str[i * 2 + 1] = hexchars[( src[i] ) & 0x0F];
+      }
+
+      return std::move( str );
     }
 
     inline string hexString( const Sha256& hash )
     {
-      std::ostringstream oss;
-      picosha2::output_hex( hash, hash + 32, oss );
-      return oss.str();
+      return bin2hex( hash, 32 );
     }
 
     inline bool hex2bin( const char* src, uint8_t* target )
