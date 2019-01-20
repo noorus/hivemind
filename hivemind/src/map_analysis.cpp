@@ -5,6 +5,7 @@
 #include "utilities.h"
 #include "blob_algo.h"
 #include "exception.h"
+#include "bot.h"
 
 namespace hivemind {
 
@@ -15,6 +16,7 @@ namespace hivemind {
     const Real c_regionChokeDiffCoefficient = 0.21f; // 0.31f; // relative difference to consider a change between region<->chokepoint
     const Real c_minNodeDistance = 6.0f; //0.25f; // 7; // minimum distance between nodes
     const Real c_minRegionObstrDistance = 2.5f; // 2.5f; // 1 = 9.7; // minimum distance to object to be considered as a region
+    const double c_regionPeuckerSimplifyDistance = 0.6; // douglas-peucker simplification distance for region polygons
 
     //
     // 1) Extract from gameinfo: dimensions, heightmap, flagmap
@@ -217,31 +219,44 @@ namespace hivemind {
       blob_algo::destroy_blobs( blob_out, blob_count );
     }
 
-    Polygon util_clipperPathToCleanPolygon( ClipperLib::Path& path, const bool simplify = false )
+    Polygon util_clipperPathToCleanPolygon( ClipperLib::Path& path, const bool simplify = false, double simplifyDistance = 1.0 )
     {
       ClipperLib::CleanPolygon( path );
 
       ClipperLib::Paths contourSimpleOut;
       ClipperLib::SimplifyPolygon( path, contourSimpleOut );
 
-      // We discard any extra polygons here, should probably log a message about them
-
-      /*for ( size_t i = 0; i < contourSimpleOut.size(); i++ )
-        printf( "util_clipperPathToCleanPolygon: poly %d, size %d\r\n", i, contourSimpleOut[i].size() );*/
+      // for ( size_t i = 0; i < contourSimpleOut.size(); i++ )
+      //   g_Bot->console().printf( "util_clipperPathToCleanPolygon: poly %d, size %d", i, contourSimpleOut[i].size() );
 
       if ( contourSimpleOut.empty() )
         return Polygon();
 
-      auto toSimplify = util_clipperPathToBoostPolygon( contourSimpleOut[0] );
+      // There could, although unlikely, be more than one output polygon. We'll find the largest one and only use that.
+      // This isn't ideal but the extra polygons are almost always just minor wrinkles.
+      size_t largestPolyIndex = 0;
+      size_t largestPolySize = 0;
+      for ( size_t i = 0; i < contourSimpleOut.size(); ++i )
+        if ( contourSimpleOut[i].size() > largestPolySize )
+        {
+          largestPolyIndex = i;
+          largestPolySize = contourSimpleOut[i].size();
+        }
 
-      if ( !simplify )
+      auto toSimplify = util_clipperPathToBoostPolygon( contourSimpleOut[largestPolyIndex] );
+
+      // Early out if we are not going to simplify or if the poly is empty anyway
+      if ( !simplify || toSimplify.outer().empty() )
         return util_boostPolygonToPolygon( toSimplify );
 
       BoostPolygon simplified;
-      boost::geometry::simplify( toSimplify, simplified, 1.0 );
+      boost::geometry::simplify( toSimplify, simplified, simplifyDistance );
 
-      if ( !boost::geometry::is_simple( simplified ) )
-        HIVE_EXCEPT( "Simplified contour polygon is not simple!" );
+      if ( simplified.outer().empty() || !boost::geometry::is_simple( simplified ) )
+      {
+        g_Bot->console().printf( "Warning: Simplified polygon (Douglas-Peucker) is empty or not simple; returning original polygon instead" );
+        return util_boostPolygonToPolygon( toSimplify );
+      }
 
       return util_boostPolygonToPolygon( simplified );
     }
@@ -267,8 +282,9 @@ namespace hivemind {
           if ( hole.empty() )
             continue;
 
-          auto clipperHole = util_contourToClipperPath( hole );
-          out_comp.contour.holes.push_back( util_clipperPathToCleanPolygon( clipperHole ) );
+          auto cleanHole = util_clipperPathToCleanPolygon( util_contourToClipperPath( hole ) );
+          if ( !cleanHole.empty() )
+            out_comp.contour.holes.push_back( cleanHole );
         }
 
         polygons_out.push_back( out_comp );
@@ -979,10 +995,10 @@ namespace hivemind {
     void convertPoly( const Polygon& in, BoostPolygon::ring_type& out )
     {
       for ( auto& pt : in )
-        out.emplace_back(pt.x,pt.y);
+        out.emplace_back( pt.x, pt.y );
     }
 
-    void util_clipAreasToRegions( ClipperLib::Paths& areas, ClipperLib::Paths& holes, ClipperLib::Paths& cutters, PolygonVector& out )
+    void util_clipAreasToRegions( ClipperLib::Paths& areas, ClipperLib::Paths& holes, ClipperLib::Paths& cutters, PolygonVector& out, size_t width, size_t height )
     {
       // combine holes & cutters (union), then cut areas with the result (difference)
       ClipperLib::Clipper clipper;
@@ -1003,7 +1019,7 @@ namespace hivemind {
 
       for ( auto& path : solution )
       {
-        auto poly = util_clipperPathToCleanPolygon( path, true );
+        auto poly = util_clipperPathToCleanPolygon( path, true, c_regionPeuckerSimplifyDistance );
         out.push_back( poly );
       }
     }
@@ -1066,7 +1082,7 @@ namespace hivemind {
       ClipperLib::Paths clipperCutPolygons = util_boostMultiPolyToClipperPaths( cutPolygons );
       ClipperLib::Paths clipperHolePolygons = util_boostMultiPolyToClipperPaths( holePolygons );
 
-      util_clipAreasToRegions( clipperAreas, clipperHolePolygons, clipperCutPolygons, regionPolygons );
+      util_clipAreasToRegions( clipperAreas, clipperHolePolygons, clipperCutPolygons, regionPolygons, width, height );
 
       for ( auto& regionPoly : regionPolygons )
       {

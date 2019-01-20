@@ -255,6 +255,7 @@ namespace hivemind {
     return out;
   }
 
+  // Only converts the outer polyline. It is assumed there are no holes.
   inline Polygon util_boostPolygonToPolygon( BoostPolygon& in )
   {
     Polygon out;

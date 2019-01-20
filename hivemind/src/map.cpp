@@ -92,7 +92,8 @@ namespace hivemind {
 
     const GameInfo& info = bot_->observation().GetGameInfo();
 
-    util_verbosePerfSection( bot_, "Map: Extracting walkability- and heightmaps", [&] {
+    util_verbosePerfSection( bot_, "Map: Extracting walkability- and heightmaps", [&]
+    {
       Analysis::Map_BuildBasics( bot_->observation(), width_, height_, flagsMap_, heightMap_ );
 
       for ( auto unit : bot_->observation().GetUnits( Unit::Alliance::Neutral ) )
@@ -135,7 +136,8 @@ namespace hivemind {
     bool gotClosestRegionTiles = false;
     bool gotFlagsMap = false;
 
-    util_verbosePerfSection( bot_, "Map: Processing contours", [&] {
+    util_verbosePerfSection( bot_, "Map: Processing contours", [&]
+    {
       Analysis::Map_ProcessContours( flagsMap_, componentLabels, components );
 
       if ( dumpImages )
@@ -146,7 +148,8 @@ namespace hivemind {
 
     // Polygon generation from traced contours ---
 
-    util_verbosePerfSection( bot_, "Map: Generating polygons", [&] {
+    util_verbosePerfSection( bot_, "Map: Generating polygons", [&]
+    {
       Analysis::Map_ComponentPolygons( components, polygons );
 
       if ( g_CVar_analysis_invertwalkable.as_b() )
@@ -164,7 +167,8 @@ namespace hivemind {
 
     if ( readCache && Cache::hasMapCache( data, cFlagsMapCacheName ) )
     {
-      gotFlagsMap = util_verbosePerfSection( bot_, "Map: Loading ground flags tilemap (cached)", [&] {
+      gotFlagsMap = util_verbosePerfSection( bot_, "Map: Loading ground flags tilemap (cached)", [&]
+      {
         return ( Cache::mapReadUint64Array2( data, flagsMap_, cFlagsMapCacheName ) );
       } );
     }
@@ -190,7 +194,8 @@ namespace hivemind {
       Analysis::RegionGraph graph;
       bgi::rtree<BoostSegmentI, bgi::quadratic<16>> rtree;
 
-      util_verbosePerfSection( bot_, "Map: Generating Voronoi diagram", [&] {
+      util_verbosePerfSection( bot_, "Map: Generating Voronoi diagram", [&]
+      {
         Analysis::Map_MakeVoronoi( info, obstacles_, componentLabels, graph, rtree );
         Analysis::Map_PruneVoronoi( graph );
         return true;
@@ -198,23 +203,29 @@ namespace hivemind {
 
       // Graph processing ---
 
-      util_verbosePerfSection( bot_, "Map: Processing graph", [&] {
+      util_verbosePerfSection( bot_, "Map: Processing graph", [&]
+      {
         Analysis::Map_DetectNodes( graph );
         Analysis::Map_SimplifyGraph( graph, simplifiedGraph );
         Analysis::Map_MergeRegionNodes( simplifiedGraph );
         return true;
       } );
 
+      if ( dumpImages )
+        bot_->debug().mapDumpPolygons( width_, height_, obstacles_, simplifiedGraph );
+
       // Chokepoints ---
 
-      util_verbosePerfSection( bot_, "Map: Figuring out chokepoints", [&] {
+      util_verbosePerfSection( bot_, "Map: Figuring out chokepoints", [&]
+      {
         Analysis::Map_GetChokepointSides( simplifiedGraph, rtree, tempChokeSides );
         return true;
       } );
 
       // Region splitting ---
 
-      util_verbosePerfSection( bot_, "Map: Splitting region polygons", [&] {
+      util_verbosePerfSection( bot_, "Map: Splitting region polygons", [&]
+      {
         Analysis::Map_MakeRegions( polygons, tempChokeSides, flagsMap_, width_, height_, regions_, regionMap_, simplifiedGraph );
         return true;
       } );
@@ -227,14 +238,16 @@ namespace hivemind {
 
     if ( readCache && Cache::hasMapCache( data, cClosestRegionTilesCacheName ) )
     {
-      gotClosestRegionTiles = util_verbosePerfSection( bot_, "Map: Loading closest-region tilemap (cached)", [&] {
+      gotClosestRegionTiles = util_verbosePerfSection( bot_, "Map: Loading closest-region tilemap (cached)", [&]
+      {
         return ( Cache::mapReadIntArray2( data, closestRegionMap_, cClosestRegionTilesCacheName ) );
       } );
     }
 
     if ( !gotClosestRegionTiles )
     {
-      util_verbosePerfSection( bot_, "Map: Precalculating closest-region tilemap", [&] {
+      util_verbosePerfSection( bot_, "Map: Precalculating closest-region tilemap", [&]
+      {
         Analysis::Map_CacheClosestRegions( regions_, regionMap_, closestRegionMap_ );
         if ( writeCache )
           Cache::mapWriteIntArray2( data, closestRegionMap_, cClosestRegionTilesCacheName );
@@ -244,13 +257,17 @@ namespace hivemind {
     }
 
     if ( dumpImages )
-      bot_->debug().mapDumpLabelMap( closestRegionMap_, false, "closest_tiles" );
+    {
+      bot_->debug().mapDumpRegionMap( regionMap_, "regions" );
+      bot_->debug().mapDumpRegionMap( closestRegionMap_, "regions_closest" );
+    }
 
     // Resource clusters ---
 
     vector<UnitVector> resourceClusters;
 
-    util_verbosePerfSection( bot_, "Map: Finding resource clusters", [&] {
+    util_verbosePerfSection( bot_, "Map: Finding resource clusters", [&]
+    {
       Analysis::Map_FindResourceClusters( bot_->observation(), resourceClusters, 4, 16.0f );
 
       updateReservedMap();
@@ -260,7 +277,8 @@ namespace hivemind {
 
     // Base locations ---
 
-    util_verbosePerfSection( bot_, "Map: Creating base locations", [&] {
+    util_verbosePerfSection( bot_, "Map: Creating base locations", [&]
+    {
       baseLocations_.clear();
 
       size_t index = 0;
@@ -282,7 +300,8 @@ namespace hivemind {
 
     if ( !gotRegions )
     {
-      util_verbosePerfSection( bot_, "Map: Calculating region heights", [&] {
+      util_verbosePerfSection( bot_, "Map: Calculating region heights", [&]
+      {
         Analysis::Map_CalculateRegionHeights( flagsMap_, regions_, regionMap_, heightMap_ );
 
         chokepoints_.clear();
@@ -345,17 +364,16 @@ namespace hivemind {
     }
 
     if ( dumpImages )
-      bot_->debug().mapDumpPolygons( width_, height_, obstacles_, regions_, chokepoints_, info.start_locations );
+      bot_->debug().mapDumpRegions( width_, height_, obstacles_, regions_, chokepoints_, info.start_locations );
 
-    testPath_.clear();
-    RegionGraphPather pather( &chokepoints_ );
+    /*RegionGraphPather pather( &chokepoints_ );
     ChokepointID from = *( region( info.start_locations[0].x, info.start_locations[0].y )->chokepoints_.begin() );
     ChokepointID to = *( region( info.start_locations[1].x, info.start_locations[1].y )->chokepoints_.begin() );
     auto chokepath = pather.findPath( from, to );
     for ( auto it : chokepath )
     {
       bot_->console().printf( "DEBUG: Choke path entry %d", it );
-    }
+    }*/
 
     bot_->console().printf( "Map: Rebuild done" );
   }

@@ -25,7 +25,7 @@ HIVE_DECLARE_CONVAR( update_delay, "Time delay between main loop updates in mill
 HIVE_DECLARE_CONVAR( enemy_count, "Number of enemy AI players to add in game.", 1 );
 HIVE_DECLARE_CONVAR_WITH_CB( enemy_race, "Race of the first enemy AI player. Subsequent players will cycle through races.", "terran", callbackCVAREnemyRace );
 
-HIVE_DECLARE_CONVAR( net_timeout, "Game API communications timeout in milliseconds.", 20000 );
+HIVE_DECLARE_CONVAR( net_timeout, "Game API communications timeout in milliseconds.", 50000 );
 
 HIVE_DECLARE_CONCMD( quit, "Quit currently active game.", concmdQuit );
 

@@ -12,11 +12,11 @@
 
 namespace hivemind {
 
-  Point3D DebugExtended::mapTileToMarker( const Vector2& v, const Array2<Real>& heightmap, Real offset, Real maxZ )
+  Point3D DebugExtended::mapTileToMarker( const Vector2& v, const Array2<Real>& heightmap, Real offset, Real maxZ, bool useMaxZ )
   {
     MapPoint2 tile = MapPoint2( math::floor( v.x ), math::floor( v.y ) );
     maxZ += offset;
-    Real z = heightmap[tile.x][tile.y] + offset;
+    Real z = ( useMaxZ ? 10000.0f : heightmap[tile.x][tile.y] + offset );
     if ( z > ( maxZ + offset ) )
       z = ( maxZ + offset );
     return Point3D( v.x + 0.5f, v.y + 0.5f, z );
@@ -35,8 +35,8 @@ namespace hivemind {
     auto previous = poly.back();
     for ( auto& vec : poly )
     {
-      Point3D p0 = mapTileToMarker( previous + offset, map.heightMap_, 0.4f, map.maxZ_ );
-      Point3D p1 = mapTileToMarker( vec + offset, map.heightMap_, 0.4f, map.maxZ_ );
+      Point3D p0 = mapTileToMarker( previous + offset, map.heightMap_, 0.4f, map.maxZ_, false );
+      Point3D p1 = mapTileToMarker( vec + offset, map.heightMap_, 0.4f, map.maxZ_, false );
       drawLine( p0, p1, color );
       drawSphere( p1, 0.1f, color );
       previous = vec;
@@ -103,6 +103,34 @@ namespace hivemind {
     stbi_write_png( "debug_map_flags_buildable.png", info.width, info.height, 1, build8.data(), info.width );
     stbi_write_png( "debug_map_flags_pathable.png", info.width, info.height, 1, path8.data(), info.width );
     stbi_write_png( "debug_map_flags_blockers.png", info.width, info.height, 1, block8.data(), info.width );
+  }
+
+  void DebugExtended::mapDumpRegionMap( Array2<int>& map, const string& name )
+  {
+    const rgb background = { 0, 0, 0 };
+
+    Array2<rgb> rgb8( map.height(), map.width() );
+
+    for ( size_t x = 0; x < map.width(); x++ )
+      for ( size_t y = 0; y < map.height(); y++ )
+      {
+        size_t row = map.height() - y - 1;
+        size_t column = x;
+
+        rgb color;
+          if ( map[x][y] == -1 )
+            color = background;
+          else
+          {
+            utils::hsl2rgb( ( (uint16_t)map[x][y] - 1 ) * 120, 230, 200, (uint8_t*)&color );
+          }
+
+        rgb8[row][column] = color;
+      }
+
+    char filename[64];
+    sprintf_s( filename, 64, "debug_map_%s.png", name.c_str() );
+    stbi_write_png( filename, (int)map.width(), (int)map.height(), 3, rgb8.data(), (int)map.width() * 3 );
   }
 
   void DebugExtended::mapDumpLabelMap( Array2<int>& map, bool contoured, const string& name )
@@ -202,25 +230,67 @@ namespace hivemind {
 
   const double cVectorImageSizeMultiplier = 32.0;
 
-  void DebugExtended::mapDumpPolygons( size_t width, size_t height, PolygonComponentVector& polys, RegionVector& regions, ChokeVector& chokes, const Point2Vector& startLocations )
+  void DebugExtended::mapDumpPolygons( size_t width, size_t height, vector<Polygon>& polys, const string& name )
   {
     svg::Dimensions dim( (double)width * cVectorImageSizeMultiplier, (double)height * cVectorImageSizeMultiplier );
-    svg::Document doc( "debug_map_polygons.svg", svg::Layout( dim, svg::Layout::BottomLeft ) );
-    /*for ( auto& poly : polys )
+    svg::Document doc( string( "debug_map_" + name + ".svg" ), svg::Layout( dim, svg::Layout::BottomLeft ) );
+    for ( auto& poly : polys )
     {
-      svg::Polygon svgPoly( svg::Stroke( 1.0, svg::Color( 50, 50, 50 ) ) );
+      svg::Polygon svgPoly( svg::Stroke( 4.0, svg::Color( 0, 0, 0 ) ) );
 
-      for ( auto& pt : poly.contour )
-        svgPoly << svg::Point( pt.x * 16.0, pt.y * 16.0 );
-      for ( auto& hole : poly.contour.holes )
+      for ( auto& pt : poly )
+        svgPoly << svg::Point( pt.x * cVectorImageSizeMultiplier, pt.y * cVectorImageSizeMultiplier );
+      for ( auto& hole : poly.holes )
       {
-        svg::Polygon holePoly( svg::Stroke( 1.0, svg::Color( 50, 50, 50 ) ) );
+        svg::Polygon holePoly( svg::Stroke( 4.0, svg::Color( 0, 0, 0 ) ) );
         for ( auto& pt : hole )
-          holePoly << svg::Point( pt.x * 16.0, pt.y * 16.0 );
+          holePoly << svg::Point( pt.x * cVectorImageSizeMultiplier, pt.y * cVectorImageSizeMultiplier );
         doc << holePoly;
       }
       doc << svgPoly;
-    }*/
+    }
+    doc.save();
+  }
+
+  void DebugExtended::mapDumpPolygons( size_t width, size_t height, PolygonComponentVector& polys, Analysis::RegionGraph& graph )
+  {
+    svg::Dimensions dim( (double)width * cVectorImageSizeMultiplier, (double)height * cVectorImageSizeMultiplier );
+    svg::Document doc( "debug_map_polygons.svg", svg::Layout( dim, svg::Layout::BottomLeft ) );
+    for ( auto& poly : polys )
+    {
+      svg::Polygon svgPoly( svg::Stroke( 4.0, svg::Color( 0, 0, 0 ) ) );
+
+      for ( auto& pt : poly.contour )
+        svgPoly << svg::Point( pt.x * cVectorImageSizeMultiplier, pt.y * cVectorImageSizeMultiplier );
+      for ( auto& hole : poly.contour.holes )
+      {
+        svg::Polygon holePoly( svg::Stroke( 4.0, svg::Color( 0, 0, 0 ) ) );
+        for ( auto& pt : hole )
+          holePoly << svg::Point( pt.x * cVectorImageSizeMultiplier, pt.y * cVectorImageSizeMultiplier );
+        doc << holePoly;
+      }
+      doc << svgPoly;
+    }
+    for ( size_t id = 0; id < graph.adjacencyList_.size(); id++ )
+    {
+      for ( auto adj : graph.adjacencyList_[id] )
+      {
+        auto v0 = graph.nodes[id];
+        auto v1 = graph.nodes[adj];
+        svg::Line line(
+          svg::Point( v0.x * cVectorImageSizeMultiplier, v0.y * cVectorImageSizeMultiplier ),
+          svg::Point( v1.x * cVectorImageSizeMultiplier, v1.y * cVectorImageSizeMultiplier ),
+          svg::Stroke( 6.0, svg::Color::Cyan ) );
+        doc << line;
+      }
+    }
+    doc.save();
+  }
+
+  void DebugExtended::mapDumpRegions( size_t width, size_t height, PolygonComponentVector& polys, RegionVector& regions, ChokeVector& chokes, const Point2Vector& startLocations )
+  {
+    svg::Dimensions dim( (double)width * cVectorImageSizeMultiplier, (double)height * cVectorImageSizeMultiplier );
+    svg::Document doc( "debug_map_regions.svg", svg::Layout( dim, svg::Layout::BottomLeft ) );
     for ( auto& region : regions )
     {
       if ( region->dubious_ )
@@ -247,19 +317,6 @@ namespace hivemind {
       svg::Circle circle( pt, 5.0 * cVectorImageSizeMultiplier, svg::Fill( svg::Color::Red ) );
       doc << circle;
     }
-    /*for ( size_t id = 0; id < graph.adjacencyList_.size(); id++ )
-    {
-      for ( auto adj : graph.adjacencyList_[id] )
-      {
-        auto v0 = graph.nodes_[id];
-        auto v1 = graph.nodes_[adj];
-        svg::Line line(
-          svg::Point( v0.x * cVectorImageSizeMultiplier, v0.y * cVectorImageSizeMultiplier ),
-          svg::Point( v1.x * cVectorImageSizeMultiplier, v1.y * cVectorImageSizeMultiplier ),
-          svg::Stroke( 6.0, svg::Color::Cyan ) );
-        doc << line;
-      }
-    }*/
     doc.save();
   }
 

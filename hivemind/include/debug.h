@@ -12,7 +12,7 @@ namespace hivemind {
   class DebugExtended {
   private:
     sc2::DebugInterface* debug_;
-    Point3D mapTileToMarker( const Vector2& v, const Array2<Real>& heightmap, Real offset, Real maxZ );
+    Point3D mapTileToMarker( const Vector2& v, const Array2<Real>& heightmap, Real offset, Real maxZ, bool useMaxZ = false );
   public:
     DebugExtended(): debug_( nullptr ) {}
     inline void setForward( sc2::DebugInterface* fwd )
@@ -101,14 +101,20 @@ namespace hivemind {
   #ifdef HIVE_SUPPORT_MAP_DUMPS
     void mapDumpBasicMaps( Array2<uint64_t>& flagmap, Array2<Real>& heightmap, const GameInfo& info );
     void mapDumpLabelMap( Array2<int>& map, bool contoured, const string& name );
+    void mapDumpRegionMap( Array2<int>& map, const string& name );
     //! Caution! This is very, VERY slow!
     void mapDumpBaseLocations( Array2<uint64_t>& flagmap, vector<UnitVector>& clusters, const GameInfo& info, BaseLocationVector& bases );
-    void mapDumpPolygons( size_t width, size_t height, PolygonComponentVector& polys, RegionVector& regions, ChokeVector& chokes, const Point2Vector& startLocations );
+    void mapDumpPolygons( size_t width, size_t height, vector<Polygon>& polys, const string& name );
+    void mapDumpPolygons( size_t width, size_t height, PolygonComponentVector& polys, Analysis::RegionGraph& graph );
+    void mapDumpRegions( size_t width, size_t height, PolygonComponentVector& polys, RegionVector& regions, ChokeVector& chokes, const Point2Vector& startLocations );
   #else
     inline void mapDumpBasicMaps( Array2<uint64_t>& flagmap, Array2<Real>& heightmap, const GameInfo& info ) { /* disabled */ }
     inline void mapDumpLabelMap( Array2<int>& map, bool contoured, const string& name ) { /* disabled */ }
+    inline void mapDumpRegionMap( Array2<int>& map, const string& name ) { /* disabled */ }
     inline void mapDumpBaseLocations( Array2<uint64_t>& flagmap, vector<UnitVector>& clusters, const GameInfo& info, BaseLocationVector& bases ) { /* disabled */ }
-    inline void mapDumpPolygons( size_t width, size_t height, PolygonComponentVector& polys, RegionVector& regions, ChokeVector& chokes, const Point2Vector& startLocations ) { /* disabled */ }
+    inline void mapDumpPolygons( size_t width, size_t height, vector<Polygon>& polys, const string& name ) { /* disabled */ }
+    inline void mapDumpPolygons( size_t width, size_t height, PolygonComponentVector& polys, Analysis::RegionGraph& graph ) { /* disabled */ }
+    inline void mapDumpRegions( size_t width, size_t height, PolygonComponentVector& polys, RegionVector& regions, ChokeVector& chokes, const Point2Vector& startLocations ) { /* disabled */ }
   #endif
   };
 
