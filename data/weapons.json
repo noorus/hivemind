@@ -897,10 +897,6 @@
           "setEffects" : 
           [
             {
-              "name" : "SentryWeaponApplyCooldown",
-              "type" : "unknown"
-            },
-            {
               "dmgAmount" : 6.0,
               "dmgArmorReduction" : 1.0,
               "dmgAttributeBonuses" : {},
@@ -1734,7 +1730,7 @@
     "period" : 2.3999999999999999,
     "randomDelayMax" : 0.125,
     "randomDelayMin" : -0.0625,
-    "range" : 10.0,
+    "range" : 11.0,
     "rangeSlop" : 1.0
   },
   "LanzerTorpedoes" : 
@@ -2384,10 +2380,6 @@
           "name" : "OracleWeaponPeriodicSet",
           "setEffects" : 
           [
-            {
-              "name" : "OracleWeaponApplyCooldown",
-              "type" : "unknown"
-            },
             {
               "dmgAmount" : 15.0,
               "dmgArmorReduction" : 0.0,
@@ -3841,10 +3833,6 @@
           "name" : "VoidRayWeaponPeriodicSet",
           "setEffects" : 
           [
-            {
-              "name" : "VoidRayWeaponApplyCooldown",
-              "type" : "unknown"
-            },
             {
               "dmgAmount" : 6.0,
               "dmgArmorReduction" : 1.0,

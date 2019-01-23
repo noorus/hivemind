@@ -1310,7 +1310,7 @@
             "type" : "and"
           }
         ],
-        "time" : 140.0
+        "time" : 170.0
       },
       "Research2" : 
       {
@@ -1350,7 +1350,7 @@
             "type" : "not"
           }
         ],
-        "time" : 80.0
+        "time" : 60.0
       }
     },
     "name" : "BarracksTechLabResearch",
@@ -2041,6 +2041,11 @@
             "type" : "not"
           }
         ],
+        "time" : 80.0
+      },
+      "Research11" : 
+      {
+        "index" : 1572,
         "time" : 110.0
       },
       "Research2" : 
@@ -2982,7 +2987,7 @@
             "type" : "not"
           }
         ],
-        "time" : 110.0
+        "time" : 140.0
       },
       "Research2" : 
       {
@@ -3765,7 +3770,7 @@
             "type" : "not"
           }
         ],
-        "time" : 60.0
+        "time" : 140.0
       }
     },
     "name" : "FusionCoreResearch",
@@ -3853,7 +3858,7 @@
             "unitName" : [ "CyberneticsCore" ]
           }
         ],
-        "time" : 38.0,
+        "time" : 42.0,
         "units" : [ "Adept" ]
       }
     },
@@ -4054,6 +4059,11 @@
   {
     "commands" : 
     {
+      "Research1" : 
+      {
+        "index" : 1222,
+        "time" : 70.0
+      },
       "Research2" : 
       {
         "index" : 1223,
@@ -4427,6 +4437,32 @@
   {
     "commands" : 
     {
+      "Research1" : 
+      {
+        "index" : 680,
+        "requires" : 
+        [
+          {
+            "operands" : 
+            [
+              {
+                "operands" : 
+                [
+                  {
+                    "state" : "QueuedOrBetter",
+                    "type" : "upgradeCount",
+                    "upgrade" : 15,
+                    "upgradeName" : "Stimpack"
+                  }
+                ],
+                "type" : "not"
+              }
+            ],
+            "type" : "and"
+          }
+        ],
+        "time" : 110.0
+      },
       "Research4" : 
       {
         "index" : 683,
@@ -4564,6 +4600,20 @@
     "name" : "MorphToCollapsibleRockTowerDebrisRampLeft",
     "type" : "morph"
   },
+  "MorphToCollapsibleRockTowerDebrisRampLeftGreen" : 
+  {
+    "commands" : 
+    {
+      "Execute" : 
+      {
+        "index" : 0,
+        "time" : 0.0,
+        "units" : [ "CollapsibleRockTowerDebrisRampLeftGreen" ]
+      }
+    },
+    "name" : "MorphToCollapsibleRockTowerDebrisRampLeftGreen",
+    "type" : "morph"
+  },
   "MorphToCollapsibleRockTowerDebrisRampRight" : 
   {
     "commands" : 
@@ -4576,6 +4626,20 @@
       }
     },
     "name" : "MorphToCollapsibleRockTowerDebrisRampRight",
+    "type" : "morph"
+  },
+  "MorphToCollapsibleRockTowerDebrisRampRightGreen" : 
+  {
+    "commands" : 
+    {
+      "Execute" : 
+      {
+        "index" : 0,
+        "time" : 0.0,
+        "units" : [ "CollapsibleRockTowerDebrisRampRightGreen" ]
+      }
+    },
+    "name" : "MorphToCollapsibleRockTowerDebrisRampRightGreen",
     "type" : "morph"
   },
   "MorphToCollapsibleTerranTowerDebris" : 
@@ -6012,6 +6076,11 @@
   {
     "commands" : 
     {
+      "Research1" : 
+      {
+        "index" : 1092,
+        "time" : 70.0
+      },
       "Research2" : 
       {
         "index" : 1093,
@@ -6057,6 +6126,16 @@
           }
         ],
         "time" : 80.0
+      },
+      "Research4" : 
+      {
+        "index" : 1095,
+        "time" : 140.0
+      },
+      "Research5" : 
+      {
+        "index" : 1096,
+        "time" : 140.0
       },
       "Research6" : 
       {
@@ -6925,7 +7004,7 @@
       {
         "index" : 800,
         "requires" : [],
-        "time" : 120.0
+        "time" : 110.0
       },
       "Research13" : 
       {
@@ -7752,7 +7831,7 @@
             "type" : "not"
           }
         ],
-        "time" : 110.0
+        "time" : 170.0
       },
       "Research3" : 
       {
@@ -8662,6 +8741,11 @@
           }
         ],
         "time" : 160.0
+      },
+      "Research10" : 
+      {
+        "index" : 1195,
+        "time" : 90.0
       },
       "Research2" : 
       {

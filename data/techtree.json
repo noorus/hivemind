@@ -286,7 +286,7 @@
               "unitName" : [ "CyberneticsCore" ]
             }
           ],
-          "time" : 38.0,
+          "time" : 42.0,
           "unit" : 311,
           "unitName" : "Adept"
         }
@@ -348,7 +348,7 @@
         {
           "ability" : 1063,
           "abilityName" : "ForgeResearch,Research2",
-          "minerals" : 175,
+          "minerals" : 150,
           "requires" : 
           [
             {
@@ -399,12 +399,12 @@
           "time" : 190.0,
           "upgrade" : 40,
           "upgradeName" : "ProtossGroundWeaponsLevel2",
-          "vespene" : 175
+          "vespene" : 150
         },
         {
           "ability" : 1064,
           "abilityName" : "ForgeResearch,Research3",
-          "minerals" : 250,
+          "minerals" : 200,
           "requires" : 
           [
             {
@@ -455,7 +455,7 @@
           "time" : 220.0,
           "upgrade" : 41,
           "upgradeName" : "ProtossGroundWeaponsLevel3",
-          "vespene" : 250
+          "vespene" : 200
         },
         {
           "ability" : 1065,
@@ -488,7 +488,7 @@
         {
           "ability" : 1066,
           "abilityName" : "ForgeResearch,Research5",
-          "minerals" : 175,
+          "minerals" : 150,
           "requires" : 
           [
             {
@@ -539,12 +539,12 @@
           "time" : 190.0,
           "upgrade" : 43,
           "upgradeName" : "ProtossGroundArmorsLevel2",
-          "vespene" : 175
+          "vespene" : 150
         },
         {
           "ability" : 1067,
           "abilityName" : "ForgeResearch,Research6",
-          "minerals" : 250,
+          "minerals" : 200,
           "requires" : 
           [
             {
@@ -595,12 +595,12 @@
           "time" : 220.0,
           "upgrade" : 44,
           "upgradeName" : "ProtossGroundArmorsLevel3",
-          "vespene" : 250
+          "vespene" : 200
         },
         {
           "ability" : 1068,
           "abilityName" : "ForgeResearch,Research7",
-          "minerals" : 200,
+          "minerals" : 150,
           "requires" : 
           [
             {
@@ -623,12 +623,12 @@
           "time" : 160.0,
           "upgrade" : 45,
           "upgradeName" : "ProtossShieldsLevel1",
-          "vespene" : 200
+          "vespene" : 150
         },
         {
           "ability" : 1069,
           "abilityName" : "ForgeResearch,Research8",
-          "minerals" : 300,
+          "minerals" : 225,
           "requires" : 
           [
             {
@@ -679,12 +679,12 @@
           "time" : 190.0,
           "upgrade" : 46,
           "upgradeName" : "ProtossShieldsLevel2",
-          "vespene" : 300
+          "vespene" : 225
         },
         {
           "ability" : 1070,
           "abilityName" : "ForgeResearch,Research9",
-          "minerals" : 400,
+          "minerals" : 300,
           "requires" : 
           [
             {
@@ -735,7 +735,7 @@
           "time" : 220.0,
           "upgrade" : 47,
           "upgradeName" : "ProtossShieldsLevel3",
-          "vespene" : 400
+          "vespene" : 300
         }
       ]
     },
@@ -778,7 +778,7 @@
         {
           "ability" : 1593,
           "abilityName" : "TwilightCouncilResearch,Research2",
-          "minerals" : 150,
+          "minerals" : 100,
           "requires" : 
           [
             {
@@ -794,15 +794,15 @@
               "type" : "not"
             }
           ],
-          "time" : 110.0,
+          "time" : 170.0,
           "upgrade" : 87,
           "upgradeName" : "BlinkTech",
-          "vespene" : 150
+          "vespene" : 100
         },
         {
           "ability" : 1592,
           "abilityName" : "TwilightCouncilResearch,Research1",
-          "minerals" : 200,
+          "minerals" : 100,
           "requires" : 
           [
             {
@@ -821,7 +821,7 @@
           "time" : 140.0,
           "upgrade" : 86,
           "upgradeName" : "Charge",
-          "vespene" : 200
+          "vespene" : 100
         },
         {
           "ability" : 1594,
@@ -965,7 +965,7 @@
         {
           "ability" : 1097,
           "abilityName" : "RoboticsBayResearch,Research6",
-          "minerals" : 200,
+          "minerals" : 150,
           "requires" : 
           [
             {
@@ -990,7 +990,7 @@
           "time" : 140.0,
           "upgrade" : 50,
           "upgradeName" : "ExtendedThermalLance",
-          "vespene" : 200
+          "vespene" : 150
         },
         {
           "ability" : 1093,
@@ -2906,7 +2906,7 @@
               "type" : "not"
             }
           ],
-          "time" : 60.0,
+          "time" : 140.0,
           "upgrade" : 76,
           "upgradeName" : "BattlecruiserEnableSpecializations",
           "vespene" : 150
@@ -2992,7 +2992,7 @@
         {
           "ability" : 731,
           "abilityName" : "BarracksTechLabResearch,Research2",
-          "minerals" : 150,
+          "minerals" : 100,
           "requires" : 
           [
             {
@@ -3011,12 +3011,12 @@
           "time" : 110.0,
           "upgrade" : 16,
           "upgradeName" : "ShieldWall",
-          "vespene" : 150
+          "vespene" : 100
         },
         {
           "ability" : 730,
           "abilityName" : "BarracksTechLabResearch,Research1",
-          "minerals" : 150,
+          "minerals" : 100,
           "requires" : 
           [
             {
@@ -3038,15 +3038,15 @@
               "type" : "and"
             }
           ],
-          "time" : 140.0,
+          "time" : 170.0,
           "upgrade" : 15,
           "upgradeName" : "Stimpack",
-          "vespene" : 150
+          "vespene" : 100
         },
         {
           "ability" : 732,
           "abilityName" : "BarracksTechLabResearch,Research3",
-          "minerals" : 100,
+          "minerals" : 50,
           "requires" : 
           [
             {
@@ -3062,10 +3062,10 @@
               "type" : "not"
             }
           ],
-          "time" : 80.0,
+          "time" : 60.0,
           "upgrade" : 17,
           "upgradeName" : "PunisherGrenades",
-          "vespene" : 100
+          "vespene" : 50
         }
       ]
     },
@@ -3101,7 +3101,7 @@
         {
           "ability" : 764,
           "abilityName" : "FactoryTechLabResearch,Research5",
-          "minerals" : 150,
+          "minerals" : 75,
           "requires" : 
           [
             {
@@ -3126,7 +3126,7 @@
           "time" : 110.0,
           "upgrade" : 122,
           "upgradeName" : "DrillClaws",
-          "vespene" : 150
+          "vespene" : 75
         },
         {
           "ability" : 766,
@@ -3177,7 +3177,7 @@
               "type" : "not"
             }
           ],
-          "time" : 110.0,
+          "time" : 140.0,
           "upgrade" : 144,
           "upgradeName" : "CycloneLockOnDamageUpgrade",
           "vespene" : 100
@@ -3192,7 +3192,7 @@
         {
           "ability" : 790,
           "abilityName" : "StarportTechLabResearch,Research1",
-          "minerals" : 200,
+          "minerals" : 100,
           "requires" : 
           [
             {
@@ -3211,7 +3211,7 @@
           "time" : 110.0,
           "upgrade" : 20,
           "upgradeName" : "BansheeCloak",
-          "vespene" : 200
+          "vespene" : 100
         },
         {
           "ability" : 793,
@@ -3783,7 +3783,7 @@
         {
           "ability" : 1223,
           "abilityName" : "LairResearch,Research2",
-          "minerals" : 50,
+          "minerals" : 100,
           "requires" : 
           [
             {
@@ -3802,7 +3802,7 @@
           "time" : 60.0,
           "upgrade" : 62,
           "upgradeName" : "overlordspeed",
-          "vespene" : 50
+          "vespene" : 100
         },
         {
           "ability" : 1225,
@@ -3857,7 +3857,7 @@
         {
           "ability" : 1223,
           "abilityName" : "LairResearch,Research2",
-          "minerals" : 50,
+          "minerals" : 100,
           "requires" : 
           [
             {
@@ -3876,7 +3876,7 @@
           "time" : 60.0,
           "upgrade" : 62,
           "upgradeName" : "overlordspeed",
-          "vespene" : 50
+          "vespene" : 100
         },
         {
           "ability" : 1225,
@@ -10158,7 +10158,7 @@
         {
           "ability" : 1223,
           "abilityName" : "LairResearch,Research2",
-          "minerals" : 50,
+          "minerals" : 100,
           "requires" : 
           [
             {
@@ -10177,7 +10177,7 @@
           "time" : 60.0,
           "upgrade" : 62,
           "upgradeName" : "overlordspeed",
-          "vespene" : 50
+          "vespene" : 100
         },
         {
           "ability" : 1225,
@@ -11509,7 +11509,7 @@
         {
           "ability" : 217,
           "abilityName" : "RoachWarrenResearch,Research3",
-          "minerals" : 150,
+          "minerals" : 100,
           "requires" : 
           [
             {
@@ -11528,7 +11528,7 @@
           "time" : 110.0,
           "upgrade" : 3,
           "upgradeName" : "TunnelingClaws",
-          "vespene" : 150
+          "vespene" : 100
         }
       ]
     },
