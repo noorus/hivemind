@@ -13,6 +13,16 @@ Image dumping via [stb_image](https://github.com/nothings/stb/) and [simple_svg]
 * [s2client-api](https://github.com/Blizzard/s2client-api)
 
 #### Opponents
+* [VoxelBot](https://github.com/HalfVoxel/sc2-voxelbot) (Protoss?) by voxel
+* [YoBot](https://github.com/yanntm/YoBot) (4gate zealot rush Protoss) by yanntm
+* [JackBot](https://github.com/Matuiss2/JackBot/tree/development) (Zerg) by Matuiss2
+
+#### Interesting stuff
+* [EvolutionChamber](https://github.com/infinity0/evolutionchamber) Genetic algorithm build order searches (old, Java)
+* [SCFusion](https://github.com/Carbon-12/SCFusion) Graphic build order tool (2016)
+* [ProBo](http://www.proboengine.com/) Protoss build order tool (**closed source**)
+
+#### Older opponents
 * [5minBot](https://github.com/Archiatrus/5minBot) (Terran) by Archiatrus
 * [CryptBot](https://github.com/Cryptyc/CryptBot) (Protoss) by Cryptyc
 * [ByunJR](https://github.com/IanGallacher/ByunJR) (Terran) by Ian Gallacher
