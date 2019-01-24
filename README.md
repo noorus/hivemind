@@ -13,6 +13,7 @@ Image dumping via [stb_image](https://github.com/nothings/stb/) and [simple_svg]
 * [s2client-api](https://github.com/Blizzard/s2client-api)
 
 #### Opponents
+* [Suvorov](https://github.com/alkurbatov/suvorov-bot) (All races, advanced?) by Alexander Kurbatov
 * [VoxelBot](https://github.com/HalfVoxel/sc2-voxelbot) (Protoss?) by voxel
 * [YoBot](https://github.com/yanntm/YoBot) (4gate zealot rush Protoss) by yanntm
 * [JackBot](https://github.com/Matuiss2/JackBot/tree/development) (Zerg) by Matuiss2
