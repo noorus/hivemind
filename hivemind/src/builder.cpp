@@ -523,6 +523,50 @@ namespace hivemind {
     }
   }
 
+  UnitTypeID getResearcherType(UpgradeID upgradeType)
+  {
+    if(upgradeType == sc2::UPGRADE_ID::ZERGLINGMOVEMENTSPEED ||
+      upgradeType == sc2::UPGRADE_ID::ZERGLINGATTACKSPEED)
+      return sc2::UNIT_TYPEID::ZERG_SPAWNINGPOOL;
+
+    if(upgradeType == sc2::UPGRADE_ID::BURROW ||
+      upgradeType == sc2::UPGRADE_ID::OVERLORDSPEED)
+      return sc2::UNIT_TYPEID::ZERG_HATCHERY;
+
+    if(upgradeType == sc2::UPGRADE_ID::EVOLVEGROOVEDSPINES ||
+      upgradeType == sc2::UPGRADE_ID::EVOLVEMUSCULARAUGMENTS)
+      return sc2::UNIT_TYPEID::ZERG_HYDRALISKDEN;
+
+    if(upgradeType == sc2::UPGRADE_ID::GLIALRECONSTITUTION ||
+      upgradeType == sc2::UPGRADE_ID::TUNNELINGCLAWS)
+      return sc2::UNIT_TYPEID::ZERG_ROACHWARREN;
+
+    if(upgradeType == sc2::UPGRADE_ID::ZERGFLYERARMORSLEVEL1 ||
+      upgradeType == sc2::UPGRADE_ID::ZERGFLYERARMORSLEVEL2 ||
+      upgradeType == sc2::UPGRADE_ID::ZERGFLYERARMORSLEVEL3 ||
+      upgradeType == sc2::UPGRADE_ID::ZERGFLYERWEAPONSLEVEL1 ||
+      upgradeType == sc2::UPGRADE_ID::ZERGFLYERWEAPONSLEVEL2 ||
+      upgradeType == sc2::UPGRADE_ID::ZERGFLYERWEAPONSLEVEL3)
+      return sc2::UNIT_TYPEID::ZERG_SPIRE;
+
+    if(upgradeType == sc2::UPGRADE_ID::ZERGMELEEWEAPONSLEVEL1 ||
+      upgradeType == sc2::UPGRADE_ID::ZERGMELEEWEAPONSLEVEL2 ||
+      upgradeType == sc2::UPGRADE_ID::ZERGMELEEWEAPONSLEVEL3 ||
+      upgradeType == sc2::UPGRADE_ID::ZERGMISSILEWEAPONSLEVEL1 ||
+      upgradeType == sc2::UPGRADE_ID::ZERGMISSILEWEAPONSLEVEL2 ||
+      upgradeType == sc2::UPGRADE_ID::ZERGMISSILEWEAPONSLEVEL3 ||
+      upgradeType == sc2::UPGRADE_ID::ZERGGROUNDARMORSLEVEL1 ||
+      upgradeType == sc2::UPGRADE_ID::ZERGGROUNDARMORSLEVEL2 ||
+      upgradeType == sc2::UPGRADE_ID::ZERGGROUNDARMORSLEVEL3)
+      return sc2::UNIT_TYPEID::ZERG_EVOLUTIONCHAMBER;
+
+    // TODO: Some upgrades are missing.
+    // TODO: Some upgrades require greater spire.
+    // TODO: Use database.
+    assert(false);
+    return sc2::UNIT_TYPEID::INVALID;
+  }
+
   AllocatedResources Builder::getCost(UnitTypeID unitType)
   {
     UnitTypeID trainerType = getTrainerType(unitType);
@@ -533,6 +577,11 @@ namespace hivemind {
     int supplyCost = std::max(ability.supplyCost, 0);
 
     return { ability.mineralCost, ability.vespeneCost, supplyCost };
+  }
+
+  AllocatedResources Builder::getCost(UpgradeID upgradeType) const
+  {
+    return researcher_.getCost(upgradeType);
   }
 
   AllocatedResources Builder::getAllocatedResources() const
@@ -564,6 +613,20 @@ namespace hivemind {
 
   bool Builder::haveResourcesToMake(UnitTypeID unitType, AllocatedResources allocatedResources) const
   {
+    auto cost = getCost(unitType);
+
+    return haveResourcesToMake(cost, allocatedResources);
+  }
+
+  bool Builder::haveResourcesToMake(UpgradeID upgradeType, AllocatedResources allocatedResources) const
+  {
+    auto cost = getCost(upgradeType);
+
+    return haveResourcesToMake(cost, allocatedResources);
+  }
+
+  bool Builder::haveResourcesToMake(AllocatedResources cost, AllocatedResources allocatedResources) const
+  {
     int minerals = bot_->Observation()->GetMinerals();
     int vespene = bot_->Observation()->GetVespene();
     int supplyLimit = bot_->Observation()->GetFoodCap();
@@ -580,8 +643,6 @@ namespace hivemind {
     minerals -= allocatedResources.minerals;
     vespene -= allocatedResources.vespene;
     usedSupply += allocatedResources.food;
-
-    auto cost = getCost(unitType);
 
     bool haveMoney = minerals >= cost.minerals;
     bool haveGas = vespene >= cost.vespene;

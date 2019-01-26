@@ -9,6 +9,48 @@ namespace hivemind {
 
   HIVE_DECLARE_CONVAR( draw_macro, "Whether to draw debug information about macro plans", true);
 
+  // A ResourceTypeID is either a UNIT_TYPEID or a UPGRADE_ID, or empty.
+  struct ResourceTypeID
+  {
+    ResourceTypeID()
+    {
+      name_ = "<null>";
+      unitType_ = UNIT_TYPEID::INVALID;
+      upgradeType_ = UPGRADE_ID::INVALID;
+    }
+
+    ResourceTypeID(UNIT_TYPEID unitType)
+    {
+      name_ = UnitTypeToName(unitType);
+      unitType_ = unitType;
+      upgradeType_ = UPGRADE_ID::INVALID;
+    }
+
+    ResourceTypeID(UPGRADE_ID upgradeType)
+    {
+      name_ = UpgradeIDToName(upgradeType);
+      unitType_ = UNIT_TYPEID::INVALID;
+      upgradeType_ = upgradeType;
+    }
+
+    bool isUnitType() const { return unitType_ != UNIT_TYPEID::INVALID; }
+    bool isUpgradeType() const { return upgradeType_ != UPGRADE_ID::INVALID; }
+
+    const char* name_;
+    UnitTypeID unitType_;
+    UpgradeID upgradeType_;
+  };
+
+  inline bool operator==(ResourceTypeID lhs, ResourceTypeID rhs)
+  {
+    return std::tie(lhs.unitType_, lhs.upgradeType_) == std::tie(rhs.unitType_, rhs.upgradeType_);
+  }
+
+  inline bool operator!=(ResourceTypeID lhs, ResourceTypeID rhs)
+  {
+    return !(lhs == rhs);
+  }
+
   struct BuildPlan
   {
     enum class State
@@ -21,7 +63,7 @@ namespace hivemind {
     {
     }
 
-    virtual AllocatedResources remainingCost() const = 0;
+    virtual AllocatedResources remainingCost(BuildPlanner* planner) const = 0;
     virtual State updateProgress(BuildPlanner* planner) = 0;
     virtual void executePlan(BuildPlanner* planner, AllocatedResources allocatedResources) = 0;
     virtual std::string toString() const = 0;
@@ -40,11 +82,30 @@ namespace hivemind {
     {
     }
 
-    AllocatedResources remainingCost() const override
+    AllocatedResources remainingCost(BuildPlanner* planner) const override
     {
       size_t remaining = count_ - startedBuilds_.size();
       return Builder::getCost(unitType_) * (int)remaining;
     }
+
+    virtual State updateProgress(BuildPlanner* planner) override;
+    virtual void executePlan(BuildPlanner* planner, AllocatedResources allocatedResources) override;
+    virtual std::string toString() const override;
+  };
+
+  struct ResearchBuildPlan : public BuildPlan
+  {
+    sc2::UPGRADE_ID upgradeType_;
+
+    BuildProjectID startedBuild_;
+
+    explicit ResearchBuildPlan(sc2::UPGRADE_ID upgradeType):
+      upgradeType_(upgradeType),
+      startedBuild_(-1)
+    {
+    }
+
+    AllocatedResources remainingCost(BuildPlanner* planner) const override;
 
     virtual State updateProgress(BuildPlanner* planner) override;
     virtual void executePlan(BuildPlanner* planner, AllocatedResources allocatedResources) override;
@@ -470,47 +531,47 @@ namespace hivemind {
       { sc2::UNIT_TYPEID::ZERG_EXTRACTOR,    4 },
     };
 #else
-    pair<sc2::UNIT_TYPEID, size_t> opening[] =
+    pair<ResourceTypeID, size_t> opening[] =
     {
       // Hatch first
-      { sc2::UNIT_TYPEID::ZERG_DRONE,        1 },
-      { sc2::UNIT_TYPEID::ZERG_OVERLORD,     1 },
-      { sc2::UNIT_TYPEID::ZERG_DRONE,        4 },
-      { sc2::UNIT_TYPEID::ZERG_HATCHERY,     1 },
-      { sc2::UNIT_TYPEID::ZERG_DRONE,        2 },
-      { sc2::UNIT_TYPEID::ZERG_EXTRACTOR,    1 },
-      { sc2::UNIT_TYPEID::ZERG_SPAWNINGPOOL, 1 },
+      { sc2::UNIT_TYPEID::ZERG_DRONE,           1 },
+      { sc2::UNIT_TYPEID::ZERG_OVERLORD,        1 },
+      { sc2::UNIT_TYPEID::ZERG_DRONE,           4 },
+      { sc2::UNIT_TYPEID::ZERG_HATCHERY,        1 },
+      { sc2::UNIT_TYPEID::ZERG_DRONE,           2 },
+      { sc2::UNIT_TYPEID::ZERG_EXTRACTOR,       1 },
+      { sc2::UNIT_TYPEID::ZERG_SPAWNINGPOOL,    1 },
       // Ling Roach (vs Protoss)
-      { sc2::UNIT_TYPEID::ZERG_DRONE,        1 },
-      { sc2::UNIT_TYPEID::ZERG_OVERLORD,     1 },
-      { sc2::UNIT_TYPEID::ZERG_QUEEN,        1 },
-      { sc2::UNIT_TYPEID::ZERG_DRONE,        1 },
-      { sc2::UNIT_TYPEID::ZERG_QUEEN,        1 },
-      { sc2::UNIT_TYPEID::ZERG_ZERGLING,     2 },
-      // Insert metabolic boost here.
-      { sc2::UNIT_TYPEID::ZERG_DRONE,        3 },
-      { sc2::UNIT_TYPEID::ZERG_HATCHERY,     1 },
-      { sc2::UNIT_TYPEID::ZERG_QUEEN,        1 },
-      { sc2::UNIT_TYPEID::ZERG_OVERLORD,     1 },
-      { sc2::UNIT_TYPEID::ZERG_ZERGLING,     2 },
-      { sc2::UNIT_TYPEID::ZERG_DRONE,        7 },
-      { sc2::UNIT_TYPEID::ZERG_SPORECRAWLER, 1 },
-      { sc2::UNIT_TYPEID::ZERG_DRONE,        1 },
-      { sc2::UNIT_TYPEID::ZERG_QUEEN,        1 },
-      { sc2::UNIT_TYPEID::ZERG_OVERLORD,     1 },
-      { sc2::UNIT_TYPEID::ZERG_SPORECRAWLER, 1 },
-      { sc2::UNIT_TYPEID::ZERG_DRONE,       11 },
-      { sc2::UNIT_TYPEID::ZERG_LAIR,         1 },
-      { sc2::UNIT_TYPEID::ZERG_DRONE,        4 },
-      { sc2::UNIT_TYPEID::ZERG_SPORECRAWLER, 1 },
-      { sc2::UNIT_TYPEID::ZERG_ZERGLING,     4 },
-      { sc2::UNIT_TYPEID::ZERG_EXTRACTOR,    1 },
-      { sc2::UNIT_TYPEID::ZERG_DRONE,        2 },
-      { sc2::UNIT_TYPEID::ZERG_ROACHWARREN,  1 },
-      { sc2::UNIT_TYPEID::ZERG_EXTRACTOR,    2 },
+      { sc2::UNIT_TYPEID::ZERG_DRONE,           1 },
+      { sc2::UNIT_TYPEID::ZERG_OVERLORD,        1 },
+      { sc2::UNIT_TYPEID::ZERG_QUEEN,           1 },
+      { sc2::UNIT_TYPEID::ZERG_DRONE,           1 },
+      { sc2::UNIT_TYPEID::ZERG_QUEEN,           1 },
+      { sc2::UNIT_TYPEID::ZERG_ZERGLING,        2 },
+      { sc2::UPGRADE_ID::ZERGLINGMOVEMENTSPEED, 1 },
+      { sc2::UNIT_TYPEID::ZERG_DRONE,           3 },
+      { sc2::UNIT_TYPEID::ZERG_HATCHERY,        1 },
+      { sc2::UNIT_TYPEID::ZERG_QUEEN,           1 },
+      { sc2::UNIT_TYPEID::ZERG_OVERLORD,        1 },
+      { sc2::UNIT_TYPEID::ZERG_ZERGLING,        2 },
+      { sc2::UNIT_TYPEID::ZERG_DRONE,           7 },
+      { sc2::UNIT_TYPEID::ZERG_SPORECRAWLER,    1 },
+      { sc2::UNIT_TYPEID::ZERG_DRONE,           1 },
+      { sc2::UNIT_TYPEID::ZERG_QUEEN,           1 },
+      { sc2::UNIT_TYPEID::ZERG_OVERLORD,        1 },
+      { sc2::UNIT_TYPEID::ZERG_SPORECRAWLER,    1 },
+      { sc2::UNIT_TYPEID::ZERG_DRONE,          11 },
+      { sc2::UNIT_TYPEID::ZERG_LAIR,            1 },
+      { sc2::UNIT_TYPEID::ZERG_DRONE,           4 },
+      { sc2::UNIT_TYPEID::ZERG_SPORECRAWLER,    1 },
+      { sc2::UNIT_TYPEID::ZERG_ZERGLING,        4 },
+      { sc2::UNIT_TYPEID::ZERG_EXTRACTOR,       1 },
+      { sc2::UNIT_TYPEID::ZERG_DRONE,           2 },
+      { sc2::UNIT_TYPEID::ZERG_ROACHWARREN,     1 },
+      { sc2::UNIT_TYPEID::ZERG_EXTRACTOR,       2 },
     };
 #endif
-    pair<sc2::UNIT_TYPEID, size_t> continuation[] =
+    pair<ResourceTypeID, size_t> continuation[] =
     {
       { sc2::UNIT_TYPEID::ZERG_OVERLORD,     1 },
       { sc2::UNIT_TYPEID::ZERG_ROACH,        4 },
@@ -529,7 +590,7 @@ namespace hivemind {
     const int N = sizeof(opening) / sizeof(*opening);
     const int N2 = sizeof(continuation) / sizeof(*continuation);
 
-    pair<sc2::UNIT_TYPEID, size_t> plan;
+    pair<ResourceTypeID, size_t> plan;
 
 
     static int choice = 0;
@@ -571,10 +632,21 @@ namespace hivemind {
 
     //if(haveTechToMake(builder, unitType))
     {
-      auto plan = std::make_unique<UnitBuildPlan>(unitType, unitCount);
-      if(plan)
+      if(unitType.isUnitType())
       {
-        planner->addPlan(std::move(plan));
+        auto plan = std::make_unique<UnitBuildPlan>(unitType.unitType_, unitCount);
+        if(plan)
+        {
+          planner->addPlan(std::move(plan));
+        }
+      }
+      else
+      {
+        auto plan = std::make_unique<ResearchBuildPlan>(unitType.upgradeType_);
+        if(plan)
+        {
+          planner->addPlan(std::move(plan));
+        }
       }
     }
     /*
@@ -600,7 +672,7 @@ namespace hivemind {
     for(auto& plan : plans_)
     {
       plan->executePlan(this, allocatedResources);
-      allocatedResources = allocatedResources + plan->remainingCost();
+      allocatedResources = allocatedResources + plan->remainingCost(this);
     }
   }
 
@@ -621,7 +693,6 @@ namespace hivemind {
       if(!haveTechToMake(builder, unitType_))
       {
         return;
-
       }
 
       BuildProjectID id;
@@ -646,7 +717,7 @@ namespace hivemind {
     return "make " + std::to_string(total) + " " + sc2::UnitTypeToName(unitType_) + " (" + std::to_string(remaining) + " remaining)";
   }
 
-  UnitBuildPlan::State UnitBuildPlan::updateProgress(BuildPlanner* planner)
+  BuildPlan::State UnitBuildPlan::updateProgress(BuildPlanner* planner)
   {
     Bot* bot = planner->getBot();
     auto& builder = bot->builder();
@@ -663,5 +734,70 @@ namespace hivemind {
     }
 
     return State::Done;
+  }
+  
+  void ResearchBuildPlan::executePlan(BuildPlanner* planner, AllocatedResources allocatedResources)
+  {
+    Bot* bot = planner->getBot();
+
+    auto& baseManager = bot->bases();
+    auto& builder = bot->builder();
+
+    if(startedBuild_ == -1)
+    {
+      if(!builder.haveResourcesToMake(upgradeType_, allocatedResources))
+      {
+        return;
+      }
+
+      // TODO: Should check if the upgrade is possible to make.
+      //if(!haveTechToMake(builder, upgradeType_))
+      //{
+      //  return;
+      //}
+
+      BuildProjectID id;
+
+      auto researcherType = getResearcherType(upgradeType_);
+
+      for(auto& base : baseManager.bases())
+      {
+        if(builder.research(upgradeType_, &base, researcherType, id))
+        {
+          startedBuild_ = id;
+          break;
+        }
+      }
+    }
+  }
+
+  std::string ResearchBuildPlan::toString() const
+  {
+    size_t started = startedBuild_ != -1;
+
+    return string("research ") + sc2::UpgradeIDToName(upgradeType_) + (started ? " (started)" : "");
+  }
+
+  BuildPlan::State ResearchBuildPlan::updateProgress(BuildPlanner* planner)
+  {
+    Bot* bot = planner->getBot();
+    auto& builder = bot->builder();
+
+    if(startedBuild_ == -1)
+    {
+      return State::NotDone;
+    }
+
+    if(!builder.isFinished(startedBuild_))
+      return State::NotDone;
+
+    return State::Done;
+  }
+
+  AllocatedResources ResearchBuildPlan::remainingCost(BuildPlanner* planner) const
+  {
+    bool started = startedBuild_ != -1;
+    size_t remaining = 1 - (int)started;
+    return planner->getBot()->builder().getCost(upgradeType_) * (int)remaining;
   }
 }

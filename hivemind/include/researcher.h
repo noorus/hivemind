@@ -74,6 +74,8 @@ namespace hivemind {
 
     // Returns the amount of resources that the not-yet-paid-upgrades will cost.
     AllocatedResources getAllocatedResources() const;
+
+    AllocatedResources getCost(UpgradeID upgradeType) const;
   };
 
 }

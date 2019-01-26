@@ -106,6 +106,7 @@ namespace hivemind {
     Trainer trainer_;
     Researcher researcher_;
     friend Trainer;
+    friend Researcher;
 
   private:
     std::unordered_map<sc2::UNIT_TYPEID, UnitStats> unitStats_;
@@ -145,8 +146,11 @@ namespace hivemind {
     }
 
     bool haveResourcesToMake(UnitTypeID unitType, AllocatedResources allocatedResources) const;
+    bool haveResourcesToMake(UpgradeID upgradeType, AllocatedResources allocatedResources) const;
+    bool haveResourcesToMake(AllocatedResources cost, AllocatedResources allocatedResources) const;
 
     static AllocatedResources getCost(UnitTypeID unitType);
+    AllocatedResources getCost(UpgradeID upgradeType) const;
 
     bool isFinished(BuildProjectID id) const
     {
@@ -155,5 +159,6 @@ namespace hivemind {
   };
 
   UnitTypeID getTrainerType(UnitTypeID unitType);
+  UnitTypeID getResearcherType(UpgradeID upgradeType);
 
 }

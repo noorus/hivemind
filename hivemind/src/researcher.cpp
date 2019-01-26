@@ -97,6 +97,9 @@ namespace hivemind {
       auto& stats = upgradeStats_[research.upgradeType];
       if(stats != UpgradeStatus::Researched)
         stats = UpgradeStatus::NotStarted;
+
+      bot_->builder().finishedBuildProjects_[it->id] = int(it->completed);
+
       researchProjects_.erase(it);
     };
 
@@ -205,6 +208,15 @@ namespace hivemind {
       //bot_->console().printf("Research %s costs %d minerals, %d vespene", sc2::UpgradeIDToName( research.upgradeType ), u.mineral_cost, u.vespene_cost);
     }
     return { mineralSum, vespeneSum, 0 };
+  }
+
+  AllocatedResources Researcher::getCost(UpgradeID upgradeType) const
+  {
+      auto& upgrades = bot_->Observation()->GetUpgradeData();
+
+      auto& u = upgrades.at(upgradeType);
+
+      return { (int)u.mineral_cost, (int)u.vespene_cost, 0 };
   }
 
 }
