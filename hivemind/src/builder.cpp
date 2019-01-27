@@ -194,7 +194,7 @@ namespace hivemind {
               bot_->console().printf("DEBUG - BUILDER: BuildOp %d for %s: Started building %x at pos (%.2f,%.2f) at game time %02d:%02d", build.id, sc2::UnitTypeToName(build.type), id(unit), pos.x, pos.y, minutes, seconds);
             }
 
-            if(build.builder->unit_type == sc2::UNIT_TYPEID::ZERG_DRONE)
+            if(build.builder && build.builder->unit_type == sc2::UNIT_TYPEID::ZERG_DRONE)
             {
               auto& droneStats = unitStats_[sc2::UNIT_TYPEID::ZERG_DRONE];
               droneStats.units.erase(build.builder);
@@ -611,6 +611,12 @@ namespace hivemind {
     return { m, v, f };
   }
 
+  UnitStats Builder::getUnitStats(UnitTypeID unitType)
+  {
+    auto& stats = unitStats_[unitType];
+    return { stats.unitCount(), stats.inProgressCount() };
+  }
+
   bool Builder::haveResourcesToMake(UnitTypeID unitType, AllocatedResources allocatedResources) const
   {
     auto cost = getCost(unitType);
@@ -646,7 +652,7 @@ namespace hivemind {
 
     bool haveMoney = minerals >= cost.minerals;
     bool haveGas = vespene >= cost.vespene;
-    bool haveSupply = usedSupply + cost.food <= supplyLimit;
+    bool haveSupply = cost.food <= 0 || usedSupply + cost.food <= supplyLimit;
 
     //bot_->console().printf("Cost of %s is %d minerals, %d vespene, %d supply", sc2::UnitTypeToName( unitType ), cost.minerals, cost.vespene, cost.food);
 

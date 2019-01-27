@@ -303,6 +303,15 @@
     <ClInclude Include="include\external\sha2.h">
       <Filter>Header Files\Algorithm</Filter>
     </ClInclude>
+    <ClInclude Include="include\opening.h">
+      <Filter>Header Files\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="include\build_plan.h">
+      <Filter>Header Files\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="include\resource_type_id.h">
+      <Filter>Header Files\Systems</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\stdafx.cpp">
@@ -454,6 +463,12 @@
     </ClCompile>
     <ClCompile Include="src\external\sha2.cpp">
       <Filter>Source Files\Algorithm</Filter>
+    </ClCompile>
+    <ClCompile Include="src\opening.cpp">
+      <Filter>Source Files\Brain</Filter>
+    </ClCompile>
+    <ClCompile Include="src\build_plan.cpp">
+      <Filter>Source Files\Brain</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

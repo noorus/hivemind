@@ -10,7 +10,7 @@ namespace hivemind {
 
   HIVE_DECLARE_CONVAR( trainer_debug, "Whether to show and print debug information on the trainer subsystem. 0 = none, 1 = basics, 2 = verbose", 1 );
 
-  Trainer::Trainer(Bot* bot, BuildProjectID& idPool, std::unordered_map<sc2::UNIT_TYPEID, UnitStats>& unitStats) :
+  Trainer::Trainer(Bot* bot, BuildProjectID& idPool, std::unordered_map<sc2::UNIT_TYPEID, BuilderUnitStats>& unitStats) :
       Subsystem(bot),
       idPool_(idPool),
       unitStats_(unitStats)
@@ -66,36 +66,6 @@ namespace hivemind {
     }
     return nullptr;
   }
-
-  template<typename T>
-  struct span
-  {
-    span(T* ptr, size_t count):
-      ptr_(ptr),
-      count_(count)
-    {
-    }
-
-    span(T* begin, T* end):
-      ptr_(begin),
-      count_(end - begin)
-    {
-    }
-
-    T* begin() const
-    {
-      return ptr_;
-    }
-
-    T* end() const
-    {
-      return ptr_ + count_;
-    }
-
-  private:
-    T* ptr_;
-    size_t count_;
-  };
 
   static span<UnitTypeID> getTrainerTypes(UnitTypeID unitType)
   {

@@ -27,6 +27,28 @@ namespace hivemind {
   class UnitStats
   {
   public:
+    int unitCount_;
+    int inProgressCount_;
+
+    int inProgressCount() const
+    {
+      return inProgressCount_;
+    }
+
+    int futureCount() const
+    {
+      return unitCount() + inProgressCount();
+    }
+
+    int unitCount() const
+    {
+      return unitCount_;
+    }
+  };
+
+  class BuilderUnitStats
+  {
+  public:
     UnitSet units;
     std::set<BuildProjectID> inProgress;
 
@@ -109,7 +131,7 @@ namespace hivemind {
     friend Researcher;
 
   private:
-    std::unordered_map<sc2::UNIT_TYPEID, UnitStats> unitStats_;
+    std::unordered_map<sc2::UNIT_TYPEID, BuilderUnitStats> unitStats_;
     std::unordered_map<sc2::UPGRADE_ID, UpgradeStatus> upgradeStats_;
 
     UnitRef acquireBuilder(Base& base);
@@ -135,14 +157,12 @@ namespace hivemind {
     // Returns the amount of resources that the not-yet-paid-trainings will cost.
     AllocatedResources getAllocatedResources() const;
 
-    UnitStats& getUnitStats(UnitTypeID unitType)
-    {
-      return unitStats_[unitType];
-    }
+    UnitStats getUnitStats(UnitTypeID unitType);
 
-    UpgradeStatus getUpgradeStatus(sc2::UPGRADE_ID upgradeType)
+    UnitStats getUpgradeStatus(sc2::UPGRADE_ID upgradeType)
     {
-      return upgradeStats_[upgradeType];
+      auto stats = upgradeStats_[upgradeType];
+      return { stats == UpgradeStatus::Researched, stats == UpgradeStatus::inProgress };
     }
 
     bool haveResourcesToMake(UnitTypeID unitType, AllocatedResources allocatedResources) const;

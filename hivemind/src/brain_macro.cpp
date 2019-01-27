@@ -4,150 +4,14 @@
 #include "ai_goals.h"
 #include "bot.h"
 #include "database.h"
+#include "opening.h"
+#include "build_plan.h"
 
 namespace hivemind {
 
   HIVE_DECLARE_CONVAR( draw_macro, "Whether to draw debug information about macro plans", true);
 
-  // A ResourceTypeID is either a UNIT_TYPEID or a UPGRADE_ID, or empty.
-  struct ResourceTypeID
-  {
-    ResourceTypeID()
-    {
-      name_ = "<null>";
-      unitType_ = UNIT_TYPEID::INVALID;
-      upgradeType_ = UPGRADE_ID::INVALID;
-    }
-
-    ResourceTypeID(UNIT_TYPEID unitType)
-    {
-      name_ = UnitTypeToName(unitType);
-      unitType_ = unitType;
-      upgradeType_ = UPGRADE_ID::INVALID;
-    }
-
-    ResourceTypeID(UPGRADE_ID upgradeType)
-    {
-      name_ = UpgradeIDToName(upgradeType);
-      unitType_ = UNIT_TYPEID::INVALID;
-      upgradeType_ = upgradeType;
-    }
-
-    bool isUnitType() const { return unitType_ != UNIT_TYPEID::INVALID; }
-    bool isUpgradeType() const { return upgradeType_ != UPGRADE_ID::INVALID; }
-
-    const char* name_;
-    UnitTypeID unitType_;
-    UpgradeID upgradeType_;
-  };
-
-  inline bool operator==(ResourceTypeID lhs, ResourceTypeID rhs)
-  {
-    return std::tie(lhs.unitType_, lhs.upgradeType_) == std::tie(rhs.unitType_, rhs.upgradeType_);
-  }
-
-  inline bool operator!=(ResourceTypeID lhs, ResourceTypeID rhs)
-  {
-    return !(lhs == rhs);
-  }
-
-  struct BuildPlan
-  {
-    enum class State
-    {
-      NotDone,
-      Done
-    };
-
-    virtual ~BuildPlan()
-    {
-    }
-
-    virtual AllocatedResources remainingCost(BuildPlanner* planner) const = 0;
-    virtual State updateProgress(BuildPlanner* planner) = 0;
-    virtual void executePlan(BuildPlanner* planner, AllocatedResources allocatedResources) = 0;
-    virtual std::string toString() const = 0;
-  };
-
-  struct UnitBuildPlan : public BuildPlan
-  {
-    sc2::UNIT_TYPEID unitType_;
-    size_t count_;
-
-    std::set<BuildProjectID> startedBuilds_;
-
-    explicit UnitBuildPlan(sc2::UNIT_TYPEID unitType, size_t count = 1):
-      unitType_(unitType),
-      count_(count)
-    {
-    }
-
-    AllocatedResources remainingCost(BuildPlanner* planner) const override
-    {
-      size_t remaining = count_ - startedBuilds_.size();
-      return Builder::getCost(unitType_) * (int)remaining;
-    }
-
-    virtual State updateProgress(BuildPlanner* planner) override;
-    virtual void executePlan(BuildPlanner* planner, AllocatedResources allocatedResources) override;
-    virtual std::string toString() const override;
-  };
-
-  struct ResearchBuildPlan : public BuildPlan
-  {
-    sc2::UPGRADE_ID upgradeType_;
-
-    BuildProjectID startedBuild_;
-
-    explicit ResearchBuildPlan(sc2::UPGRADE_ID upgradeType):
-      upgradeType_(upgradeType),
-      startedBuild_(-1)
-    {
-    }
-
-    AllocatedResources remainingCost(BuildPlanner* planner) const override;
-
-    virtual State updateProgress(BuildPlanner* planner) override;
-    virtual void executePlan(BuildPlanner* planner, AllocatedResources allocatedResources) override;
-    virtual std::string toString() const override;
-  };
-
-  class BuildPlanner
-  {
-  public:
-    explicit BuildPlanner(Bot* bot) :
-      bot_(bot)
-    {
-    }
-
-    void updateProgress();
-
-    void executePlans();
-
-    void addPlan(std::unique_ptr<BuildPlan> plan)
-    {
-      bot_->console().printf("Added plan %s", plan->toString().c_str());
-
-      plans_.push_back(std::move(plan));
-    }
-
-    Bot* getBot() const
-    {
-      return bot_;
-    }
-
-    std::unique_ptr<UnitBuildPlan> makeTechPlan(Builder& builder, sc2::UnitTypeID unitType) const;
-
-    const std::vector<std::unique_ptr<BuildPlan>>& getPlans() const
-    {
-      return plans_;
-    }
-
-  private:
-    Bot* bot_;
-
-    std::vector<std::unique_ptr<BuildPlan>> plans_;
-  };
+  static void makeMorePlans(BuildPlanner* planner);
 
   namespace Goals {
 
@@ -217,171 +81,12 @@ namespace hivemind {
 
       planner_->updateProgress();
 
-      int minerals = bot_->Observation()->GetMinerals();
-      int vespene = bot_->Observation()->GetVespene();
-      int supplyLimit = bot_->Observation()->GetFoodCap();
-      int usedSupply = bot_->Observation()->GetFoodUsed();
-
-      auto& builder = bot_->builder();
-
-      auto allocatedResources = builder.getAllocatedResources();
-      minerals -= allocatedResources.minerals;
-      vespene -= allocatedResources.vespene;
-      usedSupply += allocatedResources.food;
-
-      auto& poolState = builder.getUnitStats(sc2::UNIT_TYPEID::ZERG_SPAWNINGPOOL);
-      auto& overlordState = builder.getUnitStats(sc2::UNIT_TYPEID::ZERG_OVERLORD);
-      auto& extractorState = builder.getUnitStats(sc2::UNIT_TYPEID::ZERG_EXTRACTOR);
-      auto& hatcheryState = builder.getUnitStats(sc2::UNIT_TYPEID::ZERG_HATCHERY);
-      auto& lairState = builder.getUnitStats(sc2::UNIT_TYPEID::ZERG_LAIR);
-      auto& hiveState = builder.getUnitStats(sc2::UNIT_TYPEID::ZERG_HIVE);
-      auto& droneState = builder.getUnitStats(sc2::UNIT_TYPEID::ZERG_DRONE);
-      auto& queenState = builder.getUnitStats(sc2::UNIT_TYPEID::ZERG_QUEEN);
-      auto& evolutionChamberState = builder.getUnitStats(sc2::UNIT_TYPEID::ZERG_EVOLUTIONCHAMBER);
-      auto& lingState = builder.getUnitStats(sc2::UNIT_TYPEID::ZERG_ZERGLING);
-
-      int futureSupplyLimit = std::min(200, supplyLimit + overlordState.inProgressCount() * 8);
-      int overlordNeed = futureSupplyLimit < 200 &&
-        (
-          (usedSupply >= futureSupplyLimit - 1) ||
-          (usedSupply >= futureSupplyLimit - 2 && usedSupply > 20) ||
-          (usedSupply >= futureSupplyLimit - 3 && usedSupply > 30) ||
-          (usedSupply >= futureSupplyLimit - 6 && usedSupply > 60)
-        );
-
-      int hatcheryCount = hatcheryState.unitCount() + lairState.unitCount() + hiveState.unitCount();
-      int hatcheryFutureCount = hatcheryState.futureCount() + lairState.unitCount() + hiveState.unitCount();
-
-      int scoutDroneCount = 1;
-      int futureDroneCount = droneState.futureCount();
-      int droneNeed = futureDroneCount < hatcheryCount * (16 + 2 * 3) + scoutDroneCount && futureDroneCount <= 75;
-
-      int futureExtractorCount = extractorState.futureCount();
-      int extractorNeed = futureExtractorCount < hatcheryCount * 2 && (futureDroneCount > hatcheryCount * 16 + futureExtractorCount * 3);
-
-      int poolNeed = poolState.futureCount() == 0 && futureDroneCount >= 16 + 1 + scoutDroneCount;
-
-      int queenNeed = poolState.unitCount() > 0 && queenState.futureCount() < hatcheryCount && queenState.inProgressCount() < hatcheryCount;
-
-      int hatcheryNeed = droneState.unitCount() > (16 + 2 * 3) * hatcheryFutureCount;
-
-      auto lingSpeed = builder.getUpgradeStatus(sc2::UPGRADE_ID::ZERGLINGMOVEMENTSPEED);
-      int lingSpeedNeed = poolState.unitCount() > 0 && lingSpeed == UpgradeStatus::NotStarted;
-
-      int evolutionChamberNeed = evolutionChamberState.futureCount() == 0 && poolState.unitCount() > 0 && extractorState.unitCount() > 0 && lingState.unitCount() >= 6;
-
-      auto meleeAttack1 = builder.getUpgradeStatus(sc2::UPGRADE_ID::ZERGMELEEWEAPONSLEVEL1);
-      int meleeAttack1Need = evolutionChamberState.unitCount() > 0 && meleeAttack1 == UpgradeStatus::NotStarted;
-
-      int lairNeed = lairState.futureCount() == 0 && poolState.unitCount() > 0;
-
-      //bot_->console().printf( "minerals left: %d, allocated minerals %d", minerals, allocatedResources.first );
-
-      //BuildProjectID id;
-      /*
-      if(hatcheryNeed > 0)
+      if(planner_->getPlans().size() < 10)
       {
-        if(minerals >= 300)
-        {
-          for(auto& base : baseManager.bases())
-            if(builder.build(sc2::UNIT_TYPEID::ZERG_HATCHERY, &base, BuildPlacement_MainBuilding, id))
-              return;
-        }
-        return;
-      }
-      */
-      /*
-      if(lairNeed > 0)
-      {
-        if(minerals >= 150 && vespene >= 100)
-        {
-          for(auto& base : baseManager.bases())
-            if(builder.train(sc2::UNIT_TYPEID::ZERG_LAIR, &base, id))
-              return;
-        }
-      }
-      */
-
-      /*
-      if(poolNeed > 0)
-      {
-        if(minerals >= 200)
-        {
-          for(auto& base : baseManager.bases())
-            if(builder.build(sc2::UNIT_TYPEID::ZERG_SPAWNINGPOOL, &base, BuildPlacement_Generic, id))
-              return;
-        }
-      }
-      */
-      /*
-      if(lingSpeedNeed > 0)
-      {
-        if(minerals >= 100 && vespene > 100)
-        {
-          for(auto& base : baseManager.bases())
-            if(builder.research(sc2::UPGRADE_ID::ZERGLINGMOVEMENTSPEED, &base, sc2::UNIT_TYPEID::ZERG_SPAWNINGPOOL, id))
-              return;
-        }
+        makeMorePlans(planner_.get());
       }
 
-      if(evolutionChamberNeed > 0)
-      {
-        if(minerals >= 75)
-        {
-          for(auto& base : baseManager.bases())
-            if(builder.build(sc2::UNIT_TYPEID::ZERG_EVOLUTIONCHAMBER, &base, BuildPlacement_Generic, id))
-              return;
-        }
-      }
-
-      if(meleeAttack1Need > 0)
-      {
-        if(minerals >= 100 && vespene > 100)
-        {
-          for(auto& base : baseManager.bases())
-            if(builder.research(sc2::UPGRADE_ID::ZERGMELEEWEAPONSLEVEL1, &base, sc2::UNIT_TYPEID::ZERG_EVOLUTIONCHAMBER, id))
-              return;
-        }
-      }
-      */
-      /*
-      if(overlordNeed > 0)
-      {
-        if(minerals >= 100)
-        {
-          for(auto& base : baseManager.bases())
-            if(builder.train(sc2::UNIT_TYPEID::ZERG_OVERLORD, &base, id))
-              return;
-        }
-      }
-      */
-      /*
-      if(queenNeed > 0)
-      {
-        if(minerals >= 150 && usedSupply + 1 < supplyLimit)
-        {
-          for(auto& base : baseManager.bases())
-          {
-            if(builder.train(sc2::UNIT_TYPEID::ZERG_QUEEN, &base, id))
-              return;
-          }
-        }
-      }
-
-      if(extractorNeed > 0)
-      {
-        if(minerals >= 50)
-        {
-          for(auto& base : baseManager.bases())
-            if(builder.build(sc2::UNIT_TYPEID::ZERG_EXTRACTOR, &base, BuildPlacement_Extractor, id))
-              return;
-        }
-      }
-      */
-      {
-        // Build units from larvae according to the plan.
-        planner_->executePlans();
-      }
+      planner_->executePlans();
     }
 
     void Brain_Macro::terminate()
@@ -390,119 +95,51 @@ namespace hivemind {
     }
   }
 
-  void BuildPlanner::updateProgress()
+  static bool makeOpeningPlans(BuildPlanner* planner)
   {
-    erase_if(plans_,
-      [this](auto& plan)
+    static auto opening = [&]() {
+      auto opening = getRandomOpening();
+      planner->getBot()->console().printf("Using opening: '%s'", opening.name);
+      return opening;
+    }();
+
+    pair<ResourceTypeID, size_t> plan;
+
+    if(opening.progress < opening.items.size())
+    {
+      plan = opening.items.at(opening.progress);
+      ++opening.progress;
+    }
+    else
+    {
+      return false;
+    }
+
+    auto type = plan.first;
+    auto count = plan.second;
+
+    assert(count > 0);
+
+    if(type.isUnitType())
+    {
+      auto plan = std::make_unique<UnitBuildPlan>(type.unitType_, count);
+      if(plan)
       {
-        bool done = plan->updateProgress(this) == BuildPlan::State::Done;
-
-        if(done)
-        {
-          bot_->console().printf("Finished plan %s", plan->toString().c_str());
-        }
-
-        return done;
-      });
-  }
-
-  static std::vector<sc2::UnitTypeID> getReverseTechAliases(sc2::UnitTypeID unitType)
-  {
-    if(unitType == sc2::UNIT_TYPEID::ZERG_HATCHERY)
-    {
-      return { sc2::UNIT_TYPEID::ZERG_HATCHERY, sc2::UNIT_TYPEID::ZERG_LAIR, sc2::UNIT_TYPEID::ZERG_HIVE };
-    }
-    if(unitType == sc2::UNIT_TYPEID::ZERG_LAIR)
-    {
-      return  { sc2::UNIT_TYPEID::ZERG_LAIR, sc2::UNIT_TYPEID::ZERG_HIVE };
-    }
-    if(unitType == sc2::UNIT_TYPEID::ZERG_SPIRE)
-    {
-      return { sc2::UNIT_TYPEID::ZERG_SPIRE, sc2::UNIT_TYPEID::ZERG_GREATERSPIRE };
-    }
-    if(unitType == sc2::UNIT_TYPEID::ZERG_HYDRALISKDEN)
-    {
-      return { sc2::UNIT_TYPEID::ZERG_HYDRALISKDEN, sc2::UNIT_TYPEID::ZERG_LURKERDENMP };
-    }
-    return { unitType };
-  }
-
-  static bool haveTechToMake(Builder& builder, sc2::UnitTypeID unitType)
-  {
-    std::vector<sc2::UnitTypeID> techChain;
-    Database::techTree().findTechChain(unitType, techChain);
-
-    for(auto& buildingType : techChain)
-    {
-      if(!utils::isStructure(buildingType))
-        continue;
-
-      bool found = false;
-      for(auto alias : getReverseTechAliases(buildingType))
-      {
-        auto& stats = builder.getUnitStats(alias);
-        if(stats.unitCount() >= 1)
-        {
-          found = true;
-          break;
-        }
-      }
-      if(!found)
-      {
-        return false;
+        planner->addPlan(std::move(plan));
       }
     }
-
+    else
+    {
+      auto plan = std::make_unique<ResearchBuildPlan>(type.upgradeType_);
+      if(plan)
+      {
+        planner->addPlan(std::move(plan));
+      }
+    }
     return true;
   }
 
-  std::unique_ptr<UnitBuildPlan> BuildPlanner::makeTechPlan(Builder& builder, sc2::UnitTypeID unitType) const
-  {
-    std::vector<sc2::UnitTypeID> techChain;
-    Database::techTree().findTechChain(unitType, techChain);
-
-    for(auto& buildingType : boost::adaptors::reverse(techChain))
-    {
-      if(!utils::isStructure(buildingType))
-        continue;
-
-      bool found = false;
-      for(auto alias : getReverseTechAliases(buildingType))
-      {
-        auto& stats = builder.getUnitStats(alias);
-        if(stats.futureCount() >= 1)
-        {
-          found = true;
-          break;
-        }
-      }
-      if(found)
-        continue;
-
-      for(auto& x : plans_)
-      {
-        if(auto oldPlan = dynamic_cast<const UnitBuildPlan*>(x.get()))
-        {
-          if(oldPlan->unitType_ == buildingType)
-          {
-            found = true;
-            break;
-          }
-        }
-      }
-      if(found)
-        continue;
-
-      if(!haveTechToMake(builder, buildingType))
-        continue;
-
-      return std::make_unique<UnitBuildPlan>(buildingType);
-    }
-
-    return nullptr;
-  }
-
-  void makeMorePlans(BuildPlanner* planner)
+  static void makeHeuristicPlans(BuildPlanner* planner)
   {
     Bot* bot_ = planner->getBot();
 
@@ -511,7 +148,6 @@ namespace hivemind {
     int supplyLimit = bot_->Observation()->GetFoodCap();
     int usedSupply = bot_->Observation()->GetFoodUsed();
 
-    auto& baseManager = bot_->bases();
     auto& builder = bot_->builder();
 
     auto allocatedResources = builder.getAllocatedResources();
@@ -519,285 +155,159 @@ namespace hivemind {
     vespene -= allocatedResources.vespene;
     usedSupply += allocatedResources.food;
 
-    auto& droneState = builder.getUnitStats(sc2::UNIT_TYPEID::ZERG_DRONE);
-    auto& hatcheryState = builder.getUnitStats(sc2::UNIT_TYPEID::ZERG_HATCHERY);
-    auto& lairState = builder.getUnitStats(sc2::UNIT_TYPEID::ZERG_LAIR);
-    auto& hiveState = builder.getUnitStats(sc2::UNIT_TYPEID::ZERG_HIVE);
-    auto& poolState = builder.getUnitStats(sc2::UNIT_TYPEID::ZERG_SPAWNINGPOOL);
+    auto& poolState = planner->getStats(sc2::UNIT_TYPEID::ZERG_SPAWNINGPOOL);
+    auto& overlordState = planner->getStats(sc2::UNIT_TYPEID::ZERG_OVERLORD);
+    auto& extractorState = planner->getStats(sc2::UNIT_TYPEID::ZERG_EXTRACTOR);
+    auto& hatcheryState = planner->getStats(sc2::UNIT_TYPEID::ZERG_HATCHERY);
+    auto& lairState = planner->getStats(sc2::UNIT_TYPEID::ZERG_LAIR);
+    auto& hiveState = planner->getStats(sc2::UNIT_TYPEID::ZERG_HIVE);
+    auto& droneState = planner->getStats(sc2::UNIT_TYPEID::ZERG_DRONE);
+    auto& queenState = planner->getStats(sc2::UNIT_TYPEID::ZERG_QUEEN);
+    auto& evolutionChamberState = planner->getStats(sc2::UNIT_TYPEID::ZERG_EVOLUTIONCHAMBER);
+    auto& lingState = planner->getStats(sc2::UNIT_TYPEID::ZERG_ZERGLING);
+    auto& roachWarrenState = planner->getStats(sc2::UNIT_TYPEID::ZERG_ROACHWARREN);
 
-#if 0
-    pair<sc2::UNIT_TYPEID, size_t> opening[] =
-    {
-      { sc2::UNIT_TYPEID::ZERG_EXTRACTOR,    4 },
-    };
-#else
-    pair<ResourceTypeID, size_t> opening[] =
-    {
-      // Hatch first
-      { sc2::UNIT_TYPEID::ZERG_DRONE,           1 },
-      { sc2::UNIT_TYPEID::ZERG_OVERLORD,        1 },
-      { sc2::UNIT_TYPEID::ZERG_DRONE,           4 },
-      { sc2::UNIT_TYPEID::ZERG_HATCHERY,        1 },
-      { sc2::UNIT_TYPEID::ZERG_DRONE,           2 },
-      { sc2::UNIT_TYPEID::ZERG_EXTRACTOR,       1 },
-      { sc2::UNIT_TYPEID::ZERG_SPAWNINGPOOL,    1 },
-      // Ling Roach (vs Protoss)
-      { sc2::UNIT_TYPEID::ZERG_DRONE,           1 },
-      { sc2::UNIT_TYPEID::ZERG_OVERLORD,        1 },
-      { sc2::UNIT_TYPEID::ZERG_QUEEN,           1 },
-      { sc2::UNIT_TYPEID::ZERG_DRONE,           1 },
-      { sc2::UNIT_TYPEID::ZERG_QUEEN,           1 },
-      { sc2::UNIT_TYPEID::ZERG_ZERGLING,        2 },
-      { sc2::UPGRADE_ID::ZERGLINGMOVEMENTSPEED, 1 },
-      { sc2::UNIT_TYPEID::ZERG_DRONE,           3 },
-      { sc2::UNIT_TYPEID::ZERG_HATCHERY,        1 },
-      { sc2::UNIT_TYPEID::ZERG_QUEEN,           1 },
-      { sc2::UNIT_TYPEID::ZERG_OVERLORD,        1 },
-      { sc2::UNIT_TYPEID::ZERG_ZERGLING,        2 },
-      { sc2::UNIT_TYPEID::ZERG_DRONE,           7 },
-      { sc2::UNIT_TYPEID::ZERG_SPORECRAWLER,    1 },
-      { sc2::UNIT_TYPEID::ZERG_DRONE,           1 },
-      { sc2::UNIT_TYPEID::ZERG_QUEEN,           1 },
-      { sc2::UNIT_TYPEID::ZERG_OVERLORD,        1 },
-      { sc2::UNIT_TYPEID::ZERG_SPORECRAWLER,    1 },
-      { sc2::UNIT_TYPEID::ZERG_DRONE,          11 },
-      { sc2::UNIT_TYPEID::ZERG_LAIR,            1 },
-      { sc2::UNIT_TYPEID::ZERG_DRONE,           4 },
-      { sc2::UNIT_TYPEID::ZERG_SPORECRAWLER,    1 },
-      { sc2::UNIT_TYPEID::ZERG_ZERGLING,        4 },
-      { sc2::UNIT_TYPEID::ZERG_EXTRACTOR,       1 },
-      { sc2::UNIT_TYPEID::ZERG_DRONE,           2 },
-      { sc2::UNIT_TYPEID::ZERG_ROACHWARREN,     1 },
-      { sc2::UNIT_TYPEID::ZERG_EXTRACTOR,       2 },
-    };
-#endif
-    pair<ResourceTypeID, size_t> continuation[] =
-    {
-      { sc2::UNIT_TYPEID::ZERG_OVERLORD,     1 },
-      { sc2::UNIT_TYPEID::ZERG_ROACH,        4 },
-      /*
-      { sc2::UNIT_TYPEID::ZERG_DRONE,        1 },
-      { sc2::UNIT_TYPEID::ZERG_OVERLORD,     1 },
-      { sc2::UNIT_TYPEID::ZERG_ZERGLING,     1 },
-      { sc2::UNIT_TYPEID::ZERG_HYDRALISK,    1 },
-      { sc2::UNIT_TYPEID::ZERG_MUTALISK,     1 },
-      { sc2::UNIT_TYPEID::ZERG_ULTRALISK,    1 },
-      { sc2::UNIT_TYPEID::ZERG_SWARMHOSTMP,  1 },
-      { sc2::UNIT_TYPEID::ZERG_CORRUPTOR,    1 },
-      { sc2::UNIT_TYPEID::ZERG_INFESTOR,     1 },
-      */
-    };
-    const int N = sizeof(opening) / sizeof(*opening);
-    const int N2 = sizeof(continuation) / sizeof(*continuation);
+    int futureSupplyLimit = std::min(200, supplyLimit + overlordState.inProgressCount() * 8);
+    int overlordNeed = futureSupplyLimit < 200 &&
+      (
+      (usedSupply >= futureSupplyLimit - 1) ||
+        (usedSupply >= futureSupplyLimit - 2 && usedSupply > 20) ||
+        (usedSupply >= futureSupplyLimit - 3 && usedSupply > 30) ||
+        (usedSupply >= futureSupplyLimit - 6 && usedSupply > 60)
+        );
 
-    pair<ResourceTypeID, size_t> plan;
+    int freeSupply = supplyLimit - usedSupply;
 
+    int hatcheryCount = hatcheryState.unitCount() + lairState.unitCount() + hiveState.unitCount();
+    int hatcheryFutureCount = hatcheryState.futureCount() + lairState.unitCount() + hiveState.unitCount();
 
-    static int choice = 0;
-    if(choice < N)
+    int scoutDroneCount = 1;
+    int futureDroneCount = droneState.futureCount();
+    int droneNeed = futureDroneCount < hatcheryCount * (16 + 2 * 3) + scoutDroneCount && futureDroneCount <= 75 && freeSupply > 0;
+
+    int futureExtractorCount = extractorState.futureCount();
+    int extractorNeed = futureExtractorCount < hatcheryCount * 2
+      && (droneState.unitCount() > hatcheryCount * 16 + extractorState.unitCount() * 3)
+      && (futureDroneCount > hatcheryCount * 16 + (futureExtractorCount + 1) * 3);
+
+    int poolNeed = poolState.futureCount() == 0 && futureDroneCount >= 16 + 1 + scoutDroneCount;
+
+    int queenNeed = poolState.unitCount() > 0 && queenState.futureCount() < hatcheryCount && queenState.inProgressCount() < hatcheryCount;
+
+    int hatcheryNeed = droneState.unitCount() > 18 * hatcheryFutureCount;
+
+    auto lingSpeed = planner->getStats(sc2::UPGRADE_ID::ZERGLINGMOVEMENTSPEED);
+    int lingSpeedNeed = poolState.unitCount() > 0 && lingSpeed.futureCount() == 0;
+
+    int evolutionChamberNeed = evolutionChamberState.futureCount() == 0 && poolState.unitCount() > 0 && extractorState.unitCount() > 0 && lingState.unitCount() >= 6;
+
+    auto meleeAttack1 = planner->getStats(sc2::UPGRADE_ID::ZERGMELEEWEAPONSLEVEL1);
+    int meleeAttack1Need = evolutionChamberState.unitCount() > 0 && meleeAttack1.futureCount() == 0;
+
+    int lairNeed = lairState.futureCount() == 0 && poolState.unitCount() > 0 && queenState.unitCount() > 0;
+    int roachWarrenNeed = poolState.unitCount() > 0 && extractorState.futureCount() > 0 && roachWarrenState.futureCount() == 0;
+
+    int zerlingNeed = poolState.unitCount() > 0 && freeSupply > 0;
+    int roachNeed = roachWarrenState.unitCount() > 0 && freeSupply > 1;
+
+    vector<pair<ResourceTypeID, int>> choices;
+
+    if(hatcheryNeed > 0)
     {
-      plan = opening[choice];
-    }
-    else
-    {
-      int c = choice - N;
-      plan = continuation[c % N2];
+      int odds = 10 * (minerals / 100 + 1);
+      choices.push_back({ sc2::UNIT_TYPEID::ZERG_HATCHERY, odds });
     }
 
-    ++choice;
+    if(lairNeed > 0 && vespene >= 100)
+      choices.push_back({ sc2::UNIT_TYPEID::ZERG_LAIR, 1 });
 
-    auto unitType = plan.first;
-    auto unitCount = plan.second;
+    if(poolNeed > 0)
+      choices.push_back({ sc2::UNIT_TYPEID::ZERG_SPAWNINGPOOL, 20 });
 
-    /*
-    if(unitType == sc2::UNIT_TYPEID::ZERG_DRONE)
+    if(lingSpeedNeed > 0 && vespene > 100)
+      choices.push_back({ sc2::UPGRADE_ID::ZERGLINGMOVEMENTSPEED, 2 });
+
+    if(evolutionChamberNeed > 0)
+      choices.push_back({ sc2::UNIT_TYPEID::ZERG_EVOLUTIONCHAMBER, 2 });
+
+    if(meleeAttack1Need > 0 && vespene > 100)
+      choices.push_back({ sc2::UPGRADE_ID::ZERGMELEEWEAPONSLEVEL1, 2 });
+
+    if(overlordNeed > 0)
+      choices.push_back({ sc2::UNIT_TYPEID::ZERG_OVERLORD, 1 });
+
+    if(queenNeed > 0)
+      choices.push_back({ sc2::UNIT_TYPEID::ZERG_QUEEN, 20 });
+
+    if(extractorNeed > 0)
+      choices.push_back({ sc2::UNIT_TYPEID::ZERG_EXTRACTOR, 1 });
+
+    if(roachWarrenNeed > 0)
+      choices.push_back({ sc2::UNIT_TYPEID::ZERG_ROACHWARREN, 2 });
+
+    if(droneNeed > 0)
+      choices.push_back({ sc2::UNIT_TYPEID::ZERG_DRONE, 3 });
+
+    if(zerlingNeed > 0)
+      choices.push_back({ sc2::UNIT_TYPEID::ZERG_ZERGLING, 5 });
+
+    if(roachNeed > 0)
+      choices.push_back({ sc2::UNIT_TYPEID::ZERG_ROACH, 5 });
+
+    choices.push_back({ sc2::UNIT_TYPEID::INVALID, 10 });
+
+    auto chooseRandomly = [](auto& choices) -> size_t
     {
-      int hatcheryCount = hatcheryState.unitCount() + lairState.unitCount() + hiveState.unitCount();
-      int hatcheryFutureCount = hatcheryState.futureCount() + lairState.unitCount() + hiveState.unitCount();
+      int sum = 0;
+      for(auto&& x : choices)
+        sum += x.second;
 
-      int scoutDroneCount = 1;
-      int futureDroneCount = droneState.futureCount();
-      int optimalDroneCount = hatcheryCount * (16 + 2 * 3) + scoutDroneCount;
-      optimalDroneCount = std::min(optimalDroneCount, 75);
-
-      int droneNeed = optimalDroneCount - futureDroneCount;
-      droneNeed = std::max(droneNeed, 0);
-      droneNeed = std::min(droneNeed, 4);
-
-      unitCount = droneNeed;
-    }
-    */
-    if(unitCount == 0)
-      return;
-
-    //if(haveTechToMake(builder, unitType))
-    {
-      if(unitType.isUnitType())
+      int r = utils::randomBetween(0, sum);
+      int a = 0;
+      for(size_t i = 0, e = choices.size(); i != e; ++i)
       {
-        auto plan = std::make_unique<UnitBuildPlan>(unitType.unitType_, unitCount);
-        if(plan)
-        {
-          planner->addPlan(std::move(plan));
-        }
+        a += choices[i].second;
+
+        if(a >= r)
+          return i;
       }
-      else
-      {
-        auto plan = std::make_unique<ResearchBuildPlan>(unitType.upgradeType_);
-        if(plan)
-        {
-          planner->addPlan(std::move(plan));
-        }
-      }
-    }
-    /*
-    else
+      return 0;
+    };
+
+    size_t choice = chooseRandomly(choices);
+
+    auto type = choices.at(choice).first;
+    auto count = 1;
+
+    if(type.isUnitType())
     {
-      auto plan = planner->makeTechPlan(builder, unitType);
+      auto plan = std::make_unique<UnitBuildPlan>(type.unitType_, count);
       if(plan)
       {
         planner->addPlan(std::move(plan));
       }
     }
-    */
-  }
-
-  void BuildPlanner::executePlans()
-  {
-    if(plans_.size() < 10)
+    else if(type.isUpgradeType())
     {
-      makeMorePlans(this);
-    }
-
-    AllocatedResources allocatedResources{ 0, 0, 0 };
-    for(auto& plan : plans_)
-    {
-      plan->executePlan(this, allocatedResources);
-      allocatedResources = allocatedResources + plan->remainingCost(this);
-    }
-  }
-
-  void UnitBuildPlan::executePlan(BuildPlanner* planner, AllocatedResources allocatedResources)
-  {
-    Bot* bot = planner->getBot();
-
-    auto& baseManager = bot->bases();
-    auto& builder = bot->builder();
-
-    if(startedBuilds_.size() < count_)
-    {
-      if(!builder.haveResourcesToMake(unitType_, allocatedResources))
+      auto plan = std::make_unique<ResearchBuildPlan>(type.upgradeType_);
+      if(plan)
       {
-        return;
-      }
-
-      if(!haveTechToMake(builder, unitType_))
-      {
-        return;
-      }
-
-      BuildProjectID id;
-
-      for(auto& base : baseManager.bases())
-      {
-        if(builder.make(unitType_, &base, id))
-        {
-          startedBuilds_.insert(id);
-          break;
-        }
+        planner->addPlan(std::move(plan));
       }
     }
-  }
-
-  std::string UnitBuildPlan::toString() const
-  {
-    size_t total = count_;
-    size_t started = startedBuilds_.size();
-    size_t remaining = total - started;
-
-    return "make " + std::to_string(total) + " " + sc2::UnitTypeToName(unitType_) + " (" + std::to_string(remaining) + " remaining)";
-  }
-
-  BuildPlan::State UnitBuildPlan::updateProgress(BuildPlanner* planner)
-  {
-    Bot* bot = planner->getBot();
-    auto& builder = bot->builder();
-
-    if(startedBuilds_.size() < count_)
+    else
     {
-      return State::NotDone;
-    }
-
-    for(auto& id : startedBuilds_)
-    {
-      if(!builder.isFinished(id))
-        return State::NotDone;
-    }
-
-    return State::Done;
-  }
-  
-  void ResearchBuildPlan::executePlan(BuildPlanner* planner, AllocatedResources allocatedResources)
-  {
-    Bot* bot = planner->getBot();
-
-    auto& baseManager = bot->bases();
-    auto& builder = bot->builder();
-
-    if(startedBuild_ == -1)
-    {
-      if(!builder.haveResourcesToMake(upgradeType_, allocatedResources))
-      {
-        return;
-      }
-
-      // TODO: Should check if the upgrade is possible to make.
-      //if(!haveTechToMake(builder, upgradeType_))
-      //{
-      //  return;
-      //}
-
-      BuildProjectID id;
-
-      auto researcherType = getResearcherType(upgradeType_);
-
-      for(auto& base : baseManager.bases())
-      {
-        if(builder.research(upgradeType_, &base, researcherType, id))
-        {
-          startedBuild_ = id;
-          break;
-        }
-      }
+      // Do nothing.
     }
   }
 
-  std::string ResearchBuildPlan::toString() const
+  static void makeMorePlans(BuildPlanner* planner)
   {
-    size_t started = startedBuild_ != -1;
-
-    return string("research ") + sc2::UpgradeIDToName(upgradeType_) + (started ? " (started)" : "");
-  }
-
-  BuildPlan::State ResearchBuildPlan::updateProgress(BuildPlanner* planner)
-  {
-    Bot* bot = planner->getBot();
-    auto& builder = bot->builder();
-
-    if(startedBuild_ == -1)
+    if ( makeOpeningPlans( planner ) )
     {
-      return State::NotDone;
+      return;
     }
 
-    if(!builder.isFinished(startedBuild_))
-      return State::NotDone;
-
-    return State::Done;
-  }
-
-  AllocatedResources ResearchBuildPlan::remainingCost(BuildPlanner* planner) const
-  {
-    bool started = startedBuild_ != -1;
-    size_t remaining = 1 - (int)started;
-    return planner->getBot()->builder().getCost(upgradeType_) * (int)remaining;
+    return makeHeuristicPlans(planner);
   }
 }

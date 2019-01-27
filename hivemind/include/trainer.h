@@ -11,7 +11,7 @@ namespace hivemind {
 
   using BuildProjectID = uint64_t;
 
-  class UnitStats;
+  class BuilderUnitStats;
 
   struct AllocatedResources
   {
@@ -72,7 +72,7 @@ namespace hivemind {
     TrainingVector trainingProjects_;
     virtual void onMessage( const Message& msg ) final;
     BuildProjectID& idPool_;
-    std::unordered_map<sc2::UNIT_TYPEID, UnitStats>& unitStats_;
+    std::unordered_map<sc2::UNIT_TYPEID, BuilderUnitStats>& unitStats_;
     UnitSet trainers_;
 
     UnitRef getTrainer(Base& base, UnitTypeID trainerType) const;
@@ -80,7 +80,7 @@ namespace hivemind {
     void onTrainingComplete(const Training& training);
 
   public:
-    Trainer( Bot* bot, BuildProjectID& idPool, std::unordered_map<sc2::UNIT_TYPEID, UnitStats>& );
+    Trainer( Bot* bot, BuildProjectID& idPool, std::unordered_map<sc2::UNIT_TYPEID, BuilderUnitStats>& );
     void gameBegin() final;
     bool train( UnitTypeID unitType, Base* base, BuildProjectID& idOut );
     void remove( BuildProjectID id );

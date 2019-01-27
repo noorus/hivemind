@@ -428,4 +428,34 @@ namespace hivemind {
       }
     }
   }
+
+  template<typename T>
+  struct span
+  {
+    span(T* ptr, size_t count):
+      ptr_(ptr),
+      count_(count)
+    {
+    }
+
+    span(T* begin, T* end):
+      ptr_(begin),
+      count_(end - begin)
+    {
+    }
+
+    T* begin() const
+    {
+      return ptr_;
+    }
+
+    T* end() const
+    {
+      return ptr_ + count_;
+    }
+
+  private:
+    T* ptr_;
+    size_t count_;
+  };
 }

@@ -141,6 +141,7 @@
     <ClInclude Include="include\brain_macro.h" />
     <ClInclude Include="include\brain_queen.h" />
     <ClInclude Include="include\builder.h" />
+    <ClInclude Include="include\build_plan.h" />
     <ClInclude Include="include\cache.h" />
     <ClInclude Include="include\chokepoint.h" />
     <ClInclude Include="include\console.h" />
@@ -170,6 +171,7 @@
     <ClInclude Include="include\map_analysis.h" />
     <ClInclude Include="include\messaging.h" />
     <ClInclude Include="include\myself.h" />
+    <ClInclude Include="include\opening.h" />
     <ClInclude Include="include\pathfinding.h" />
     <ClInclude Include="include\pathing.h" />
     <ClInclude Include="include\platform_windows.h" />
@@ -177,6 +179,7 @@
     <ClInclude Include="include\region.h" />
     <ClInclude Include="include\regiongraph.h" />
     <ClInclude Include="include\researcher.h" />
+    <ClInclude Include="include\resource_type_id.h" />
     <ClInclude Include="include\sc2_forward.h" />
     <ClInclude Include="include\stdafx.h" />
     <ClInclude Include="include\strategy.h" />
@@ -207,6 +210,7 @@
     <ClCompile Include="src\brain_scouting.cpp" />
     <ClCompile Include="src\brain_updateharvesters.cpp" />
     <ClCompile Include="src\builder.cpp" />
+    <ClCompile Include="src\build_plan.cpp" />
     <ClCompile Include="src\cache.cpp" />
     <ClCompile Include="src\console.cpp" />
     <ClCompile Include="src\consolewindow_windows.cpp" />
@@ -224,6 +228,7 @@
     <ClCompile Include="src\map_analysis.cpp" />
     <ClCompile Include="src\messaging.cpp" />
     <ClCompile Include="src\myself.cpp" />
+    <ClCompile Include="src\opening.cpp" />
     <ClCompile Include="src\pathfinding.cpp" />
     <ClCompile Include="src\pathing.cpp" />
     <ClCompile Include="src\platform_windows.cpp" />
