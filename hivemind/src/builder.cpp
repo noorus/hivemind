@@ -29,8 +29,13 @@ namespace hivemind {
     researcher_.gameBegin();
   }
 
-  bool Builder::make(UnitTypeID unitType, Base* base, BuildProjectID& idOut)
+  bool Builder::make(ResourceTypeID type, Base* base, BuildProjectID& idOut)
   {
+    if(type.isUpgradeType())
+      return research(type.upgradeType_, base, idOut);
+
+    auto unitType = type.unitType_;
+
     auto trainerType = getTrainerType(unitType);
 
     if(!utils::isStructure(unitType) || utils::isStructure(trainerType))
@@ -50,7 +55,6 @@ namespace hivemind {
       return build(unitType, base, placement, idOut);
     }
   }
-
 
   bool Builder::build( UnitTypeID structureType, Base* base, BuildingPlacement placement, BuildProjectID& idOut )
   {
@@ -82,8 +86,10 @@ namespace hivemind {
     return trainer_.train(unitType, base, idOut);
   }
 
-  bool Builder::research(UpgradeID upgradeType, Base* base, UnitTypeID researcherType, BuildProjectID& idOut)
+  bool Builder::research(UpgradeID upgradeType, Base* base, BuildProjectID& idOut)
   {
+    UnitTypeID researcherType = getResearcherType(upgradeType);
+
     return researcher_.research(upgradeType, base, researcherType, idOut);
   }
 
@@ -567,21 +573,22 @@ namespace hivemind {
     return sc2::UNIT_TYPEID::INVALID;
   }
 
-  AllocatedResources Builder::getCost(UnitTypeID unitType)
+  AllocatedResources Builder::getCost(ResourceTypeID type) const
   {
-    UnitTypeID trainerType = getTrainerType(unitType);
+    if(type.isUnitType())
+    {
+      UnitTypeID trainerType = getTrainerType(type.unitType_);
 
-    auto& ability = Database::techTree().getBuildAbility(unitType, trainerType);
+      auto& ability = Database::techTree().getBuildAbility(type.unitType_, trainerType);
 
-    // Zerg buildings cost negative supply because they consume the drone.
-    int supplyCost = std::max(ability.supplyCost, 0);
+      // Zerg buildings cost negative supply because they consume the drone.
+      int supplyCost = std::max(ability.supplyCost, 0);
 
-    return { ability.mineralCost, ability.vespeneCost, supplyCost };
-  }
-
-  AllocatedResources Builder::getCost(UpgradeID upgradeType) const
-  {
-    return researcher_.getCost(upgradeType);
+      return { ability.mineralCost, ability.vespeneCost, supplyCost };
+    }
+    else if(type.isUpgradeType())
+      return researcher_.getCost(type.upgradeType_);
+    return AllocatedResources();
   }
 
   AllocatedResources Builder::getAllocatedResources() const
@@ -594,7 +601,7 @@ namespace hivemind {
         continue;
       }
 
-      auto cost = getCost(building.type);
+      auto cost = getCost(ResourceTypeID(building.type));
 
       builderResources.minerals += cost.minerals;
       builderResources.vespene += cost.vespene;
@@ -615,20 +622,6 @@ namespace hivemind {
   {
     auto& stats = unitStats_[unitType];
     return { stats.unitCount(), stats.inProgressCount() };
-  }
-
-  bool Builder::haveResourcesToMake(UnitTypeID unitType, AllocatedResources allocatedResources) const
-  {
-    auto cost = getCost(unitType);
-
-    return haveResourcesToMake(cost, allocatedResources);
-  }
-
-  bool Builder::haveResourcesToMake(UpgradeID upgradeType, AllocatedResources allocatedResources) const
-  {
-    auto cost = getCost(upgradeType);
-
-    return haveResourcesToMake(cost, allocatedResources);
   }
 
   bool Builder::haveResourcesToMake(AllocatedResources cost, AllocatedResources allocatedResources) const
@@ -658,5 +651,13 @@ namespace hivemind {
 
     return haveMoney && haveGas && haveSupply;
   }
+
+  bool Builder::haveResourcesToMake(ResourceTypeID type, AllocatedResources allocatedResources) const
+  {
+    auto cost = getCost(type);
+
+    return haveResourcesToMake(cost, allocatedResources);
+  }
+
 
 }

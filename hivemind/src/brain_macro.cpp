@@ -120,22 +120,12 @@ namespace hivemind {
 
     assert(count > 0);
 
-    if(type.isUnitType())
+    auto planObject = std::make_unique<BuildPlan>(type, count);
+    if(planObject)
     {
-      auto plan = std::make_unique<UnitBuildPlan>(type.unitType_, count);
-      if(plan)
-      {
-        planner->addPlan(std::move(plan));
-      }
+      planner->addPlan(std::move(planObject));
     }
-    else
-    {
-      auto plan = std::make_unique<ResearchBuildPlan>(type.upgradeType_);
-      if(plan)
-      {
-        planner->addPlan(std::move(plan));
-      }
-    }
+
     return true;
   }
 
@@ -279,17 +269,9 @@ namespace hivemind {
     auto type = choices.at(choice).first;
     auto count = 1;
 
-    if(type.isUnitType())
+    if(type.isValid())
     {
-      auto plan = std::make_unique<UnitBuildPlan>(type.unitType_, count);
-      if(plan)
-      {
-        planner->addPlan(std::move(plan));
-      }
-    }
-    else if(type.isUpgradeType())
-    {
-      auto plan = std::make_unique<ResearchBuildPlan>(type.upgradeType_);
+      auto plan = std::make_unique<BuildPlan>(type, count);
       if(plan)
       {
         planner->addPlan(std::move(plan));

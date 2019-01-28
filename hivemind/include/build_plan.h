@@ -11,7 +11,7 @@ namespace hivemind {
 
   class Bot;
   class BuildPlanner;
-  
+
   struct BuildPlan
   {
     enum class State
@@ -20,60 +20,23 @@ namespace hivemind {
       Done
     };
 
-    virtual ~BuildPlan()
-    {
-    }
-
-    virtual AllocatedResources remainingCost(BuildPlanner* planner) const = 0;
-    virtual State updateProgress(BuildPlanner* planner) = 0;
-    virtual void executePlan(BuildPlanner* planner, AllocatedResources allocatedResources) = 0;
-    virtual std::string toString() const = 0;
-    virtual pair<ResourceTypeID, int> getCount() const = 0;
-  };
-
-  struct UnitBuildPlan : public BuildPlan
-  {
-    sc2::UNIT_TYPEID unitType_;
+    ResourceTypeID type_;
     size_t count_;
 
     std::set<BuildProjectID> startedBuilds_;
 
-    explicit UnitBuildPlan(sc2::UNIT_TYPEID unitType, size_t count = 1):
-      unitType_(unitType),
+    explicit BuildPlan(ResourceTypeID type, size_t count = 1):
+      type_(type),
       count_(count)
     {
     }
 
-    AllocatedResources remainingCost(BuildPlanner* planner) const override
-    {
-      size_t remaining = count_ - startedBuilds_.size();
-      return Builder::getCost(unitType_) * (int)remaining;
-    }
-
-    virtual State updateProgress(BuildPlanner* planner) override;
-    virtual void executePlan(BuildPlanner* planner, AllocatedResources allocatedResources) override;
-    virtual std::string toString() const override;
-    virtual pair<ResourceTypeID, int> getCount() const override;
-  };
-
-  struct ResearchBuildPlan : public BuildPlan
-  {
-    sc2::UPGRADE_ID upgradeType_;
-
-    BuildProjectID startedBuild_;
-
-    explicit ResearchBuildPlan(sc2::UPGRADE_ID upgradeType):
-      upgradeType_(upgradeType),
-      startedBuild_(-1)
-    {
-    }
-
-    AllocatedResources remainingCost(BuildPlanner* planner) const override;
-
-    virtual State updateProgress(BuildPlanner* planner) override;
-    virtual void executePlan(BuildPlanner* planner, AllocatedResources allocatedResources) override;
-    virtual std::string toString() const override;
-    virtual pair<ResourceTypeID, int> getCount() const override;
+    ~BuildPlan() = default;
+    AllocatedResources remainingCost(BuildPlanner* planner) const;
+    State updateProgress(BuildPlanner* planner);
+    void executePlan(BuildPlanner* planner, AllocatedResources allocatedResources);
+    std::string toString() const;
+    pair<ResourceTypeID, int> getCount() const;
   };
 
   class BuildPlanner
@@ -100,7 +63,7 @@ namespace hivemind {
       return bot_;
     }
 
-    std::unique_ptr<UnitBuildPlan> makeTechPlan(Builder& builder, sc2::UnitTypeID unitType) const;
+    std::unique_ptr<BuildPlan> makeTechPlan(Builder& builder, sc2::UnitTypeID unitType) const;
 
     const std::vector<std::unique_ptr<BuildPlan>>& getPlans() const
     {

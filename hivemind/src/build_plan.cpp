@@ -29,8 +29,15 @@ namespace hivemind {
     return { unitType };
   }
 
-  static bool haveTechToMake(Builder& builder, sc2::UnitTypeID unitType)
+  static bool haveTechToMake(Builder& builder, ResourceTypeID type)
   {
+    if(type.isUpgradeType())
+    {
+      // TODO: fix.
+      return true;
+    }
+    auto unitType = type.unitType_;
+
     std::vector<sc2::UnitTypeID> techChain;
     Database::techTree().findTechChain(unitType, techChain);
 
@@ -84,7 +91,7 @@ namespace hivemind {
     }
   }
 
-  std::unique_ptr<UnitBuildPlan> BuildPlanner::makeTechPlan(Builder& builder, sc2::UnitTypeID unitType) const
+  std::unique_ptr<BuildPlan> BuildPlanner::makeTechPlan(Builder& builder, sc2::UnitTypeID unitType) const
   {
     std::vector<sc2::UnitTypeID> techChain;
     Database::techTree().findTechChain(unitType, techChain);
@@ -109,9 +116,9 @@ namespace hivemind {
 
       for(auto& x : plans_)
       {
-        if(auto oldPlan = dynamic_cast<const UnitBuildPlan*>(x.get()))
+        if(auto oldPlan = dynamic_cast<const BuildPlan*>(x.get()))
         {
-          if(oldPlan->unitType_ == buildingType)
+          if(oldPlan->type_ == ResourceTypeID(buildingType))
           {
             found = true;
             break;
@@ -121,10 +128,10 @@ namespace hivemind {
       if(found)
         continue;
 
-      if(!haveTechToMake(builder, buildingType))
+      if(!haveTechToMake(builder, ResourceTypeID(buildingType)))
         continue;
 
-      return std::make_unique<UnitBuildPlan>(buildingType);
+      return std::make_unique<BuildPlan>(ResourceTypeID(buildingType));
     }
 
     return nullptr;
@@ -149,7 +156,7 @@ namespace hivemind {
     return stats;
   }
 
-  void UnitBuildPlan::executePlan(BuildPlanner* planner, AllocatedResources allocatedResources)
+  void BuildPlan::executePlan(BuildPlanner* planner, AllocatedResources allocatedResources)
   {
     Bot* bot = planner->getBot();
 
@@ -158,12 +165,18 @@ namespace hivemind {
 
     if(startedBuilds_.size() < count_)
     {
-      if(!builder.haveResourcesToMake(unitType_, allocatedResources))
+      if(!builder.haveResourcesToMake(type_, allocatedResources))
       {
+        allocatedResources.food = 0;
+        if(builder.haveResourcesToMake(type_, allocatedResources))
+        {
+          planner->getBot()->console().printf("Canceling plan %s, not enough supply", type_.name_);
+          count_ = startedBuilds_.size();
+        }
         return;
       }
 
-      if(!haveTechToMake(builder, unitType_))
+      if(!haveTechToMake(builder, type_))
       {
         return;
       }
@@ -172,7 +185,7 @@ namespace hivemind {
 
       for(auto& base : baseManager.bases())
       {
-        if(builder.make(unitType_, &base, id))
+        if(builder.make(type_, &base, id))
         {
           startedBuilds_.insert(id);
           break;
@@ -181,25 +194,31 @@ namespace hivemind {
     }
   }
 
-  std::string UnitBuildPlan::toString() const
+  std::string BuildPlan::toString() const
   {
     size_t total = count_;
     size_t started = startedBuilds_.size();
     size_t remaining = total - started;
 
-    return "make " + std::to_string(total) + " " + sc2::UnitTypeToName(unitType_) + " (" + std::to_string(remaining) + " not started)";
+    return "make " + std::to_string(total) + " " + type_.name_ + " (" + std::to_string(remaining) + " not started)";
   }
 
-  pair<ResourceTypeID, int> UnitBuildPlan::getCount() const
+  pair<ResourceTypeID, int> BuildPlan::getCount() const
   {
     size_t total = count_;
     size_t started = startedBuilds_.size();
     size_t remaining = total - started;
 
-    return { unitType_, (int)remaining };
+    return { type_, (int)remaining };
   }
 
-  BuildPlan::State UnitBuildPlan::updateProgress(BuildPlanner* planner)
+  AllocatedResources BuildPlan::remainingCost(BuildPlanner* planner) const
+  {
+    size_t remaining = count_ - startedBuilds_.size();
+    return planner->getBot()->builder().getCost(type_) * (int)remaining;
+  }
+
+  BuildPlan::State BuildPlan::updateProgress(BuildPlanner* planner)
   {
     Bot* bot = planner->getBot();
     auto& builder = bot->builder();
@@ -217,77 +236,4 @@ namespace hivemind {
 
     return State::Done;
   }
-  
-  void ResearchBuildPlan::executePlan(BuildPlanner* planner, AllocatedResources allocatedResources)
-  {
-    Bot* bot = planner->getBot();
-
-    auto& baseManager = bot->bases();
-    auto& builder = bot->builder();
-
-    if(startedBuild_ == -1)
-    {
-      if(!builder.haveResourcesToMake(upgradeType_, allocatedResources))
-      {
-        return;
-      }
-
-      // TODO: Should check if the upgrade is possible to make.
-      //if(!haveTechToMake(builder, upgradeType_))
-      //{
-      //  return;
-      //}
-
-      BuildProjectID id;
-
-      auto researcherType = getResearcherType(upgradeType_);
-
-      for(auto& base : baseManager.bases())
-      {
-        if(builder.research(upgradeType_, &base, researcherType, id))
-        {
-          startedBuild_ = id;
-          break;
-        }
-      }
-    }
-  }
-
-  std::string ResearchBuildPlan::toString() const
-  {
-    size_t started = startedBuild_ != -1;
-
-    return string("research ") + sc2::UpgradeIDToName(upgradeType_) + (started ? " (started)" : "");
-  }
-
-  pair<ResourceTypeID, int> ResearchBuildPlan::getCount() const
-  {
-    int count = startedBuild_ == -1;
-    return { upgradeType_, count };
-  }
-
-
-  BuildPlan::State ResearchBuildPlan::updateProgress(BuildPlanner* planner)
-  {
-    Bot* bot = planner->getBot();
-    auto& builder = bot->builder();
-
-    if(startedBuild_ == -1)
-    {
-      return State::NotDone;
-    }
-
-    if(!builder.isFinished(startedBuild_))
-      return State::NotDone;
-
-    return State::Done;
-  }
-
-  AllocatedResources ResearchBuildPlan::remainingCost(BuildPlanner* planner) const
-  {
-    bool started = startedBuild_ != -1;
-    size_t remaining = 1 - (int)started;
-    return planner->getBot()->builder().getCost(upgradeType_) * (int)remaining;
-  }
-
 }

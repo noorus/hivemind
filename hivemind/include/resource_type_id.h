@@ -34,6 +34,7 @@ namespace hivemind {
 
     bool isUnitType() const { return unitType_ != UNIT_TYPEID::INVALID; }
     bool isUpgradeType() const { return upgradeType_ != UPGRADE_ID::INVALID; }
+    bool isValid() const { return isUnitType() || isUpgradeType(); }
 
     const char* name_;
     UnitTypeID unitType_;

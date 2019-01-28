@@ -6,6 +6,7 @@
 #include "base.h"
 #include "trainer.h"
 #include "researcher.h"
+#include "resource_type_id.h"
 
 namespace hivemind {
 
@@ -144,9 +145,9 @@ namespace hivemind {
 
     bool build( UnitTypeID structureType, Base* base, BuildingPlacement placement, BuildProjectID& idOut );
     bool train( UnitTypeID unitType, Base* base, BuildProjectID& idOut );
-    bool research( UpgradeID upgradeType, Base* base, UnitTypeID researcherType, BuildProjectID& idOut );
+    bool research( UpgradeID upgradeType, Base* base, BuildProjectID& idOut );
 
-    bool make( UnitTypeID unitType, Base* base, BuildProjectID& idOut );
+    bool make( ResourceTypeID type, Base* base, BuildProjectID& idOut );
 
     void remove( BuildProjectID id );
     void update( const GameTime time, const GameTime delta );
@@ -165,12 +166,10 @@ namespace hivemind {
       return { stats == UpgradeStatus::Researched, stats == UpgradeStatus::inProgress };
     }
 
-    bool haveResourcesToMake(UnitTypeID unitType, AllocatedResources allocatedResources) const;
-    bool haveResourcesToMake(UpgradeID upgradeType, AllocatedResources allocatedResources) const;
     bool haveResourcesToMake(AllocatedResources cost, AllocatedResources allocatedResources) const;
+    bool haveResourcesToMake(ResourceTypeID type, AllocatedResources allocatedResources) const;
 
-    static AllocatedResources getCost(UnitTypeID unitType);
-    AllocatedResources getCost(UpgradeID upgradeType) const;
+    AllocatedResources getCost(ResourceTypeID type) const;
 
     bool isFinished(BuildProjectID id) const
     {
