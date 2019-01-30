@@ -7,15 +7,17 @@
 
 namespace hivemind {
 
+  HIVE_DECLARE_CONVAR( creep_debug, "Whether to print debug information on creep. 0 = none, 1 = basics, 2 = verbose", 1 );
+
   namespace Goals {
 
     /* Brain: Spread creep goal */
 
     const GameTime cCreepCheckDelay = 50;
-    const GameTime cTumorFullCreepTime = utils::timeToTicks( 0, (uint16_t)( ( ( 21.0f - 3.0f ) / 2.0f ) * 0.8332f * 1.5f ) ); // ((fullGrownFootprint - spawnFootprint) / 2) * creepPeriod * goodMeasure
+    const GameTime cTumorFullCreepTime = utils::timeToTicks( 0, ( uint16_t )( ( ( 21.0f - 3.0f ) / 2.0f ) * 0.8332f * 1.5f ) ); // ((fullGrownFootprint - spawnFootprint) / 2) * creepPeriod * goodMeasure
 
-    Brain_SpreadCreep::Brain_SpreadCreep( AI::Agent * agent ):
-    AI::CompositeGoal( agent )
+    Brain_SpreadCreep::Brain_SpreadCreep( AI::Agent* agent )
+        : AI::CompositeGoal( agent )
     {
     }
 
@@ -31,8 +33,7 @@ namespace hivemind {
       {
         nextCreepTime_ = ( bot_->time() + cCreepCheckDelay );
 
-        auto tumors = bot_->observation().GetUnits( []( const Unit& unit ) -> bool
-        {
+        auto tumors = bot_->observation().GetUnits( []( const Unit& unit ) -> bool {
           return ( utils::isMine( unit ) && unit.is_alive && unit.unit_type == UNIT_TYPEID::ZERG_CREEPTUMORBURROWED && unit.orders.empty() );
         } );
 
@@ -60,7 +61,10 @@ namespace hivemind {
               auto creep = bot_->map().creep( Vector2( tumorPt ) );
               if ( !creep || creep->fronts.empty() )
               {
-                bot_->console().printf( "CREEP: Want to creep via tumor %x, but no fronts found (?!)", id( tumor ) );
+                if ( g_CVar_creep_debug.as_i() > 0 )
+                {
+                  bot_->console().printf( "CREEP: Want to creep via tumor %x, but no fronts found (?!)", id( tumor ) );
+                }
               }
               else
               {
@@ -81,9 +85,17 @@ namespace hivemind {
                   if ( bot_->query().Placement( sc2::ABILITY_ID::BUILD_CREEPTUMOR_TUMOR, destPt ) )
                     break;
                   else
-                    bot_->console().printf( "CREEP: Want to creep via tumor %x, but can't find placement at %i,%i", id( tumor ), (int)destPt.x, (int)destPt.y );
+                  {
+                    if ( g_CVar_creep_debug.as_i() > 0 )
+                    {
+                      bot_->console().printf( "CREEP: Want to creep via tumor %x, but can't find placement at %i,%i", id( tumor ), (int)destPt.x, (int)destPt.y );
+                    }
+                  }
                 }
-                bot_->console().printf( "CREEP: Creeping via tumor %x to %i,%i", id( tumor ), (int)destPt.x, (int)destPt.y );
+                if ( g_CVar_creep_debug.as_i() > 0 )
+                {
+                  bot_->console().printf( "CREEP: Creeping via tumor %x to %i,%i", id( tumor ), (int)destPt.x, (int)destPt.y );
+                }
                 CreepTumor( tumor ).tumor( destPt );
               }
             }
@@ -98,7 +110,5 @@ namespace hivemind {
     {
       status_ = AI::Goal::Status_Inactive;
     }
-
   }
-
 }

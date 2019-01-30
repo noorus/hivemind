@@ -19,7 +19,7 @@ HIVE_DECLARE_CONVAR( draw_map, "Whether to draw map analysis debug features.", t
 HIVE_DECLARE_CONVAR( draw_baselocations, "Whether to show base location debug information.", true );
 HIVE_DECLARE_CONVAR( draw_chokepoints, "Whether to draw chokepoint debug features.", true );
 
-HIVE_DECLARE_CONVAR( creep_debug, "Whether to draw creep debug features.", false );
+HIVE_DECLARE_CONVAR( draw_creep, "Whether to draw creep debug features.", false );
 
 #ifdef HIVE_SUPPORT_MAP_DUMPS
 HIVE_DECLARE_CONVAR( analysis_dump_maps, "Dump out images of generated map layers upon analysis.", false );
@@ -492,7 +492,7 @@ namespace hivemind {
     }
 
     // draw creep fronts if creep_debug is enabled
-    if ( g_CVar_creep_debug.as_b() )
+    if ( g_CVar_draw_creep.as_b() )
     {
       for ( auto& creep : creeps_ )
         for ( size_t i = 0; i < creep.fronts.size(); i++ )

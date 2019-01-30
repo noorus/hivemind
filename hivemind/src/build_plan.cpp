@@ -8,6 +8,9 @@
 
 namespace hivemind {
 
+  HIVE_DECLARE_CONVAR( build_plan_debug, "Whether to print debug information about plans", false);
+
+
   static std::vector<sc2::UnitTypeID> getReverseTechAliases(sc2::UnitTypeID unitType)
   {
     if(unitType == sc2::UNIT_TYPEID::ZERG_HATCHERY)
@@ -31,15 +34,20 @@ namespace hivemind {
 
   static bool haveTechToMake(Builder& builder, ResourceTypeID type)
   {
+    std::vector<sc2::UnitTypeID> techChain;
+
     if(type.isUpgradeType())
     {
-      // TODO: fix.
-      return true;
+      Database::techTree().findTechChain(type.upgradeType_, techChain);
     }
-    auto unitType = type.unitType_;
-
-    std::vector<sc2::UnitTypeID> techChain;
-    Database::techTree().findTechChain(unitType, techChain);
+    else if(type.isUnitType())
+    {
+      Database::techTree().findTechChain(type.unitType_, techChain);
+    }
+    else
+    {
+      return false;
+    }
 
     for(auto& buildingType : techChain)
     {
@@ -74,7 +82,10 @@ namespace hivemind {
 
         if(done)
         {
-          bot_->console().printf("Finished plan %s", plan->toString().c_str());
+          if(g_CVar_build_plan_debug.as_i() > 0)
+          {
+            bot_->console().printf("Finished plan %s", plan->toString().c_str());
+          }
         }
 
         return done;
@@ -89,6 +100,16 @@ namespace hivemind {
       plan->executePlan(this, allocatedResources);
       allocatedResources = allocatedResources + plan->remainingCost(this);
     }
+  }
+
+  void BuildPlanner::addPlan(std::unique_ptr<BuildPlan> plan)
+  {
+    if(g_CVar_build_plan_debug.as_i() > 0)
+    {
+      bot_->console().printf("Added plan %s", plan->toString().c_str());
+    }
+
+    plans_.push_back(std::move(plan));
   }
 
   std::unique_ptr<BuildPlan> BuildPlanner::makeTechPlan(Builder& builder, sc2::UnitTypeID unitType) const
@@ -170,9 +191,12 @@ namespace hivemind {
         allocatedResources.food = 0;
         if(builder.haveResourcesToMake(type_, allocatedResources))
         {
-          planner->getBot()->console().printf("Canceling plan %s, not enough supply", type_.name_);
+          if(g_CVar_build_plan_debug.as_i() > 0)
+          {
+            planner->getBot()->console().printf("Canceling plan %s, not enough supply", type_.name_);
+          }
           count_ = startedBuilds_.size();
-        }
+        } 
         return;
       }
 

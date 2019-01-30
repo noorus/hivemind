@@ -51,12 +51,7 @@ namespace hivemind {
 
     void executePlans();
 
-    void addPlan(std::unique_ptr<BuildPlan> plan)
-    {
-      bot_->console().printf("Added plan %s", plan->toString().c_str());
-
-      plans_.push_back(std::move(plan));
-    }
+    void addPlan(std::unique_ptr<BuildPlan> plan);
 
     Bot* getBot() const
     {

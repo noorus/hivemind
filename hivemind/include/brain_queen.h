@@ -46,6 +46,7 @@ namespace hivemind {
 
       void processLarvaInjections();
       void processCreepTumorBuilds();
+      void saturateBases();
 
     public:
       virtual const string& getName() const final { static string name = "Brain_Queen"; return name; }

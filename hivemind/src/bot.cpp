@@ -12,7 +12,7 @@ namespace hivemind {
 
   static bool callbackCVARGodmode( ConVar* variable, ConVar::Value oldValue );
   static bool callbackCVARCostIgnore( ConVar* variable, ConVar::Value oldValue );
-  static bool callbackCVARShowMap ( ConVar* variable, ConVar::Value oldValue );
+  static bool callbackCVARShowMap( ConVar* variable, ConVar::Value oldValue );
   static bool callbackCVARFastBuild( ConVar* variable, ConVar::Value oldValue );
   static void concmdGetMoney( Console* console, ConCmd* command, StringVector& arguments );
   static void concmdKill( Console* console, ConCmd* command, StringVector& arguments );
@@ -21,7 +21,7 @@ namespace hivemind {
   HIVE_DECLARE_CONVAR_WITH_CB( cheat_godmode, "Cheat: Invulnerability.", false, callbackCVARGodmode );
   HIVE_DECLARE_CONVAR_WITH_CB( cheat_ignorecost, "Cheat: Ignore all resource cost checks.", false, callbackCVARCostIgnore );
   HIVE_DECLARE_CONVAR_WITH_CB( cheat_showmap, "Cheat: Reveal entire map and remove fog of war.", false, callbackCVARShowMap );
-  HIVE_DECLARE_CONVAR_WITH_CB( cheat_fastbuild, "Cheat: Everything builds fast.", false, callbackCVARFastBuild);
+  HIVE_DECLARE_CONVAR_WITH_CB( cheat_fastbuild, "Cheat: Everything builds fast.", false, callbackCVARFastBuild );
   HIVE_DECLARE_CONCMD( cheat_getmoney, "Cheat: Get 5000 minerals and 5000 vespene.", concmdGetMoney );
   HIVE_DECLARE_CONCMD( kill, "Cheat: Kill selected units.", concmdKill );
   HIVE_DECLARE_CONCMD( testPath, "Usage: testPath x1 y1 x2 y2. Creates a debug pathing from (x1,y1) to (x2,y2).", concmdTestPath );
@@ -32,6 +32,7 @@ namespace hivemind {
 
   HIVE_DECLARE_CONVAR( brain_enable, "Whether the brain is enabled and updated or not.", true );
 
+  HIVE_DECLARE_CONVAR( bot_events_debug, "Whether to print debug information about global events. 0 = none, 1 = basics, 2 = verbose", 1 );
 
   bool callbackCVARGodmode( ConVar* variable, ConVar::Value oldValue )
   {
@@ -79,7 +80,7 @@ namespace hivemind {
 
   void concmdGetMoney( Console* console, ConCmd* command, StringVector& arguments )
   {
-    if(!g_Bot)
+    if ( !g_Bot )
       return;
 
     g_Bot->getMoneyCheat();
@@ -107,48 +108,48 @@ namespace hivemind {
     MapPoint2 start;
     MapPoint2 end;
 
-    if(arguments.size() >= 5)
+    if ( arguments.size() >= 5 )
     {
-      start.x = stoi(arguments.at(1));
-      start.y = stoi(arguments.at(2));
-      end.x = stoi(arguments.at(3));
-      end.y = stoi(arguments.at(4));
+      start.x = stoi( arguments.at( 1 ) );
+      start.y = stoi( arguments.at( 2 ) );
+      end.x = stoi( arguments.at( 3 ) );
+      end.y = stoi( arguments.at( 4 ) );
     }
     else
     {
-      start.x = utils::randomBetween(0, (int)g_Bot->map().width() - 1);
-      start.y = utils::randomBetween(0, (int)g_Bot->map().height() - 1);
-      end.x = utils::randomBetween(0, (int)g_Bot->map().width() - 1);
-      end.y = utils::randomBetween(0, (int)g_Bot->map().height() - 1);
+      start.x = utils::randomBetween( 0, (int)g_Bot->map().width() - 1 );
+      start.y = utils::randomBetween( 0, (int)g_Bot->map().height() - 1 );
+      end.x = utils::randomBetween( 0, (int)g_Bot->map().width() - 1 );
+      end.y = utils::randomBetween( 0, (int)g_Bot->map().height() - 1 );
     }
 
-    console->printf("Pathing from (%d, %d) to (%d, %d)", start.x, start.y, end.x, end.y);
+    console->printf( "Pathing from (%d, %d) to (%d, %d)", start.x, start.y, end.x, end.y );
     platform::PerformanceTimer timer;
     timer.start();
     auto path = g_Bot->pathing().createPath( start.midVec2(), end.midVec2() );
     auto time = timer.stop();
-    console->printf("Path length: %d, time: %f ms", path->verts().size(), time);
+    console->printf( "Path length: %d, time: %f ms", path->verts().size(), time );
   }
 
-  Bot::Bot( Console& console ):
-    time_( 0 ),
-    console_( console ),
-    players_( this ),
-    brain_( this ),
-    messaging_( this ),
-    map_( this ),
-    workers_( this ),
-    baseManager_( this ),
-    intelligence_( this ),
-    strategy_( this ),
-    builder_( this ),
-    vision_( this ),
-    pathing_( this ),
-    myself_( this ),
-    cheatCostIgnore_( false ),
-    cheatGodmode_( false ),
-    cheatShowMap_( false ),
-    cheatFastBuild_( false )
+  Bot::Bot( Console& console )
+      : time_( 0 ),
+        console_( console ),
+        players_( this ),
+        brain_( this ),
+        messaging_( this ),
+        map_( this ),
+        workers_( this ),
+        baseManager_( this ),
+        intelligence_( this ),
+        strategy_( this ),
+        builder_( this ),
+        vision_( this ),
+        pathing_( this ),
+        myself_( this ),
+        cheatCostIgnore_( false ),
+        cheatGodmode_( false ),
+        cheatShowMap_( false ),
+        cheatFastBuild_( false )
   {
     console_.setBot( this );
   }
@@ -198,8 +199,7 @@ namespace hivemind {
     console_.gameBegin();
 
     auto& gameInfo = observation_->GetGameInfo();
-    console_.printf( "Map: %s (%dx%d)", gameInfo.map_name.c_str(),
-      gameInfo.width, gameInfo.height );
+    console_.printf( "Map: %s (%dx%d)", gameInfo.map_name.c_str(), gameInfo.width, gameInfo.height );
 
     std::experimental::filesystem::path mapPath( gameInfo.local_map_path );
 
@@ -207,9 +207,7 @@ namespace hivemind {
     mapData.filepath = mapPath.string();
 
     bool gotHash = false;
-    if ( !g_CVar_map_always_hash.as_b()
-      && mapPath.stem().string().length() == 64
-      && boost::iequals( mapPath.extension().string(), ".s2ma" ) )
+    if ( !g_CVar_map_always_hash.as_b() && mapPath.stem().string().length() == 64 && boost::iequals( mapPath.extension().string(), ".s2ma" ) )
     {
       if ( utils::hex2bin( mapPath.stem().string().c_str(), mapData.hash ) )
       {
@@ -352,7 +350,7 @@ namespace hivemind {
 
     intelligence_.update( time_, delta );
     myself_.update( time_, delta );
-    pathing_.update(time_, delta);
+    pathing_.update( time_, delta );
 
     ControllerBase::setActions( action_ );
 
@@ -385,63 +383,62 @@ namespace hivemind {
     baseManager_.draw();
 
     static bool pathtest = false;
-    if(false)
+    if ( false )
     {
       pathtest = true;
 
-      auto makePath = [&](MapPoint2 from, MapPoint2 to)
-      {
+      auto makePath = [&]( MapPoint2 from, MapPoint2 to ) {
         platform::PerformanceTimer timer;
         timer.start();
 
-        auto path = pathing_.createPath( from.midVec2(), to.midVec2());
+        auto path = pathing_.createPath( from.midVec2(), to.midVec2() );
 
         auto time = timer.stop();
-        console_.printf("Path from {%d, %d} to {%d, %d} took %d vertices%s, and %f ms", from.x, from.y, to.x, to.y, path->verts().size(), path->verts().empty() ? " (NOT FOUND)" : "", time);
+        console_.printf( "Path from {%d, %d} to {%d, %d} took %d vertices%s, and %f ms", from.x, from.y, to.x, to.y, path->verts().size(), path->verts().empty() ? " (NOT FOUND)" : "", time );
       };
 
-      if(0)
+      if ( 0 )
       {
-        for(int i = 0; i < 5; i++)
+        for ( int i = 0; i < 5; i++ )
         {
-          auto idx = utils::randomBetween(0, (int)map_.getBaseLocations().size() - 2);
+          auto idx = utils::randomBetween( 0, (int)map_.getBaseLocations().size() - 2 );
           auto from = map_.getBaseLocations()[idx].position();
           auto to = map_.getBaseLocations()[idx + 1].position();
 
-          makePath(from, to);
+          makePath( from, to );
         }
       }
 
       //makePath({ 53, 100 }, { 57, 102 });
       //makePath({ 50, 70 }, { 50, 80 });
-      makePath({ 130, 100 }, { 30, 50 });
+      makePath( {130, 100}, {30, 50} );
     }
 
     pathing_.draw();
 
-    if(g_CVar_draw_units.as_b())
+    if ( g_CVar_draw_units.as_b() )
     {
-      for(auto unit : observation_->GetUnits())
+      for ( auto unit : observation_->GetUnits() )
       {
-        if(unit->is_selected)
+        if ( unit->is_selected )
         {
           auto& dbUnit = Database::unit( unit->unit_type );
           char sdf[256];
           sprintf_s( sdf, 256, "%x %s (%d) wpos (%.2f,%.2f)\n", id( unit ), dbUnit.name.c_str(), (int)unit->unit_type, unit->pos.x, unit->pos.y );
           string txt( sdf );
-          if (utils::isMine(unit))
+          if ( utils::isMine( unit ) )
             for ( auto& order : unit->orders )
               txt.append( string( sc2::AbilityTypeToName( order.ability_id ) ) + "\n" );
-          debug_.drawText(txt, Vector3(unit->pos), sc2::Colors::Green);
+          debug_.drawText( txt, Vector3( unit->pos ), sc2::Colors::Green );
 
           if ( !dbUnit.buildingPolygon.empty() )
             debug_.drawMapBarePolygon( map_, dbUnit.buildingPolygon, Colors::Teal, Vector2( unit->pos.x, unit->pos.y ) );
 
-          MapPoint2 coord(unit->pos);
+          MapPoint2 coord( unit->pos );
           auto regIndex = map_.regionMap_[coord.x][coord.y];
-          string nrg = "region: " + std::to_string(regIndex);
-          Vector3 nrgpos(unit->pos.x, unit->pos.y, unit->pos.z + 1.0f);
-          debug_.drawText(nrg, nrgpos, sc2::Colors::Teal);
+          string nrg = "region: " + std::to_string( regIndex );
+          Vector3 nrgpos( unit->pos.x, unit->pos.y, unit->pos.z + 1.0f );
+          debug_.drawText( nrg, nrgpos, sc2::Colors::Teal );
         }
       }
     }
@@ -477,14 +474,21 @@ namespace hivemind {
   void Bot::OnUnitCreated( const Unit* unit )
   {
     if ( unit->alliance == sc2::Unit::Self && unit->unit_type != UNIT_TYPEID::ZERG_DRONE && unit->unit_type != UNIT_TYPEID::ZERG_LARVA )
-      console_.printf( "Bot::UnitCreated %s %x", sc2::UnitTypeToName( unit->unit_type ), id( unit ) );
-
+    {
+      if ( g_CVar_bot_events_debug.as_i() > 0 )
+      {
+        console_.printf( "Bot::UnitCreated %s %x", sc2::UnitTypeToName( unit->unit_type ), id( unit ) );
+      }
+    }
     messaging_.sendGlobal( M_Global_UnitCreated, unit );
   }
 
   void Bot::OnUnitDestroyed( const Unit* unit )
   {
-    console_.printf( "Bot::UnitDestroyed %s %x", sc2::UnitTypeToName( unit->unit_type ), id( unit ) );
+    if ( g_CVar_bot_events_debug.as_i() > 0 )
+    {
+      console_.printf( "Bot::UnitDestroyed %s %x", sc2::UnitTypeToName( unit->unit_type ), id( unit ) );
+    }
     messaging_.sendGlobal( M_Global_UnitDestroyed, unit );
   }
 
@@ -500,25 +504,37 @@ namespace hivemind {
 
   void Bot::OnUpgradeCompleted( UpgradeID upgrade )
   {
-    console_.printf( "Bot::UpgradeCompleted %s", sc2::UpgradeIDToName( upgrade ) );
+    if ( g_CVar_bot_events_debug.as_i() > 0 )
+    {
+      console_.printf( "Bot::UpgradeCompleted %s", sc2::UpgradeIDToName( upgrade ) );
+    }
     messaging_.sendGlobal( M_Global_UpgradeCompleted, (uint32_t)upgrade );
   }
 
   void Bot::OnBuildingConstructionComplete( const Unit* unit )
   {
-    console_.printf( "Bot::ConstructionCompleted %s", sc2::UnitTypeToName( unit->unit_type ) );
+    if ( g_CVar_bot_events_debug.as_i() > 0 )
+    {
+      console_.printf( "Bot::ConstructionCompleted %s", sc2::UnitTypeToName( unit->unit_type ) );
+    }
     messaging_.sendGlobal( M_Global_ConstructionCompleted, unit );
   }
 
   void Bot::OnNydusDetected()
   {
-    console_.printf( "GLOBAL: Nydus detected!" );
+    if ( g_CVar_bot_events_debug.as_i() > 0 )
+    {
+      console_.printf( "GLOBAL: Nydus detected!" );
+    }
     messaging_.sendGlobal( M_Global_NydusDetected );
   }
 
   void Bot::OnNuclearLaunchDetected()
   {
-    console_.printf( "GLOBAL: Nuclear launch detected!" );
+    if ( g_CVar_bot_events_debug.as_i() > 0 )
+    {
+      console_.printf( "GLOBAL: Nuclear launch detected!" );
+    }
     messaging_.sendGlobal( M_Global_NuclearLaunchDetected );
   }
 
@@ -533,8 +549,7 @@ namespace hivemind {
     "SC2UnknownStatus",
     "SC2 has either crashed or been forcibly terminated by this library because it was not responding to requests.",
     "The response from SC2 contains errors, most likely meaning the API was not used in a correct way.",
-    "A request was made and a response was not received in the amount of time given by the timeout."
-  };
+    "A request was made and a response was not received in the amount of time given by the timeout."};
 
   void Bot::OnError( const std::vector<ClientError>& client_errors, const std::vector<std::string>& protocol_errors )
   {
@@ -543,5 +558,4 @@ namespace hivemind {
     for ( auto& error : protocol_errors )
       console_.printf( "PROTOCOL ERROR: %s", error.c_str() );
   }
-
 }

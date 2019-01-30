@@ -87,7 +87,8 @@ namespace hivemind {
 
       if ( utils::isStructure( unit ) )
       {
-        bot_->console().printf( "Building created: %s at (%.2f, %.2f)", sc2::UnitTypeToName( unit->unit_type ), unit->pos.x, unit->pos.y );
+        if( verbose )
+          bot_->console().printf( "Building created: %s at (%.2f, %.2f)", sc2::UnitTypeToName( unit->unit_type ), unit->pos.x, unit->pos.y );
         addBuilding( unit );
       }
       else
