@@ -23,6 +23,8 @@ namespace hivemind {
     struct Options {
       string hivemindExecPath_; //!< Cmdline argv[0]
       StringVector executeCommands_; //!< Extra commands to execute on startup
+      int gamePort = -1;
+      int startPort = -1;
     };
     enum Action {
       Bot_Playing,

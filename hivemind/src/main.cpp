@@ -182,10 +182,22 @@ int runMain( hivemind::Bot::Options& options )
 
   coordinator.SetParticipants( players );
 
-  coordinator.LaunchStarcraft();
+  if (options.gamePort != -1 && options.startPort != -1)
+  {
+    int gamePort = options.gamePort;
+    int startPort = options.startPort;
+    console.printf("Connecting to startcraft running on port %d. Bot start port %d", gamePort, startPort);
+    coordinator.Connect(gamePort);
+    coordinator.SetupPorts(2, startPort, false);
+    coordinator.JoinGame();
+  }
+  else
+  {
+    coordinator.LaunchStarcraft();
 
-  if ( !coordinator.StartGame( g_CVar_map.as_s() ) )
-    HIVE_EXCEPT( "Failed to start game" );
+    if(!coordinator.StartGame(g_CVar_map.as_s()))
+      HIVE_EXCEPT("Failed to start game");
+  }
 
   while ( true )
   {
@@ -250,6 +262,24 @@ int APIENTRY wWinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCm
       ++i;
       if ( i < argCount )
         options.executeCommands_.emplace_back( platform::wideToUtf8( arguments[i] ) );
+    }
+    else if ( _wcsicmp( arguments[i], L"--GamePort" ) == 0 )
+    {
+      ++i;
+      if(i < argCount)
+      {
+        string portString = platform::wideToUtf8(arguments[i]);
+        options.gamePort = std::stoi(portString);
+      }
+    }
+    else if ( _wcsicmp( arguments[i], L"--StartPort" ) == 0 )
+    {
+      ++i;
+      if(i < argCount)
+      {
+        string portString = platform::wideToUtf8(arguments[i]);
+        options.startPort = std::stoi(portString);
+      }
     }
     ++i;
   }
